@@ -1,0 +1,84 @@
+RushHour Read me
+yasshi2525 (https://twitter.com/yasshi2525)
+
+1. 前提ソフトウェア
+2. ビルド方法
+3. テスト方法
+4. 実行方法
+
+--------------------------------------------------------------------------------
+1. 前提ソフトウェア
+
+　　Java SE Development Kit 8　ソースコードのビルド
+　　Apache Maven　　　　　　　　ビルドツール
+　　MariaDB　　　　　　　　　　　DBサーバ
+　　Payara Server 　　　　　　　アプリケーションサーバ
+
+--------------------------------------------------------------------------------
+2. ビルド方法
+
+mvn compile
+
+--------------------------------------------------------------------------------
+3. 単体テスト方法
+
+(1) MariaDBにテスト用のユーザを作成する
+
+CREATE USER 'rushhourtest'@'%' IDENTIFIED BY 'takao109'
+
+GRANT alter, create, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
+
+(2) Mavenでテストする
+
+mvn test
+
+--------------------------------------------------------------------------------
+4. 実行方法
+
+(1) MariaDBにユーザを作成する
+
+CREATE USER 'rushhour'@'%' IDENTIFIED BY 'takao109'
+
+GRANT alter, create, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
+
+
+(2) Payara ServerにDB情報を登録する
+
+(a) JDBCドライバをコピーする (JDBCドライバは MariaDB Connector/J から入手する)
+
+コピー先
+<install_dir>/glassfish/lib
+
+(b) アプリケーションサーバを起動する
+
+<install_dir>/glassfish/bin/asadmin start-domain
+
+(c) DB情報を登録する
+
+<install_dir>/glassfish/bin/asadmin create-jdbc-connection-pool --datasourceclassname org.mariadb.jdbc.MariaDbDataSource --restype javax.sql.XADataSource --property user=rushhour:password=takao109:databaseName=rushhour:portNumber=3306:serverName=localhost RushHourPool
+
+<install_dir>/glassfish/bin/asadmin create-jdbc-resource --connectionpoolid RushHourPool jdbc/RushHour
+
+
+(3) 設定ファイルを編集する
+
+src/main/resources/config.properties
+
+rushhour.twitter.consumerKey=<TwitterのDevelopersサイトで発行した値を記入>
+rushhour.twitter.consumerSecret=<TwitterのDevelopersサイトで発行した値を記入>
+rushhour.twitter.callbackUrl=http://127.0.0.1:<ポート番号>/RushHour1.0/faces/callbackTwitter.xhtml
+
+
+(4) ビルドする
+
+mvn install
+
+
+(5) デプロイする
+
+<install_dir>/glassfish/bin/asadmin deploy target/RushHourGame-1.0-SNAPSHOT.war
+
+
+(6) ブラウザからアクセスする
+
+http://localhost:<ポート番号>/RushHourGame

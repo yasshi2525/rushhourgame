@@ -1,0 +1,9 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Copyright 2017 @yasshi2525. All rights reserved.
+${licensePrefix}Project Name    : RushHour 
+${licensePrefix}Developer's URL : https://twitter.com/yasshi2525
+<#if licenseLast??>
+${licenseLast}
+</#if>
