@@ -28,9 +28,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.json.TwitterUserData;
+import net.rushhourgame.json.TwitterUserDataParser;
 
 /**
  *
@@ -43,6 +46,9 @@ public class TwitterUserShowClient extends TwitterClient implements Serializable
     protected static final String USER_ID = "user_id";
     
     protected Player player;
+    @Inject
+    protected TwitterUserDataParser parser;
+    protected TwitterUserData data;
     
     @PostConstruct
     public void init(){
@@ -64,11 +70,10 @@ public class TwitterUserShowClient extends TwitterClient implements Serializable
         sigBuilder.setoAuthTokenSecret(player.getOauth().getAccessTokenSecret());
     }
     
-    public String getIconUrl(){
-        return "";
-    }
-    
-    public String getUserData(){
-        return response.getEntity().toString();
+    public TwitterUserData getUserData(){
+        if(!parser.isParsed()){
+            parser.parse(responseHeader);
+        }
+        return parser.getCache();
     }
 }

@@ -69,6 +69,7 @@ public abstract class HttpClient implements Serializable {
     protected HttpMethod httpMethod;
     protected MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
     protected boolean isExecuted;
+    protected String responseHeader;
 
     public int getResponseStatus() {
         return response.getStatus();
@@ -249,7 +250,6 @@ public abstract class HttpClient implements Serializable {
 
     protected SortedMap<String, String> parseResponseData() {
         LOG.log(Level.FINE, "{0}#parseResponseData start", HttpClient.class.getSimpleName());
-        String responseHeader = null;
         if (response != null) {
             responseHeader = response.readEntity(String.class);
             LOG.log(Level.FINER, "{0}#parseResponseData {1}",

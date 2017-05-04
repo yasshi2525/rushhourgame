@@ -36,6 +36,7 @@ import net.rushhourgame.entity.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
+import net.rushhourgame.json.TwitterUserData;
 
 /**
  *
@@ -80,17 +81,7 @@ public class PlayerManagedBean implements Serializable {
         return player.getDisplayName();
     }
 
-    public String getIcon() throws RushHourException {
-        if (!isSignIn()) {
-            throw new RushHourException(ErrorMessage.createInvalidToken());
-        }
-        if (!client.isExecuted()) {
-            client.execute();
-        }
-        return client.getIconUrl();
-    }
-
-    public String getUserData() throws RushHourException {
+    public TwitterUserData getData() throws RushHourException {
         if (!isSignIn()) {
             throw new RushHourException(ErrorMessage.createInvalidToken());
         }
