@@ -39,9 +39,10 @@ import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.OAuthController;
+import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 
 /**
- * Twitter のリクエストトークンを取得する
+ * (1) Twitter のリクエストトークンを取得する
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
@@ -54,6 +55,8 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
     protected static final String OAUTH_CALLBACK = "oauth_callback";
     @Inject
     transient protected OAuthController oAuthController;
+    @Inject
+    transient protected TwitterOAuthRequestTokenClient client;
 
     /**
      * リクエストトークンを取得し、リダイレクトする.
@@ -63,49 +66,34 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
      */
     @Transactional
     public void requestRequestToken() throws IOException, RushHourException {
-        // リクエストトークンを取得するためのヘッダを作成
-        requester.getParameters().put(OAUTH_CALLBACK, prop.get(TWITTER_CALLBACK_URL));
-        requester.setResourceUrl(prop.get(TWITTER_API_REQ_TOKEN));
-
         // リクエストトークンの取得
-        requester.request();
+        client.execute();
 
-        Map<String, String> responseMap = requester.getResponseMap();
-
-        // 必要なパラメータが帰ってこなかった
-        if (!responseMap.containsKey("oauth_callback_confirmed")) {
-            throw new RushHourException(ErrorMessage.createReSignInError(
-                    SIGNIN_FAIL, SIGNIN_FAIL_INVALID_RESPONSE),
-                    "invalid response : " + responseMap
-            );
-        }
-
-        if (Boolean.valueOf(responseMap.get("oauth_callback_confirmed"))) {
-            // パラメータが存在しない
-            if (!responseMap.containsKey("oauth_token") || !responseMap.containsKey("oauth_token_secret")) {
-                throw new RushHourException(ErrorMessage.createReSignInError(
-                        SIGNIN_FAIL, SIGNIN_FAIL_INVALID_RESPONSE),
-                        "invalid response : " + responseMap
-                );
-            }
-
+        // コールバックURLの確認完了通知
+        if (client.isOAuthCallBackConfirmedOK()) {
+            
+            // 認証情報の保存
             oAuthController.createOAuthBean(
-                    responseMap.get("oauth_token"),
-                    responseMap.get("oauth_token_secret"));
-            //アクセストークン取得のためにリダイレクト
+                    client.getRequestToken(),
+                    client.getRequestTokenSecret());
+            
+            //アクセストークン取得のためにTwitterにリダイレクト
             FacesContext.getCurrentInstance().getExternalContext()
-                    .redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + responseMap.get("oauth_token"));
+                    .redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
+      
         } else {
             // コールバックURLの設定値不正
-            LOG.log(Level.SEVERE, "TwitterOAuthRequestTokenManagedBean#requestRequestToken"
-                    + " unable to get request_token because of invalid callback url {0}",
-                    requester.getParameters().get(OAUTH_CALLBACK));
+            LOG.log(Level.SEVERE, "{0}#requestRequestToken"
+                    + " unable to get request_token because of invalid callback url {1}",
+                    new Object[]{this.getClass().getSimpleName(), 
+                        client.getOAuthCallBack()
+                    });
             throw new RushHourException(
                     ErrorMessage.createReSignInError(
                             SIGNIN_FAIL,
                             SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED,
-                            responseMap.get("oauth_callback_confirmed")),
-                    "oauth_callback_confirmed = " + responseMap.get("oauth_callback_confirmed")
+                            client.getOAuthCallBack()),
+                    "oauth_callback_confirmed = " + client.getOAuthCallBackConfirmed()
             );
         }
     }

@@ -21,34 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.managedbean;
+package net.rushhourgame.httpclient;
 
-import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
-import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 
 /**
- * ログイン用
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public abstract class AbstractTwitterOAuthManagedBean {
+public class TwitterClientTest {
 
-    private static final Logger LOG = Logger.getLogger(AbstractTwitterOAuthManagedBean.class.getName());
-    
-    @Inject
-    transient protected RushHourProperties prop;
-    @Inject
-    transient protected RushHourResourceBundle msgProp;
-    
-    protected static final String ERR_PAGE = "error.xhtml";
-    protected static final String MYPAGE = "index.xhtml";
+    protected TwitterClient inst;
+    protected static final String INVALID_URL = "http://127.0.0.1/";
+    protected static RushHourProperties prop;
+    protected static RushHourResourceBundle resourceBundle;
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-    
-    protected ExternalContext getExternalContext(){
-        return FacesContext.getCurrentInstance().getExternalContext();
+    @BeforeClass
+    public static void setUpClass() {
+        prop = RushHourProperties.getInstance();
+        resourceBundle = RushHourResourceBundle.getInstance();
+    }
+
+    @Before
+    public void setUp() {
+        inst = new TwitterOAuthRequestTokenClient();
+        inst.prop = RushHourProperties.getInstance();
+    }
+
+    @Test
+    public void testCreateNonce() {
+        String createNonce = inst.createNonce();
+        assertNotNull(createNonce);
+        assertFalse(createNonce.contains("/"));
+        assertFalse(createNonce.contains("+"));
+        assertFalse(createNonce.contains("="));
     }
 }

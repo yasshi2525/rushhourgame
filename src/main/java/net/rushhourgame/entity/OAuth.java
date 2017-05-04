@@ -112,7 +112,7 @@ public class OAuth extends AbstractEntity implements Serializable {
         this.oauthVerifier = oauthVerifier;
     }
 
-    protected String getAccessToken() {
+    public String getAccessToken() {
         return accessToken;
     }
 
@@ -120,7 +120,7 @@ public class OAuth extends AbstractEntity implements Serializable {
         this.accessToken = accessToken;
     }
 
-    protected String getAccessTokenSecret() {
+    public String getAccessTokenSecret() {
         return accessTokenSecret;
     }
 

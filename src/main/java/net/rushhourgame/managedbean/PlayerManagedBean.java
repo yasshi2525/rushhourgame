@@ -35,7 +35,7 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
-import net.rushhourgame.request.TwitterRESTRequester;
+import net.rushhourgame.httpclient.TwitterUserShowClient;
 
 /**
  *
@@ -44,9 +44,10 @@ import net.rushhourgame.request.TwitterRESTRequester;
 @Named("player")
 @ViewScoped
 public class PlayerManagedBean implements Serializable {
+
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(PlayerManagedBean.class.getName());
-    
+
     @Inject
     transient protected RushHourProperties prop;
     @Inject
@@ -54,52 +55,52 @@ public class PlayerManagedBean implements Serializable {
     @Inject
     transient protected RushHourSession rushHourSession;
     @Inject
-    transient protected TwitterRESTRequester requester;
-    
-    protected TwitterUserData cache;
-    
+    transient protected TwitterUserShowClient client;
+
+    protected Player player;
+    protected boolean isSignIn;
+
     @PostConstruct
-    public void init(){
+    public void init() {
+        isSignIn = pCon.isValidToken(rushHourSession.getAccessToken());
+        if (isSignIn) {
+            player = pCon.findByToken(rushHourSession.getAccessToken());
+            client.setPlayer(player);
+        }
     }
-    
-    public boolean isSignIn(){
-        return pCon.isValidToken(rushHourSession.getAccessToken());
+
+    public boolean isSignIn() {
+        return isSignIn;
     }
-    
-    public String getDisplayName() throws RushHourException{
-        if(!isSignIn()){
+
+    public String getDisplayName() throws RushHourException {
+        if (!isSignIn()) {
             throw new RushHourException(ErrorMessage.createInvalidToken());
         }
-        Player p = fetchPlayer(rushHourSession.getAccessToken());
-        if(p == null){
-            return null;
-        }
-        return p.getDisplayName();
+        return player.getDisplayName();
     }
-    
-    public String getIcon() throws RushHourException{
-        if(!isSignIn()){
+
+    public String getIcon() throws RushHourException {
+        if (!isSignIn()) {
             throw new RushHourException(ErrorMessage.createInvalidToken());
         }
-        Player p = fetchPlayer(rushHourSession.getAccessToken());
-        if(cache == null){
-            fetchTwitterUserData(p);
+        if (!client.isExecuted()) {
+            client.execute();
         }
-        return cache.iconUrl;
+        return client.getIconUrl();
     }
-    
-    protected Player fetchPlayer(String accessToken){
+
+    public String getUserData() throws RushHourException {
+        if (!isSignIn()) {
+            throw new RushHourException(ErrorMessage.createInvalidToken());
+        }
+        if (!client.isExecuted()) {
+            client.execute();
+        }
+        return client.getUserData();
+    }
+
+    protected Player fetchPlayer(String accessToken) {
         return pCon.findByToken(accessToken);
-    }
-    
-    protected void fetchTwitterUserData(Player p) throws RushHourException{
-        requester.setResourceUrl(prop.get(RushHourProperties.TWITTER_API_USERS_SHOW));
-        requester.getParameters().put("user_id", p.getUserId());
-        
-        requester.request();
-    }
-    
-    protected static class TwitterUserData{
-        public String iconUrl = "";
     }
 }

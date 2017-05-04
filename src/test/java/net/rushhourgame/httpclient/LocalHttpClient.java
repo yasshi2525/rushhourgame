@@ -21,47 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.request;
+package net.rushhourgame.httpclient;
 
-import net.rushhourgame.request.OAuthRequester;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import java.io.UnsupportedEncodingException;
+import java.util.SortedMap;
 import java.util.logging.Logger;
-import net.rushhourgame.exception.RushHourException;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalOAuthRequester extends OAuthRequester {
+public class LocalHttpClient extends HttpClient {
 
-    private static final Logger LOG = Logger.getLogger(LocalOAuthRequester.class.getName());
-    boolean validResource = true;
-    boolean successes;
+    private static final Logger LOG = Logger.getLogger(LocalHttpClient.class.getName());
 
-    public void setValidResource(boolean validResource) {
-        this.validResource = validResource;
+    @Override
+    protected SortedMap<String, String> buildHeader() throws UnsupportedEncodingException {
+        return null;
     }
 
-    public int getResponseStatus() {
-        return successes && validResource ? 200 : 999;
-    }
-
-    public void request() throws RushHourException {
-        if (validResource) {
-            try {
-                Thread.sleep((long) (Math.random() * 1000));
-                responseMap = new HashMap<String, String>() {
-                    {
-                        put("foo", "bar");
-                    }
-                };
-                successes = true;
-            } catch (InterruptedException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
-
-        }
-    }
 }

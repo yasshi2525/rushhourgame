@@ -59,6 +59,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";
     public static final String SIGNIN_FAIL_NO_RESOURCE = "rushhour.message.signin.fail.noResource";
+    public static final String SIGNIN_FAIL_NO_HTTP_METHOD = "rushhour.message.signin.fail.noHttpMethod";
     public static final String SIGNIN_FAIL_ENCODE = "rushhour.message.signin.fail.encode";
     public static final String SIGNIN_FAIL_BAD_RES_STATUS = "rushhour.message.signin.fail.badResponseStatus";
     public static final String SIGNIN_FAIL_INVALID_RESPONSE = "rushhour.message.signin.fail.invalidResponse";

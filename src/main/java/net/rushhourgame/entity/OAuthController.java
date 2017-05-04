@@ -97,7 +97,6 @@ public class OAuthController extends AbstractController {
     public OAuth findByRequestToken(String requestToken) throws RushHourException{
         try {
             String id = digestCalculater.calcDigest(requestToken);
-            System.out.println("\nrequestToken(digest )="+id+ "\n");
             return findBy("OAuth.findById", "id", id, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);

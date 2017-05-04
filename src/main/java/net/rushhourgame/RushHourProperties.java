@@ -52,7 +52,7 @@ public class RushHourProperties extends AbstractProperties{
     public static final String TWITTER_API_REQ_TOKEN = "rushhour.twitter.api.request_token";
     public static final String TWITTER_API_ACCESS_TOKEN = "rushhour.twitter.api.access_token";
     public static final String TWITTER_API_AUTHENTICATE = "rushhour.twitter.api.authenticate";
-    public static final String TWITTER_API_USERS_SHOW = "rushhouse.twitter.api.users.show";
+    public static final String TWITTER_API_USERS_SHOW = "rushhour.twitter.api.users.show";
 
     protected RushHourProperties() {
         super(Arrays.asList("config.properties", "rushhour.properties"));

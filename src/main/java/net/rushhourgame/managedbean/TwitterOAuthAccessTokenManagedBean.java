@@ -25,7 +25,6 @@ package net.rushhourgame.managedbean;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
@@ -38,12 +37,12 @@ import net.rushhourgame.entity.PlayerController;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 
 /**
- *
+ * (2) Twitter のアクセストークンを取得する
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Named
@@ -64,11 +63,14 @@ public class TwitterOAuthAccessTokenManagedBean extends AbstractTwitterOAuthMana
     transient protected PlayerController playerController;
     @Inject
     transient protected RushHourSession rushHourSession;
+    @Inject
+    transient protected TwitterOAuthAccessTokenClient client;
 
     /**
      * access tokenを取得する
      *
      * @throws net.rushhourgame.exception.RushHourException
+     * @throws java.io.IOException
      */
     @Transactional
     public void init() throws RushHourException, IOException {
@@ -97,46 +99,25 @@ public class TwitterOAuthAccessTokenManagedBean extends AbstractTwitterOAuthMana
         oAuth.setOauthVerifier(oauthVerifier);
 
         // アクセストークンの取得
-        Map<String, String> res = requestAccessToken(oAuth);
-
-        // 必要なパラメータが帰ってこなかった
-        if(!res.containsKey("oauth_token") || !res.containsKey("oauth_token_secret")
-                || !res.containsKey("user_id") || !res.containsKey("screen_name")){
-            throw new RushHourException(ErrorMessage.createReSignInError(
-                    SIGNIN_FAIL, SIGNIN_FAIL_INVALID_RESPONSE),
-                    "invalid response : " + res
-            );
-        }
+        client.setOAuthToken(requestToken);
+        client.setOAuthVerifier(oauthVerifier);
+        client.setOAuthTokenSecret(oAuth.getRequestTokenSecret());
         
+        // リクエストの実行
+        client.execute();
+
         // OAuthテーブルに登録
-        updateOAuthAccessToken(oAuth, res.get("oauth_token"), res.get("oauth_token_secret"));
+        updateOAuthAccessToken(oAuth, client.getAccessToken(), client.getAccessTokenSecret());
 
         // プレイヤーデータの取得 (存在しない場合は取得)
-        Player p = fetchPlayer(requestToken, res.get("user_id"), res.get("oauth_token"), res.get("screen_name"));
+        Player p = fetchPlayer(
+                requestToken, client.getUserId(), client.getAccessToken(), client.getScreenName());
         
         // セッションへデータを登録
         registerSessionAttribute(p);
         
         getExternalContext().redirect(MYPAGE);
     }
-
-    /**
-     * アクセストークンを取得する
-     *
-     * @param oAuth
-     * @throws net.rushhourgame.exception.RushHourException
-     * @return
-     */
-    protected Map<String, String> requestAccessToken(OAuth oAuth) throws RushHourException {
-        requester.setResourceUrl(prop.get(TWITTER_API_ACCESS_TOKEN));
-        requester.getParameters().put(OAUTH_TOKEN, requestToken);
-        requester.getParameters().put(OAUTH_VERIFIER, oauthVerifier);
-        requester.setOauthTokenSecret(oAuth.getRequestTokenSecret());
-        
-        requester.request();
-        return requester.getResponseMap();
-    }
-
     /**
      * アクセストークンを oAuth テーブルに登録
      *
