@@ -1,1 +1,3 @@
+src/main/resources/config.properties
+src/test/resources/META-INF/persistence.xml
 target/
