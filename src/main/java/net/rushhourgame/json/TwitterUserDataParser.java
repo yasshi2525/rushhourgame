@@ -68,7 +68,7 @@ public class TwitterUserDataParser implements Serializable {
                                 obj.screen_name = parser.getString();
                                 break;
                             case "profile_background_color":
-                                obj.profile_background_color = parser.getString();
+                                obj.profile_background_color = "#" + parser.getString();
                                 break;
                             case "profile_image_url":
                                 obj.profile_image_url = parser.getString();
@@ -77,10 +77,10 @@ public class TwitterUserDataParser implements Serializable {
                                 obj.profile_image_url_https = parser.getString();
                                 break;
                             case "profile_link_color":
-                                obj.profile_link_color = parser.getString();
+                                obj.profile_link_color = "#" + parser.getString();
                                 break;
                             case "profile_text_color":
-                                obj.profile_text_color = parser.getString();
+                                obj.profile_text_color = "#" + parser.getString();
                                 break;
                             case "default_profile":
                                 obj.default_profile = parser.getString();

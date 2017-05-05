@@ -10,9 +10,9 @@
     <h:body>
         <f:view>
             <f:metadata>
-                <f:viewParam name="oauth_token" value="#{twitterOAuthAccessTokenManagedBean.requestToken}"/>
-                <f:viewParam name="oauth_verifier" value="#{twitterOAuthAccessTokenManagedBean.oauthVerifier}"/>
-                <f:viewAction action="#{twitterOAuthAccessTokenManagedBean.init()}"/>
+                <f:viewParam name="oauth_token" value="#{twitterOAuthAccessToken.requestToken}"/>
+                <f:viewParam name="oauth_verifier" value="#{twitterOAuthAccessToken.oauthVerifier}"/>
+                <f:viewAction action="#{twitterOAuthAccessToken.init()}"/>
             </f:metadata>
         </f:view>
         <ui:composition template="templates/template.xhtml">

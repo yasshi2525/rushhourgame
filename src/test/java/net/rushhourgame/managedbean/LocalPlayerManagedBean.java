@@ -51,7 +51,7 @@ public class LocalPlayerManagedBean extends PlayerManagedBean {
         if (!isSignIn()) {
             return null;
         }
-        Player p = fetchPlayer(accessToken);
+        Player p = pCon.findByToken(accessToken);
         if (p == null) {
             return null;
         }

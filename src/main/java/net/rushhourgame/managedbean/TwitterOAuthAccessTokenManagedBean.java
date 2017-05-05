@@ -45,7 +45,7 @@ import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
  * (2) Twitter のアクセストークンを取得する
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named
+@Named("twitterOAuthAccessToken")
 @ViewScoped
 public class TwitterOAuthAccessTokenManagedBean extends AbstractTwitterOAuthManagedBean implements Serializable {
     

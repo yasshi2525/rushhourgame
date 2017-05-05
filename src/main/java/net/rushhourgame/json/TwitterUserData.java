@@ -44,30 +44,51 @@ public class TwitterUserData implements Serializable {
     protected String default_profile_image;
 
     public String getName() {
+        if(name == null){
+            return "no name";
+        }
         return name;
     }
 
     public String getScreen_name() {
+        if(screen_name == null){
+            return "no name";
+        }
         return screen_name;
     }
 
     public String getProfile_background_color() {
+        if(profile_background_color == null){
+            return "#AAAAAA";
+        }
         return profile_background_color;
     }
 
     public String getProfile_image_url() {
+        if(profile_image_url == null){
+            return "no_image.png";
+        }
         return profile_image_url;
     }
 
     public String getProfile_image_url_https() {
+        if(profile_image_url_https == null){
+            return "no_image.png";
+        }
         return profile_image_url_https;
     }
 
     public String getProfile_link_color() {
+        if(profile_link_color == null){
+            return "#CCCCFF";
+        }
         return profile_link_color;
     }
 
     public String getProfile_text_color() {
+        if(profile_text_color == null){
+            return "#000000";
+        }
         return profile_text_color;
     }
 

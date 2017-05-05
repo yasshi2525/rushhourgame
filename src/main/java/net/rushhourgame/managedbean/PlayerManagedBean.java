@@ -25,6 +25,7 @@ package net.rushhourgame.managedbean;
 
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -39,7 +40,7 @@ import net.rushhourgame.httpclient.TwitterUserShowClient;
 import net.rushhourgame.json.TwitterUserData;
 
 /**
- *
+ * 未ログイン時は未ログイン用のデータを返す
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Named("player")
@@ -60,13 +61,24 @@ public class PlayerManagedBean implements Serializable {
 
     protected Player player;
     protected boolean isSignIn;
+    /**
+     * ログインしていない場合は未ログイン時用の値が格納
+     */
+    protected TwitterUserData userData;
 
     @PostConstruct
     public void init() {
+        userData = new TwitterUserData();
         isSignIn = pCon.isValidToken(rushHourSession.getAccessToken());
         if (isSignIn) {
             player = pCon.findByToken(rushHourSession.getAccessToken());
             client.setPlayer(player);
+            try {
+                client.execute();
+                userData  = client.getUserData();
+            } catch (RushHourException ex) {
+                LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init fail to client#execute" , ex);
+            }
         }
     }
 
@@ -74,24 +86,23 @@ public class PlayerManagedBean implements Serializable {
         return isSignIn;
     }
 
-    public String getDisplayName() throws RushHourException {
+    public String getDisplayName() {
         if (!isSignIn()) {
-            throw new RushHourException(ErrorMessage.createInvalidToken());
+            return "no name";
         }
         return player.getDisplayName();
     }
-
-    public TwitterUserData getData() throws RushHourException {
-        if (!isSignIn()) {
-            throw new RushHourException(ErrorMessage.createInvalidToken());
-        }
-        if (!client.isExecuted()) {
-            client.execute();
-        }
-        return client.getUserData();
+    
+    public String getName(){
+        return userData.getName();
     }
-
-    protected Player fetchPlayer(String accessToken) {
-        return pCon.findByToken(accessToken);
+    
+    public String getImageUrl(){
+        return userData.getProfile_image_url();
+    }
+    
+    public String getHeaderStyle(){
+        return "background-color: " + userData.getProfile_link_color() + ";"
+                + "color: " + userData.getProfile_text_color() + ";";
     }
 }
