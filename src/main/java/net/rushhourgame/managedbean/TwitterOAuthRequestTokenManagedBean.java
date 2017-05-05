@@ -46,7 +46,7 @@ import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named
+@Named("twitterOAuthRequestToken")
 @ViewScoped
 public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthManagedBean implements Serializable {
 
@@ -57,6 +57,7 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
     transient protected OAuthController oAuthController;
     @Inject
     transient protected TwitterOAuthRequestTokenClient client;
+    protected boolean isLoading;
 
     /**
      * リクエストトークンを取得し、リダイレクトする.
@@ -66,6 +67,7 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
      */
     @Transactional
     public void requestRequestToken() throws IOException, RushHourException {
+        isLoading = true;
         // リクエストトークンの取得
         client.execute();
 
@@ -76,7 +78,6 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
             oAuthController.createOAuthBean(
                     client.getRequestToken(),
                     client.getRequestTokenSecret());
-            
             //アクセストークン取得のためにTwitterにリダイレクト
             FacesContext.getCurrentInstance().getExternalContext()
                     .redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
@@ -96,5 +97,9 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
                     "oauth_callback_confirmed = " + client.getOAuthCallBackConfirmed()
             );
         }
+    }
+
+    public boolean isLoading() {
+        return isLoading;
     }
 }
