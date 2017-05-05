@@ -60,7 +60,7 @@ public class PlayerControllerTest {
     protected static final String TEST_USER2_PLAIN_ACCESS_TOKEN = "access_token_002";
     protected static final String TEST_USER2_DISPLAY_NAME = "test_user2";
     protected static final String UNEXIST_USER_ID = "unexist_user_id_999";
-    protected static final String UNEXIST_ACCESS_TOKEN= "unexist_access_token_999";
+    protected static final String UNEXIST_ACCESS_TOKEN = "unexist_access_token_999";
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -96,12 +96,12 @@ public class PlayerControllerTest {
     }
 
     @Test
-    public void testCreatePlayer() throws RushHourException  {
+    public void testCreatePlayer() throws RushHourException {
         OAuth oAuth = oAuthController.createOAuthBean("foo", "foosec");
-        System.out.println("requestToken(digest )="+oAuth.getId());
-        System.out.println("requestToken(encrypt)="+oAuth.getRequestToken());
+        System.out.println("requestToken(digest )=" + oAuth.getId());
+        System.out.println("requestToken(encrypt)=" + oAuth.getRequestToken());
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        
+
         assertNotNull(created.getToken());
         assertNotEquals(TEST_USER_PLAIN_ACCESS_TOKEN, created.getToken());
         assertEquals(TEST_USER_DISPLAY_NAME, created.getDisplayName());
@@ -110,13 +110,13 @@ public class PlayerControllerTest {
         assertNotNull(created.getOauth());
         assertEquals(1, controller.findPlayers().size());
     }
-    
+
     @Test
-    public void testCreateNoOAuthPlayer() throws RushHourException{
+    public void testCreateNoOAuthPlayer() throws RushHourException {
         exception.expect(NullPointerException.class);
         inst.createPlayer(null, TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
     }
-    
+
     @Test
     public void testCreateSameRequestToken() {
         try {
@@ -128,14 +128,14 @@ public class PlayerControllerTest {
         }
 
     }
-    
+
     @Test
     public void testCreateSameUserID() {
         Player createPlayer = null;
         try {
             oAuthController.createOAuthBean("foo", "foosec");
             createPlayer = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-            
+
             oAuthController.createOAuthBean("bar", "barsec");
             inst.createPlayer("bar", TEST_USER_ID, TEST_USER2_PLAIN_ACCESS_TOKEN, TEST_USER2_DISPLAY_NAME);
             fail();
@@ -144,7 +144,7 @@ public class PlayerControllerTest {
             assertTrue(ex.getMessage().startsWith("User Id is already registered : "));
         }
     }
-    
+
     @Test
     public void testCreateSameAccessToken() {
         Player createPlayer = null;
@@ -155,11 +155,11 @@ public class PlayerControllerTest {
             inst.createPlayer("bar", TEST_USER2_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER2_DISPLAY_NAME);
             fail();
         } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN, 
+            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN,
                     "User accessToken is already registered : " + createPlayer.getToken(), ex.getMessage());
         }
     }
-    
+
     @Test
     public void testReLogin() {
         try {
@@ -175,8 +175,11 @@ public class PlayerControllerTest {
         }
     }
 
+    /**
+     * 違うユーザが違うユーザのtokenにしようしたとき
+     */
     @Test
-    public void testUpdateSameToken() {
+    public void testUpdateSameTokenByDifferentPlayer() {
         Player p1 = null;
         try {
             oAuthController.createOAuthBean("foo", "foosec");
@@ -192,13 +195,21 @@ public class PlayerControllerTest {
     }
 
     @Test
+    public void testUpdateSameTokenBySampePlayer() throws RushHourException {
+        oAuthController.createOAuthBean("foo", "foosec");
+        Player p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
+        oAuthController.createOAuthBean("bar", "barsec");
+        inst.updateToken(p1, "bar", TEST_USER_PLAIN_ACCESS_TOKEN);
+    }
+
+    @Test
     public void testExistsUserId() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
         assertTrue(inst.existsUserId(created.getUserId()));
         assertFalse(inst.existsUserId(UNEXIST_USER_ID));
     }
-    
+
     @Test
     public void testIsValidAccessToken() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
@@ -211,7 +222,7 @@ public class PlayerControllerTest {
     public void testFindByUserId() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        
+
         assertEquals(created.getId(), inst.findByUserId(created.getUserId()).getId());
         assertNull(inst.findByUserId(UNEXIST_USER_ID));
     }
@@ -220,7 +231,7 @@ public class PlayerControllerTest {
     public void testFindByAccessToken() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        
+
         assertEquals(created.getId(), inst.findByToken(created.getToken()).getId());
         assertNull(inst.findByToken(UNEXIST_ACCESS_TOKEN));
     }
@@ -228,15 +239,15 @@ public class PlayerControllerTest {
     @Test
     public void testClearAccessToken() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
-        String accessToken = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, 
+        String accessToken = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN,
                 TEST_USER_DISPLAY_NAME).getToken();
         assertTrue(inst.isValidToken(accessToken));
         inst.clearToken(accessToken);
         assertFalse(inst.isValidToken(accessToken));
-        
+
         inst.clearToken(UNEXIST_ACCESS_TOKEN);
     }
-    
+
     @Test
     public void testDelete() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");

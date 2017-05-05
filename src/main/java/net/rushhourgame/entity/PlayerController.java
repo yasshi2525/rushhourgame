@@ -137,20 +137,27 @@ public class PlayerController extends AbstractController {
      * @throws RushHourException 
      */
     public void updateToken(Player p, String requestToken, String newPlainAccessToken) throws RushHourException {
+        //値が同じ場合は更新しない
+        String oldToken = p.getToken();
+        
         p.setOauth(oCon.findByRequestToken(requestToken));
         
-        String newAccessToken;
+        String newToken;
         try {
-            newAccessToken = calculator.calcDigest(newPlainAccessToken);
+            newToken = calculator.calcDigest(newPlainAccessToken);
+            if(oldToken.equals(newToken)){
+            LOG.log(Level.INFO, "PlayerController#updateToken old token = new token");
+                return;
+            }
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "PlayerController#updateToken", ex);
             throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
         
-        if (existsToken(newAccessToken)) {
+        if (existsToken(newToken)) {
             throw new RushHourException(
                     ErrorMessage.createRetryError(ACCOUNT_FAIL, ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN),
-                    "accessToken is already existed : " + newAccessToken
+                    "accessToken is already existed : " + newToken
             );
         }
         p.setToken(newPlainAccessToken);
