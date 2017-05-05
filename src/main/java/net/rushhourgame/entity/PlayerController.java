@@ -68,12 +68,12 @@ public class PlayerController extends AbstractController {
             throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
         
-        if (existsUserId(userIdDigest)) {
+        if (existsUserId(plainUserId)) {
             // ユーザID重複
             throw new RushHourException(ErrorMessage.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID),
-                    "User Id is already registered : " + userIdDigest);
+                    "User Id is already registered : digest(" + userIdDigest + ")");
         }
         if (existsToken(tokenDigest)) {
             //アクセストークン重複
@@ -97,16 +97,28 @@ public class PlayerController extends AbstractController {
         return p;
     }
 
-    public boolean existsUserId(String userId) {
-        return exists("Player.existsId", "id", userId);
+    public boolean existsUserId(String userId) throws RushHourException {
+        try {
+            String id = calculator.calcDigest(userId);
+            return exists("Player.existsId", "id", id);
+        } catch (NoSuchAlgorithmException ex) {
+            LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#existsUserId", ex);
+            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+        }
     }
 
     public boolean existsToken(String token) {
         return exists("Player.existsToken", "token", token);
     }
 
-    public Player findByUserId(String userId) {
-        return findBy("Player.findById", "id", userId, dummyInst);
+    public Player findByUserId(String userId) throws RushHourException {
+        try {
+            String id = calculator.calcDigest(userId);
+            return findBy("Player.findById", "id", id, dummyInst);
+        } catch (NoSuchAlgorithmException ex) {
+            LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#findByUserId", ex);
+            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+        }
     }
 
     public Player findByToken(String token) {

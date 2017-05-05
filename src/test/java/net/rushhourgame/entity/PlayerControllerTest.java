@@ -141,7 +141,7 @@ public class PlayerControllerTest {
             fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID, ex.getErrMsg().getDetailId());
-            assertEquals("User Id is already registered : " + createPlayer.getId(), ex.getMessage());
+            assertTrue(ex.getMessage().startsWith("User Id is already registered : "));
         }
     }
     
@@ -195,7 +195,7 @@ public class PlayerControllerTest {
     public void testExistsUserId() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        assertTrue(inst.existsUserId(created.getId()));
+        assertTrue(inst.existsUserId(created.getUserId()));
         assertFalse(inst.existsUserId(UNEXIST_USER_ID));
     }
     
@@ -212,7 +212,7 @@ public class PlayerControllerTest {
         oAuthController.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
         
-        assertEquals(created.getId(), inst.findByUserId(created.getId()).getId());
+        assertEquals(created.getId(), inst.findByUserId(created.getUserId()).getId());
         assertNull(inst.findByUserId(UNEXIST_USER_ID));
     }
 
