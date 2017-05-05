@@ -165,7 +165,7 @@ public class TwitterOAuthAccessTokenManagedBean extends AbstractTwitterOAuthMana
      */
     protected void registerSessionAttribute(Player player) {
         // セッションにアクセストークンとロケールを追加
-        rushHourSession.setAccessToken(player.getToken());
+        rushHourSession.setToken(player.getToken());
         rushHourSession.setLocale(player.getLocale());
     }
     

@@ -48,16 +48,16 @@ public class RushHourSession implements Serializable {
         findOrCreateBean().setLocale(locale);
     }
     
-    public void setAccessToken(String accessToken){
-        findOrCreateBean().setAccessToken(accessToken);
+    public void setToken(String accessToken){
+        findOrCreateBean().setToken(accessToken);
     }
     
     public Locale getLocale(){
         return findOrCreateBean().getLocale();
     }
     
-    public String getAccessToken(){
-        return findOrCreateBean().getAccessToken();
+    public String getToken(){
+        return findOrCreateBean().getToken();
     }
     
     protected boolean hasValidBean(){
@@ -69,16 +69,16 @@ public class RushHourSession implements Serializable {
         findOrCreateBean(session).setLocale(locale);
     }
     
-    static public void setAccessToken(HttpSession session, String accessToken){
-        findOrCreateBean(session).setAccessToken(accessToken);
+    static public void setToken(HttpSession session, String accessToken){
+        findOrCreateBean(session).setToken(accessToken);
     }
     
     static public Locale getLocale(HttpSession session){
         return findOrCreateBean(session).getLocale();
     }
     
-    static public String getAccessToken(HttpSession session){
-        return findOrCreateBean(session).getAccessToken();
+    static public String getToken(HttpSession session){
+        return findOrCreateBean(session).getToken();
     }
     
     static protected boolean hasValidBean(HttpSession session){

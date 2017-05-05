@@ -190,7 +190,7 @@ public class PlayerControllerTest {
             fail();
         } catch (RushHourException ex) {
             assertEquals(ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN, ex.getErrMsg().getDetailId());
-            assertEquals("accessToken is already existed : " + p1.getToken(), ex.getMessage());
+            assertEquals("token is already existed : " + p1.getToken(), ex.getMessage());
         }
     }
 
@@ -246,6 +246,17 @@ public class PlayerControllerTest {
         assertFalse(inst.isValidToken(accessToken));
 
         inst.clearToken(UNEXIST_ACCESS_TOKEN);
+    }
+    
+    @Test
+    public void testClearAccessTokenMultiPlayer() throws RushHourException{
+        oAuthController.createOAuthBean("foo", "foosec");
+        Player user1 = inst.createPlayer("foo", "user1", "user1_at", "user1");
+        oAuthController.createOAuthBean("bar", "barsec");
+        Player user2 = inst.createPlayer("bar", "user2", "user2_at", "user2");
+        
+        inst.clearToken(user1.getToken());
+        inst.clearToken(user2.getToken());
     }
 
     @Test

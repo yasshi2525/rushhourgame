@@ -89,4 +89,8 @@ public class MessageManagedBean implements Serializable{
     public String getLangJp(){
         return res.get(LABEL_LANG_JP, rushHourSession.getLocale());
     }
+    
+    public String getLogOut(){
+        return res.get(LABEL_LOGOUT, rushHourSession.getLocale());
+    }
 }

@@ -55,6 +55,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_WELCOME = "rushhour.label.welcome";
     public static final String LABEL_LANG_EN = "rushhour.label.lang.en";
     public static final String LABEL_LANG_JP = "rushhour.label.lang.jp";
+    public static final String LABEL_LOGOUT = "rushhour.label.logout";
 
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";

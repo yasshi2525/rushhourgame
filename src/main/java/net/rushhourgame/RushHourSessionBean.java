@@ -32,7 +32,7 @@ import java.util.Locale;
  */
 public class RushHourSessionBean implements Serializable{
     private final int serialVersionUID = 1;
-    protected String accessToken;
+    protected String token;
     protected Locale locale; 
 
     protected RushHourSessionBean() {
@@ -43,7 +43,7 @@ public class RushHourSessionBean implements Serializable{
     }
 
     protected RushHourSessionBean(String accessToken) {
-        this.accessToken = accessToken;
+        this.token = accessToken;
     }
     
     public boolean isJp(){
@@ -54,12 +54,12 @@ public class RushHourSessionBean implements Serializable{
         return Locale.ENGLISH.equals(locale);
     }
     
-    public String getAccessToken() {
-        return accessToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Locale getLocale() {

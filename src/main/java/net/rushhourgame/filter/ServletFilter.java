@@ -49,24 +49,26 @@ public class ServletFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         handleLocale(request);
-        
-        chain.doFilter(request, response);
-
+        try {
+            chain.doFilter(request, response);
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "ServletFilter#doFilter fail", e);
+        }
     }
-    
-    protected void handleLocale(ServletRequest request){
-        HttpSession session = ((HttpServletRequest)request).getSession();
+
+    protected void handleLocale(ServletRequest request) {
+        HttpSession session = ((HttpServletRequest) request).getSession();
         Locale locale = RushHourSession.getLocale(session);
-        if(locale != null){
+        if (locale != null) {
             return;
         }
-        
+
         //ブラウザの値を設定
         locale = request.getLocale();
-        
+
         //GETパラメタの値を設定
-        if(request.getParameter("lang") != null){
-            switch(request.getParameter("lang")){
+        if (request.getParameter("lang") != null) {
+            switch (request.getParameter("lang")) {
                 case "jp":
                     locale = Locale.JAPANESE;
                     break;
@@ -74,12 +76,12 @@ public class ServletFilter implements Filter {
                     locale = Locale.ENGLISH;
                     break;
                 default:
-                    LOG.log(Level.FINE, "{0}#handleLocale Unsuppoert language : {0}", 
+                    LOG.log(Level.FINE, "{0}#handleLocale Unsuppoert language : {0}",
                             new Object[]{this.getClass().getSimpleName(), request.getParameter("lang")});
                     locale = Locale.ENGLISH;
             }
         }
-        
+
         //セッションに記憶
         RushHourSession.setLocale(session, locale);
     }

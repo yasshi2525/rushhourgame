@@ -55,9 +55,9 @@ public class SessionListener implements HttpSessionListener{
         LOG.log(Level.INFO, "SessionListener#sessionDestroyed session is destoroyed : id = {0}", se.getSession().getId());
         Object bean = se.getSession().getAttribute("rushhour");
         if(bean != null && bean instanceof RushHourSessionBean){
-            controller.clearToken(((RushHourSessionBean)bean).getAccessToken());
-            LOG.log(Level.INFO, "SessionListener#sessionDestroyed clear access_token = {0}", 
-                    ((RushHourSessionBean)bean).getAccessToken());
+            String clearedAccessToken = ((RushHourSessionBean)bean).getToken();
+            controller.clearToken(clearedAccessToken);
+            LOG.log(Level.INFO, "SessionListener#sessionDestroyed clear access_token = {0}", clearedAccessToken);
         }
     }
     

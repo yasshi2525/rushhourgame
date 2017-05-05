@@ -145,7 +145,7 @@ public class PlayerController extends AbstractController {
         String newToken;
         try {
             newToken = calculator.calcDigest(newPlainAccessToken);
-            if(oldToken.equals(newToken)){
+            if(newToken.equals(oldToken)){
             LOG.log(Level.INFO, "PlayerController#updateToken old token = new token");
                 return;
             }
@@ -157,7 +157,7 @@ public class PlayerController extends AbstractController {
         if (existsToken(newToken)) {
             throw new RushHourException(
                     ErrorMessage.createRetryError(ACCOUNT_FAIL, ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN),
-                    "accessToken is already existed : " + newToken
+                    "token is already existed : " + newToken
             );
         }
         p.setToken(newPlainAccessToken);
@@ -168,8 +168,10 @@ public class PlayerController extends AbstractController {
             Player player = findByToken(token);
             if (player != null) {
                 player.setToken(null);
+                //OAuth oAuth = player.getOauth();
                 player.setOauth(null);
-                LOG.log(Level.INFO, "PlayerController#clearToken clear access token of {0}", player.getId());
+                //em.remove(oAuth);
+                LOG.log(Level.INFO, "PlayerController#clearToken clear access token");
             }
         } catch (NoResultException e) {
             LOG.log(Level.INFO, "PlayerController#clearToken"
