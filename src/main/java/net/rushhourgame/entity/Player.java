@@ -24,14 +24,18 @@
 package net.rushhourgame.entity;
 
 import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.Converter;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -62,7 +66,7 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM Player x WHERE x.token = :token"
     )
 })
-public class Player extends AbstractEntity implements Serializable {
+public class Player extends AbstractEntity implements Owner, Serializable {
 
     @Id
     protected String id;
@@ -77,6 +81,9 @@ public class Player extends AbstractEntity implements Serializable {
     protected Locale locale;
     @OneToOne(orphanRemoval = true)
     protected OAuth oauth;
+    @ElementCollection(targetClass = RoleType.class)
+    @Enumerated(EnumType.STRING)
+    protected EnumSet<RoleType> roles;
     
     public String getId() {
         return id;
@@ -147,5 +154,9 @@ public class Player extends AbstractEntity implements Serializable {
 
     public void setOauth(OAuth oauth) {
         this.oauth = oauth;
+    }
+
+    public EnumSet<RoleType> getRoles() {
+        return roles;
     }
 }

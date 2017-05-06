@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
@@ -21,23 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-var pixi = require('pixi.js');
+package net.rushhourgame.entity;
 
-$(function () {
-    initPixi();
-});
+import java.io.Serializable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-function initPixi() {
-    var renderer = pixi.autoDetectRenderer();
-    $("#gameview").get(0).appendChild(renderer.view);
-    
-    renderer.backgroundColor = 0x808080;
-    pixi.loader
-            .add([
-                "resources/image/s_absorber.png",
-                "resources/image/s_distributer.png",
-                "resources/image/s_station.png",
-                "resources/image/s_train.png"])
-            .load();
+/**
+ *
+ * @author yasshi2525 <https://twitter.com/yasshi2525>
+ */
+@MappedSuperclass
+public class SimplePoint implements Pointable, Serializable {
+
+    private final long serialVersionUID = 1;
+    @Id
+    @GeneratedValue
+    protected long id;
+    protected double x;
+    protected double y;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double distTo(Pointable p) {
+        return Math.sqrt((p.getX() - x) * (p.getX() - x)
+                + (p.getY() - y) * (p.getY() - y));
+    }
 }
-

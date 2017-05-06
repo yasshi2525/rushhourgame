@@ -1,4 +1,4 @@
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
@@ -21,23 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-var pixi = require('pixi.js');
+package net.rushhourgame.entity;
 
-$(function () {
-    initPixi();
-});
-
-function initPixi() {
-    var renderer = pixi.autoDetectRenderer();
-    $("#gameview").get(0).appendChild(renderer.view);
-    
-    renderer.backgroundColor = 0x808080;
-    pixi.loader
-            .add([
-                "resources/image/s_absorber.png",
-                "resources/image/s_distributer.png",
-                "resources/image/s_station.png",
-                "resources/image/s_train.png"])
-            .load();
+/**
+ *
+ * @author yasshi2525 <https://twitter.com/yasshi2525>
+ */
+public interface Processable {
+    public boolean canProcess();
+    public void process();
 }
-
