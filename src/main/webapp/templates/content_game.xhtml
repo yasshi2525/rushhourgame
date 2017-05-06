@@ -1,9 +1,30 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui">
-        Hello. <h:outputText value="#{player.displayName}"/>
-</div>
+<h:form xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui">
+    <p:menu>
+        <p:submenu label="#{msg.rail}">
+            <p:menuitem value="#{msg.create}"/>
+            <p:menuitem value="#{msg.edit}"/>
+            <p:menuitem value="#{msg.remove}"/>
+        </p:submenu>
+        <p:submenu label="#{msg.station}">
+            <p:menuitem value="#{msg.create}"/>
+            <p:menuitem value="#{msg.edit}"/>
+            <p:menuitem value="#{msg.remove}"/>
+        </p:submenu>
+        <p:submenu label="#{msg.route}">
+            <p:menuitem value="#{msg.create}"/>
+            <p:menuitem value="#{msg.edit}"/>
+            <p:menuitem value="#{msg.remove}"/>
+        </p:submenu>
+        <p:submenu label="#{msg.train}">
+            <p:menuitem value="#{msg.create}"/>
+            <p:menuitem value="#{msg.edit}"/>
+            <p:menuitem value="#{msg.remove}"/>
+        </p:submenu>
+    </p:menu>
+</h:form>
 

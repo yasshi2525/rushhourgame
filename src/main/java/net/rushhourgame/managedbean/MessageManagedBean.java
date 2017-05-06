@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.Locale;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -96,5 +97,27 @@ public class MessageManagedBean implements Serializable{
     
     public String getLogOut(){
         return res.get(LABEL_LOGOUT, rushHourSession.getLocale());
+    }
+    
+    public String getRail(){
+        return res.get(LABEL_RAIL, rushHourSession.getLocale());
+    }
+    public String getStation(){
+        return res.get(LABEL_STATION, rushHourSession.getLocale());
+    }
+    public String getRoute(){
+        return res.get(LABEL_ROUTE, rushHourSession.getLocale());
+    }
+    public String getTrain(){
+        return res.get(LABEL_TRAIN, rushHourSession.getLocale());
+    }
+    public String getCreate(){
+        return res.get(LABEL_CREATE, rushHourSession.getLocale());
+    }
+    public String getEdit(){
+        return res.get(LABEL_EDIT, rushHourSession.getLocale());
+    }
+    public String getRemove(){
+        return res.get(LABEL_REMOVE, rushHourSession.getLocale());
     }
 }

@@ -57,6 +57,13 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_LANG_EN = "rushhour.label.lang.en";
     public static final String LABEL_LANG_JP = "rushhour.label.lang.jp";
     public static final String LABEL_LOGOUT = "rushhour.label.logout";
+    public static final String LABEL_RAIL = "rushhour.label.rail";
+    public static final String LABEL_STATION = "rushhour.label.station";
+    public static final String LABEL_ROUTE = "rushhour.label.route";
+    public static final String LABEL_TRAIN = "rushhour.label.train";
+    public static final String LABEL_CREATE = "rushhour.label.create";
+    public static final String LABEL_EDIT = "rushhour.label.edit";
+    public static final String LABEL_REMOVE = "rushhour.label.remove";
 
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";
