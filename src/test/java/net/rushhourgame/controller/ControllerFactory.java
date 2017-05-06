@@ -57,13 +57,19 @@ public class ControllerFactory {
         return inst;
     }
     
+    public static GameMasterController createGameMasterController(){
+        GameMasterController inst = new GameMasterController();
+        init(inst);
+        return inst;
+    }
+    
     public static DigestCalculator createDigestCalculator(){
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();
         return inst;
     }
     
-    public static void init(AbstractController inst){
+    protected static void init(AbstractController inst){
         inst.calculator = createDigestCalculator();
         inst.em = LocalEntityManager.createEntityManager();
         inst.prop = RushHourProperties.getInstance();

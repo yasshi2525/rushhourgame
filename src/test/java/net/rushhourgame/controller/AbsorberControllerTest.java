@@ -23,13 +23,13 @@
  */
 package net.rushhourgame.controller;
 
-import net.rushhourgame.entity.LocalOwner;
 import net.rushhourgame.entity.Owner;
 import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Player;
 import org.junit.Before;
 
 /**
@@ -37,14 +37,19 @@ import org.junit.Before;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class AbsorberControllerTest extends AbstractControllerTest{
-    protected static Owner admin = new LocalOwner(RoleType.ADMINISTRATOR);
-    protected static Owner player = new LocalOwner(RoleType.PLAYER);
+    protected Owner admin ;
+    protected Owner player;
     protected AbsorberController inst;
     
     @Before
     public void setUp(){
         super.setUp();
         inst = ControllerFactory.createAbsorberController();
+        
+        player = new Player();
+        player.getRoles().add(RoleType.PLAYER);
+        admin = new Player();
+        admin.getRoles().add(RoleType.ADMINISTRATOR);
     }
     
     @Test

@@ -23,22 +23,51 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static net.rushhourgame.entity.AbstractEntityTest.em;
+import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class PointEntityTest extends AbstractEntityTest{
+public class PointEntityTest extends AbstractEntityTest {
 
-    /**
-     * Test of distTo method, of class PointEntity.
-     */
+    private static final Logger LOG = Logger.getLogger(PointEntityTest.class.getName());
+    
+    protected Player player;
+    protected Player other;
+    protected Player admin;
+    protected GameMaster gm;
+    protected PointEntity inst;
+    
+    @Before
+    public void setUp() {
+        super.setUp();
+        player = new Player();
+        player.getRoles().add(RoleType.PLAYER);
+        other = new Player();
+        other.getRoles().add(RoleType.PLAYER);
+        admin = new Player();
+        admin.getRoles().add(RoleType.ADMINISTRATOR);
+        try {
+            gm = gCon.create();
+        } catch (RushHourException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            tCon.clean();
+            fail();
+        }
+        inst = new SimplePointEntity();
+    }
+
     @Test
     public void testDistTo() {
-        PointEntity inst = new PointEntity();
-        PointEntity target = new PointEntity();
+        PointEntity target = new SimplePointEntity();
         target.x = 3.0;
         target.y = 4.0;
         double result = inst.distTo(target);
@@ -50,20 +79,60 @@ public class PointEntityTest extends AbstractEntityTest{
      */
     @Test
     public void testIsPrivilegedBy() {
-        Owner admin = new Player();
-        admin.getRoles().add(RoleType.ADMINISTRATOR);
-        
-        Owner other = new Player();
-        admin.getRoles().add(RoleType.PLAYER);
-        
-        Owner self = new Player();
-        PointEntity inst = new PointEntity();
-        inst.owner = self;
-        
-        assertTrue(inst.isPrivilegedBy(self));
+        inst.player = player;
+
+        assertTrue(inst.isPrivilegedBy(player));
         assertTrue(inst.isPrivilegedBy(admin));
         assertFalse(inst.isPrivilegedBy(other));
         assertFalse(inst.isPrivilegedBy(null));
     }
+
+    @Test
+    public void testGetPlayerOwner() {
+        inst.player = player;
+        assertEquals(player, inst.getOwner());
+        assertNotEquals(gm, inst.getOwner());
+    }
     
+    @Test
+    public void testGetGMOwner() {
+        inst.gameMaster = gm;
+        assertEquals(gm, inst.getOwner());
+        assertNotEquals(player, inst.getOwner());
+    }
+    
+    @Test
+    public void testSetPlayerOwner(){
+        inst.setOwner(player);
+        assertEquals(player, inst.getOwner());
+        assertNotEquals(gm, inst.getOwner());
+    }
+    
+    @Test
+    public void testSetGMOwner(){
+        inst.setOwner(gm);
+        assertEquals(gm, inst.getOwner());
+        assertNotEquals(player, inst.getOwner());
+    }
+    
+    @Test
+    public void testSetNullOwner(){
+        ex.expect(NullPointerException.class);
+        inst.setOwner(null);
+    }
+    
+    @Test
+    public void testChangeOwner(){
+        inst.setOwner(player);
+        assertEquals(player, inst.getOwner());
+        assertNotEquals(gm, inst.getOwner());
+        
+        inst.setOwner(gm);
+        assertEquals(gm, inst.getOwner());
+        assertNotEquals(player, inst.getOwner());
+        
+        inst.setOwner(player);
+        assertEquals(player, inst.getOwner());
+        assertNotEquals(gm, inst.getOwner());
+    }
 }

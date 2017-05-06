@@ -26,9 +26,17 @@ package net.rushhourgame.entity;
 import net.rushhourgame.controller.LocalTableController;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.controller.AbsorberController;
 import net.rushhourgame.controller.ControllerFactory;
+import net.rushhourgame.controller.DigestCalculator;
+import net.rushhourgame.controller.GameMasterController;
+import net.rushhourgame.controller.OAuthController;
+import net.rushhourgame.controller.PlayerController;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 /**
  *
@@ -37,6 +45,14 @@ import org.junit.Before;
 public abstract class AbstractEntityTest {
     protected static EntityManager em = LocalEntityManager.createEntityManager();
     protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
+    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
+    protected static RushHourProperties prop = RushHourProperties.getInstance();
+    protected static PlayerController pCon = ControllerFactory.createPlayController();
+    protected static OAuthController oCon = ControllerFactory.createOAuthController();
+    protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
+    protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
+    @Rule
+    public ExpectedException ex = ExpectedException.none();
     
     @Before
     public void setUp() {

@@ -23,39 +23,41 @@
  */
 package net.rushhourgame.controller;
 
-import javax.persistence.EntityManager;
-import net.rushhourgame.LocalEntityManager;
-import net.rushhourgame.RushHourProperties;
-import org.junit.After;
+import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import static net.rushhourgame.RushHourResourceBundle.*;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class AbstractControllerTest {
-
-    protected static EntityManager em = LocalEntityManager.createEntityManager();
-    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
-    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
-    protected static PlayerController pCon = ControllerFactory.createPlayController();
-    protected static OAuthController oCon = ControllerFactory.createOAuthController();
-    protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
-    protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
+public class GameMasterControllerTest extends AbstractControllerTest{
+    protected GameMasterController inst;
+    
     @Before
     public void setUp() {
-        em.getTransaction().begin();
+        super.setUp();
+        inst = ControllerFactory.createGameMasterController();
+    }
+    
+    @Test
+    public void testExists() throws RushHourException {
+        assertFalse(inst.exists());
+        inst.create();
+        assertTrue(inst.exists());
     }
 
-    @After
-    public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+    @Test
+    public void testCreate() {
+        try {
+            inst.create();
+            inst.create();
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_DATA_INCONSIST_DUP_GM, ex.getErrMsg().getDetailId());
+        }
     }
+    
 }

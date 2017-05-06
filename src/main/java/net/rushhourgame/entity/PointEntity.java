@@ -26,15 +26,16 @@ package net.rushhourgame.entity;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * つねに player XOR gameMaster が成立.
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass
-public class PointEntity implements Ownable, Pointable, Serializable {
+public abstract class PointEntity implements Ownable, Pointable, Serializable {
 
     private final long serialVersionUID = 1;
     @Id
@@ -42,8 +43,10 @@ public class PointEntity implements Ownable, Pointable, Serializable {
     protected long id;
     protected double x;
     protected double y;
-    @NotNull
-    protected Owner owner;
+    @ManyToOne
+    protected Player player;
+    @ManyToOne
+    protected GameMaster gameMaster;
     
     public long getId() {
         return id;
@@ -54,11 +57,25 @@ public class PointEntity implements Ownable, Pointable, Serializable {
     }
 
     public Owner getOwner() {
-        return owner;
+        if(gameMaster != null){
+            return gameMaster;
+        }
+        return player;
     }
 
     public void setOwner(Owner owner) {
-        this.owner = owner;
+        if(owner == null){
+            throw new NullPointerException("owner is null");
+        }
+        if(owner instanceof GameMaster){
+            gameMaster = (GameMaster) owner;
+            player = null;
+        }else if(owner instanceof Player){
+            gameMaster = null;
+            player = (Player) owner;
+        }else{
+            throw new IllegalArgumentException("owner is not GameMaster nor Player");
+        }
     }
 
     public double getX() {
@@ -95,6 +112,10 @@ public class PointEntity implements Ownable, Pointable, Serializable {
         if(owner.getRoles().contains(RoleType.ADMINISTRATOR)){
             return true;
         }
-        return this.owner.equals(owner);
+        if(gameMaster != null){
+            return gameMaster.equals(owner);
+        }
+        
+        return player.equals(owner);
     }
 }

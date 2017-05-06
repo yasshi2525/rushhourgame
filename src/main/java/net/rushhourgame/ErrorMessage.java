@@ -175,6 +175,11 @@ public class ErrorMessage implements Serializable {
         ErrorMessage errMsg = new ErrorMessage(GAME_NO_PRIVILEDGE, detailId, GAME_NO_PRIVILEDGE_ACTION);
         return errMsg;
     }
+    
+    public static ErrorMessage createDataInconsitency(String detailId){
+        ErrorMessage errMsg = new ErrorMessage(GAME_DATA_INCONSIST, detailId, GAME_DATA_INCONSIST_ACTION);
+        return errMsg;
+    }
 
     public String buildTitle(RushHourResourceBundle prop, Locale locale) {
         if (prop == null || titleId == null || prop.get(titleId, locale) == null) {

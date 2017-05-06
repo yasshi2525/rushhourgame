@@ -96,7 +96,11 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String GAME_NO_PRIVILEDGE_OTHER_OWNED = "rushhour.message.game.noPrivilege.otherOwned";
     public static final String GAME_NO_PRIVILEDGE_ONLY_ADMIN = "rushhour.message.game.noPrivilege.onlyAdministrator";
     public static final String GAME_NO_OWNER = "rushhour.message.game.noOwner";
-
+    
+    public static final String GAME_DATA_INCONSIST = "rushhour.message.game.dataInconsistency";
+    public static final String GAME_DATA_INCONSIST_DUP_GM = "rushhour.message.game.dataInconsistency.duplicateGameMaster";
+    public static final String GAME_DATA_INCONSIST_ACTION = "rushhour.message.game.dataInconsistency.action";
+    
     public static final String UNKNOWN = "rushhour.message.unknown";
     public static final String UNKNOWN_DETAIL = "rushhour.message.unknown.detail";
     public static final String UNKNOWN_ACTION = "rushhour.message.unknown.action";

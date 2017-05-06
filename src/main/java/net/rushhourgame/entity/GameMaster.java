@@ -23,23 +23,36 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
- *
+ * Absorber, Distributer の所有者はこれにする。
+ * 1個しか存在しない
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalOwner implements Owner{
-    protected Set<RoleType> roles = new HashSet<>();
-    
-    public LocalOwner(RoleType role){
-        roles.add(role);
+@NamedQueries({
+    @NamedQuery(
+            name="GameMaster.count",
+            query = "SELECT count(x) FROM GameMaster x"
+    )
+})
+@Entity
+public class GameMaster extends OwnerEntity implements Owner, Serializable{
+    private final long serialVersionUID = 1;
+    @Id
+    @GeneratedValue
+    protected long id;
+
+    public long getId() {
+        return id;
     }
-    
-    @Override
-    public Set<RoleType> getRoles() {
-        return roles;
+
+    public void setId(long id) {
+        this.id = id;
     }
-    
 }
