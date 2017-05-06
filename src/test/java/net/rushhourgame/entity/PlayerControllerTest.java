@@ -23,11 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.rushhourgame.entity.OAuthController;
-import net.rushhourgame.entity.PlayerController;
 import javax.persistence.EntityManager;
 import net.rushhourgame.RushHourProperties;
 import org.junit.After;
@@ -38,7 +33,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
-import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 
@@ -247,14 +241,14 @@ public class PlayerControllerTest {
 
         inst.clearToken(UNEXIST_ACCESS_TOKEN);
     }
-    
+
     @Test
-    public void testClearAccessTokenMultiPlayer() throws RushHourException{
+    public void testClearAccessTokenMultiPlayer() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player user1 = inst.createPlayer("foo", "user1", "user1_at", "user1");
         oAuthController.createOAuthBean("bar", "barsec");
         Player user2 = inst.createPlayer("bar", "user2", "user2_at", "user2");
-        
+
         inst.clearToken(user1.getToken());
         inst.clearToken(user2.getToken());
     }
@@ -268,5 +262,39 @@ public class PlayerControllerTest {
         em.remove(player);
         //assertEquals(0, controller.findOAuths().size());
         assertEquals(0, controller.findPlayers().size());
+    }
+
+    @Test
+    public void testControlRole() throws RushHourException {
+        oAuthController.createOAuthBean("foo", "foosec");
+        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
+        assertEquals(0, player.getRoles().size());
+        player.roles.add(RoleType.PLAYER);
+        assertEquals(1, player.getRoles().size());
+        player.roles.add(RoleType.ADMINISTRATOR);
+        assertEquals(2, player.getRoles().size());
+    }
+    
+    @Test
+    public void testPersistNoRole() throws RushHourException {
+        oAuthController.createOAuthBean("foo", "foosec");
+        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
+        em.flush();
+        assertEquals(0, player.getRoles().size());
+        player.roles.add(RoleType.PLAYER);
+        assertEquals(1, player.getRoles().size());
+        player.roles.add(RoleType.ADMINISTRATOR);
+        assertEquals(2, player.getRoles().size());
+    }
+    
+    @Test
+    public void testLoadRole() throws RushHourException {
+        oAuthController.createOAuthBean("foo", "foosec");
+        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
+        player.roles.add(RoleType.PLAYER);
+        em.flush();
+        assertEquals(1, player.getRoles().size());
+        player.roles.add(RoleType.ADMINISTRATOR);
+        assertEquals(2, player.getRoles().size());
     }
 }

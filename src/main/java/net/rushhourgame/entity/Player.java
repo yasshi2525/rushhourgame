@@ -25,6 +25,7 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -81,9 +82,10 @@ public class Player extends AbstractEntity implements Owner, Serializable {
     protected Locale locale;
     @OneToOne(orphanRemoval = true)
     protected OAuth oauth;
+    
     @ElementCollection(targetClass = RoleType.class)
     @Enumerated(EnumType.STRING)
-    protected EnumSet<RoleType> roles;
+    protected Set<RoleType> roles = new HashSet<>();
     
     public String getId() {
         return id;
@@ -156,7 +158,7 @@ public class Player extends AbstractEntity implements Owner, Serializable {
         this.oauth = oauth;
     }
 
-    public EnumSet<RoleType> getRoles() {
+    public Set<RoleType> getRoles() {
         return roles;
     }
 }
