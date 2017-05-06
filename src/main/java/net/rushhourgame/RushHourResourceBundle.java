@@ -90,6 +90,12 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
 
     public static final String SERVER_ERR_ACTION = "rushhour.message.servererror.action";
     public static final String SYSTEM_ERR_ACTION = "rushhour.message.systemerror.action";
+    
+    public static final String GAME_NO_PRIVILEDGE = "rushhour.message.game.noPrivilege";
+    public static final String GAME_NO_PRIVILEDGE_ACTION = "rushhour.message.game.noPrivilege.action";
+    public static final String GAME_NO_PRIVILEDGE_OTHER_OWNED = "rushhour.message.game.noPrivilege.otherOwned";
+    public static final String GAME_NO_PRIVILEDGE_ONLY_ADMIN = "rushhour.message.game.noPrivilege.onlyAdministrator";
+    public static final String GAME_NO_OWNER = "rushhour.message.game.noOwner";
 
     public static final String UNKNOWN = "rushhour.message.unknown";
     public static final String UNKNOWN_DETAIL = "rushhour.message.unknown.detail";

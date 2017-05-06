@@ -170,6 +170,11 @@ public class ErrorMessage implements Serializable {
         ErrorMessage errMsg = new ErrorMessage(REQUEST_FAIL, REQUEST_FAIL_INVALID_TOKEN, SIGNIN_FAIL_ACTION);
         return errMsg;
     }
+    
+    public static ErrorMessage createNoPrivileged(String detailId){
+        ErrorMessage errMsg = new ErrorMessage(GAME_NO_PRIVILEDGE, detailId, GAME_NO_PRIVILEDGE_ACTION);
+        return errMsg;
+    }
 
     public String buildTitle(RushHourResourceBundle prop, Locale locale) {
         if (prop == null || titleId == null || prop.get(titleId, locale) == null) {

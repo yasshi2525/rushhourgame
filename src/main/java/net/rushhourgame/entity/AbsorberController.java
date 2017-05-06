@@ -23,54 +23,43 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.RushHourResourceBundle;
+import net.rushhourgame.ErrorMessage;
+import static net.rushhourgame.RushHourProperties.*;
+import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.exception.RushHourException;
 
 /**
- *
+ * 
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public abstract class AbstractController implements Serializable{
+public class AbsorberController extends GeometricController {
+    private final long serialVersionUID = 1;
 
-    private final int serialVersionUID = 1;
-    private static final Logger LOG = Logger.getLogger(AbstractController.class.getName());
     
-    @PersistenceContext
-    transient protected EntityManager em;    
-    @Inject
-    transient protected RushHourProperties prop;
-    
-
-    /**
-     * テーブルに指定した id のエンティティが存在するか返す
-     *
-     * @param query
-     * @param key
-     * @param value
-     * @return
-     */
-    protected boolean exists(String query, String key, String value) {
-        return em.createNamedQuery(query, Integer.class)
-                .setParameter(key, value)
-                .getSingleResult() == 1;
+    public Absorber create(Owner owner, double x, double y) throws RushHourException{
+        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));
     }
-
-    @SuppressWarnings("unchecked")
-    protected <T> T findBy(String query, String key, String value, T dummyInst) {
-        try {
-            return (T) em.createNamedQuery(query, dummyInst.getClass())
-                    .setParameter(key, value)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+    
+    public Absorber create(Owner owner, double x, double y, double scale) throws RushHourException{
+        if(owner == null){
+            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
         }
+        if(!owner.getRoles().contains(RoleType.ADMINISTRATOR)){
+            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_PRIVILEDGE_ONLY_ADMIN));
+        }
+        Absorber obj = new Absorber();
+        obj.setOwner(owner);
+        obj.setX(x);
+        obj.setY(y);
+        obj.setScale(scale);
+        return obj;
+    }
+    
+    public List<Absorber> findIn(double centerX, double centerY, double scale){
+        return findIn("Absorber", centerX, centerY, scale);
     }
 }

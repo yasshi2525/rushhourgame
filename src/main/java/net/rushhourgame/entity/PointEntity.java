@@ -27,6 +27,7 @@ import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -41,6 +42,7 @@ public class PointEntity implements Ownable, Pointable, Serializable {
     protected long id;
     protected double x;
     protected double y;
+    @NotNull
     protected Owner owner;
     
     public long getId() {
