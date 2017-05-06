@@ -9,7 +9,8 @@ yasshi2525 (https://twitter.com/yasshi2525)
 --------------------------------------------------------------------------------
 1. 前提ソフトウェア
 
-　　Java SE Development Kit 8　ソースコードのビルド
+    NodeJS　　　　　　　　　　　JavaScriptコードのビルド
+　　Java SE Development Kit 8　Javaコードのビルド
 　　Apache Maven　　　　　　　　ビルドツール
 　　MariaDB　　　　　　　　　　　DBサーバ
 　　Payara Server 　　　　　　　アプリケーションサーバ
@@ -17,7 +18,12 @@ yasshi2525 (https://twitter.com/yasshi2525)
 --------------------------------------------------------------------------------
 2. ビルド方法
 
+(1) Javaファイルをコンパイル
 mvn compile
+
+(2) JavaScriptファイルをコンパイル
+npm install
+gulp
 
 --------------------------------------------------------------------------------
 3. 単体テスト方法

@@ -1,0 +1,18 @@
+{
+  "name": "RushHourGame",
+  "version": "1.0.0",
+  "author": "yasshi2525 <https://twitter.com/yasshi2525>",
+  "contributors": [],
+  "license": "MIT",
+  "repository" : "ssh://gituser@153.120.41.176:24602/opt/git/rushhourgame.git",
+  "dependencies": {
+    "jquery": "3.2.1",
+    "pixi.js": "4.5.1",
+    "browserify": "14.3.0",
+    "gulp": "3.9.1",
+    "vinyl-source-stream": "",
+    "gulp-streamify": "",
+    "gulp-uglify": "",
+    "gulp-rename": ""
+  }
+}

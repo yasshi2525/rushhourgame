@@ -1,3 +1,5 @@
-src/main/resources/config.properties
-src/test/resources/META-INF/persistence.xml
-target/
+/src/main/resources/config.properties
+/src/test/resources/META-INF/persistence.xml
+/target/
+/node_modules/
+/src/main/webapp/resources/js/build/
