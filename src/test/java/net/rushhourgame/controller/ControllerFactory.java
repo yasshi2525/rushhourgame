@@ -21,39 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
-import javax.persistence.EntityManager;
+import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class AbstractControllerTest{
-    protected static EntityManager em;
-    protected static LocalTableController tCon;
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
-
-    @BeforeClass
-    public static void setUpClass() {
-        em = LocalTableController.lookupEntityManager();
-        tCon = new LocalTableController(em);
+public class ControllerFactory {
+    
+    public static AbsorberController createAbsorberController(){
+        AbsorberController inst = new AbsorberController();
+        init(inst);
+        return inst;
     }
     
-    @Before
-    public void setUp() {
-        em.getTransaction().begin();
+    public static OAuthController createOAuthController(){
+        OAuthController inst = new OAuthController();
+        init(inst);
+        return inst;
     }
     
-    @After
-    public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+    public static PlayerController createPlayController(){
+        PlayerController inst = new PlayerController();
+        init(inst);
+        inst.oCon = createOAuthController();
+        return inst;
     }
     
+    public static LocalTableController createLocalTableController(){
+        LocalTableController inst = new LocalTableController();
+        inst.em = LocalEntityManager.createEntityManager();
+        return inst;
+    }
+    
+    public static DigestCalculator createDigestCalculator(){
+        DigestCalculator inst = new DigestCalculator();
+        inst.prop = RushHourProperties.getInstance();
+        return inst;
+    }
+    
+    public static void init(AbstractController inst){
+        inst.calculator = createDigestCalculator();
+        inst.em = LocalEntityManager.createEntityManager();
+        inst.prop = RushHourProperties.getInstance();
+    }
 }

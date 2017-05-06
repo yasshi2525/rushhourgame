@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
 
@@ -43,14 +44,12 @@ public class OAuthController extends AbstractController {
     private static final Logger LOG = Logger.getLogger(OAuthController.class.getName());
     
     private final OAuth dummyInst = new OAuth();
-    @Inject
-    DigestCalculator digestCalculater;
 
     public OAuth createOAuthBean(String requestToken, String requestTokenSecret) throws RushHourException {
         try {
             // IDはrequestTokenのダイジェスト
             // requestTokenを主キーにするため。
-            String requestTokenDigest = digestCalculater.calcDigest(requestToken);
+            String requestTokenDigest = calculator.calcDigest(requestToken);
             
             if(isRegisteredRequestToken(requestToken)){
                 throw new RushHourException(ErrorMessage.createReSignInError(
@@ -80,7 +79,7 @@ public class OAuthController extends AbstractController {
      */
     public boolean isRegisteredRequestToken(String requestToken) throws RushHourException{
         try {
-            String id = digestCalculater.calcDigest(requestToken);
+            String id = calculator.calcDigest(requestToken);
             return exists("OAuth.isValidId", "id", id);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#isRegisteredRequestToken", ex);
@@ -96,7 +95,7 @@ public class OAuthController extends AbstractController {
      */
     public OAuth findByRequestToken(String requestToken) throws RushHourException{
         try {
-            String id = digestCalculater.calcDigest(requestToken);
+            String id = calculator.calcDigest(requestToken);
             return findBy("OAuth.findById", "id", id, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);

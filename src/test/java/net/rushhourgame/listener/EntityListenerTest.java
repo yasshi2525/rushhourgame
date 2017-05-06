@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.listener;
 
-import net.rushhourgame.listener.EntityListener;
 import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;

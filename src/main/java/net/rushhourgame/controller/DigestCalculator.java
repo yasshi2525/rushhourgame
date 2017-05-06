@@ -21,37 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
-import java.util.List;
+import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import net.rushhourgame.RushHourProperties;
+import static net.rushhourgame.RushHourProperties.*;
 
 /**
- * 領域内にあるEntityを取得できる
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public abstract class GeometricController extends AbstractController{
+public class DigestCalculator implements Serializable{
     private final long serialVersionUID = 1;
+    @Inject
+    protected RushHourProperties prop;
     
-    @SuppressWarnings("unchecked")
-    protected <T> List<T> findIn(String tableName, double centerX, double centerY, double scale){
-        double width = Math.pow(2.0, scale);
-        double height = Math.pow(2.0, scale);
-        
-        return em.createQuery(buildQueryAreaIn(tableName))
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
-                .getResultList();
-    }
-    
-    protected String buildQueryAreaIn(String tableName){
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT obj FROM ");
-        sb.append(tableName);
-        sb.append(" obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2");
-        return sb.toString();
+    public String calcDigest(String input) throws NoSuchAlgorithmException{
+        MessageDigest md = MessageDigest.getInstance(prop.get(DIGEST_ALGORITHM));
+        md.update(prop.get(DIGEST_SALT).getBytes());
+        md.update(input.getBytes());
+        return Base64.getEncoder().encodeToString(md.digest());
     }
 }

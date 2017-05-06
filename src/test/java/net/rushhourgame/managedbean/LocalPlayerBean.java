@@ -23,9 +23,8 @@
  */
 package net.rushhourgame.managedbean;
 
-import net.rushhourgame.managedbean.PlayerBean;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.PlayerController;
+import net.rushhourgame.controller.PlayerController;
 
 /**
  *

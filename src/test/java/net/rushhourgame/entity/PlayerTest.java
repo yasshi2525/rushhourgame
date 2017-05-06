@@ -23,14 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.Locale;
-import java.util.Set;
-import javax.persistence.EntityManager;
-import static net.rushhourgame.entity.OAuthControllerTest.em;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

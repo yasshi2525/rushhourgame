@@ -21,20 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
-import net.rushhourgame.RushHourProperties;
-import org.junit.After;
+import net.rushhourgame.entity.OAuth;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 
@@ -42,43 +35,18 @@ import static net.rushhourgame.RushHourResourceBundle.*;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class OAuthControllerTest {
+public class OAuthControllerTest extends AbstractControllerTest{
 
     protected static final String TEST_REQ_TOKEN = "testAAA";
     protected static final String TEST_REQ_TOKEN_SECRET = "test_secretBBB";
     protected static final String NOT_EXIST_REQ_TOKEN = "unexistrequesttoken";
-    protected static LocalTableController tableController;
-    protected static PlayerController playerController;
+    
     protected OAuthController inst;
-    protected static EntityManager em;
-    protected static DigestCalculator calculater;
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @BeforeClass
-    public static void setUpClass() {
-        em = LocalTableController.lookupEntityManager();
-        calculater = new DigestCalculator();
-        calculater.prop = RushHourProperties.getInstance();
-        tableController = new LocalTableController(em);
-        tableController.clean();
-        playerController = new PlayerController();
-        playerController.em = em;
-        playerController.calculator = calculater;
-    }
 
     @Before
     public void setUp() {
-        inst = new OAuthController();
-        inst.em = em;
-        inst.digestCalculater = calculater;
-        em.getTransaction().begin();
-    }
-
-    @After
-    public void tearDown() {
-        em.getTransaction().commit();
-        tableController.clean();
+        super.setUp();
+        inst = ControllerFactory.createOAuthController();
     }
 
     @Test
@@ -90,7 +58,7 @@ public class OAuthControllerTest {
         assertEquals(TEST_REQ_TOKEN, created.getRequestToken());
         assertEquals(TEST_REQ_TOKEN_SECRET, created.getRequestTokenSecret());
         assertEquals(null, created.getOauthVerifier());
-        assertEquals(1, tableController.findOAuths().size());
+        assertEquals(1, tCon.findOAuths().size());
     }
 
     /**
@@ -129,6 +97,6 @@ public class OAuthControllerTest {
     public void testDeleteOAuth() throws RushHourException, NoSuchAlgorithmException{
         OAuth created = inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
         em.remove(created);
-        assertEquals(0, tableController.findOAuths().size());
+        assertEquals(0, tCon.findOAuths().size());
     }
 }

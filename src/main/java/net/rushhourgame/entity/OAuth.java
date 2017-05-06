@@ -80,19 +80,19 @@ public class OAuth extends AbstractEntity implements Serializable {
                     foreignKeyDefinition = "FOREIGN KEY (player_id) REFERENCES player (id) ON UPDATE SET NULL"))
     protected Player player;*/
 
-    protected String getId() {
+    public String getId() {
         return id;
     }
     
-    protected void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    protected String getRequestToken() {
+    public String getRequestToken() {
         return requestToken;
     }
     
-    protected void setRequestToken(String requestToken) {
+    public void setRequestToken(String requestToken) {
         this.requestToken = requestToken;
     }
 
@@ -100,11 +100,11 @@ public class OAuth extends AbstractEntity implements Serializable {
         return requestTokenSecret;
     }
     
-    protected void setRequestTokenSecret(String requestTokenSecret) {
+    public void setRequestTokenSecret(String requestTokenSecret) {
         this.requestTokenSecret = requestTokenSecret;
     }
 
-    protected String getOauthVerifier() {
+    public String getOauthVerifier() {
         return oauthVerifier;
     }
 

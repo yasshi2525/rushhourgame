@@ -21,17 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import javax.persistence.EntityManager;
+import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.RushHourProperties;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalOAuthController extends OAuthController {
-    public LocalOAuthController(EntityManager em, DigestCalculator calculator){
-        this.em = em;
-        this.digestCalculater = calculator;
+public class AbstractControllerTest {
+
+    protected static EntityManager em = LocalEntityManager.createEntityManager();
+    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
+    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
+    protected static RushHourProperties prop = RushHourProperties.getInstance();
+    protected static PlayerController pCon = ControllerFactory.createPlayController();
+    protected static OAuthController oCon = ControllerFactory.createOAuthController();
+    protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Before
+    public void setUp() {
+        em.getTransaction().begin();
+    }
+
+    @After
+    public void tearDown() {
+        em.getTransaction().commit();
+        tCon.clean();
     }
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -31,7 +31,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.RushHourResourceBundle;
 
 /**
  *
@@ -47,6 +46,8 @@ public abstract class AbstractController implements Serializable{
     transient protected EntityManager em;    
     @Inject
     transient protected RushHourProperties prop;
+    @Inject
+    protected DigestCalculator calculator;
     
 
     /**

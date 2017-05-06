@@ -26,7 +26,6 @@ package net.rushhourgame.entity;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-import javax.crypto.spec.SecretKeySpec;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

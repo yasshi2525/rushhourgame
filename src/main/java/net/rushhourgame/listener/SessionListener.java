@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSessionBean;
-import net.rushhourgame.entity.PlayerController;
+import net.rushhourgame.controller.PlayerController;
 
 /**
  *

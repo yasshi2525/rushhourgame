@@ -21,21 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.entity.LocalOwner;
+import net.rushhourgame.entity.Owner;
+import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import org.junit.Before;
 
 /**
  *
@@ -44,16 +39,21 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 public class AbsorberControllerTest extends AbstractControllerTest{
     protected static Owner admin = new LocalOwner(RoleType.ADMINISTRATOR);
     protected static Owner player = new LocalOwner(RoleType.PLAYER);
+    protected AbsorberController inst;
+    
+    @Before
+    public void setUp(){
+        super.setUp();
+        inst = ControllerFactory.createAbsorberController();
+    }
     
     @Test
     public void testCreate() throws RushHourException{
-        AbsorberController inst = createInstance();
         assertNotNull(inst.create(admin, 0.0, 0.0));
     }
     
     @Test
     public void testCreateByPlayer(){
-        AbsorberController inst = createInstance();
         try {
             assertNotNull(inst.create(player, 0.0, 0.0));
             fail();
@@ -64,19 +64,11 @@ public class AbsorberControllerTest extends AbstractControllerTest{
     
     @Test
     public void testCreateByNull(){
-        AbsorberController inst = createInstance();
         try {
             assertNotNull(inst.create(null, 0.0, 0.0));
             fail();
         } catch (RushHourException ex) {
             assertEquals(GAME_NO_OWNER, ex.getErrMsg().getDetailId());
         }
-    }
-    
-    protected static AbsorberController createInstance(){
-        AbsorberController inst = new AbsorberController();
-        inst.em = em;
-        inst.prop = prop;
-        return inst;
     }
 }

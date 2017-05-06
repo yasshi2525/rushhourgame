@@ -21,43 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame;
 
-import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.transaction.UserTransaction;
-import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.Player;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalTableController {
-    EntityManager em;
+public class LocalEntityManager {
+    protected static EntityManager em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
     
-    public LocalTableController(EntityManager em){
-        this.em = em;
-    }
-    
-    public static EntityManager lookupEntityManager(){
-        return Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
-    }
-    
-    public void clean(){
-        em.getTransaction().begin();
-        em.createQuery("DELETE FROM Player x").executeUpdate();
-        em.createQuery("DELETE FROM OAuth x").executeUpdate();
-        em.getTransaction().commit();
-    }
-    
-    public List<Player> findPlayers(){
-        return em.createQuery("SELECT x FROM Player x", Player.class).getResultList();
-    }
-    
-    public List<OAuth> findOAuths(){
-        return em.createQuery("SELECT x FROM OAuth x", OAuth.class).getResultList();
+    public static EntityManager createEntityManager(){
+        return em;
     }
 }

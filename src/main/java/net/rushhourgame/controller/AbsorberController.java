@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.entity.Absorber;
+import net.rushhourgame.entity.Owner;
+import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;

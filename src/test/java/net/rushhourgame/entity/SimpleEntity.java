@@ -23,12 +23,10 @@
  */
 package net.rushhourgame.entity;
 
-import net.rushhourgame.entity.AbstractEntity;
-
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class SimpleEntity extends AbstractEntity{
+public class SimpleEntity extends AbstractEntity {
     
 }

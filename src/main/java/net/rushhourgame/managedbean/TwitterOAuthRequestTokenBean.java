@@ -38,7 +38,7 @@ import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
-import net.rushhourgame.entity.OAuthController;
+import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 
 /**

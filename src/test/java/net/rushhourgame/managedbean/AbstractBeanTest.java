@@ -21,18 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.managedbean;
 
 import javax.persistence.EntityManager;
+import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.controller.ControllerFactory;
+import net.rushhourgame.controller.DigestCalculator;
+import net.rushhourgame.controller.LocalTableController;
+import net.rushhourgame.controller.OAuthController;
+import net.rushhourgame.controller.PlayerController;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalPlayerController extends PlayerController {
-    public LocalPlayerController(EntityManager em, OAuthController oCon, DigestCalculator calculator){
-        this.em = em;
-        this.oCon = oCon;
-        this.calculator = calculator;
+public class AbstractBeanTest {
+
+    protected static EntityManager em = LocalEntityManager.createEntityManager();
+    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
+    protected static PlayerController pCon = ControllerFactory.createPlayController();
+    protected static OAuthController oCon = ControllerFactory.createOAuthController();
+    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
+
+    @BeforeClass
+    public static void setUpClass() {
+        tCon.clean();
+    }
+    
+    @Before
+    public void setUp() {
+        em.getTransaction().begin();
+    }
+    
+    @After
+    public void tearDown() {
+        em.getTransaction().commit();
+        tCon.clean();
     }
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
@@ -31,6 +31,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
 
@@ -46,8 +48,6 @@ public class PlayerController extends AbstractController {
     private static final Logger LOG = Logger.getLogger(PlayerController.class.getName());
     @Inject
     protected OAuthController oCon;
-    @Inject
-    protected DigestCalculator calculator;
     
     public Player createPlayer(String requestToken, String plainUserId, 
             String plainAccessToken, String displayName) throws RushHourException {

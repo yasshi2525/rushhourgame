@@ -41,7 +41,7 @@ import javax.validation.ConstraintViolationException;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.entity.PlayerController;
+import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterUserShowClient;

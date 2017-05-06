@@ -23,24 +23,20 @@
  */
 package net.rushhourgame.entity;
 
+import net.rushhourgame.controller.LocalTableController;
 import javax.persistence.EntityManager;
+import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.controller.ControllerFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public abstract class AbstractEntityTest {
-    protected static EntityManager em;
-    protected static LocalTableController tCon;
-
-    @BeforeClass
-    public static void setUpClass() {
-        em = LocalTableController.lookupEntityManager();
-        tCon = new LocalTableController(em);
-    }
+    protected static EntityManager em = LocalEntityManager.createEntityManager();
+    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
     
     @Before
     public void setUp() {

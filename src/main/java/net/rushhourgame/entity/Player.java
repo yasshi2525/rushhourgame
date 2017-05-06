@@ -91,7 +91,7 @@ public class Player extends OwnerEntity implements Serializable {
      * 主キー重複防止のため Controller以外のアクセス禁止
      * @param id 
      */
-    protected void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -111,14 +111,14 @@ public class Player extends OwnerEntity implements Serializable {
      * 外部サービス接続時のユーザID
      * @param userId 
      */
-    protected void setUserId(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     /**
      * Unique制約のため Controller以外のアクセス禁止
      * @param token
      */
-    protected void setToken(String token) {
+    public void setToken(String token) {
         this.token = token;
     }
 

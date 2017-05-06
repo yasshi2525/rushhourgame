@@ -23,19 +23,11 @@
  */
 package net.rushhourgame.managedbean;
 
-import java.security.NoSuchAlgorithmException;
-import javax.persistence.EntityManager;
-import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.entity.LocalDigestCalculator;
-import net.rushhourgame.entity.LocalOAuthController;
-import net.rushhourgame.entity.LocalPlayerController;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import net.rushhourgame.entity.LocalTableController;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
@@ -44,37 +36,25 @@ import net.rushhourgame.exception.RushHourException;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class PlayerBeanTest {
-    protected static EntityManager em;
-    protected static LocalTableController tCon;
-    protected static LocalPlayerController pCon;
-    protected static LocalOAuthController oCon;
-    protected static LocalDigestCalculator calculator;
+public class PlayerBeanTest extends AbstractBeanTest {
+
     protected static final String VALID_PLAIN_ACCESS_TOKEN = "valid";
     protected static final String INVALID_ACCESS_TOKEN = "invalid";
     protected static final String DISPLAY_NAME = "user1";
+    protected OAuth oAuth;
+    protected Player player;
     protected String accessToken;
     
-    @BeforeClass
-    public static void setUpClass() {
-        em = LocalTableController.lookupEntityManager();
-        tCon = new LocalTableController(em);
-        calculator = new LocalDigestCalculator(RushHourProperties.getInstance());
-        oCon = new LocalOAuthController(em, calculator);
-        pCon = new LocalPlayerController(em, oCon, calculator);
-        tCon.clean();
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
     @Before
-    public void setUp() throws RushHourException, NoSuchAlgorithmException {
-        em.getTransaction().begin();
-        OAuth oAuth = oCon.createOAuthBean("foo", "foosec");
-        Player createPlayer = pCon.createPlayer("foo", "user1", VALID_PLAIN_ACCESS_TOKEN, DISPLAY_NAME);
-        accessToken = createPlayer.getToken();
+    public void setUp() {
+        super.setUp();
+        try {
+            oAuth = oCon.createOAuthBean("foo", "foosec");
+            player = pCon.createPlayer("foo", "user1", VALID_PLAIN_ACCESS_TOKEN, DISPLAY_NAME);
+            accessToken = player.getToken();
+        } catch (RushHourException ex) {
+            fail();
+        }
     }
     
     @After
