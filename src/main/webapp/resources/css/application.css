@@ -30,6 +30,14 @@ THE SOFTWARE.
     font-size: x-large;
 }
 
+.twitterIcon{
+    color: #00aced !important;
+    background-position: 5% center !important;
+    background-size: 15% !important;
+    background-image: url("#{resource['image/Twitter_Social_Icon_Blue.png']}") !important;
+    background-repeat: no-repeat !important;
+}
+
 .twitterSignIn{
     height: 30px;
     width: 160px;

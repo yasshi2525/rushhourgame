@@ -28,7 +28,7 @@ $(function () {
 });
 
 function initPixi() {
-    var renderer = pixi.autoDetecteRenderer();
+    var renderer = pixi.autoDetectRenderer();
     $("#gameview").get(0).appendChild(renderer.view);
 }
 

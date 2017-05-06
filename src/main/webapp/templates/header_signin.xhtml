@@ -6,12 +6,13 @@
      >
     <p:commandButton
         ajax="false"
-        styleClass="twitterSignIn"
+        styleClass="twitterIcon"
         rendered="#{!player.signIn}"
-        value=""
+        value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{msg.twitterSignIn}"
         disabled="#{twitterOAuthRequestToken.pressed}"
         actionListener="#{twitterOAuthRequestToken.actionListener}"
-        action="#{twitterOAuthRequestToken.requestRequestToken()}"/>
+        action="#{twitterOAuthRequestToken.requestRequestToken()}">
+    </p:commandButton>
 </div>
 
 
