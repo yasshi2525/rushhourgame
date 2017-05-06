@@ -23,37 +23,43 @@
  */
 package net.rushhourgame.managedbean;
 
-import java.io.Serializable;
-import java.util.Locale;
-import javax.inject.Named;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import net.rushhourgame.RushHourSession;
+import net.rushhourgame.managedbean.PlayerBean;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.PlayerController;
 
 /**
- * 言語選択リンク押下時の処理
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named(value = "lang")
-@ViewScoped
-public class LanguageManagedBean implements Serializable{
-    private final int serialVersionUID = 1;
-    @Inject
-    RushHourSession rushHourSession;
-    
-    public void change(String lang){
-        if (lang != null) {
-            switch (lang.toLowerCase()) {
-                case "jp":
-                    rushHourSession.setLocale(Locale.JAPANESE);
-                    break;
-                case "en":
-                    rushHourSession.setLocale(Locale.ENGLISH);
-                    break;
-                default:
-                    rushHourSession.setLocale(Locale.ENGLISH);
-                    break;
-            }
+public class LocalPlayerBean extends PlayerBean {
+
+    protected boolean hasSessionData;
+    protected String accessToken;
+
+    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData) {
+        this.hasSessionData = hasSessionData;
+        this.pCon = pCon;
+    }
+
+    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData, String accessToken) {
+        this(pCon, hasSessionData);
+        this.accessToken = accessToken;
+    }
+
+    @Override
+    public String getDisplayName() {
+        if (!isSignIn()) {
+            return null;
         }
+        Player p = pCon.findByToken(accessToken);
+        if (p == null) {
+            return null;
+        }
+        return p.getDisplayName();
+    }
+
+    @Override
+    public boolean isSignIn() {
+        return pCon.isValidToken(accessToken);
     }
 }

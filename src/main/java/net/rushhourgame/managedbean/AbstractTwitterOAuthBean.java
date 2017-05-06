@@ -23,43 +23,32 @@
  */
 package net.rushhourgame.managedbean;
 
-import net.rushhourgame.managedbean.PlayerManagedBean;
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.PlayerController;
+import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
+import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.RushHourResourceBundle;
 
 /**
- *
+ * ログイン用
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalPlayerManagedBean extends PlayerManagedBean {
+public abstract class AbstractTwitterOAuthBean {
 
-    protected boolean hasSessionData;
-    protected String accessToken;
+    private static final Logger LOG = Logger.getLogger(AbstractTwitterOAuthBean.class.getName());
+    
+    @Inject
+    transient protected RushHourProperties prop;
+    @Inject
+    transient protected RushHourResourceBundle msgProp;
+    
+    protected static final String ERR_PAGE = "error.xhtml";
+    protected static final String MYPAGE = "index.xhtml";
 
-    public LocalPlayerManagedBean(PlayerController pCon, boolean hasSessionData) {
-        this.hasSessionData = hasSessionData;
-        this.pCon = pCon;
-    }
-
-    public LocalPlayerManagedBean(PlayerController pCon, boolean hasSessionData, String accessToken) {
-        this(pCon, hasSessionData);
-        this.accessToken = accessToken;
-    }
-
-    @Override
-    public String getDisplayName() {
-        if (!isSignIn()) {
-            return null;
-        }
-        Player p = pCon.findByToken(accessToken);
-        if (p == null) {
-            return null;
-        }
-        return p.getDisplayName();
-    }
-
-    @Override
-    public boolean isSignIn() {
-        return pCon.isValidToken(accessToken);
+    
+    protected ExternalContext getExternalContext(){
+        return FacesContext.getCurrentInstance().getExternalContext();
     }
 }

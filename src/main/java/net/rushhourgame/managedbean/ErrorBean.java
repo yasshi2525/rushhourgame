@@ -23,32 +23,63 @@
  */
 package net.rushhourgame.managedbean;
 
-import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
+import java.io.Serializable;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import net.rushhourgame.RushHourProperties;
+import javax.inject.Named;
+import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.RushHourResourceBundle;
+import net.rushhourgame.RushHourSession;
 
 /**
- * ログイン用
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public abstract class AbstractTwitterOAuthManagedBean {
-
-    private static final Logger LOG = Logger.getLogger(AbstractTwitterOAuthManagedBean.class.getName());
+@Named("err")
+@ViewScoped
+public class ErrorBean implements Serializable {
+    private final int serialVersionUID = 1;
+    private static final Logger LOG = Logger.getLogger(ErrorBean.class.getName());
     
     @Inject
-    transient protected RushHourProperties prop;
+    transient protected RushHourResourceBundle msgProps;
+    
     @Inject
-    transient protected RushHourResourceBundle msgProp;
-    
-    protected static final String ERR_PAGE = "error.xhtml";
-    protected static final String MYPAGE = "index.xhtml";
+    transient protected RushHourSession rushHourSession;
 
+    protected ErrorMessage contents;
+
+    @PostConstruct
+    public void init(){
+        Object obj = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("error");
+        if(obj instanceof ErrorMessage){
+            contents = (ErrorMessage) obj;
+        }else{
+            contents = new ErrorMessage();
+        }
+    }
     
-    protected ExternalContext getExternalContext(){
-        return FacesContext.getCurrentInstance().getExternalContext();
+    public String getTitle(){
+        if(contents == null){
+            return "No Contents";
+        }
+        return contents.buildTitle(msgProps, rushHourSession.getLocale());
+    }
+    
+    public String getDetail(){
+        if(contents == null){
+            return "No Contents";
+        }
+        return contents.buildDetail(msgProps, rushHourSession.getLocale());
+    }
+    
+    public String getAction(){
+        if(contents == null){
+            return "No Contents";
+        }
+        return contents.buildAction(msgProps, rushHourSession.getLocale());
     }
 }

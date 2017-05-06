@@ -44,7 +44,7 @@ import net.rushhourgame.exception.RushHourException;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class PlayerManagedBeanTest {
+public class PlayerBeanTest {
     protected static EntityManager em;
     protected static LocalTableController tCon;
     protected static LocalPlayerController pCon;
@@ -85,49 +85,49 @@ public class PlayerManagedBeanTest {
     
     @Test
     public void testIsSignIn() {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true, accessToken);
+        PlayerBean inst = new LocalPlayerBean(pCon, true, accessToken);
         assertTrue(inst.isSignIn());
     }
 
     @Test
     public void testIsSignInNoSessionData() {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, false);
+        PlayerBean inst = new LocalPlayerBean(pCon, false);
         assertFalse(inst.isSignIn());
     }
     
     @Test
     public void testIsSignInAccessTokenNull() {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true);
+        PlayerBean inst = new LocalPlayerBean(pCon, true);
         assertFalse(inst.isSignIn());
     }
     
     @Test
     public void testIsSignInInvalidAccessToken() {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true, INVALID_ACCESS_TOKEN);
+        PlayerBean inst = new LocalPlayerBean(pCon, true, INVALID_ACCESS_TOKEN);
         assertFalse(inst.isSignIn());
     }
     
    @Test
     public void testGetDisplayName() throws RushHourException {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true, accessToken);
+        PlayerBean inst = new LocalPlayerBean(pCon, true, accessToken);
         assertEquals(DISPLAY_NAME, inst.getDisplayName());
     }
 
     @Test
     public void testGetDisplayNameNoSessionData() throws RushHourException {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, false);
+        PlayerBean inst = new LocalPlayerBean(pCon, false);
         assertNull(inst.getDisplayName());
     }
     
     @Test
     public void testGetDisplayNameAccessTokenNull() throws RushHourException {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true);
+        PlayerBean inst = new LocalPlayerBean(pCon, true);
         assertNull(inst.getDisplayName());
     }
     
     @Test
     public void testGetDisplayNameInvalidAccessToken() throws RushHourException {
-        PlayerManagedBean inst = new LocalPlayerManagedBean(pCon, true, INVALID_ACCESS_TOKEN);
+        PlayerBean inst = new LocalPlayerBean(pCon, true, INVALID_ACCESS_TOKEN);
         assertNull(inst.getDisplayName());
     }
 }

@@ -24,62 +24,36 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
+import java.util.Locale;
+import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
-import net.rushhourgame.ErrorMessage;
-import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.RushHourSession;
 
 /**
- *
+ * 言語選択リンク押下時の処理
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named("err")
+@Named(value = "lang")
 @ViewScoped
-public class ErrorManagedBean implements Serializable {
+public class LanguageBean implements Serializable{
     private final int serialVersionUID = 1;
-    private static final Logger LOG = Logger.getLogger(ErrorManagedBean.class.getName());
-    
     @Inject
-    transient protected RushHourResourceBundle msgProps;
+    RushHourSession rushHourSession;
     
-    @Inject
-    transient protected RushHourSession rushHourSession;
-
-    protected ErrorMessage contents;
-
-    @PostConstruct
-    public void init(){
-        Object obj = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("error");
-        if(obj instanceof ErrorMessage){
-            contents = (ErrorMessage) obj;
-        }else{
-            contents = new ErrorMessage();
+    public void change(String lang){
+        if (lang != null) {
+            switch (lang.toLowerCase()) {
+                case "jp":
+                    rushHourSession.setLocale(Locale.JAPANESE);
+                    break;
+                case "en":
+                    rushHourSession.setLocale(Locale.ENGLISH);
+                    break;
+                default:
+                    rushHourSession.setLocale(Locale.ENGLISH);
+                    break;
+            }
         }
-    }
-    
-    public String getTitle(){
-        if(contents == null){
-            return "No Contents";
-        }
-        return contents.buildTitle(msgProps, rushHourSession.getLocale());
-    }
-    
-    public String getDetail(){
-        if(contents == null){
-            return "No Contents";
-        }
-        return contents.buildDetail(msgProps, rushHourSession.getLocale());
-    }
-    
-    public String getAction(){
-        if(contents == null){
-            return "No Contents";
-        }
-        return contents.buildAction(msgProps, rushHourSession.getLocale());
     }
 }

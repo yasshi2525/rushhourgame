@@ -54,10 +54,10 @@ import net.rushhourgame.json.TwitterUserData;
  */
 @Named("player")
 @ViewScoped
-public class PlayerManagedBean implements Serializable {
+public class PlayerBean implements Serializable {
     
     private final int serialVersionUID = 1;
-    private static final Logger LOG = Logger.getLogger(PlayerManagedBean.class.getName());
+    private static final Logger LOG = Logger.getLogger(PlayerBean.class.getName());
     
     @Inject
     transient protected RushHourProperties prop;
