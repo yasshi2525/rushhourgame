@@ -23,12 +23,24 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.MappedSuperclass;
+
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public interface Ownable {
-    public void setOwner(Owner owner);
-    public Owner getOwner();
-    public boolean isPrivilegedBy(Owner owner);
+@MappedSuperclass
+public abstract class OwnerEntity extends AbstractEntity implements Owner{
+    @ElementCollection(targetClass = RoleType.class)
+    @Enumerated(EnumType.STRING)
+    protected Set<RoleType> roles = new HashSet<>();
+    
+    public Set<RoleType> getRoles(){
+        return roles;
+    }
 }

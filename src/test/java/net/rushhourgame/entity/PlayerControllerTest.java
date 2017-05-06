@@ -257,44 +257,14 @@ public class PlayerControllerTest {
     public void testDelete() throws RushHourException {
         oAuthController.createOAuthBean("foo", "foosec");
         Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        //oAuth.setPlayer(player);
-        //em.remove(oAuth);
         em.remove(player);
-        //assertEquals(0, controller.findOAuths().size());
         assertEquals(0, controller.findPlayers().size());
     }
-
-    @Test
-    public void testControlRole() throws RushHourException {
-        oAuthController.createOAuthBean("foo", "foosec");
-        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        assertEquals(0, player.getRoles().size());
-        player.roles.add(RoleType.PLAYER);
-        assertEquals(1, player.getRoles().size());
-        player.roles.add(RoleType.ADMINISTRATOR);
-        assertEquals(2, player.getRoles().size());
-    }
     
     @Test
-    public void testPersistNoRole() throws RushHourException {
+    public void testRole() throws RushHourException{
         oAuthController.createOAuthBean("foo", "foosec");
         Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        em.flush();
-        assertEquals(0, player.getRoles().size());
-        player.roles.add(RoleType.PLAYER);
-        assertEquals(1, player.getRoles().size());
-        player.roles.add(RoleType.ADMINISTRATOR);
-        assertEquals(2, player.getRoles().size());
-    }
-    
-    @Test
-    public void testLoadRole() throws RushHourException {
-        oAuthController.createOAuthBean("foo", "foosec");
-        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, TEST_USER_DISPLAY_NAME);
-        player.roles.add(RoleType.PLAYER);
-        em.flush();
-        assertEquals(1, player.getRoles().size());
-        player.roles.add(RoleType.ADMINISTRATOR);
-        assertEquals(2, player.getRoles().size());
+        assertTrue(player.getRoles().contains(RoleType.PLAYER));
     }
 }

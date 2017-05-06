@@ -23,12 +23,33 @@
  */
 package net.rushhourgame.entity;
 
+import javax.persistence.EntityManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public interface Ownable {
-    public void setOwner(Owner owner);
-    public Owner getOwner();
-    public boolean isPrivilegedBy(Owner owner);
+public abstract class AbstractEntityTest {
+    protected static EntityManager em;
+    protected static LocalTableController tCon;
+
+    @BeforeClass
+    public static void setUpClass() {
+        em = LocalTableController.lookupEntityManager();
+        tCon = new LocalTableController(em);
+    }
+    
+    @Before
+    public void setUp() {
+        em.getTransaction().begin();
+    }
+    
+    @After
+    public void tearDown() {
+        em.getTransaction().commit();
+        tCon.clean();
+    }
 }

@@ -83,6 +83,7 @@ public class PlayerController extends AbstractController {
                     "User accessToken is already registered : " + tokenDigest);
         }
         Player p = new Player();
+        p.getRoles().add(RoleType.PLAYER);
         p.setId(userIdDigest);
         p.setUserId(plainUserId);
         p.setToken(tokenDigest);

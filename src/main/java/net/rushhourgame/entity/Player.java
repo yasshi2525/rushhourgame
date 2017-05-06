@@ -67,7 +67,7 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM Player x WHERE x.token = :token"
     )
 })
-public class Player extends AbstractEntity implements Owner, Serializable {
+public class Player extends OwnerEntity implements Serializable {
 
     @Id
     protected String id;
@@ -82,10 +82,6 @@ public class Player extends AbstractEntity implements Owner, Serializable {
     protected Locale locale;
     @OneToOne(orphanRemoval = true)
     protected OAuth oauth;
-    
-    @ElementCollection(targetClass = RoleType.class)
-    @Enumerated(EnumType.STRING)
-    protected Set<RoleType> roles = new HashSet<>();
     
     public String getId() {
         return id;

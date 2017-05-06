@@ -23,51 +23,51 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@MappedSuperclass
-public class SimplePoint implements Pointable, Serializable {
+public class PointEntityTest extends AbstractEntityTest{
 
-    private final long serialVersionUID = 1;
-    @Id
-    @GeneratedValue
-    protected long id;
-    protected double x;
-    protected double y;
-
-    public long getId() {
-        return id;
+    /**
+     * Test of distTo method, of class PointEntity.
+     */
+    @Test
+    public void testDistTo() {
+        PointEntity inst = new PointEntity();
+        PointEntity target = new PointEntity();
+        target.x = 3.0;
+        target.y = 4.0;
+        double result = inst.distTo(target);
+        assertEquals(5.0, result, 0.0);
     }
 
-    public void setId(long id) {
-        this.id = id;
+    /**
+     * Test of isPrivilegedBy method, of class PointEntity.
+     */
+    @Test
+    public void testIsPrivilegedBy() {
+        Owner admin = new Player();
+        admin.getRoles().add(RoleType.ADMINISTRATOR);
+        
+        Owner other = new Player();
+        admin.getRoles().add(RoleType.PLAYER);
+        
+        Owner self = new Player();
+        PointEntity inst = new PointEntity();
+        inst.owner = self;
+        
+        assertTrue(inst.isPrivilegedBy(self));
+        assertTrue(inst.isPrivilegedBy(admin));
+        assertFalse(inst.isPrivilegedBy(other));
+        assertFalse(inst.isPrivilegedBy(null));
     }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double distTo(Pointable p) {
-        return Math.sqrt((p.getX() - x) * (p.getX() - x)
-                + (p.getY() - y) * (p.getY() - y));
-    }
+    
 }
