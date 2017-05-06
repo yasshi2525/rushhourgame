@@ -41,7 +41,7 @@ public class LanguageManagedBean implements Serializable{
     @Inject
     RushHourSession rushHourSession;
     
-    public void action(String lang){
+    public void change(String lang){
         if (lang != null) {
             switch (lang.toLowerCase()) {
                 case "jp":

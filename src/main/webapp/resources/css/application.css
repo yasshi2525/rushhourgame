@@ -25,12 +25,19 @@ THE SOFTWARE.
     Created on : 2017/05/05, 12:27:32
     Author     : yasshi2525 <https://twitter.com/yasshi2525>
 */
-input.twitterSignin{
-    width: 150px; 
-    background-repeat: no-repeat;  
-    background-image: url("#{resource['image/sign-in-with-twitter-link.png']}");
+
+.title{
+    font-size: x-large;
 }
 
-.playerHeader{
-    width: 100%;
+.twitterSignIn{
+    height: 30px;
+    width: 160px;
+    background-image: url("#{resource['image/sign-in-with-twitter-link.png']}") !important;
+    background-repeat: no-repeat !important;
+}
+
+img.header{
+    width:50%;
+    height:50%;
 }

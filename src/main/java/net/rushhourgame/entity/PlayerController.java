@@ -168,10 +168,8 @@ public class PlayerController extends AbstractController {
             Player player = findByToken(token);
             if (player != null) {
                 player.setToken(null);
-                //OAuth oAuth = player.getOauth();
                 player.setOauth(null);
-                //em.remove(oAuth);
-                LOG.log(Level.INFO, "PlayerController#clearToken clear access token");
+                LOG.log(Level.FINE, "PlayerController#clearToken clear token : {0}", token);
             }
         } catch (NoResultException e) {
             LOG.log(Level.INFO, "PlayerController#clearToken"

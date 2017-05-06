@@ -53,6 +53,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_TWITTER_SIGNIN = "rushhour.label.twitterSignIn";
     public static final String LABEL_FETCH_ACCESS_TOKEN = "rushhour.label.fetchAccessToken";
     public static final String LABEL_WELCOME = "rushhour.label.welcome";
+    public static final String LABEL_LANG = "rushhour.label.lang";
     public static final String LABEL_LANG_EN = "rushhour.label.lang.en";
     public static final String LABEL_LANG_JP = "rushhour.label.lang.jp";
     public static final String LABEL_LOGOUT = "rushhour.label.logout";

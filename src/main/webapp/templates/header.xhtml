@@ -1,41 +1,39 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<h:panelGrid 
+<h:form
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:p="http://primefaces.org/ui"
-    styleClass="playerHeader"
-    style="#{player.headerStyle}}"
-    columns="5">
-    <!-- アプリ名 -->
-    <h:panelGroup>
-        <div><h:outputText value="#{msg.rushHour}"/> ver<h:outputText value="#{msg.rushHourVer}"/></div>
-    </h:panelGroup>
-
-    <h:panelGroup>
-        <!-- サインイン -->
-        <h:panelGroup rendered="#{!player.signIn}">
-            <ui:include src="header_signin.xhtml"/>
-        </h:panelGroup>
-        <!-- ユーザデータ-->
-        <h:panelGroup rendered="#{player.signIn}">
-            <ui:include src="header_userdata.xhtml"/>
-        </h:panelGroup>
-    </h:panelGroup>
-
-    <!-- 言語 -->
-    <h:panelGroup>
-        <h:form>
-            <span>
-                <h:commandLink rendered="#{!sessionScope.rushhour.jp}" value="#{msg.langJp}" action="#{lang.action('jp')}"/>
-                <h:outputText rendered="#{sessionScope.rushhour.jp}" value="#{msg.langJp}"/>
-            </span>
-            <span>
-                <h:commandLink rendered="#{!sessionScope.rushhour.en}" value="#{msg.langEn}" action="#{lang.action('en')}"/>
-                <h:outputText rendered="#{sessionScope.rushhour.en}" value="#{msg.langEn}"/>
-            </span>
-        </h:form>
-    </h:panelGroup>
-</h:panelGrid>
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <p:menubar>
+        <p:menuitem 
+            ajax="false"
+            value="#{msg.rushHour} ver #{msg.rushHourVer}"
+            action="index.xhtml"
+            styleClass="title"/>
+        <f:facet name="options">
+            <!-- サインイン -->
+            <h:panelGrid  rendered="#{!player.signIn}">
+                <ui:include src="header_signin.xhtml"/>
+            </h:panelGrid>
+            <!-- ユーザデータ -->
+            <h:panelGrid rendered="#{player.signIn}">
+                <ui:include src="header_userdata.xhtml"/>
+            </h:panelGrid>
+        </f:facet>
+        <ui:include src="header_lang.xhtml">
+            <!-- 言語 -->
+        </ui:include>
+        <p:menuitem 
+            ajax="false"
+            rendered="#{player.signIn}"
+            value="#{msg.logOut}" 
+            action="#{player.logOut()}"
+            icon="ui-icon-triangle-1-e"
+            >
+            <!-- ログアウト -->
+        </p:menuitem>
+    </p:menubar>
+</h:form>
 

@@ -57,7 +57,7 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
     transient protected OAuthController oAuthController;
     @Inject
     transient protected TwitterOAuthRequestTokenClient client;
-    protected boolean isLoading;
+    protected boolean isPressed;
 
     /**
      * リクエストトークンを取得し、リダイレクトする.
@@ -67,7 +67,6 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
      */
     @Transactional
     public void requestRequestToken() throws IOException, RushHourException {
-        isLoading = true;
         // リクエストトークンの取得
         client.execute();
 
@@ -98,8 +97,12 @@ public class TwitterOAuthRequestTokenManagedBean extends AbstractTwitterOAuthMan
             );
         }
     }
+    
+    public void actionListener(){
+        isPressed = true;
+    }
 
-    public boolean isLoading() {
-        return isLoading;
+    public boolean isPressed() {
+        return isPressed;
     }
 }

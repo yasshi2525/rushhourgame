@@ -7,6 +7,8 @@
         <phase-listener>net.rushhourgame.listener.CheckPhaseListener</phase-listener>
     </lifecycle>
     <factory>
-        <exception-handler-factory>net.rushhourgame.RushHourExceptionHandlerFactory</exception-handler-factory>
+        <exception-handler-factory>
+            net.rushhourgame.RushHourExceptionHandlerFactory
+        </exception-handler-factory>
     </factory>
 </faces-config>

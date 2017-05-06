@@ -1,9 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<h:form xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:h="http://xmlns.jcp.org/jsf/html"
-        xmlns:p="http://primefaces.org/ui">
-    <h:commandButton styleClass="twitterSignin" action="#{twitterOAuthRequestToken.requestRequestToken()}"/>
-</h:form>
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://xmlns.jcp.org/jsf/html"
+     xmlns:p="http://primefaces.org/ui"
+     >
+    <p:commandButton
+        ajax="false"
+        styleClass="twitterSignIn"
+        rendered="#{!player.signIn}"
+        value=""
+        disabled="#{twitterOAuthRequestToken.pressed}"
+        actionListener="#{twitterOAuthRequestToken.actionListener}"
+        action="#{twitterOAuthRequestToken.requestRequestToken()}"/>
+</div>
 
 

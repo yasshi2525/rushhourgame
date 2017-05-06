@@ -1,11 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<h:form 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:p="http://primefaces.org/ui">
-    <h:graphicImage url="#{player.imageUrl}"/>
-    <h:outputText value="#{player.name}"/>
-    <h:commandButton value="#{msg.logOut}" action="#{player.logOut()}"/>
-</h:form>
+<p:panelGrid columns="2" 
+             xmlns="http://www.w3.org/1999/xhtml" 
+             xmlns:h="http://xmlns.jcp.org/jsf/html" 
+             xmlns:p="http://primefaces.org/ui"
+             >
+    <h:graphicImage 
+        styleClass="header"
+        url="#{player.imageUrl}"/>
+    <h:outputText 
+        value="#{player.name}"
+        />
+</p:panelGrid>
 

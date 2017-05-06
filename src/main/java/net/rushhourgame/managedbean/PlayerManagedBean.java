@@ -121,8 +121,11 @@ public class PlayerManagedBean implements Serializable {
         return userData.getProfile_image_url();
     }
     
-    public String getHeaderStyle() {
-        return "background-color: " + userData.getProfile_link_color() + ";"
-                + "color: " + userData.getProfile_text_color() + ";";
+    public String getBackGroundColor(){
+        return userData.getProfile_link_color();
+    }
+    
+    public String getColor(){
+        return userData.getProfile_text_color();
     }
 }
