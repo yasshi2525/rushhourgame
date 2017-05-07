@@ -24,22 +24,14 @@
 package net.rushhourgame.entity;
 
 import java.io.Serializable;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -76,10 +68,6 @@ public class Player extends OwnerEntity implements Serializable {
     protected String userId;
     @Column(unique = true)
     protected String token;
-    protected String displayName;
-    protected String icon;
-    @NotNull
-    protected Locale locale;
     @OneToOne(orphanRemoval = true)
     protected OAuth oauth;
     
@@ -87,14 +75,14 @@ public class Player extends OwnerEntity implements Serializable {
         return id;
     }
 
-    /**
-     * 主キー重複防止のため Controller以外のアクセス禁止
-     * @param id 
-     */
     public void setId(String id) {
         this.id = id;
     }
-
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
+    
     public String getToken() {
         return token;
     }
@@ -113,37 +101,6 @@ public class Player extends OwnerEntity implements Serializable {
      */
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-    /**
-     * Unique制約のため Controller以外のアクセス禁止
-     * @param token
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 
     public OAuth getOauth() {

@@ -23,20 +23,22 @@
  */
 package net.rushhourgame;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Singleton
-public class RushHourResourceBundle extends AbstractResourceBundle {
+public class RushHourResourceBundle extends AbstractResourceBundle{
 
+    private final long serialVersionUID = 1;
     @Inject
     protected RushHourProperties prop;
 
@@ -107,6 +109,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
 
     protected RushHourResourceBundle() {
         super("rushhourmessage");
+        LOG.log(Level.INFO, "{0}#constructor", this.getClass().getSimpleName());
     }
 
     @PostConstruct

@@ -21,47 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.managedbean;
+package net.rushhourgame.entity;
 
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.json.EmptyUserData;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import net.rushhourgame.RushHourProperties;
+import static net.rushhourgame.RushHourProperties.*;
 
 /**
- *
+ * 
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalPlayerBean extends PlayerBean {
-    protected EmptyUserData empty;
-    protected boolean hasSessionData;
-    protected String accessToken;
+@Converter
+public class LocaleConverter implements AttributeConverter<Locale, String> {
 
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData) {
-        this.hasSessionData = hasSessionData;
-        this.pCon = pCon;
-        empty = new EmptyUserData();
-        empty.init();
-    }
+    private static final Logger LOG = Logger.getLogger(LocaleConverter.class.getName());
 
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData, String accessToken) {
-        this(pCon, hasSessionData);
-        this.accessToken = accessToken;
+    @Override
+    public String convertToDatabaseColumn(Locale attribute) {
+        return attribute.toString();
     }
 
     @Override
-    public String getName() {
-        if (!isSignIn()) {
-            return empty.getName();
-        }
-        Player p = pCon.findByToken(accessToken);
-        if (p == null) {
-            return empty.getName();
-        }
-        return p.getInfo().getName();
-    }
-
-    @Override
-    public boolean isSignIn() {
-        return pCon.isValidToken(accessToken);
+    public Locale convertToEntityAttribute(String dbData) {
+        return new Locale(dbData);
     }
 }

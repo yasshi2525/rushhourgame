@@ -25,22 +25,41 @@ package net.rushhourgame.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass
-public abstract class OwnerEntity extends AbstractEntity implements Owner{
+public abstract class OwnerEntity extends AbstractEntity implements Owner {
+    private final long serialVersionUID = 1;
+    
+    @NotNull
+    @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    protected OwnerInfo info;
+    
     @ElementCollection(targetClass = RoleType.class)
     @Enumerated(EnumType.STRING)
     protected Set<RoleType> roles = new HashSet<>();
+
+    public OwnerInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(OwnerInfo info) {
+        this.info = info;
+    }
     
-    public Set<RoleType> getRoles(){
+    public Set<RoleType> getRoles() {
         return roles;
     }
 }

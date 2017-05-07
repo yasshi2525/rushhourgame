@@ -59,7 +59,7 @@ public abstract class HttpClient implements Serializable {
     private static final Logger LOG = Logger.getLogger(HttpClient.class.getName());
 
     @Inject
-    transient RushHourProperties prop;
+    RushHourProperties prop;
     protected final SortedMap<String, String> getParameters = new TreeMap<>();
     protected final SortedMap<String, String> postParameters = new TreeMap<>();
     protected final SortedMap<String, SortedMap<String, String>> requestHeaders = new TreeMap<>();

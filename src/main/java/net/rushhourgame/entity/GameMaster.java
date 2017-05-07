@@ -26,9 +26,12 @@ package net.rushhourgame.entity;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  * Absorber, Distributer の所有者はこれにする。
@@ -45,9 +48,9 @@ import javax.persistence.NamedQuery;
 public class GameMaster extends OwnerEntity implements Owner, Serializable{
     private final long serialVersionUID = 1;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
-
+    
     public long getId() {
         return id;
     }

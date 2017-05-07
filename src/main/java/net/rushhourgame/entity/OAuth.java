@@ -72,13 +72,6 @@ public class OAuth extends AbstractEntity implements Serializable {
     @Convert(converter = EncryptConverter.class)
     protected String accessToken;
     protected String accessTokenSecret;
-    
-    /*@ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(
-            foreignKey = @ForeignKey(
-                    name = "fk_oauth_player_id",
-                    foreignKeyDefinition = "FOREIGN KEY (player_id) REFERENCES player (id) ON UPDATE SET NULL"))
-    protected Player player;*/
 
     public String getId() {
         return id;

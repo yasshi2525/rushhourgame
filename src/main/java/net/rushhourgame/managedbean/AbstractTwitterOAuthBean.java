@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.Serializable;
 import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
@@ -35,14 +36,14 @@ import net.rushhourgame.RushHourResourceBundle;
  * ログイン用
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public abstract class AbstractTwitterOAuthBean {
+public abstract class AbstractTwitterOAuthBean implements Serializable{
 
     private static final Logger LOG = Logger.getLogger(AbstractTwitterOAuthBean.class.getName());
     
     @Inject
-    transient protected RushHourProperties prop;
+    protected RushHourProperties prop;
     @Inject
-    transient protected RushHourResourceBundle msgProp;
+    protected RushHourResourceBundle msgProp;
     
     protected static final String ERR_PAGE = "error.xhtml";
     protected static final String MYPAGE = "index.xhtml";

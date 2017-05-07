@@ -23,9 +23,11 @@
  */
 package net.rushhourgame;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Singleton;
+import javax.ejb.Singleton;
 
 /**
  *
@@ -34,6 +36,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RushHourProperties extends AbstractProperties{
 
+    private final long serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(RushHourProperties.class.getName());
     
     protected static RushHourProperties instance = new RushHourProperties();
@@ -58,6 +61,7 @@ public class RushHourProperties extends AbstractProperties{
 
     protected RushHourProperties() {
         super(Arrays.asList("config.properties", "rushhour.properties"));
+        LOG.log(Level.INFO, "{0}#constructor", this.getClass().getSimpleName());
     }
     
     /**

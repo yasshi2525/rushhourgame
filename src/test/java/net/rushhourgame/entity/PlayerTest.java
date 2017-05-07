@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.Locale;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -31,35 +32,64 @@ import static org.junit.Assert.*;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class PlayerTest extends AbstractEntityTest{
+    protected static final String JP_NAME = "日本語名";
 
     @Test
     public void testControlRole() {
         Player player = new Player();
+        player.setId("hoge");
+        em.persist(player);
         assertEquals(0, player.getRoles().size());
+        
         player.roles.add(RoleType.PLAYER);
+        em.merge(player);
         assertEquals(1, player.getRoles().size());
+        
         player.roles.add(RoleType.ADMINISTRATOR);
+        em.merge(player);
         assertEquals(2, player.getRoles().size());
     }
     
     @Test
     public void testPersistNoRole() {
         Player player = new Player();
-        em.flush();
+        player.setId("hoge");
+        em.persist(player);
         assertEquals(0, player.getRoles().size());
+        
         player.roles.add(RoleType.PLAYER);
+        em.merge(player);
         assertEquals(1, player.getRoles().size());
+        
         player.roles.add(RoleType.ADMINISTRATOR);
+        em.merge(player);
         assertEquals(2, player.getRoles().size());
     }
     
     @Test
     public void testLoadRole() {
         Player player = new Player();
+        player.setId("hoge");
         player.roles.add(RoleType.PLAYER);
-        em.flush();
+        em.persist(player);
         assertEquals(1, player.getRoles().size());
+        
         player.roles.add(RoleType.ADMINISTRATOR);
+        em.merge(player);
         assertEquals(2, player.getRoles().size());
+    }
+    
+    @Test
+    public void testSetJPName(){
+        Player player = new Player();
+        OwnerInfo info = new OwnerInfo();
+        info.setColor("#000000");
+        info.setIconUrl("#000000");
+        info.setLocale(Locale.getDefault());
+        info.setName(JP_NAME);
+        info.setTextColor("#000000");
+        player.setId("hoge");
+        player.setInfo(info);
+        em.persist(player);
     }
 }

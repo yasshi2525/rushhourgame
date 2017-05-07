@@ -45,10 +45,10 @@ public class ErrorBean implements Serializable {
     private static final Logger LOG = Logger.getLogger(ErrorBean.class.getName());
     
     @Inject
-    transient protected RushHourResourceBundle msgProps;
+    protected RushHourResourceBundle msgProps;
     
     @Inject
-    transient protected RushHourSession rushHourSession;
+    protected RushHourSession rushHourSession;
 
     protected ErrorMessage contents;
 

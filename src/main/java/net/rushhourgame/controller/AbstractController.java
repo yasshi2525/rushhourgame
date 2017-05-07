@@ -43,9 +43,9 @@ public abstract class AbstractController implements Serializable{
     private static final Logger LOG = Logger.getLogger(AbstractController.class.getName());
     
     @PersistenceContext
-    transient protected EntityManager em;    
+    protected EntityManager em;    
     @Inject
-    transient protected RushHourProperties prop;
+    protected RushHourProperties prop;
     @Inject
     protected DigestCalculator calculator;
     

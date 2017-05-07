@@ -21,84 +21,92 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.json;
+package net.rushhourgame.entity;
 
 import java.io.Serializable;
+import java.util.Locale;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import net.rushhourgame.entity.Owner;
+import net.rushhourgame.json.UserData;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class TwitterUserData implements UserData, Serializable {
-
-    private final int serialVersionUID = 1;
-
+@Entity
+public class OwnerInfo implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+    
     @NotNull
     protected String name;
-    protected String screen_name;
-    protected String profile_background_color;
-    @NotNull
-    protected String profile_image_url;
-    protected String profile_image_url_https;
-    @NotNull
-    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
-    protected String profile_link_color;
-    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
-    protected String profile_text_color;
-    protected String default_profile;
-    protected String default_profile_image;
-
-    @Override
-    public String getIconUrl() {
-        return profile_image_url;
-    }
-
-    @Override
-    public String getColor() {
-        return profile_link_color;
-    }
     
+    @NotNull
+    protected String iconUrl;
+    
+    @NotNull
+    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
+    protected String color;
+    
+    @NotNull
+    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
+    protected String textColor;
+    
+    @NotNull
+    @Convert(converter = LocaleConverter.class)
+    protected Locale locale;
+
+    public void include(UserData data){
+        name = data.getName();
+        iconUrl = data.getIconUrl();
+        color = data.getColor();
+        textColor = data.getTextColor();
+    }
+
     public String getName() {
         return name;
     }
 
-    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public String getTextColor() {
-        return profile_text_color;
+        return textColor;
     }
 
-    public String getScreen_name() {
-        return screen_name;
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
     }
 
-    public String getProfile_background_color() {
-        return profile_background_color;
+    public Locale getLocale() {
+        return locale;
     }
 
-    public String getProfile_image_url() {
-        return profile_image_url;
-    }
-
-    public String getProfile_image_url_https() {
-        return profile_image_url_https;
-    }
-
-    public String getProfile_link_color() {
-        return profile_link_color;
-    }
-
-    public String getProfile_text_color() {
-        return profile_text_color;
-    }
-
-    public String getDefault_profile() {
-        return default_profile;
-    }
-
-    public String getDefault_profile_image() {
-        return default_profile_image;
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

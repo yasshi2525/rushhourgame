@@ -24,6 +24,7 @@
 package net.rushhourgame;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class AbstractProperties {
+public class AbstractProperties implements Serializable{
 
     private static final Logger LOG = Logger.getLogger(AbstractProperties.class.getName());
     protected Properties cache;

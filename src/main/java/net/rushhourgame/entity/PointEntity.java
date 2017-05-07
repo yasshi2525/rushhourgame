@@ -35,7 +35,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass
-public abstract class PointEntity implements Ownable, Pointable, Serializable {
+public abstract class PointEntity extends OwnableEntity implements Pointable, Serializable {
 
     private final long serialVersionUID = 1;
     @Id
@@ -43,10 +43,6 @@ public abstract class PointEntity implements Ownable, Pointable, Serializable {
     protected long id;
     protected double x;
     protected double y;
-    @ManyToOne
-    protected Player player;
-    @ManyToOne
-    protected GameMaster gameMaster;
     
     public long getId() {
         return id;
@@ -54,28 +50,6 @@ public abstract class PointEntity implements Ownable, Pointable, Serializable {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Owner getOwner() {
-        if(gameMaster != null){
-            return gameMaster;
-        }
-        return player;
-    }
-
-    public void setOwner(Owner owner) {
-        if(owner == null){
-            throw new NullPointerException("owner is null");
-        }
-        if(owner instanceof GameMaster){
-            gameMaster = (GameMaster) owner;
-            player = null;
-        }else if(owner instanceof Player){
-            gameMaster = null;
-            player = (Player) owner;
-        }else{
-            throw new IllegalArgumentException("owner is not GameMaster nor Player");
-        }
     }
 
     public double getX() {
@@ -97,25 +71,5 @@ public abstract class PointEntity implements Ownable, Pointable, Serializable {
     public double distTo(Pointable p) {
         return Math.sqrt((p.getX() - x) * (p.getX() - x)
                 + (p.getY() - y) * (p.getY() - y));
-    }
-
-    /**
-     * 管理者か自分の所有者ならtrue
-     * @param owner
-     * @return 
-     */
-    @Override
-    public boolean isPrivilegedBy(Owner owner) {
-        if(owner == null){
-            return false;
-        }
-        if(owner.getRoles().contains(RoleType.ADMINISTRATOR)){
-            return true;
-        }
-        if(gameMaster != null){
-            return gameMaster.equals(owner);
-        }
-        
-        return player.equals(owner);
     }
 }

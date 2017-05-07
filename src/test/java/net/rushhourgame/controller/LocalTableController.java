@@ -49,6 +49,7 @@ public class LocalTableController {
         em.createQuery("DELETE FROM Absorber x").executeUpdate();
         em.createQuery("DELETE FROM GameMaster x").executeUpdate();
         em.createQuery("DELETE FROM Player x").executeUpdate();
+        em.createQuery("DELETE FROM OwnerInfo x").executeUpdate();
         em.createQuery("DELETE FROM OAuth x").executeUpdate();
         em.getTransaction().commit();
     }

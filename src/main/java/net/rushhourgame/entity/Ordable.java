@@ -28,6 +28,8 @@ package net.rushhourgame.entity;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public interface Ordable {
+
     public void setOrder(int i);
+
     public int getOrder();
 }

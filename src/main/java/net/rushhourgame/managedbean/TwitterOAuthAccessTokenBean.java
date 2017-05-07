@@ -40,6 +40,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
+import net.rushhourgame.httpclient.TwitterUserShowClient;
 
 /**
  * (2) Twitter のアクセストークンを取得する
@@ -47,7 +48,7 @@ import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
  */
 @Named("twitterOAuthAccessToken")
 @ViewScoped
-public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean implements Serializable {
+public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
     
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthAccessTokenBean.class.getName());
@@ -58,13 +59,18 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean implem
     protected String oauthVerifier;
     
     @Inject
-    transient protected OAuthController oAuthController;
+    protected OAuthController oAuthController;
     @Inject
-    transient protected PlayerController playerController;
+    protected PlayerController playerController;
     @Inject
-    transient protected RushHourSession rushHourSession;
+    protected RushHourSession rushHourSession;
     @Inject
-    transient protected TwitterOAuthAccessTokenClient client;
+    protected TwitterOAuthAccessTokenClient client;
+    /**
+     * 表示名、アイコンのURLを取得
+     */
+    @Inject
+    protected TwitterUserShowClient userShowClient;
 
     /**
      * access tokenを取得する
@@ -110,8 +116,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean implem
         updateOAuthAccessToken(oAuth, client.getAccessToken(), client.getAccessTokenSecret());
 
         // プレイヤーデータの取得 (存在しない場合は取得)
-        Player p = fetchPlayer(
-                requestToken, client.getUserId(), client.getAccessToken(), client.getScreenName());
+        Player p = fetchPlayer(requestToken, client.getUserId(), client.getAccessToken(), client.getAccessTokenSecret());
         
         // セッションへデータを登録
         registerSessionAttribute(p);
@@ -137,17 +142,26 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean implem
      * @param requestToken
      * @param userId
      * @param accessToken
-     * @param displayName
+     * @param accessTokenSecret
      * @return
      * @throws net.rushhourgame.exception.RushHourException
      */
-    protected Player fetchPlayer(String requestToken, String userId, String accessToken, 
-            String displayName) throws RushHourException {
+    protected Player fetchPlayer(String requestToken, String userId, 
+            String accessToken, String accessTokenSecret) throws RushHourException {
         if (!playerController.existsUserId(userId)) {
             //新規ユーザ登録
+            
+            //ユーザデータを取得
+            userShowClient.setPlayer(userId, accessToken, accessTokenSecret);
+            userShowClient.execute();
+            
             LOG.log(Level.INFO,
                     "TwitterOAuthAccessTokenManagedBean#fetchPlayer create new user : id = {0}", userId);
-            return playerController.createPlayer(requestToken, userId, accessToken, displayName, rushHourSession.getLocale());
+            return playerController.createPlayer(
+                    requestToken, 
+                    userId, 
+                    accessToken, 
+                    userShowClient.getUserData());
         } else {
             //既存ユーザを取得
             Player player = playerController.findByUserId(userId);
@@ -166,7 +180,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean implem
     protected void registerSessionAttribute(Player player) {
         // セッションにアクセストークンとロケールを追加
         rushHourSession.setToken(player.getToken());
-        rushHourSession.setLocale(player.getLocale());
+        rushHourSession.setLocale(player.getInfo().getLocale());
     }
     
     public String getRequestToken() {

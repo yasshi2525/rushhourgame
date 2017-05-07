@@ -34,7 +34,9 @@ import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.OwnerInfo;
 import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.json.UserData;
 
 /**
  *
@@ -49,13 +51,25 @@ public class PlayerController extends AbstractController {
     @Inject
     protected OAuthController oCon;
     
-    public Player createPlayer(String requestToken, String plainUserId, 
-            String plainAccessToken, String displayName) throws RushHourException {
-        return createPlayer(requestToken, plainUserId, plainAccessToken, displayName, Locale.getDefault());
+    public Player createPlayer(
+            String requestToken, 
+            String plainUserId, 
+            String plainAccessToken, 
+            UserData userData) throws RushHourException {
+        return createPlayer(
+                requestToken, 
+                plainUserId, 
+                plainAccessToken, 
+                userData,
+                Locale.getDefault());
     }
     
-    public Player createPlayer(String requestToken, String plainUserId, 
-            String plainAccessToken, String displayName, Locale locale) throws RushHourException {
+    public Player createPlayer(
+            String requestToken, 
+            String plainUserId, 
+            String plainAccessToken, 
+            UserData userData,
+            Locale locale) throws RushHourException {
         // idはTwitterのIDのダイジェストを使う
         // tokenはTwitterのaccessTokenのダイジェストを使う
         String userIdDigest;
@@ -82,17 +96,22 @@ public class PlayerController extends AbstractController {
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN),
                     "User accessToken is already registered : " + tokenDigest);
         }
+        OwnerInfo info = new OwnerInfo();
+        info.include(userData);
+        if (locale != null) {
+            info.setLocale(locale);
+        }else{
+            info.setLocale(Locale.getDefault());
+        }
+        
         Player p = new Player();
         p.getRoles().add(RoleType.PLAYER);
         p.setId(userIdDigest);
         p.setUserId(plainUserId);
         p.setToken(tokenDigest);
-        p.setDisplayName(displayName);
-        if (locale != null) {
-            p.setLocale(locale);
-        }else{
-            p.setLocale(Locale.getDefault());
-        }
+        
+        p.setInfo(info);
+        
         p.setOauth(oCon.findByRequestToken(requestToken));
         em.persist(p);
         return p;

@@ -42,10 +42,10 @@ public class MessageBean implements Serializable{
     private final int serialVersionUID = 1;
     
     @Inject
-    transient protected RushHourSession rushHourSession;
+    protected RushHourSession rushHourSession;
     
     @Inject
-    transient protected RushHourResourceBundle res;
+    protected RushHourResourceBundle res;
 
     public String getRushHour(){
         return res.get(LABEL_RUSHHOUR, rushHourSession.getLocale());

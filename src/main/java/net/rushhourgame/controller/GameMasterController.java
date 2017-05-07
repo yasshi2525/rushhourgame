@@ -23,11 +23,13 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Locale;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.GameMaster;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.OwnerInfo;
 import net.rushhourgame.entity.RoleType;
 
 /**
@@ -44,8 +46,15 @@ public class GameMasterController extends AbstractController{
         if(exists()){
             throw new RushHourException(ErrorMessage.createDataInconsitency(GAME_DATA_INCONSIST_DUP_GM));
         }
+        OwnerInfo info = new OwnerInfo();
+        info.setColor("#888888");
+        info.setIconUrl("no_image.png");
+        info.setLocale(Locale.getDefault());
+        info.setName("GameMaster");
+        
         GameMaster inst = new GameMaster();
         inst.getRoles().add(RoleType.ADMINISTRATOR);
+        inst.setInfo(info);
         em.persist(inst);
         return inst;
     }

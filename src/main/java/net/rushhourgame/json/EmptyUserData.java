@@ -21,47 +21,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.managedbean;
+package net.rushhourgame.json;
 
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.json.EmptyUserData;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
+import javax.enterprise.inject.Model;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalPlayerBean extends PlayerBean {
-    protected EmptyUserData empty;
-    protected boolean hasSessionData;
-    protected String accessToken;
+@Model
+public class EmptyUserData implements UserData, Serializable {
 
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData) {
-        this.hasSessionData = hasSessionData;
-        this.pCon = pCon;
-        empty = new EmptyUserData();
-        empty.init();
+    private final long serialVersionUID = 1;
+    private static final Logger LOG = Logger.getLogger(EmptyUserData.class.getName());
+
+    @NotNull
+    protected String name;
+    @NotNull
+    protected String iconUrl;
+    @NotNull
+    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
+    protected String color;
+    @NotNull
+    @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
+    protected String textColor;
+
+    @PostConstruct
+    public void init() {
+        LOG.log(Level.INFO, "{0}#init start", this.getClass().getSimpleName());
+        name = "NoName";
+        iconUrl = "no_image.png";
+        color = "#AAAAAA";
+        textColor = "#000000";
     }
 
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData, String accessToken) {
-        this(pCon, hasSessionData);
-        this.accessToken = accessToken;
-    }
-
-    @Override
     public String getName() {
-        if (!isSignIn()) {
-            return empty.getName();
-        }
-        Player p = pCon.findByToken(accessToken);
-        if (p == null) {
-            return empty.getName();
-        }
-        return p.getInfo().getName();
+        return name;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
-    public boolean isSignIn() {
-        return pCon.isValidToken(accessToken);
+    public String getTextColor() {
+        return textColor;
     }
 }

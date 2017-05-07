@@ -41,37 +41,41 @@ import net.rushhourgame.json.TwitterUserDataParser;
  */
 @Dependent
 public class TwitterUserShowClient extends TwitterClient implements Serializable {
+
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(TwitterUserShowClient.class.getName());
     protected static final String USER_ID = "user_id";
-    
-    protected Player player;
+
     @Inject
     protected TwitterUserDataParser parser;
     protected TwitterUserData data;
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         super.init();
         LOG.log(Level.FINE, "{0}#init start", this.getClass().getSimpleName());
         httpMethod = HttpMethod.GET;
         mediaType = MediaType.APPLICATION_JSON_TYPE;
         resourceUrl = prop.get(RushHourProperties.TWITTER_API_USERS_SHOW);
-        
+
         sigBuilder.setHttpMethod(httpMethod.toString());
         sigBuilder.setBaseUrl(resourceUrl);
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-        getParameters.put(USER_ID, player.getUserId());
-        String accessToken = player.getOauth().getAccessToken();
-        requestHeaders.get(AUTHIRIZATION).put(OAUTH_TOKEN, player.getOauth().getAccessToken());
-        sigBuilder.setoAuthTokenSecret(player.getOauth().getAccessTokenSecret());
+    public void setPlayer(String userId, String accessToken, String accessTokenSecret) {
+
+        getParameters.put(USER_ID, userId);
+        requestHeaders.get(AUTHIRIZATION).put(OAUTH_TOKEN, accessToken);
+        sigBuilder.setoAuthTokenSecret(accessTokenSecret);
     }
-    
-    public TwitterUserData getUserData(){
-        if(!parser.isParsed()){
+
+    public void setPlayer(Player player) {
+        
+        setPlayer(player.getUserId(), player.getOauth().getAccessToken(), player.getOauth().getAccessTokenSecret());
+    }
+
+    public TwitterUserData getUserData() {
+        if (!parser.isParsed()) {
             parser.parse(responseHeader);
         }
         return parser.getCache();

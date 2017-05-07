@@ -28,7 +28,15 @@ package net.rushhourgame.entity;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public interface Ownable {
+
     public void setOwner(Owner owner);
+
     public Owner getOwner();
+
+    /**
+     * 引数のownerからの操作を受け付けるか
+     * @param owner
+     * @return 
+     */
     public boolean isPrivilegedBy(Owner owner);
 }

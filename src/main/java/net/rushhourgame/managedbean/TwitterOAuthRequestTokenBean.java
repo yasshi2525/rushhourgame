@@ -48,15 +48,15 @@ import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
  */
 @Named("twitterOAuthRequestToken")
 @ViewScoped
-public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean implements Serializable {
+public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
 
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthRequestTokenBean.class.getName());
     protected static final String OAUTH_CALLBACK = "oauth_callback";
     @Inject
-    transient protected OAuthController oAuthController;
+    protected OAuthController oAuthController;
     @Inject
-    transient protected TwitterOAuthRequestTokenClient client;
+    protected TwitterOAuthRequestTokenClient client;
     protected boolean isPressed;
 
     /**

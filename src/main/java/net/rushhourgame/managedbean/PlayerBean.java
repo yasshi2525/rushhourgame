@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -45,7 +46,9 @@ import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
+import net.rushhourgame.json.EmptyUserData;
 import net.rushhourgame.json.TwitterUserData;
+import net.rushhourgame.json.UserData;
 
 /**
  * 未ログイン時は未ログイン用のデータを返す
@@ -58,26 +61,27 @@ public class PlayerBean implements Serializable {
     
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(PlayerBean.class.getName());
-    
     @Inject
-    transient protected RushHourProperties prop;
+    protected RushHourProperties prop;
     @Inject
-    transient protected PlayerController pCon;
+    protected PlayerController pCon;
     @Inject
-    transient protected RushHourSession rushHourSession;
+    protected RushHourSession rushHourSession;
     @Inject
-    transient protected TwitterUserShowClient client;
+    protected TwitterUserShowClient client;    
+    protected EmptyUserData emptyUser;
     
     protected Player player;
     protected boolean isSignIn;
     /**
      * ログインしていない場合は未ログイン時用の値が格納
      */
-    protected TwitterUserData userData;
+    @Inject
+    protected UserData userData;
     
     @PostConstruct
     public void init() {
-        userData = new TwitterUserData();
+        emptyUser = new EmptyUserData();
         isSignIn = pCon.isValidToken(rushHourSession.getToken());
         if (isSignIn) {
             player = pCon.findByToken(rushHourSession.getToken());
@@ -106,26 +110,31 @@ public class PlayerBean implements Serializable {
         return isSignIn;
     }
     
-    public String getDisplayName() {
-        if (!isSignIn()) {
-            return "no name";
-        }
-        return player.getDisplayName();
-    }
-    
     public String getName() {
+        if(userData == null){
+            return emptyUser.getName();
+        }
         return userData.getName();
     }
     
-    public String getImageUrl() {
-        return userData.getProfile_image_url();
-    }
-    
-    public String getBackGroundColor(){
-        return userData.getProfile_link_color();
+    public String getIconUrl() {
+        if(userData == null){
+            return emptyUser.getIconUrl();
+        }
+        return userData.getIconUrl();
     }
     
     public String getColor(){
-        return userData.getProfile_text_color();
+        if(userData == null){
+            return emptyUser.getColor();
+        }
+        return userData.getColor();
+    }
+    
+    public String getTextColor(){
+        if(userData == null){
+            return emptyUser.getTextColor();
+        }
+        return userData.getTextColor();
     }
 }

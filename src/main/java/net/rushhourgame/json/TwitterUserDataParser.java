@@ -25,6 +25,8 @@ package net.rushhourgame.json;
 
 import java.io.Serializable;
 import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.json.Json;
 import javax.json.stream.JsonParser;
@@ -37,6 +39,8 @@ import javax.json.stream.JsonParser;
 public class TwitterUserDataParser implements Serializable {
 
     private final int serialVersionUID = 1;
+    private static final Logger LOG = Logger.getLogger(TwitterUserDataParser.class.getName());
+    
     protected TwitterUserData cache;
     protected boolean parsed;
     
@@ -63,6 +67,7 @@ public class TwitterUserDataParser implements Serializable {
                         switch (key) {
                             case "name":
                                 obj.name = parser.getString();
+                                LOG.log(Level.FINE, "name="+obj.getName());
                                 break;
                             case "screen_name":
                                 obj.screen_name = parser.getString();
