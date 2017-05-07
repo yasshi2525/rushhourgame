@@ -29,12 +29,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.inject.Inject;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
+@Startup
 @Singleton
 public class RushHourResourceBundle extends AbstractResourceBundle{
 
@@ -108,7 +110,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle{
     public static final String UNKNOWN_ACTION = "rushhour.message.unknown.action";
 
     protected RushHourResourceBundle() {
-        super("rushhourmessage");
+        super("message");
         LOG.log(Level.INFO, "{0}#constructor", this.getClass().getSimpleName());
     }
 
