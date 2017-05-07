@@ -116,6 +116,8 @@ public class RushHourProperties implements Serializable {
             
             Path userConfig = FileSystems.getDefault()
                     .getPath(constants.getProperty(CONFIG_PATH));
+            LOG.log(Level.FINE, "{0}#init user config path = {1}",
+                    new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath()});
 
             if (Files.exists(userConfig) && !Files.isDirectory(userConfig)) {
                 // ユーザの設定をロード
