@@ -124,7 +124,7 @@ public class RushHourProperties implements Serializable {
                 try (InputStream is = Files.newInputStream(userConfig)) {
                     config.load(is);
                 }
-                LOG.log(Level.INFO, "{0}#init success to load user config");
+                LOG.log(Level.INFO, "{0}#init success to load user config", this.getClass().getSimpleName());
 
             } /*
                 勝手にファイルを作るのは管理上問題なので、store実行時のみファイルをつくるようにした
