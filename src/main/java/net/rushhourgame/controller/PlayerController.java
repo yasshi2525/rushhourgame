@@ -142,10 +142,16 @@ public class PlayerController extends AbstractController {
     }
 
     public Player findByToken(String token) {
+        if(token == null){
+            return null;
+        }
         return findBy("Player.findByToken", "token", token, dummyInst);
     }
 
     public boolean isValidToken(String token) {
+        if(token == null){
+            return false;
+        }
         return exists("Player.existsToken", "token", token);
     }
 

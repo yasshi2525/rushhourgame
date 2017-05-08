@@ -26,20 +26,14 @@ package net.rushhourgame.managedbean;
 import java.io.IOException;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.PlayerController;
@@ -47,7 +41,6 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
 import net.rushhourgame.json.EmptyUserData;
-import net.rushhourgame.json.TwitterUserData;
 import net.rushhourgame.json.UserData;
 
 /**
@@ -76,7 +69,6 @@ public class PlayerBean implements Serializable {
     /**
      * ログインしていない場合は未ログイン時用の値が格納
      */
-    @Inject
     protected UserData userData;
     
     @PostConstruct

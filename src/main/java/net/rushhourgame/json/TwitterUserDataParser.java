@@ -67,7 +67,6 @@ public class TwitterUserDataParser implements Serializable {
                         switch (key) {
                             case "name":
                                 obj.name = parser.getString();
-                                LOG.log(Level.FINE, "name="+obj.getName());
                                 break;
                             case "screen_name":
                                 obj.screen_name = parser.getString();
