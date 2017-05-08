@@ -21,23 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-var pixi = require('pixi.js');
 
-$(function () {
-    initPixi();
+console.log('loaded js');
+var gameview = require('./gameview.js');
+
+$(function(){
+    gameview.init();
 });
-
-function initPixi() {
-    var renderer = pixi.autoDetectRenderer();
-    $("#gameview").get(0).appendChild(renderer.view);
-    
-    renderer.backgroundColor = 0x808080;
-    pixi.loader
-            .add([
-                "resources/image/s_absorber.png",
-                "resources/image/s_distributer.png",
-                "resources/image/s_station.png",
-                "resources/image/s_train.png"])
-            .load();
-}
-

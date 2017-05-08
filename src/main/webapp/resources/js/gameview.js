@@ -21,34 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+var pixi = require('pixi.js');
 
-var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
-var streamify = require('gulp-streamify');
-var uglify = require('gulp-uglify');
-var rename = require('gulp-rename');
+exports.init = function(){
+    initPixi();
+};
 
-gulp.task('buildNormal', function () {
-    build(false);
-});
-
-gulp.task('default', function () {
-    build(true);
-});
-
-function build(minimize){
-    _build('index.js', ['./src/main/webapp/resources/js/index.js'], minimize);
-    _build('admin.js', ['./src/main/webapp/resources/js/admin.js'], minimize);
+function initPixi() {
+    var renderer = pixi.autoDetectRenderer();
+    $("#gameview").get(0).appendChild(renderer.view);
+    
+    renderer.backgroundColor = 0x808080;
+    pixi.loader
+            .add([
+                "resources/image/s_absorber.png",
+                "resources/image/s_distributer.png",
+                "resources/image/s_station.png",
+                "resources/image/s_train.png"])
+            .load();
 }
 
-function _build(target, entries, minimize) {
-    var b = browserify({entries: entries})
-            .bundle()
-            .pipe(source(target));
-    if (minimize) {
-        b.pipe(streamify(uglify()));
-    }
-    b.pipe(rename(target))
-            .pipe(gulp.dest('./src/main/webapp/resources/js/build'));
-}
