@@ -23,13 +23,13 @@
  */
 var pixi = require('pixi.js');
 
-exports.init = function(){
-    initPixi();
+exports.init = function(canvasid){
+    initPixi(canvasid);
 };
 
-function initPixi() {
+function initPixi(canvasid) {
     var renderer = pixi.autoDetectRenderer();
-    $("#gameview").get(0).appendChild(renderer.view);
+    $("#" + canvasid).get(0).appendChild(renderer.view);
     
     renderer.backgroundColor = 0x808080;
     pixi.loader

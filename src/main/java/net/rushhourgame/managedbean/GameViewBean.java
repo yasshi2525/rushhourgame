@@ -23,25 +23,44 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.Serializable;
 import java.util.Date;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.Dependent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named(value = "counter")
-@Dependent
-public class CounterBean {
+@Named(value = "game")
+@ViewScoped
+public class GameViewBean implements Serializable{
+    private final long serialVersionUID = 1;
+    @Inject
+    protected PlayerController pCon;
     
-    /**
-     * Creates a new instance of CounterBean
-     */
-    public CounterBean() {
+    @Inject
+    protected AbsorberController aCon;
+    
+    @Inject
+    protected RushHourSession rhSession;
+    
+    protected Player player;
+    
+    @PostConstruct
+    public void init() {
+        player = pCon.findByToken(rhSession.getToken());
     }
     
-    public String getCount(){
-        return new Date().toString();
+    public void onClick() throws RushHourException{
+        aCon.create(player, Math.random() * 100, Math.random() * 100);
     }
 }

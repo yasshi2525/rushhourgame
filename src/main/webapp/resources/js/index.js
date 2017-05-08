@@ -26,5 +26,5 @@ console.log('loaded js');
 var gameview = require('./gameview.js');
 
 $(function(){
-    gameview.init();
+    gameview.init('gameview');
 });
