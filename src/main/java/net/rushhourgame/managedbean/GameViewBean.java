@@ -25,6 +25,8 @@ package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.Dependent;
@@ -44,6 +46,8 @@ import net.rushhourgame.exception.RushHourException;
 @ViewScoped
 public class GameViewBean implements Serializable{
     private final long serialVersionUID = 1;
+    private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
+    
     @Inject
     protected PlayerController pCon;
     
@@ -55,12 +59,31 @@ public class GameViewBean implements Serializable{
     
     protected Player player;
     
+    protected int mouseX;
+    protected int mouseY;
+    
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
     }
     
     public void onClick() throws RushHourException{
-        aCon.create(player, Math.random() * 100, Math.random() * 100);
+        aCon.create(player, mouseX, mouseY);
+    }
+
+    public int getMouseX() {
+        return mouseX;
+    }
+
+    public void setMouseX(int mouseX) {
+        this.mouseX = mouseX;
+    }
+
+    public int getMouseY() {
+        return mouseY;
+    }
+
+    public void setMouseY(int mouseY) {
+        this.mouseY = mouseY;
     }
 }

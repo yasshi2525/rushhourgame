@@ -21,16 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 var pixi = require('pixi.js');
 
-exports.init = function(canvasid){
-    initPixi(canvasid);
+exports.init = function (params) {
+    initPixi(params);
+    initEventHandler(params);
 };
 
-function initPixi(canvasid) {
+function initPixi(params) {
     var renderer = pixi.autoDetectRenderer();
-    $("#" + canvasid).get(0).appendChild(renderer.view);
-    
+    $('#' + params.canvas).get(0).appendChild(renderer.view);
+
     renderer.backgroundColor = 0x808080;
     pixi.loader
             .add([
@@ -41,3 +43,20 @@ function initPixi(canvasid) {
             .load();
 }
 
+function initEventHandler(params) {
+    $canvas = $('#' + params.canvas);
+    $mouseX = $('#' + params.mouseX);
+    $mouseY = $('#' + params.mouseY);
+    $canvas.on({
+        'click': function (event) {
+            var mouseX = event.originalEvent.offsetX;
+            var mouseY = event.originalEvent.offsetY;
+            $mouseX.val(mouseX);
+            $mouseY.val(mouseY);
+        }
+    });
+}
+
+function onClickCanvas(event) {
+
+}

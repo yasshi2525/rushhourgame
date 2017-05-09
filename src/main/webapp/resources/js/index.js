@@ -22,9 +22,12 @@
  * THE SOFTWARE.
  */
 
-console.log('loaded js');
 var gameview = require('./gameview.js');
 
 $(function(){
-    gameview.init('gameview');
+    gameview.init({
+        canvas: 'gameview',
+        mouseX: 'mouseX',
+        mouseY: 'mouseY'
+    });
 });
