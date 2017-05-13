@@ -25,10 +25,14 @@ package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
 import java.util.Locale;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.entity.Player;
 
 /**
  * 言語選択リンク押下時の処理
@@ -40,17 +44,35 @@ public class LanguageBean implements Serializable{
     private final int serialVersionUID = 1;
     @Inject
     RushHourSession rushHourSession;
+    @Inject
+    PlayerController pCon;
+    Player player;
     
+    @PostConstruct
+    public void init(){
+        player = pCon.findByToken(rushHourSession.getToken());
+    }
+    
+    @Transactional
     public void change(String lang){
         if (lang != null) {
             switch (lang.toLowerCase()) {
                 case "jp":
+                    if(player != null){
+                        player.getInfo().setLocale(Locale.JAPANESE);
+                    }
                     rushHourSession.setLocale(Locale.JAPANESE);
                     break;
                 case "en":
+                    if(player != null){
+                        player.getInfo().setLocale(Locale.ENGLISH);
+                    }
                     rushHourSession.setLocale(Locale.ENGLISH);
                     break;
                 default:
+                    if(player != null){
+                        player.getInfo().setLocale(Locale.ENGLISH);
+                    }
                     rushHourSession.setLocale(Locale.ENGLISH);
                     break;
             }

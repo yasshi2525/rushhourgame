@@ -17,8 +17,10 @@
                     <ui:include src="templates/content_viewonly.xhtml"/>
                 </h:panelGroup>
                 <h:panelGroup rendered="#{player.signIn}">
-                    <ui:include src="templates/content_controller.xhtml"/>
-                    <ui:include src="templates/content_viewer.xhtml"/>
+                    <h:panelGrid columns="2">
+                        <ui:include src="templates/content_controller.xhtml"/>
+                        <ui:include src="templates/content_viewer.xhtml"/>
+                    </h:panelGrid>
                 </h:panelGroup>
             </ui:define>
         </ui:decorate>
