@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.httpclient;
 
+import java.io.UnsupportedEncodingException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +56,13 @@ public class TwitterClientTest {
     public void setUp() {
         inst = new TwitterOAuthRequestTokenClient();
         inst.prop = RushHourProperties.getInstance();
+        inst.sigBuilder = new TwitterSignatureBuilder();
+    }
+    
+    @Test
+    public void testBuilderHeader() throws UnsupportedEncodingException{
+        inst.init();
+        assertNotNull(inst.buildHeader().get("Authorization"));
     }
 
     @Test
