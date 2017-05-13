@@ -23,27 +23,16 @@
  */
 package net.rushhourgame.httpclient;
 
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.SortedMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
 import net.rushhourgame.RushHourProperties;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.RushHourResourceBundle;
-import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.httpclient.TwitterClientTest.prop;
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
