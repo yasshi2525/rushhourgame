@@ -80,14 +80,14 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
      */
     @Transactional
     public void init() throws RushHourException, IOException {
-        if (requestToken == null) {
+        if (requestToken == null || oauthVerifier == null) {
             // GETパラメータからリクエストトークンを受け取れない
             LOG.log(Level.SEVERE, "TwitterOAuthAccessTokenManagedBean#init requestToken is null");
             
             throw new RushHourException(ErrorMessage.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_NO_REQ_TOKEN
-            ), "requestToken is null");
+            ), "requestToken or oAuthVerifier is null");
         }
         
         if (!oAuthController.isRegisteredRequestToken(requestToken)) {

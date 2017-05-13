@@ -23,6 +23,8 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
@@ -39,12 +41,12 @@ import org.junit.BeforeClass;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class PlayerControllerTest extends AbstractControllerTest{
+public class PlayerControllerTest extends AbstractControllerTest {
 
     protected PlayerController inst;
-    protected static UserData userData1 = new EmptyUserData();;
-    protected static UserData userData2 = new EmptyUserData();;
-    protected static UserData userData999 = new EmptyUserData();;
+    protected static UserData userData1 = new EmptyUserData();
+    protected static UserData userData2 = new EmptyUserData();
+    protected static UserData userData999 = new EmptyUserData();
     
     protected static final String TEST_USER_ID = "test_user_id_001";
     protected static final String TEST_USER_PLAIN_ACCESS_TOKEN = "access_token_001";
@@ -52,7 +54,7 @@ public class PlayerControllerTest extends AbstractControllerTest{
     protected static final String TEST_USER2_PLAIN_ACCESS_TOKEN = "access_token_002";
     protected static final String UNEXIST_USER_ID = "unexist_user_id_999";
     protected static final String UNEXIST_ACCESS_TOKEN = "unexist_access_token_999";
-    
+
     @Before
     public void setUp() {
         super.setUp();
@@ -75,9 +77,12 @@ public class PlayerControllerTest extends AbstractControllerTest{
     }
 
     @Test
-    public void testCreateNoOAuthPlayer() throws RushHourException {
-        exception.expect(NullPointerException.class);
-        inst.createPlayer(null, TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
+    public void testCreateNoOAuthPlayer() {
+        try {
+            inst.createPlayer(null, TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
+        } catch (RushHourException ex) {
+            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN, ex.getErrMsg().getDetailId());
+        }
     }
 
     @Test
@@ -166,6 +171,19 @@ public class PlayerControllerTest extends AbstractControllerTest{
     }
 
     @Test
+    public void testUpdateNullAccessToken() throws RushHourException {
+        oCon.createOAuthBean("foo", "foosec");
+        Player p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
+        oCon.createOAuthBean("bar", "barsec");
+        try {
+            inst.updateToken(p1, "bar", null);
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, ex.getErrMsg().getDetailId());
+        }
+    }
+
+    @Test
     public void testExistsUserId() throws RushHourException {
         oCon.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
@@ -230,9 +248,9 @@ public class PlayerControllerTest extends AbstractControllerTest{
         em.remove(player);
         assertEquals(0, tCon.findPlayers().size());
     }
-    
+
     @Test
-    public void testRole() throws RushHourException{
+    public void testRole() throws RushHourException {
         oCon.createOAuthBean("foo", "foosec");
         Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
         assertTrue(player.getRoles().contains(RoleType.PLAYER));

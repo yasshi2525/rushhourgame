@@ -46,6 +46,10 @@ public class OAuthController extends AbstractController {
     private final OAuth dummyInst = new OAuth();
 
     public OAuth createOAuthBean(String requestToken, String requestTokenSecret) throws RushHourException {
+        if(requestToken == null){
+            throw new RushHourException(ErrorMessage.createReSignInError(
+                    SIGNIN_FAIL, SIGNIN_FAIL_GET_REQ_TOKEN_INVALID_REQ_TOKEN, "null"));
+        }
         try {
             // IDはrequestTokenのダイジェスト
             // requestTokenを主キーにするため。
@@ -78,6 +82,9 @@ public class OAuthController extends AbstractController {
      * @throws net.rushhourgame.exception.RushHourException 
      */
     public boolean isRegisteredRequestToken(String requestToken) throws RushHourException{
+        if(requestToken == null){
+            return false;
+        }
         try {
             String id = calculator.calcDigest(requestToken);
             return exists("OAuth.isValidId", "id", id);
@@ -94,6 +101,9 @@ public class OAuthController extends AbstractController {
      * @throws RushHourException 
      */
     public OAuth findByRequestToken(String requestToken) throws RushHourException{
+        if(requestToken == null){
+            return null;
+        }
         try {
             String id = calculator.calcDigest(requestToken);
             return findBy("OAuth.findById", "id", id, dummyInst);

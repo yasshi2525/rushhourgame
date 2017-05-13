@@ -70,6 +70,15 @@ public class PlayerController extends AbstractController {
             String plainAccessToken, 
             UserData userData,
             Locale locale) throws RushHourException {
+        if(plainUserId == null){
+            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID, "null"));
+        }
+        if(plainAccessToken == null){
+            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null"));
+        }
+        
         // idはTwitterのIDのダイジェストを使う
         // tokenはTwitterのaccessTokenのダイジェストを使う
         String userIdDigest;
@@ -118,6 +127,9 @@ public class PlayerController extends AbstractController {
     }
 
     public boolean existsUserId(String userId) throws RushHourException {
+        if(userId == null){
+            return false;
+        }
         try {
             String id = calculator.calcDigest(userId);
             return exists("Player.existsId", "id", id);
@@ -132,6 +144,9 @@ public class PlayerController extends AbstractController {
     }
 
     public Player findByUserId(String userId) throws RushHourException {
+        if(userId == null){
+            return null;
+        }
         try {
             String id = calculator.calcDigest(userId);
             return findBy("Player.findById", "id", id, dummyInst);
@@ -163,6 +178,12 @@ public class PlayerController extends AbstractController {
      * @throws RushHourException 
      */
     public void updateToken(Player p, String requestToken, String newPlainAccessToken) throws RushHourException {
+        if(newPlainAccessToken == null){
+            throw new RushHourException(
+                    ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+                            SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null")
+            );
+        }
         //値が同じ場合は更新しない
         String oldToken = p.getToken();
         

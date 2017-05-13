@@ -78,8 +78,7 @@ public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
                     client.getRequestToken(),
                     client.getRequestTokenSecret());
             //アクセストークン取得のためにTwitterにリダイレクト
-            FacesContext.getCurrentInstance().getExternalContext()
-                    .redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
+            getExternalContext().redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
       
         } else {
             // コールバックURLの設定値不正

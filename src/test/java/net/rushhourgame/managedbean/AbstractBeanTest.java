@@ -25,6 +25,7 @@ package net.rushhourgame.managedbean;
 
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
 import net.rushhourgame.controller.LocalTableController;
@@ -45,7 +46,8 @@ public class AbstractBeanTest {
     protected static PlayerController pCon = ControllerFactory.createPlayController();
     protected static OAuthController oCon = ControllerFactory.createOAuthController();
     protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
-
+    protected static RushHourProperties prop = RushHourProperties.getInstance();
+    
     @BeforeClass
     public static void setUpClass() {
         tCon.clean();
