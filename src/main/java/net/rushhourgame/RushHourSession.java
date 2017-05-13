@@ -81,8 +81,9 @@ public class RushHourSession implements Serializable {
         return findOrCreateBean(session).getToken();
     }
     
-    static protected boolean hasValidBean(HttpSession session){
-        return session.getAttribute(SESSION_NAME) != null
+    static protected boolean isValidBean(HttpSession session){
+        return session != null 
+                && session.getAttribute(SESSION_NAME) != null
                 && session.getAttribute(SESSION_NAME) instanceof RushHourSessionBean;
     }
     
@@ -112,7 +113,7 @@ public class RushHourSession implements Serializable {
                         getClass().getSimpleName(), 
                         SESSION_NAME,
                         injectedSession.getAttribute(SESSION_NAME), 
-                        injectedSession.getAttribute("rushhour").getClass()});
+                        injectedSession.getAttribute(SESSION_NAME).getClass()});
            
             ret = new RushHourSessionBean();
             injectedSession.setAttribute(SESSION_NAME, ret);
@@ -126,7 +127,7 @@ public class RushHourSession implements Serializable {
      * @return 
      */
     static protected RushHourSessionBean findOrCreateBean(HttpSession session){
-        if(hasValidBean(session)){
+        if(isValidBean(session)){
             //すでに存在するので作成しない
             return (RushHourSessionBean) session.getAttribute(SESSION_NAME);
         }

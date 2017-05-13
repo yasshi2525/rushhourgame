@@ -63,48 +63,6 @@ public class RushHourSessionTest {
     }
 
     @Test
-    public void testSetLocale_Locale() {
-        System.out.println("setLocale");
-        Locale locale = null;
-        RushHourSession instance = new RushHourSession();
-        instance.setLocale(locale);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testSetToken_String() {
-        System.out.println("setToken");
-        String accessToken = "";
-        RushHourSession instance = new RushHourSession();
-        instance.setToken(accessToken);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testGetLocale() {
-        System.out.println("getLocale");
-        RushHourSession instance = new RushHourSession();
-        Locale expResult = null;
-        Locale result = instance.getLocale();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testGetToken() {
-        System.out.println("getToken");
-        RushHourSession instance = new RushHourSession();
-        String expResult = "";
-        String result = instance.getToken();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
     public void testHasValidBean() {
         RushHourSession inst = new RushHourSession();
 
@@ -144,79 +102,106 @@ public class RushHourSessionTest {
     }
 
     @Test
-    public void testSetLocale_HttpSession_Locale() {
-        System.out.println("setLocale");
-        HttpSession session = null;
-        Locale locale = null;
-        RushHourSession.setLocale(session, locale);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testIsValidBean_HttpSession() {
+        assertFalse(RushHourSession.isValidBean(null));
+        
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute(SESSION_NAME)).thenReturn(null);
+        
+        assertFalse(RushHourSession.isValidBean(session));
+        
+        when(session.getAttribute(SESSION_NAME)).thenReturn(new Object());
+        assertFalse(RushHourSession.isValidBean(session));
+        
+        when(session.getAttribute(SESSION_NAME)).thenReturn(new RushHourSessionBean());
+        assertTrue(RushHourSession.isValidBean(session));
     }
 
     @Test
-    public void testSetToken_HttpSession_String() {
-        System.out.println("setToken");
-        HttpSession session = null;
-        String accessToken = "";
-        RushHourSession.setToken(session, accessToken);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testGetLocale_HttpSession() {
-        System.out.println("getLocale");
-        HttpSession session = null;
-        Locale expResult = null;
-        Locale result = RushHourSession.getLocale(session);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testGetToken_HttpSession() {
-        System.out.println("getToken");
-        HttpSession session = null;
-        String expResult = "";
-        String result = RushHourSession.getToken(session);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testHasValidBean_HttpSession() {
-        System.out.println("hasValidBean");
-        HttpSession session = null;
-        boolean expResult = false;
-        boolean result = RushHourSession.hasValidBean(session);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    @Test
-    public void testFindOrCreateBeanWhenValidBean() {
+    public void testFindBeanWhenValidBean() {
         RushHourSession inst = new RushHourSession();
+        RushHourSession spy = spy(inst);
+        doReturn(true).when(spy).hasValidBean();
+        
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute(SESSION_NAME)).thenReturn(bean);
-        inst.injectedSession = session;
+        spy.injectedSession = session;
 
-        assertEquals(bean, inst.findOrCreateBean());
+        assertEquals(bean, spy.findOrCreateBean());
+        
+        verify(session, times(1)).getAttribute(SESSION_NAME);
+    }
+    
+    @Test
+    public void testCreateBean(){
+        RushHourSession inst = new RushHourSession();
+        RushHourSession spy = spy(inst);
+        doReturn(false).when(spy).hasValidBean();
+        
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute(SESSION_NAME)).thenReturn(null);
+        spy.injectedSession = session;
+        
+        RushHourSessionBean actual = spy.findOrCreateBean();
+        assertNotNull(actual);
+        assertNotEquals(bean, actual);
+        
+        verify(spy, times(1)).hasValidBean();
+        verify(session, times(1)).getAttribute(SESSION_NAME);
+    }
+    
+    @Test
+    public void testReplaceBean(){
+        RushHourSession inst = new RushHourSession();
+        HttpSession session = mock(HttpSession.class);
+        
+        Object before = new Object();
+        when(session.getAttribute(SESSION_NAME)).thenReturn(before);
+        inst.injectedSession = session;
+        
+        RushHourSessionBean actual = inst.findOrCreateBean();
+        assertNotNull(actual);
+        assertNotEquals(before, actual);
+        
+        verify(session, times(5)).getAttribute(SESSION_NAME);
+    }
+
+    @Test
+    public void testFindBeanWhenValidBeanHttpSession() {
+       
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute(SESSION_NAME)).thenReturn(bean);
+        
+
+        assertEquals(bean, RushHourSession.findOrCreateBean(session));
         
         verify(session, times(3)).getAttribute(SESSION_NAME);
     }
-
+    
     @Test
-    public void testFindOrCreateBean_HttpSession() {
-        System.out.println("findOrCreateBean");
-        HttpSession session = null;
-        RushHourSessionBean expResult = null;
-        RushHourSessionBean result = RushHourSession.findOrCreateBean(session);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testCreateBeanHttpSession(){
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute(SESSION_NAME)).thenReturn(null);
+        
+        RushHourSessionBean actual = RushHourSession.findOrCreateBean(session);
+        assertNotNull(actual);
+        assertNotEquals(bean, actual);
+        
+        verify(session, times(2)).getAttribute(SESSION_NAME);
+    }
+    
+    @Test
+    public void testReplaceBeanHttpSession(){
+        HttpSession session = mock(HttpSession.class);
+        
+        Object before = new Object();
+        when(session.getAttribute(SESSION_NAME)).thenReturn(before);
+        
+        RushHourSessionBean actual = RushHourSession.findOrCreateBean(session);
+        assertNotNull(actual);
+        assertNotEquals(before, actual);
+        
+        verify(session, times(5)).getAttribute(SESSION_NAME);
     }
 
 }
