@@ -24,7 +24,11 @@
 package net.rushhourgame.httpclient;
 
 import java.io.UnsupportedEncodingException;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Response;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -35,13 +39,21 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class HttpClientTest {
 
     protected HttpClient inst;
@@ -52,6 +64,9 @@ public class HttpClientTest {
     @Rule
     public ExpectedException ex = ExpectedException.none();
 
+    @Mock
+    protected Response response;
+    
     public HttpClientTest() {
     }
 
@@ -130,8 +145,69 @@ public class HttpClientTest {
             assertEquals(SIGNIN_FAIL_NO_HTTP_METHOD, ex.getErrMsg().getDetailId());
         }
     }
+    
+    @Test
+    public void testVerifyResourceUrl(){
+        try {
+            inst.verifyResourceUrl();
+        } catch (RushHourException ex) {
+            fail();
+        }
+        inst.resourceUrl = null;
+        try {
+            inst.verifyResourceUrl();
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(SIGNIN_FAIL_NO_RESOURCE, ex.getErrMsg().getDetailId());
+        }
+    }
+    
+    @Test
+    public void testVerifyResponseCode(){
+        when(response.getStatus()).thenReturn(Response.Status.OK.getStatusCode());
+        inst.response = response;
+        try {
+            inst.verifyResponseCode();
+        } catch (RushHourException ex) {
+            fail();
+        }
+        when(response.getStatus()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        try {
+            inst.verifyResponseCode();
+        } catch (RushHourException ex) {
+            assertEquals(SIGNIN_FAIL_BAD_RES_STATUS, ex.getErrMsg().getDetailId());
+            assertEquals(String.valueOf(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()), ex.getErrMsg().getDetailParams().get(0));
+        }
+    }
+    
+    @Test
+    public void testVerifyResponseHeaderKey(){
+        inst.responseHeaders = new TreeMap<>();
+        try {
+            inst.verifyResponseHeaderKey("unexist");
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(SIGNIN_FAIL_INVALID_RESPONSE, ex.getErrMsg().getDetailId());
+        }
+        inst.responseHeaders.put("exist", "ok");
+        try {
+            inst.verifyResponseHeaderKey("exist");
+        } catch (RushHourException ex) {
+            fail();
+        }
+    }
+    
+    @Test
+    public void testBuildGETQuery() throws UnsupportedEncodingException{
+        assertEquals("", inst.buildGETQuery());
+        inst.getParameters.put("aaa", "bbb");
+        assertEquals("?aaa=bbb", inst.buildGETQuery());
+        inst.getParameters.put("ccc", "ddd");
+        assertEquals("?aaa=bbb&ccc=ddd", inst.buildGETQuery());
+    }
 
     @Test
+    @Ignore
     public void testBuildPOSTParams() {
         
     }
@@ -160,5 +236,12 @@ public class HttpClientTest {
         assertEquals(2, inst.parseQueryToMap("prm1=val1&prm2=val2&").size());
         assertEquals(2, inst.parseQueryToMap("prm1=val1&&prm2=val2").size());
         assertEquals(2, inst.parseQueryToMap("prm1=val1&hoge&prm2=val2").size());
+    }
+    
+    @Test
+    public void testEncodeUrl() throws UnsupportedEncodingException{
+        assertEquals("test", inst.encodeURL("test"));
+        assertEquals("space%20space", inst.encodeURL("space space"));
+        assertEquals("plus%2Bplus", inst.encodeURL("plus+plus"));
     }
 }
