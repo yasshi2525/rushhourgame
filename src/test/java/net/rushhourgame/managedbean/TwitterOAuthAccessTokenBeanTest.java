@@ -34,7 +34,7 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
-import net.rushhourgame.json.EmptyUserData;
+import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.TwitterUserData;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -78,6 +78,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             spy.rushHourSession = session;
             spy.client = client;
             spy.userShowClient = showClient;
+            doReturn(null).when(session).getLocale();
             doReturn("test_access").when(client).getAccessToken();
             doReturn("test_access_sec").when(client).getAccessTokenSecret();
             doReturn("test_user_id").when(client).getUserId();
@@ -85,7 +86,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             doNothing().when(context).redirect(anyString());
             doReturn(new TwitterUserData()).when(showClient).getUserData();
             oCon.createOAuthBean("test", "test_sec");
-            pCon.createPlayer("test", "testId", "test_access", new EmptyUserData());
+            pCon.createPlayer("test", "testId", "test_access", new SimpleUserData());
         } catch (IOException | RushHourException ex) {
             Logger.getLogger(TwitterOAuthAccessTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();

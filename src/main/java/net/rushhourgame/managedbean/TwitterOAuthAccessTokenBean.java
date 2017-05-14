@@ -38,6 +38,7 @@ import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
@@ -161,7 +162,9 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
                     requestToken, 
                     userId, 
                     accessToken, 
-                    userShowClient.getUserData());
+                    userShowClient.getUserData(),
+                    rushHourSession.getLocale(),
+                    SignInType.TWITTER);
         } else {
             //既存ユーザを取得
             Player player = playerController.findByUserId(userId);

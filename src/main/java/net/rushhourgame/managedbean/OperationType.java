@@ -23,44 +23,13 @@
  */
 package net.rushhourgame.managedbean;
 
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.json.SimpleUserData;
-
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class LocalPlayerBean extends PlayerBean {
-    protected SimpleUserData empty;
-    protected boolean hasSessionData;
-    protected String accessToken;
-
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData) {
-        this.hasSessionData = hasSessionData;
-        this.pCon = pCon;
-        empty = new SimpleUserData();
-    }
-
-    public LocalPlayerBean(PlayerController pCon, boolean hasSessionData, String accessToken) {
-        this(pCon, hasSessionData);
-        this.accessToken = accessToken;
-    }
-
-    @Override
-    public String getName() {
-        if (!isSignIn()) {
-            return empty.getName();
-        }
-        Player p = pCon.findByToken(accessToken);
-        if (p == null) {
-            return empty.getName();
-        }
-        return p.getInfo().getName();
-    }
-
-    @Override
-    public boolean isSignIn() {
-        return pCon.isValidToken(accessToken);
-    }
+public enum OperationType {
+    NONE,
+    CREATE_RAIL,
+    EDIT_RAIL,
+    REMOVE_RAIL
 }

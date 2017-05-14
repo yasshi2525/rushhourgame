@@ -33,7 +33,7 @@ import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.OwnerInfo;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
-import net.rushhourgame.json.EmptyUserData;
+import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
 
 /**
@@ -45,8 +45,8 @@ public class PlayerBeanTest extends AbstractBeanTest {
     protected static final String VALID_PLAIN_ACCESS_TOKEN = "valid";
     protected static final String INVALID_ACCESS_TOKEN = "invalid";
     protected static final String DISPLAY_NAME = "user1";
-    protected static EmptyUserData emptyUser;
-    protected static final UserData userData = new EmptyUserData();
+    protected static SimpleUserData emptyUser;
+    protected static final UserData userData = new SimpleUserData();
     protected OAuth oAuth;
     protected Player player;
     protected String accessToken;
@@ -54,8 +54,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
     @BeforeClass
     public static void setUpClass() {
         AbstractBeanTest.setUpClass();
-        emptyUser = new EmptyUserData();
-        emptyUser.init();
+        emptyUser = new SimpleUserData();
     }
     
     @Before

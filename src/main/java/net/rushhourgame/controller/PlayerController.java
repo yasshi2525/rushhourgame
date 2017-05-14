@@ -30,11 +30,13 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
+import javax.validation.ConstraintViolationException;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.OwnerInfo;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.UserData;
 
@@ -54,7 +56,7 @@ public class PlayerController extends AbstractController {
     public Player createPlayer(
             String requestToken, 
             String plainUserId, 
-            String plainAccessToken, 
+            String plainAccessToken,
             UserData userData) throws RushHourException {
         return createPlayer(
                 requestToken, 
@@ -67,9 +69,25 @@ public class PlayerController extends AbstractController {
     public Player createPlayer(
             String requestToken, 
             String plainUserId, 
-            String plainAccessToken, 
+            String plainAccessToken,
             UserData userData,
             Locale locale) throws RushHourException {
+        return createPlayer(
+                requestToken, 
+                plainUserId, 
+                plainAccessToken, 
+                userData,
+                locale,
+                SignInType.LOCAL);
+    }
+    
+    public Player createPlayer(
+            String requestToken, 
+            String plainUserId, 
+            String plainAccessToken, 
+            UserData userData,
+            Locale locale,
+            SignInType signIn) throws RushHourException {
         if(plainUserId == null){
             throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID, "null"));
@@ -118,11 +136,17 @@ public class PlayerController extends AbstractController {
         p.setId(userIdDigest);
         p.setUserId(plainUserId);
         p.setToken(tokenDigest);
-        
+        p.setSignIn(signIn);
         p.setInfo(info);
         
         p.setOauth(oCon.findByRequestToken(requestToken));
+        try{
         em.persist(p);
+        }catch(ConstraintViolationException e){
+            e.getConstraintViolations().forEach((val)->{
+                LOG.log(Level.SEVERE, val.toString());
+            });
+        }
         return p;
     }
 

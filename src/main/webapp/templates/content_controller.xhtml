@@ -3,12 +3,15 @@
 <h:form xmlns="http://www.w3.org/1999/xhtml"
         xmlns:h="http://xmlns.jcp.org/jsf/html"
         xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-        xmlns:p="http://primefaces.org/ui">
-    <p:menu>
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        prependId="false">
+    <!-- 操作選択 -->
+    <p:menu binding="#{game.menu}">
         <p:submenu label="#{msg.rail}">
-            <p:menuitem value="#{msg.create}"/>
-            <p:menuitem value="#{msg.edit}"/>
-            <p:menuitem value="#{msg.remove}"/>
+            <p:menuitem value="#{msg.create}" actionListener="#{game.setOperation('CREATE_RAIL')}"/>
+            <p:menuitem value="#{msg.edit}" actionListener="#{game.setOperation('EDIT_RAIL')}"/>
+            <p:menuitem value="#{msg.remove}" actionListener="#{game.setOperation('REMOVE_RAIL')}"/>
         </p:submenu>
         <p:submenu label="#{msg.station}">
             <p:menuitem value="#{msg.create}"/>
@@ -26,5 +29,6 @@
             <p:menuitem value="#{msg.remove}"/>
         </p:submenu>
     </p:menu>
+    <h:outputText value="#{game.operation}"/>
 </h:form>
 

@@ -70,6 +70,8 @@ public class Player extends OwnerEntity implements Serializable {
     protected String token;
     @OneToOne(orphanRemoval = true)
     protected OAuth oauth;
+    @NotNull
+    protected SignInType signIn;
     
     public String getId() {
         return id;
@@ -113,5 +115,16 @@ public class Player extends OwnerEntity implements Serializable {
 
     public Set<RoleType> getRoles() {
         return roles;
+    }
+
+    public SignInType getSignIn() {
+        return signIn;
+    }
+
+    public void setSignIn(SignInType signIn) {
+        if(signIn == null){
+            signIn = SignInType.LOCAL;
+        }
+        this.signIn = signIn;
     }
 }

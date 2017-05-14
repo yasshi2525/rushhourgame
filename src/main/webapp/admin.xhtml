@@ -2,16 +2,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title><h:outputText value="#{msg.rushHour}"/></title>
+        <title>Admin Page<h:outputText value="#{msg.rushHour}"/></title>
         <h:outputStylesheet library="css" name="application.css"/>
         <h:outputScript library="js" name="build/admin.js"/>
+        <f:metadata>
+            <f:viewAction action="#{admin.init()}"/>
+        </f:metadata>
     </h:head>
     <h:body>
         <ui:decorate template="templates/template.xhtml">
             <ui:define name="content">
-                <ui:include src="templates/content_viewer.xhtml"/>
+                    <h:panelGrid columns="2">
+                        <ui:include src="templates/content_controller.xhtml"/>
+                        <ui:include src="templates/content_viewer.xhtml"/>
+                    </h:panelGrid>
             </ui:define>
         </ui:decorate>
     </h:body>

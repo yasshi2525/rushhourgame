@@ -38,9 +38,10 @@ import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
-import net.rushhourgame.json.EmptyUserData;
+import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
 
 /**
@@ -51,7 +52,7 @@ import net.rushhourgame.json.UserData;
 @Named("player")
 @ViewScoped
 public class PlayerBean implements Serializable {
-    
+
     private final int serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(PlayerBean.class.getName());
     @Inject
@@ -61,70 +62,72 @@ public class PlayerBean implements Serializable {
     @Inject
     protected RushHourSession rushHourSession;
     @Inject
-    protected TwitterUserShowClient client;    
-    protected EmptyUserData emptyUser;
-    
+    protected TwitterUserShowClient client;
+    protected SimpleUserData emptyUser;
+
     protected Player player;
     protected boolean isSignIn;
     /**
      * ログインしていない場合は未ログイン時用の値が格納
      */
     protected UserData userData;
-    
+
     @PostConstruct
     public void init() {
-        emptyUser = new EmptyUserData();
+        emptyUser = new SimpleUserData();
         isSignIn = pCon.isValidToken(rushHourSession.getToken());
         if (isSignIn) {
             player = pCon.findByToken(rushHourSession.getToken());
-            client.setPlayer(player);
-            try {
-                client.execute();
-                userData = client.getUserData();
-            } catch (RushHourException ex) {
-                LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init fail to client#execute", ex);
+            if (player.getSignIn() == SignInType.TWITTER) {
+                client.setPlayer(player);
+                try {
+                    client.execute();
+                    userData = client.getUserData();
+                } catch (RushHourException ex) {
+                    LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init fail to client#execute", ex);
+                }
             }
         }
     }
-    
+
     @Transactional
     public void logOut() throws IOException {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         if (isSignIn) {
-            LOG.log(Level.FINE, "{0}#logout clear {1}", 
+            LOG.log(Level.FINE, "{0}#logout clear {1}",
                     new Object[]{this.getClass().getSimpleName(), rushHourSession.getToken()});
             context.invalidateSession();
         }
         context.redirect("index.xhtml");
     }
-    
+
     public boolean isSignIn() {
         return isSignIn;
     }
-    
+
     public String getName() {
-        if(userData == null){
+        if (userData == null) {
             return emptyUser.getName();
         }
         return userData.getName();
     }
-    
+
     public String getIconUrl() {
-        if(userData == null){
+        if (userData == null) {
             return emptyUser.getIconUrl();
         }
         return userData.getIconUrl();
     }
-    
-    public String getColor(){
-        if(userData == null){
+
+    public String getColor() {
+        if (userData == null) {
             return emptyUser.getColor();
         }
         return userData.getColor();
     }
-    
-    public String getTextColor(){
-        if(userData == null){
+
+    public String getTextColor() {
+        if (userData == null) {
             return emptyUser.getTextColor();
         }
         return userData.getTextColor();

@@ -36,11 +36,10 @@ import javax.validation.constraints.Pattern;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Model
-public class EmptyUserData implements UserData, Serializable {
+public class SimpleUserData implements UserData, Serializable {
 
     private final long serialVersionUID = 1;
-    private static final Logger LOG = Logger.getLogger(EmptyUserData.class.getName());
+    private static final Logger LOG = Logger.getLogger(SimpleUserData.class.getName());
 
     @NotNull
     protected String name;
@@ -53,9 +52,7 @@ public class EmptyUserData implements UserData, Serializable {
     @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
     protected String textColor;
 
-    @PostConstruct
-    public void init() {
-        LOG.log(Level.INFO, "{0}#init start", this.getClass().getSimpleName());
+    public SimpleUserData() {
         name = "NoName";
         iconUrl = "no_image.png";
         color = "#AAAAAA";
@@ -77,5 +74,21 @@ public class EmptyUserData implements UserData, Serializable {
     @Override
     public String getTextColor() {
         return textColor;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
     }
 }

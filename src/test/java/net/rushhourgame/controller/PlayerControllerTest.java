@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.json.EmptyUserData;
+import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
 import org.junit.BeforeClass;
 
@@ -44,9 +44,9 @@ import org.junit.BeforeClass;
 public class PlayerControllerTest extends AbstractControllerTest {
 
     protected PlayerController inst;
-    protected static UserData userData1 = new EmptyUserData();
-    protected static UserData userData2 = new EmptyUserData();
-    protected static UserData userData999 = new EmptyUserData();
+    protected static UserData userData1 = new SimpleUserData();
+    protected static UserData userData2 = new SimpleUserData();
+    protected static UserData userData999 = new SimpleUserData();
     
     protected static final String TEST_USER_ID = "test_user_id_001";
     protected static final String TEST_USER_PLAIN_ACCESS_TOKEN = "access_token_001";

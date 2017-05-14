@@ -24,89 +24,62 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.Dependent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RoleType;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
-import static net.rushhourgame.managedbean.OperationType.*;
-import org.primefaces.component.menu.Menu;
+import net.rushhourgame.json.SimpleUserData;
+import net.rushhourgame.json.TwitterUserData;
+import net.rushhourgame.json.UserData;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Named(value = "game")
+@Named(value = "admin")
 @ViewScoped
-public class GameViewBean implements Serializable{
+public class AdminBean implements Serializable {
+
     private final long serialVersionUID = 1;
-    private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
-    
-    protected Menu menu;
-    
+
     @Inject
     protected PlayerController pCon;
     @Inject
-    protected AbsorberController aCon;
+    protected OAuthController oCon;
     @Inject
-    protected RushHourSession rhSession;
-    protected Player player;
-    protected OperationType operation = NONE;
-    
-    protected int mouseX;
-    protected int mouseY;
-    
-    @PostConstruct
-    public void init() {
-        player = pCon.findByToken(rhSession.getToken());
-    }
-    
-    public void onClick() throws RushHourException{
-        switch(operation){
-            case CREATE_RAIL:
+    protected RushHourSession session;
+    protected SimpleUserData userData;
+
+    protected static final String ADMIN_USER = "admin";
+
+    @Transactional
+    public void init() throws RushHourException {
+        if (!pCon.isValidToken(session.getToken())) {
+            Player p;
+            //ログインしていないときはAdminでログイン
+            if (pCon.existsUserId(ADMIN_USER)) {
+                p = pCon.findByUserId(ADMIN_USER);
+            } else {
+                userData = new SimpleUserData();
+                oCon.createOAuthBean(ADMIN_USER, ADMIN_USER);
+                userData.setName(ADMIN_USER);
                 
+                p = pCon.createPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, userData, session.getLocale());
+            }
+            //Admin権限の付与
+            if (!p.getRoles().contains(RoleType.ADMINISTRATOR)) {
+                p.getRoles().add(RoleType.ADMINISTRATOR);
+            }
+            session.setToken(p.getToken());
         }
-        aCon.create(player, mouseX, mouseY);
     }
-
-    public int getMouseX() {
-        return mouseX;
-    }
-
-    public void setMouseX(int mouseX) {
-        this.mouseX = mouseX;
-    }
-
-    public int getMouseY() {
-        return mouseY;
-    }
-
-    public void setMouseY(int mouseY) {
-        this.mouseY = mouseY;
-    }
-
-    public OperationType getOperation() {
-        return operation;
-    }
-
-    public void setOperation(OperationType operation) {
-        this.operation = operation;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
-    }
-    
 }
