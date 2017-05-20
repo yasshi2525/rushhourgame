@@ -50,6 +50,7 @@ public class PointEntityTest extends AbstractEntityTest {
     public void setUp() {
         super.setUp();
         player = new Player();
+        player.id="user1";
         player.getRoles().add(RoleType.PLAYER);
         other = new Player();
         other.getRoles().add(RoleType.PLAYER);

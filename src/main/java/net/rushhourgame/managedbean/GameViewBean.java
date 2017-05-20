@@ -50,8 +50,6 @@ public class GameViewBean implements Serializable{
     private final long serialVersionUID = 1;
     private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
     
-    protected Menu menu;
-    
     @Inject
     protected PlayerController pCon;
     @Inject
@@ -100,13 +98,8 @@ public class GameViewBean implements Serializable{
     public void setOperation(OperationType operation) {
         this.operation = operation;
     }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
-    }
     
+    public boolean isOperating(){
+        return operation != NONE;
+    }
 }

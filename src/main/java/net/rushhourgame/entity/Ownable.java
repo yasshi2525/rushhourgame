@@ -39,4 +39,6 @@ public interface Ownable {
      * @return 
      */
     public boolean isPrivilegedBy(Owner owner);
+    
+    public boolean isOwnedBy(Owner owner);
 }

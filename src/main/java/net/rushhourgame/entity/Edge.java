@@ -23,43 +23,36 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /**
- * つねに player XOR gameMaster が成立.
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@MappedSuperclass
-public abstract class PointEntity extends OwnableEntity implements Pointable, Serializable {
+@Entity
+public class Edge extends OwnableEntity{
+    @ManyToOne
+    @NotNull
+    protected Node fromNode;
+    @ManyToOne
+    @NotNull
+    protected Node toNode;
 
-    private final long serialVersionUID = 1;
-    protected double x;
-    protected double y;
-
-    public double getX() {
-        return x;
+    public Node getFromNode() {
+        return fromNode;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setFromNode(Node fromNode) {
+        this.fromNode = fromNode;
     }
 
-    public double getY() {
-        return y;
+    public Node getToNode() {
+        return toNode;
     }
 
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double distTo(Pointable p) {
-        return Math.sqrt((p.getX() - x) * (p.getX() - x)
-                + (p.getY() - y) * (p.getY() - y));
+    public void setToNode(Node toNode) {
+        this.toNode = toNode;
     }
 }

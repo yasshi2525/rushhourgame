@@ -25,6 +25,9 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -34,9 +37,13 @@ import javax.persistence.MappedSuperclass;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass
-public abstract class OwnableEntity extends AbstractEntity implements Ownable, Serializable{
+public abstract class OwnableEntity extends AbstractEntity implements Ownable, Serializable {
+
     private final long serialVersionUID = 0;
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+
     @ManyToOne
     /*@JoinColumn(
             foreignKey = @ForeignKey(
@@ -45,46 +52,69 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable, S
     protected Player player;
     @ManyToOne
     protected GameMaster gameMaster;
-    
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public Owner getOwner() {
-        if(gameMaster != null){
+        if (gameMaster != null) {
             return gameMaster;
         }
         return player;
     }
 
     public void setOwner(Owner owner) {
-        if(owner == null){
+        if (owner == null) {
             throw new NullPointerException("owner is null");
         }
-        if(owner instanceof GameMaster){
+        if (owner instanceof GameMaster) {
             gameMaster = (GameMaster) owner;
             player = null;
-        }else if(owner instanceof Player){
+        } else if (owner instanceof Player) {
             gameMaster = null;
             player = (Player) owner;
-        }else{
+        } else {
             throw new IllegalArgumentException("owner is not GameMaster nor Player");
         }
     }
-    
+
     /**
      * 管理者か自分の所有者ならtrue
+     *
      * @param owner
-     * @return 
+     * @return
      */
     @Override
     public boolean isPrivilegedBy(Owner owner) {
-        if(owner == null){
+        if (owner == null) {
             return false;
         }
-        if(owner.getRoles().contains(RoleType.ADMINISTRATOR)){
+        if (owner.getRoles().contains(RoleType.ADMINISTRATOR)) {
             return true;
         }
-        if(gameMaster != null){
-            return gameMaster.equals(owner);
-        }
-        
-        return player.equals(owner);
+        return isOwnedBy(owner);
     }
+
+    @Override
+    public boolean isOwnedBy(Owner owner) {
+        if (owner == null) {
+            return false;
+        }
+
+        if (owner instanceof GameMaster && gameMaster != null) {
+            return ((GameMaster) owner).id == gameMaster.id;
+            
+        } else if (owner instanceof Player && player != null) {
+            return player.id.equals(((Player) owner).id);
+            
+        } else {
+            return false;
+        }
+    }
+
 }

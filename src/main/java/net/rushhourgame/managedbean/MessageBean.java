@@ -120,4 +120,8 @@ public class MessageBean implements Serializable{
     public String getRemove(){
         return res.get(LABEL_REMOVE, rushHourSession.getLocale());
     }
+    
+    public String getGoBack(){
+        return res.get(LABEL_GO_BACK, rushHourSession.getLocale());
+    }
 }

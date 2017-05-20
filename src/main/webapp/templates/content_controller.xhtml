@@ -7,11 +7,11 @@
         xmlns:f="http://xmlns.jcp.org/jsf/core"
         prependId="false">
     <!-- 操作選択 -->
-    <p:menu binding="#{game.menu}">
+    <p:menu rendered="#{!game.operating}">
         <p:submenu label="#{msg.rail}">
-            <p:menuitem value="#{msg.create}" actionListener="#{game.setOperation('CREATE_RAIL')}"/>
-            <p:menuitem value="#{msg.edit}" actionListener="#{game.setOperation('EDIT_RAIL')}"/>
-            <p:menuitem value="#{msg.remove}" actionListener="#{game.setOperation('REMOVE_RAIL')}"/>
+            <p:menuitem update="@form" value="#{msg.create}" actionListener="#{game.setOperation('CREATE_RAIL')}"/>
+            <p:menuitem update="@form" value="#{msg.edit}" actionListener="#{game.setOperation('EDIT_RAIL')}"/>
+            <p:menuitem update="@form" value="#{msg.remove}" actionListener="#{game.setOperation('REMOVE_RAIL')}"/>
         </p:submenu>
         <p:submenu label="#{msg.station}">
             <p:menuitem value="#{msg.create}"/>
@@ -29,6 +29,6 @@
             <p:menuitem value="#{msg.remove}"/>
         </p:submenu>
     </p:menu>
-    <h:outputText value="#{game.operation}"/>
+    <p:commandButton update="@form" rendered="#{game.operating}" value="#{msg.goBack}" actionListener="#{game.setOperation('NONE')}"/>
 </h:form>
 

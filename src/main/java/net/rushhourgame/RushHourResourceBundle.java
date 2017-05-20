@@ -68,6 +68,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle{
     public static final String LABEL_CREATE = "rushhour.label.create";
     public static final String LABEL_EDIT = "rushhour.label.edit";
     public static final String LABEL_REMOVE = "rushhour.label.remove";
+    public static final String LABEL_GO_BACK = "rushhour.label.goback";
 
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";
