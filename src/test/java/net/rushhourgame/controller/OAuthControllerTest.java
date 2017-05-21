@@ -99,4 +99,9 @@ public class OAuthControllerTest extends AbstractControllerTest{
         em.remove(created);
         assertEquals(0, tCon.findOAuths().size());
     }
+    
+    @Test
+    public void testPurgeOld(){
+        inst.purgeOld(0);
+    }
 }

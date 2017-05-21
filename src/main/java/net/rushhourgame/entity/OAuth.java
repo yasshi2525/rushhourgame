@@ -43,17 +43,21 @@ import javax.persistence.Table;
     @NamedQuery(
             name = "OAuth.isValidId",
             query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-            + " FROM OAuth x WHERE x.id = :id")
-    , @NamedQuery(
+            + " FROM OAuth x WHERE x.id = :id"), 
+    @NamedQuery(
             name = "OAuth.findById",
             query = "SELECT x FROM OAuth x WHERE x.id = :id"),
     @NamedQuery(
             name = "OAuth.isValidRequestToken",
             query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-            + " FROM OAuth x WHERE x.requestToken = :requestToken")
-    , @NamedQuery(
+            + " FROM OAuth x WHERE x.requestToken = :requestToken"), 
+    @NamedQuery(
             name = "OAuth.findByRequestToken",
-            query = "SELECT x FROM OAuth x WHERE x.requestToken = :requestToken")
+            query = "SELECT x FROM OAuth x WHERE x.requestToken = :requestToken"),
+    @NamedQuery(
+            name = "OAuth.findByThreshold",
+            query = "DELETE FROM OAuth o WHERE o.updated < :threshold AND o.player = NULL"
+    )
 })
 @Entity
 public class OAuth extends AbstractEntity implements Serializable {
@@ -72,7 +76,9 @@ public class OAuth extends AbstractEntity implements Serializable {
     @Convert(converter = EncryptConverter.class)
     protected String accessToken;
     protected String accessTokenSecret;
-
+    @OneToOne(mappedBy = "oauth")
+    protected Player player;
+    
     public String getId() {
         return id;
     }

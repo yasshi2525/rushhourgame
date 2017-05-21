@@ -23,7 +23,6 @@
  */
 package net.rushhourgame;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +30,6 @@ import java.io.Serializable;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -81,6 +79,7 @@ public class RushHourProperties implements Serializable {
     public static final String ADMINISTRATOR = "rushhour.administrator";
     public static final String LANG = "rushhour.lang";
 
+    public static final String GAME_DEF_OAUTH_PURGE_DAY = "rushhour.game.default.oauth.purgeday";
     public static final String GAME_DEF_ABS_SCALE = "rushhour.game.default.absorber.scale";
 
     //--------------------------------------------------------------------------

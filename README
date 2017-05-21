@@ -33,7 +33,7 @@ mvn compile
 
 CREATE USER 'rushhourtest'@'%' IDENTIFIED BY 'takao109'
 
-GRANT alter, create, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
+GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
 
 (2) Mavenでテストする
 
@@ -46,7 +46,7 @@ mvn test
 
 CREATE USER 'rushhour'@'%' IDENTIFIED BY 'takao109'
 
-GRANT alter, create, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
+GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
 
 
 (2) Payara ServerにDB情報を登録する

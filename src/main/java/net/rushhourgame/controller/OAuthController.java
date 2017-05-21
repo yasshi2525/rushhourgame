@@ -24,13 +24,15 @@
 package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -111,5 +113,15 @@ public class OAuthController extends AbstractController {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);
             throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
+    }
+    
+    public void purgeOld(int purgeDay){
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.DATE, -purgeDay);
+        int val = em.createNamedQuery("OAuth.findByThreshold")
+                .setParameter("threshold", instance.getTime())
+                .executeUpdate();
+            LOG.log(Level.INFO, "{0}#purgeOld {1} entries",
+                    new Object[]{this.getClass().getSimpleName(), val});
     }
 }
