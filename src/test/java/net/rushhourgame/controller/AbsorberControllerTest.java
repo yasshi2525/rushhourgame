@@ -36,29 +36,31 @@ import org.junit.Before;
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class AbsorberControllerTest extends AbstractControllerTest{
-    protected Owner admin ;
+public class AbsorberControllerTest extends AbstractControllerTest {
+
+    protected Owner admin;
     protected Owner player;
     protected AbsorberController inst;
-    
+
     @Before
-    public void setUp(){
+    public void setUp() {
         super.setUp();
         inst = ControllerFactory.createAbsorberController();
-        
-        player = new Player();
-        player.getRoles().add(RoleType.PLAYER);
-        admin = new Player();
-        admin.getRoles().add(RoleType.ADMINISTRATOR);
+        try {
+            player = createPlayer();
+            admin = createAdmin();
+        } catch (RushHourException e) {
+            fail();
+        }
     }
-    
+
     @Test
-    public void testCreate() throws RushHourException{
+    public void testCreate() throws RushHourException {
         assertNotNull(inst.create(admin, 0.0, 0.0));
     }
-    
+
     @Test
-    public void testCreateByPlayer(){
+    public void testCreateByPlayer() {
         try {
             assertNotNull(inst.create(player, 0.0, 0.0));
             fail();
@@ -66,9 +68,9 @@ public class AbsorberControllerTest extends AbstractControllerTest{
             assertEquals(GAME_NO_PRIVILEDGE_ONLY_ADMIN, ex.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
-    public void testCreateByNull(){
+    public void testCreateByNull() {
         try {
             assertNotNull(inst.create(null, 0.0, 0.0));
             fail();

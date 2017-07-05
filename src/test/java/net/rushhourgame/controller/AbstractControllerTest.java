@@ -26,6 +26,11 @@ package net.rushhourgame.controller;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RoleType;
+import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.json.SimpleUserData;
+import net.rushhourgame.json.UserData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,5 +62,16 @@ public class AbstractControllerTest {
     public void tearDown() {
         em.getTransaction().commit();
         tCon.clean();
+    }
+    
+    protected static Player createPlayer() throws RushHourException{
+        return pCon.createPlayer("_player", "_player", "_player", new SimpleUserData());
+    }
+    
+    protected Player createAdmin() throws RushHourException{
+        Player admin = pCon.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
+        admin.getRoles().add(RoleType.ADMINISTRATOR);
+        
+        return admin;
     }
 }

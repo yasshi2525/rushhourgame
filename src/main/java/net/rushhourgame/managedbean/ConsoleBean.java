@@ -21,48 +21,69 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.controller;
+package net.rushhourgame.managedbean;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessage;
-import net.rushhourgame.entity.Absorber;
+import java.io.Serializable;
+import javax.annotation.PostConstruct;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Owner;
-import net.rushhourgame.entity.RoleType;
-import static net.rushhourgame.RushHourProperties.*;
-import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 
 /**
- * 
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Dependent
-public class AbsorberController extends GeometricController {
+@Named(value = "console")
+@ViewScoped
+public class ConsoleBean implements Serializable{
     private final long serialVersionUID = 1;
+    
+    @Inject
+    protected RushHourSession session;
+    
+    @Inject
+    protected AbsorberController aCon;
+    
+    @Inject
+    protected PlayerController pCon;
+    
+    protected Player player;
+    
+    protected double x;
+    protected double y;
+    
+    @PostConstruct
+    public void init() {
+        player = pCon.findByToken(session.getToken());
+    }
+    
+    @Transactional
+    public void createAbsorber() throws RushHourException{
+        aCon.create(player, x, y);
+    }
 
-    
-    public Absorber create(Owner owner, double x, double y) throws RushHourException{
-        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
     
-    public Absorber create(Owner owner, double x, double y, double scale) throws RushHourException{
-        if(owner == null){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
-        }
-        if(!owner.getRoles().contains(RoleType.ADMINISTRATOR)){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_PRIVILEDGE_ONLY_ADMIN));
-        }
-        Absorber inst = new Absorber();
-        inst.setOwner(owner);
-        inst.setX(x);
-        inst.setY(y);
-        inst.setScale(scale);
-        em.persist(inst);
-        return inst;
-    }
     
-    public List<Absorber> findIn(double centerX, double centerY, double scale){
-        return findIn("Absorber", centerX, centerY, scale);
-    }
 }

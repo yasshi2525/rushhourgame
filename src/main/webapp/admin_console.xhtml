@@ -5,9 +5,8 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Admin Page<h:outputText value="#{msg.rushHour}"/></title>
+        <title>Admin Page(Console)<h:outputText value="#{msg.rushHour}"/></title>
         <h:outputStylesheet library="css" name="application.css"/>
-        <h:outputScript library="js" name="build/admin.js"/>
         <f:metadata>
             <f:viewAction action="#{admin.init()}"/>
         </f:metadata>
@@ -15,12 +14,14 @@
     <h:body>
         <ui:decorate template="templates/template.xhtml">
             <ui:define name="content">
-                    <h:panelGrid columns="2">
-                        <ui:include src="templates/content_controller.xhtml"/>
-                        <ui:include src="templates/content_viewer.xhtml"/>
-                    </h:panelGrid>
                 <h:form>
-                    <h:commandLink value="コンソール" action="admin_console.xhtml"/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="x"/>
+                        <h:inputText value="#{console.x}"/>
+                        <h:outputLabel value="y"/>
+                        <h:inputText value="#{console.y}"/>
+                    </h:panelGrid>
+                    <h:commandButton value="Create Absorber" actionListener="#{console.createAbsorber()}"/>
                 </h:form>
             </ui:define>
         </ui:decorate>
