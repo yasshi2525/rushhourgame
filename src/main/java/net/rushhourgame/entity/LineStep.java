@@ -27,70 +27,82 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Station extends Building implements Pointable{
+public class LineStep extends OwnableEntity{
     private final long serialVersionUID = 1;
     
-    @NotNull
     @ManyToOne
-    protected RailPoint railPoint;
+    protected Line parent;
     
-    /**
-     * 駅の前. nodeは駅前を表し、他のBuildingから徒歩で移動できる。
-     * platformは駅の中を表し、nodeからのみ徒歩移動できる。
-     * node - 徒歩 - platform - 電車移動 - platform - node
-     */
-    @NotNull
+    @OneToOne
+    protected LineStep next;
+    
+    protected TargetType target;
+    
     @ManyToOne
-    protected Node platform;
+    protected Rail onRail;
     
-    protected String name;
+    @ManyToOne
+    protected Station onStation;
     
-    protected int capacity;
-    
-    public void collectHuman(){
-        throw new UnsupportedOperationException();
-    }
-    
-    public void freeHuman(){
-        throw new UnsupportedOperationException();
+    @OneToMany
+    protected List<Train> trains;
+
+    public Line getParent() {
+        return parent;
     }
 
-    public Node getPlatform() {
-        return platform;
+    public void setParent(Line parent) {
+        this.parent = parent;
+    }
+
+    public LineStep getNext() {
+        return next;
+    }
+
+    public void setNext(LineStep next) {
+        this.next = next;
+    }
+
+    public TargetType getTarget() {
+        return target;
+    }
+
+    public void setTarget(TargetType target) {
+        this.target = target;
+    }
+
+    public Rail getOnRail() {
+        return onRail;
+    }
+
+    public void setOnRail(Rail onRail) {
+        this.onRail = onRail;
+    }
+
+    public Station getOnStation() {
+        return onStation;
+    }
+
+    public void setOnStation(Station onStation) {
+        this.onStation = onStation;
+    }
+
+    public List<Train> getTrains() {
+        return trains;
     }
     
-    public void setPlatform(Node platform) {
-        this.platform = platform;
-    }
-
-    public RailPoint getRailPoint() {
-        return railPoint;
-    }
-
-    public void setRailPoint(RailPoint railPoint) {
-        this.railPoint = railPoint;
+    public enum TargetType{
+        RAIL_LINE, STATION
     }
     
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public enum ActionType{
+        STOP, PASS
     }
 }

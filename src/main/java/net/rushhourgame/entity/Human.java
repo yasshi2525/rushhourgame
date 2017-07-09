@@ -23,35 +23,36 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
-    private final long serialVersionUID = 1;
-    
+public class Human extends AbstractEntity implements Pointable{
+    private final long serialVersionUID = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
     
-    @NotNull
-    @ManyToOne
-    protected Point point;
+    protected double x;
+    protected double y;
     
-    @OneToMany
-    protected List<Human> humans;
+    @ManyToOne
+    protected Node next;
+    
+    protected int live;
+    
+    @ManyToOne
+    Distributer src;
+    
+    @ManyToOne
+    Absorber dest;
 
     public long getId() {
         return id;
@@ -60,41 +61,58 @@ public class Node extends AbstractEntity implements Pointable, Serializable {
     public void setId(long id) {
         this.id = id;
     }
-    
-    @Override
-    public void setX(double x) {
-        point.setX(x);
-    }
-    
-    @Override
-    public void setY(double y) {
-        point.setY(y);
-    }
-    
-    @Override
+
     public double getX() {
-        return point.getX();
+        return x;
     }
-    
-    @Override
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
     public double getY() {
-        return point.getY();
+        return y;
     }
-    
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public int getLive() {
+        return live;
+    }
+
+    public void setLive(int live) {
+        this.live = live;
+    }
+
+    public Distributer getSrc() {
+        return src;
+    }
+
+    public void setSrc(Distributer src) {
+        this.src = src;
+    }
+
+    public Absorber getDest() {
+        return dest;
+    }
+
+    public void setDest(Absorber dest) {
+        this.dest = dest;
+    }
+
+    public Node getNext() {
+        return next;
+    }
+
+    public void setNext(Node next) {
+        this.next = next;
+    }
+
     @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
-    }
-
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
-    }
-
-    public List<Human> getHumans() {
-        return humans;
+    public double distTo(Pointable other) {
+        return Math.sqrt((other.getX() - x) * (other.getX() - x)
+                + (other.getY() - y) * (other.getY() - y));
     }
 }

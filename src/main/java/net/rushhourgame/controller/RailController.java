@@ -27,7 +27,7 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.RailLine;
+import net.rushhourgame.entity.Rail;
 import net.rushhourgame.entity.RailPoint;
 import net.rushhourgame.entity.Owner;
 import net.rushhourgame.exception.RushHourException;
@@ -62,12 +62,12 @@ public class RailController extends PointEntityController{
         to.setY(y);
         em.persist(to);
         
-        RailLine e1 = new RailLine();
+        Rail e1 = new Rail();
         e1.setFromNode(from);
         e1.setToNode(to);
         em.persist(e1);
         
-        RailLine e2 = new RailLine();
+        Rail e2 = new Rail();
         e2.setFromNode(to);
         e2.setToNode(from);
         em.persist(e2);
@@ -80,14 +80,14 @@ public class RailController extends PointEntityController{
         return findIn("Node", centerX, centerY, scale);
     }
     
-    public List<RailLine> findEdgeIn(double centerX, double centerY, double scale){
+    public List<Rail> findEdgeIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
         return em.createQuery("SELECT e FROM Edge e WHERE"
                         + "    (:x1 < e.fromNode.x AND e.fromNode.x < :x2 AND :y1 < e.fromNode.y AND e.fromNode.y < :y2)"
                         + " OR (:x1 < e.toNode.x   AND e.toNode.x   < :x2 AND :y1 < e.toNode.y   AND e.toNode.y   < :y2)", 
-                RailLine.class)
+                Rail.class)
                 .setParameter("x1", centerX - width / 2.0)
                 .setParameter("x2", centerX + width / 2.0)
                 .setParameter("y1", centerY - height / 2.0)

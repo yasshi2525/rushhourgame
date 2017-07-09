@@ -23,13 +23,53 @@
  */
 package net.rushhourgame.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public interface Ordable {
+@Entity
+public class Rail extends OwnableEntity{
+    private final long serialVersionUID = 1;
+    
+    @NotNull
+    @ManyToOne
+    protected RailPoint _from;
+    
+    @NotNull
+    @ManyToOne
+    protected RailPoint _to;
+    
+    protected double cost;
 
-    public void setOrder(int i);
+    public RailPoint getFrom() {
+        return _from;
+    }
 
-    public int getOrder();
+    public void setFrom(RailPoint from) {
+        _from = from;
+    }
+
+    public RailPoint getTo() {
+        return _to;
+    }
+
+    public void setTo(RailPoint to) {
+        _to = to;
+    }
+    
+    public double getDist(){
+        return _from.distTo(_to);
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 }

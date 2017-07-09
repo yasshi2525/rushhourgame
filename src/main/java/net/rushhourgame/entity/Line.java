@@ -23,50 +23,32 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.OneToMany;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class RailLine extends OwnableEntity{
+public class Line extends OwnableEntity{
     private final long serialVersionUID = 1;
     
-    @NotNull
-    @ManyToOne
-    protected RailPoint _from;
+    protected String name;
     
-    @NotNull
-    @ManyToOne
-    protected RailPoint _to;
-    
-    protected double cost;
+    @OneToMany
+    List<LineStep> steps;
 
-    public RailPoint getFrom() {
-        return _from;
+    public String getName() {
+        return name;
     }
 
-    public void setFrom(RailPoint from) {
-        _from = from;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public RailPoint getTo() {
-        return _to;
-    }
-
-    public void setTo(RailPoint to) {
-        _to = to;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
+    public List<LineStep> getSteps() {
+        return steps;
     }
 }

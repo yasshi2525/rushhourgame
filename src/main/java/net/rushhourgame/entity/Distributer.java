@@ -23,7 +23,9 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 /**
  * 住宅(人を生成するオブジェクト)
@@ -38,6 +40,9 @@ public class Distributer extends Building{
     protected int capacity;
     protected int _interval;
     protected int count;
+    
+    @OneToMany(mappedBy = "src")
+    private List<Human> humans;
 
     public int getCapacity() {
         return capacity;
@@ -73,5 +78,9 @@ public class Distributer extends Building{
 
     public boolean expires() {
         return count >= _interval;
+    }
+
+    public List<Human> getHumans() {
+        return humans;
     }
 }

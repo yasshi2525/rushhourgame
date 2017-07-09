@@ -42,12 +42,12 @@ public class RailPoint extends OwnableEntity implements Pointable{
     protected Point point;
     
     @OneToMany(mappedBy = "_from")
-    protected List<RailLine> outEdges;
+    protected List<Rail> outEdges;
     
     @OneToMany(mappedBy = "_to")
-    protected List<RailLine> inEdges;
+    protected List<Rail> inEdges;
     
-    @OneToMany(mappedBy = "on")
+    @OneToMany(mappedBy = "railPoint")
     protected List<Station> stations;
     
     public double getX() {
@@ -71,11 +71,11 @@ public class RailPoint extends OwnableEntity implements Pointable{
         return point.distTo(other);
     }
 
-    public List<RailLine> getOutEdges() {
+    public List<Rail> getOutEdges() {
         return outEdges;
     }
 
-    public List<RailLine> getInEdges() {
+    public List<Rail> getInEdges() {
         return inEdges;
     }
 

@@ -24,9 +24,11 @@
 package net.rushhourgame.entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  * 会社(人の行き先。人を吸収するオブジェクト)
@@ -42,6 +44,9 @@ import javax.persistence.NamedQuery;
 public class Absorber extends Building implements Serializable{
     private final long serialVersionUID = 1;
     protected double scale;
+    
+    @OneToMany(mappedBy = "dest")
+    private List<Human> humans;
 
     public double getScale() {
         return scale;
@@ -49,5 +54,9 @@ public class Absorber extends Building implements Serializable{
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public List<Human> getHumans() {
+        return humans;
     }
 }
