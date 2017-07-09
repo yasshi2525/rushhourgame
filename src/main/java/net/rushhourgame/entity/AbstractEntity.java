@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
@@ -33,7 +34,9 @@ import javax.persistence.TemporalType;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass
-public abstract class AbstractEntity{
+public abstract class AbstractEntity implements Serializable{
+    private final long serialVersionUID = 1;
+    
     @Temporal(TemporalType.TIMESTAMP)
     protected Date created;
     

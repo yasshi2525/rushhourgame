@@ -68,7 +68,7 @@ public class AbstractControllerTest {
         return pCon.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
     
-    protected Player createAdmin() throws RushHourException{
+    protected static Player createAdmin() throws RushHourException{
         Player admin = pCon.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
         admin.getRoles().add(RoleType.ADMINISTRATOR);
         

@@ -23,61 +23,64 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+public class Station extends Building implements Pointable{
     private final long serialVersionUID = 1;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
     @NotNull
-    protected Point point;
+    @ManyToOne
+    protected RailPoint railPoint;
     
-    @Override
-    public void setX(double x) {
-        point.setX(x);
+    /**
+     * 駅の前. nodeは駅前を表し、他のBuildingから徒歩で移動できる。
+     * platformは駅の中を表し、nodeからのみ徒歩移動できる。
+     * node - 徒歩 - platform - 電車移動 - platform - node
+     */
+    @NotNull
+    @ManyToOne
+    protected Node platform;
+    
+    protected String name;
+    
+    protected int capacity;
+
+    public Node getPlatform() {
+        return platform;
     }
     
-    @Override
-    public void setY(double y) {
-        point.setY(y);
-    }
-    
-    @Override
-    public double getX() {
-        return point.getX();
-    }
-    
-    @Override
-    public double getY() {
-        return point.getY();
-    }
-    
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
+    public void setPlatform(Node platform) {
+        this.platform = platform;
     }
 
-    public Point getPoint() {
-        return point;
+    public RailPoint getRailPoint() {
+        return railPoint;
     }
 
-    public void setPoint(Point point) {
-        this.point = point;
+    public void setRailPoint(RailPoint railPoint) {
+        this.railPoint = railPoint;
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

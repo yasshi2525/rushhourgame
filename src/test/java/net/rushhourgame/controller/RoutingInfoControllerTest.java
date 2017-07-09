@@ -23,46 +23,55 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import net.rushhourgame.ErrorMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.rushhourgame.entity.Absorber;
 import net.rushhourgame.entity.Owner;
-import net.rushhourgame.entity.RoleType;
-import static net.rushhourgame.RushHourProperties.*;
-import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Node;
+import net.rushhourgame.entity.RoutingInfo;
 import net.rushhourgame.exception.RushHourException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
- * 
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Dependent
-public class AbsorberController extends PointEntityController {
-    private final long serialVersionUID = 1;
+public class RoutingInfoControllerTest extends AbstractControllerTest {
+    protected RoutingInfoController inst;
+    protected Owner admin;
     
-    public Absorber create(Owner owner, double x, double y) throws RushHourException{
-        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));
+    @Before
+    public void setUp() {
+        super.setUp();
+        inst = ControllerFactory.createRoutingInfoController();
+        try {
+            admin = createAdmin();
+        } catch (RushHourException ex) {
+            fail();
+        }
     }
     
-    public Absorber create(Owner owner, double x, double y, double scale) throws RushHourException{
-        if(owner == null){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
-        }
-        if(!owner.getRoles().contains(RoleType.ADMINISTRATOR)){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_PRIVILEDGE_ONLY_ADMIN));
-        }
-        Absorber inst = new Absorber();
-        inst.setOwner(owner);
-        inst.setScale(scale);
-        inst.setPoint(nCon.create(x, y));
-        em.persist(inst);
-        return inst;
+    @Test
+    public void testSameClassInstance() throws RushHourException {
+        inst.create(
+                aCon.create(admin, 0, 0),
+                aCon.create(admin, 0, 0), 
+                aCon.create(admin, 0, 0));
+        em.flush();
     }
     
-    public List<Absorber> findIn(double centerX, double centerY, double scale){
-        return super.findIn(em.createNamedQuery("Absorber.findIn", Absorber.class), 
-                centerX, centerY, scale);
+    @Test
+    @Ignore
+    public void testDifferentClassInstance() throws RushHourException {
+        inst.create(
+                aCon.create(admin, 0, 0),
+                aCon.create(admin, 0, 0), 
+                aCon.create(admin, 0, 0));
     }
 }

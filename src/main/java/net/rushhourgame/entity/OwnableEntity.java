@@ -24,16 +24,14 @@
 package net.rushhourgame.entity;
 
 import java.io.Serializable;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
- *
+ * つねに player XOR gameMaster が成立.
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @MappedSuperclass

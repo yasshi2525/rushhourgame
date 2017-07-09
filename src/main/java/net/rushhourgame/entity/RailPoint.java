@@ -23,61 +23,63 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+public class RailPoint extends OwnableEntity implements Pointable{
     private final long serialVersionUID = 1;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
     @NotNull
+    @ManyToOne
     protected Point point;
     
-    @Override
+    @OneToMany(mappedBy = "_from")
+    protected List<RailLine> outEdges;
+    
+    @OneToMany(mappedBy = "_to")
+    protected List<RailLine> inEdges;
+    
+    @OneToMany(mappedBy = "on")
+    protected List<Station> stations;
+    
+    public double getX() {
+        return point.getX();
+    }
+
     public void setX(double x) {
         point.setX(x);
     }
-    
-    @Override
+
+    public double getY() {
+        return point.getY();
+    }
+
     public void setY(double y) {
         point.setY(y);
     }
     
     @Override
-    public double getX() {
-        return point.getX();
-    }
-    
-    @Override
-    public double getY() {
-        return point.getY();
-    }
-    
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
+    public double distTo(Pointable other) {
+        return point.distTo(other);
     }
 
-    public Point getPoint() {
-        return point;
+    public List<RailLine> getOutEdges() {
+        return outEdges;
     }
 
-    public void setPoint(Point point) {
-        this.point = point;
+    public List<RailLine> getInEdges() {
+        return inEdges;
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 }

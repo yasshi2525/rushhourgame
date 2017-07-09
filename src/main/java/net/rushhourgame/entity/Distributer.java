@@ -23,10 +23,55 @@
  */
 package net.rushhourgame.entity;
 
+import javax.persistence.Entity;
+
 /**
+ * 住宅(人を生成するオブジェクト)
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class SimplePointEntity extends PointEntity{
-    
+@Entity
+public class Distributer extends Building{
+
+    private final long serialVersionUID = 1;
+
+    protected int capacity;
+    protected int _interval;
+    protected int count;
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public int getInterval() {
+        return _interval;
+    }
+
+    public void setInterval(int _interval) {
+        this._interval = _interval;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public void step() {
+        count++;
+    }
+
+    public void reset() {
+        count = 0;
+    }
+
+    public boolean expires() {
+        return count >= _interval;
+    }
 }

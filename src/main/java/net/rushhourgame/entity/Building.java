@@ -23,61 +23,48 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
-/**
- * 論理的な位置情報を持つエンティティ
- * @author yasshi2525 <https://twitter.com/yasshi2525>
- */
-@Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
-    private final long serialVersionUID = 1;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
+@MappedSuperclass
+public abstract class Building extends OwnableEntity implements Pointable {
+
     @NotNull
-    protected Point point;
+    @ManyToOne
+    protected Node node;
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
     
+    public Node getNode() {
+        return node;
+    }
+
     @Override
     public void setX(double x) {
-        point.setX(x);
+        node.setX(x);
     }
-    
+
     @Override
     public void setY(double y) {
-        point.setY(y);
+        node.setY(y);
     }
-    
+
     @Override
     public double getX() {
-        return point.getX();
+        return node.getX();
     }
-    
+
     @Override
     public double getY() {
-        return point.getY();
+        return node.getY();
     }
-    
+
     @Override
     public double distTo(Pointable p) {
-        return point.distTo(p);
+        return node.distTo(p);
     }
 
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
-    }
 }

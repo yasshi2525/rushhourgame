@@ -63,6 +63,12 @@ public class ControllerFactory {
         return inst;
     }
     
+    public static RoutingInfoController createRoutingInfoController(){
+        RoutingInfoController inst = new RoutingInfoController();
+        init(inst);
+        return inst;
+    }
+    
     public static DigestCalculator createDigestCalculator(){
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();

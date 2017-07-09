@@ -21,63 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import javax.enterprise.context.Dependent;
+import net.rushhourgame.entity.Node;
+import net.rushhourgame.entity.RoutingInfo;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+@Dependent
+public class RoutingInfoController extends AbstractController implements Serializable{
     private final long serialVersionUID = 1;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
-    @NotNull
-    protected Point point;
-    
-    @Override
-    public void setX(double x) {
-        point.setX(x);
-    }
-    
-    @Override
-    public void setY(double y) {
-        point.setY(y);
-    }
-    
-    @Override
-    public double getX() {
-        return point.getX();
-    }
-    
-    @Override
-    public double getY() {
-        return point.getY();
-    }
-    
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
-    }
-
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
+    public RoutingInfo create(Node src, Node next, Node dest){
+        RoutingInfo inst = new RoutingInfo();
+        
+        inst.setSrc(src);
+        inst.setNext(next);
+        inst.setDest(dest);
+        
+        em.persist(inst);
+        return inst;
     }
 }

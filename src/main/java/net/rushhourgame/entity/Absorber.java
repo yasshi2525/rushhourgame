@@ -23,14 +23,23 @@
  */
 package net.rushhourgame.entity;
 
+import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  * 会社(人の行き先。人を吸収するオブジェクト)
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Absorber extends PointEntity{
+@NamedQueries({
+    @NamedQuery(
+            name="Absorber.findIn",
+            query = "SELECT obj FROM Absorber obj WHERE obj.node.point.x > :x1 AND obj.node.point.x < :x2 AND obj.node.point.y > :y1 AND obj.node.point.y < :y2"
+    )
+})
+public class Absorber extends Building implements Serializable{
     private final long serialVersionUID = 1;
     protected double scale;
 

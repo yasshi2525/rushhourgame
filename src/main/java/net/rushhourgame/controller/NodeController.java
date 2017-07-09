@@ -21,63 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import net.rushhourgame.entity.Point;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+@Dependent
+public class NodeController extends AbstractController{
     private final long serialVersionUID = 1;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
-    @NotNull
-    protected Point point;
-    
-    @Override
-    public void setX(double x) {
-        point.setX(x);
+    public Point create(double x, double y){
+        Point inst = new Point();
+        inst.setX(x);
+        inst.setY(y);
+        em.persist(inst);
+        return inst;
     }
     
-    @Override
-    public void setY(double y) {
-        point.setY(y);
-    }
-    
-    @Override
-    public double getX() {
-        return point.getX();
-    }
-    
-    @Override
-    public double getY() {
-        return point.getY();
-    }
-    
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
-    }
-
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
+    public List<Point> findIn(double centerX, double centerY, double scale){
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return em.createNamedQuery("Node.findIn", Point.class)
+                .setParameter("x1", centerX - width / 2.0)
+                .setParameter("x2", centerX + width / 2.0)
+                .setParameter("y1", centerY - height / 2.0)
+                .setParameter("y2", centerY + height / 2.0)
+                .getResultList();
     }
 }

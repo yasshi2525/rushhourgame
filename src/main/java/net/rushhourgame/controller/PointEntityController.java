@@ -21,45 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
-import java.io.Serializable;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.persistence.TypedQuery;
+import net.rushhourgame.entity.Point;
 
 /**
- * つねに player XOR gameMaster が成立.
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@MappedSuperclass
-public abstract class PointEntity extends OwnableEntity implements Pointable, Serializable {
-
+@Dependent
+public class PointEntityController extends AbstractController{
     private final long serialVersionUID = 1;
-    protected double x;
-    protected double y;
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double distTo(Pointable p) {
-        return Math.sqrt((p.getX() - x) * (p.getX() - x)
-                + (p.getY() - y) * (p.getY() - y));
+    
+    @Inject
+    protected NodeController nCon;
+    
+    protected <T> List<T> findIn(TypedQuery<T> query, double centerX, double centerY, double scale){
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return query
+                .setParameter("x1", centerX - width / 2.0)
+                .setParameter("x2", centerX + width / 2.0)
+                .setParameter("y1", centerY - height / 2.0)
+                .setParameter("y2", centerY + height / 2.0)
+                .getResultList();
     }
 }

@@ -44,7 +44,7 @@ public class PointEntityTest extends AbstractEntityTest {
     protected Player other;
     protected Player admin;
     protected GameMaster gm;
-    protected PointEntity inst;
+    protected Node inst;
     
     @Before
     public void setUp() {
@@ -68,15 +68,15 @@ public class PointEntityTest extends AbstractEntityTest {
 
     @Test
     public void testDistTo() {
-        PointEntity target = new SimplePointEntity();
-        target.x = 3.0;
-        target.y = 4.0;
+        Node target = new SimplePointEntity();
+        target.setX(3.0);
+        target.setY(4.0);
         double result = inst.distTo(target);
         assertEquals(5.0, result, 0.0);
     }
 
     /**
-     * Test of isPrivilegedBy method, of class PointEntity.
+     * Test of isPrivilegedBy method, of class Node.
      */
     @Test
     public void testIsPrivilegedBy() {

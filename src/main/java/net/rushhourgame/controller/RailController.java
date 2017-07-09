@@ -27,8 +27,8 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.Edge;
-import net.rushhourgame.entity.Node;
+import net.rushhourgame.entity.RailLine;
+import net.rushhourgame.entity.RailPoint;
 import net.rushhourgame.entity.Owner;
 import net.rushhourgame.exception.RushHourException;
 
@@ -37,37 +37,37 @@ import net.rushhourgame.exception.RushHourException;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class RailController extends GeometricController{
+public class RailController extends PointEntityController{
     
-    public Node create(Owner owner, double x, double y) throws RushHourException{
+    public RailPoint create(Owner owner, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
         }
-        Node n = new Node();
+        RailPoint n = new RailPoint();
         n.setX(x);
         n.setY(y);
         em.persist(n);
         return n;
     }
     
-    public Node extend(Owner owner, Node from, double x, double y) throws RushHourException{
+    public RailPoint extend(Owner owner, RailPoint from, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
         }
         if(!from.isOwnedBy(owner)){
             throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        Node to = new Node();
+        RailPoint to = new RailPoint();
         to.setX(x);
         to.setY(y);
         em.persist(to);
         
-        Edge e1 = new Edge();
+        RailLine e1 = new RailLine();
         e1.setFromNode(from);
         e1.setToNode(to);
         em.persist(e1);
         
-        Edge e2 = new Edge();
+        RailLine e2 = new RailLine();
         e2.setFromNode(to);
         e2.setToNode(from);
         em.persist(e2);
@@ -76,19 +76,18 @@ public class RailController extends GeometricController{
     }
     
     
-    public List<Node> findNodeIn(double centerX, double centerY, double scale){
+    public List<RailPoint> findNodeIn(double centerX, double centerY, double scale){
         return findIn("Node", centerX, centerY, scale);
     }
     
-    public List<Edge> findEdgeIn(double centerX, double centerY, double scale){
+    public List<RailLine> findEdgeIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
-        return em.createQuery(
-                "SELECT e FROM Edge e WHERE"
+        return em.createQuery("SELECT e FROM Edge e WHERE"
                         + "    (:x1 < e.fromNode.x AND e.fromNode.x < :x2 AND :y1 < e.fromNode.y AND e.fromNode.y < :y2)"
                         + " OR (:x1 < e.toNode.x   AND e.toNode.x   < :x2 AND :y1 < e.toNode.y   AND e.toNode.y   < :y2)", 
-                Edge.class)
+                RailLine.class)
                 .setParameter("x1", centerX - width / 2.0)
                 .setParameter("x2", centerX + width / 2.0)
                 .setParameter("y1", centerY - height / 2.0)

@@ -24,35 +24,60 @@
 package net.rushhourgame.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 論理的な接続情報
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Edge extends OwnableEntity{
+public class Link extends AbstractEntity{
+    private final long serialVersionUID = 1;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+    
     @ManyToOne
-    @NotNull
-    protected Node fromNode;
+    protected Node _from;
+    
     @ManyToOne
-    @NotNull
-    protected Node toNode;
+    protected Node _to;
+    
+    protected double cost;
 
-    public Node getFromNode() {
-        return fromNode;
+    public long getId() {
+        return id;
     }
 
-    public void setFromNode(Node fromNode) {
-        this.fromNode = fromNode;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public Node getToNode() {
-        return toNode;
+    public Node getFrom() {
+        return _from;
     }
 
-    public void setToNode(Node toNode) {
-        this.toNode = toNode;
+    public void setFrom(Node from) {
+        this._from = from;
+    }
+
+    public Node getTo() {
+        return _to;
+    }
+
+    public void setTo(Node to) {
+        this._to = to;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }

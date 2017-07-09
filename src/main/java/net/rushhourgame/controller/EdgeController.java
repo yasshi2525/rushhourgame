@@ -25,33 +25,37 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.entity.Link;
+import net.rushhourgame.entity.Point;
+import net.rushhourgame.exception.RushHourException;
 
 /**
- * 領域内にあるEntityを取得できる
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public abstract class GeometricController extends AbstractController{
+public class EdgeController extends AbstractController{
     private final long serialVersionUID = 1;
     
-    @SuppressWarnings("unchecked")
-    protected <T> List<T> findIn(String tableName, double centerX, double centerY, double scale){
-        double width = Math.pow(2.0, scale);
-        double height = Math.pow(2.0, scale);
-        
-        return em.createQuery(buildQueryAreaIn(tableName))
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
-                .getResultList();
+    public Link create(Point from, Point to) throws RushHourException{
+        if(from == null || to == null){
+            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+        }
+        return create(from, to, from.distTo(to));
     }
     
-    protected String buildQueryAreaIn(String tableName){
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT obj FROM ");
-        sb.append(tableName);
-        sb.append(" obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2");
-        return sb.toString();
+    public Link create(Point from, Point to, double cost) throws RushHourException{
+        if(from == null || to == null){
+            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+        }
+        
+        Link inst = new Link();
+        inst.setFrom(from);
+        inst.setTo(to);
+        inst.setCost(cost);
+        em.persist(inst);
+        return inst;
     }
+
 }

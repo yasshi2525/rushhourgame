@@ -23,61 +23,76 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ * 物理的座標を持つエンティティ
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+@NamedQueries({
+    @NamedQuery(
+            name="Point.findIn",
+            query = "SELECT obj FROM Point obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+    )
+})
+public class Point extends AbstractEntity implements Pointable{
     private final long serialVersionUID = 1;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
     
-    @ManyToOne
-    @NotNull
-    protected Point point;
+    protected double x;
+    protected double y;
     
-    @Override
-    public void setX(double x) {
-        point.setX(x);
+    @OneToMany(mappedBy = "_from", orphanRemoval = true)
+    protected List<Link> outEdges;
+    
+    @OneToMany(mappedBy = "_to", orphanRemoval = true)
+    protected List<Link> inEdges;
+
+    public long getId() {
+        return id;
     }
-    
-    @Override
-    public void setY(double y) {
-        point.setY(y);
+
+    public void setId(long id) {
+        this.id = id;
     }
-    
-    @Override
+
     public double getX() {
-        return point.getX();
+        return x;
     }
-    
-    @Override
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
     public double getY() {
-        return point.getY();
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public List<Link> getOutEdges() {
+        return outEdges;
+    }
+
+    public List<Link> getInEdges() {
+        return inEdges;
     }
     
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
-    }
-
-    public Point getPoint() {
-        return point;
-    }
-
-    public void setPoint(Point point) {
-        this.point = point;
+    public double distTo(Pointable other) {
+        return Math.sqrt((other.getX() - x) * (other.getX() - x)
+                + (other.getY() - y) * (other.getY() - y));
     }
 }

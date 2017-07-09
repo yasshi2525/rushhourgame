@@ -23,61 +23,50 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 /**
- * 論理的な位置情報を持つエンティティ
+ *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
-    
+public class RailLine extends OwnableEntity{
     private final long serialVersionUID = 1;
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
     @NotNull
-    protected Point point;
+    @ManyToOne
+    protected RailPoint _from;
     
-    @Override
-    public void setX(double x) {
-        point.setX(x);
-    }
+    @NotNull
+    @ManyToOne
+    protected RailPoint _to;
     
-    @Override
-    public void setY(double y) {
-        point.setY(y);
-    }
-    
-    @Override
-    public double getX() {
-        return point.getX();
-    }
-    
-    @Override
-    public double getY() {
-        return point.getY();
-    }
-    
-    @Override
-    public double distTo(Pointable p) {
-        return point.distTo(p);
+    protected double cost;
+
+    public RailPoint getFrom() {
+        return _from;
     }
 
-    public Point getPoint() {
-        return point;
+    public void setFrom(RailPoint from) {
+        _from = from;
     }
 
-    public void setPoint(Point point) {
-        this.point = point;
+    public RailPoint getTo() {
+        return _to;
+    }
+
+    public void setTo(RailPoint to) {
+        _to = to;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }
