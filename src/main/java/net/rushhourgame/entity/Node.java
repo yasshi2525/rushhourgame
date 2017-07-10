@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Node extends AbstractEntity implements Pointable, Serializable {
+public class Node extends AbstractEntity implements Pointable {
     
     private final long serialVersionUID = 1;
     

@@ -23,8 +23,10 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -47,6 +49,9 @@ public class Train extends OwnableEntity implements Pointable{
     @NotNull
     @ManyToOne
     protected LineStep current;
+    
+    @OneToMany
+    protected List<Human> passengers;
 
     @Override
     public void setX(double x) {
@@ -56,6 +61,10 @@ public class Train extends OwnableEntity implements Pointable{
     @Override
     public void setY(double y) {
         throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    public LineStep getCurrent() {
+        return current;
     }
 
     @Override
@@ -119,5 +128,17 @@ public class Train extends OwnableEntity implements Pointable{
                         * process;
         }
         return Double.NaN;
+    }
+    
+    public void freeHuman(List<Human> hs){
+        for(Human h : hs){
+            h.getOffTrain(current.getOnStation());
+        }
+    }
+    
+    public void collectHuman(List<Human> hs){
+        for(Human h : hs){
+            h.getInTrain(this);
+        }
     }
 }

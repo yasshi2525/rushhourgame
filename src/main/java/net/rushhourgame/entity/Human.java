@@ -34,25 +34,70 @@ import javax.persistence.ManyToOne;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-public class Human extends AbstractEntity implements Pointable{
+public class Human extends AbstractEntity implements Pointable {
+
     private final long serialVersionUID = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
-    
+
     protected double x;
     protected double y;
-    
+
     @ManyToOne
-    protected Node next;
-    
+    protected Link current;
+
     protected int live;
-    
+
     @ManyToOne
     Distributer src;
-    
+
     @ManyToOne
     Absorber dest;
+
+    public void idle() {
+
+    }
+
+    public void walk() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean finishes() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void enterStation() {
+        if (current.getType() == Link.Type.ENTER_STATION) {
+            shiftTask();
+        }
+    }
+
+    public void exitStation() {
+        if (current.getType() == Link.Type.EXIT_STATION) {
+            shiftTask();
+        }
+    }
+
+    public void getInTrain(Train t) {
+        if (current.getWay().getId() == t.getCurrent().getId()) {
+            x = t.getX();
+            y = t.getY();
+            shiftTask();
+        }
+    }
+
+    public void getOffTrain(Station st) {
+        if (current.getTo().getId() == st.getPlatform().getId()) {
+            x = st.getX();
+            y = st.getY();
+            shiftTask();
+        }
+    }
+
+    protected void shiftTask() {
+        throw new UnsupportedOperationException();
+    }
 
     public long getId() {
         return id;
@@ -102,12 +147,12 @@ public class Human extends AbstractEntity implements Pointable{
         this.dest = dest;
     }
 
-    public Node getNext() {
-        return next;
+    public Link getCurrent() {
+        return current;
     }
 
-    public void setNext(Node next) {
-        this.next = next;
+    public void setCurrent(Link current) {
+        this.current = current;
     }
 
     @Override

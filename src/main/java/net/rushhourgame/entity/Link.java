@@ -47,7 +47,12 @@ public class Link extends AbstractEntity{
     @ManyToOne
     protected Node _to;
     
+    @ManyToOne
+    protected LineStep way;
+    
     protected double cost;
+    
+    protected Type type;
 
     public long getId() {
         return id;
@@ -79,5 +84,28 @@ public class Link extends AbstractEntity{
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public LineStep getWay() {
+        return way;
+    }
+
+    public void setWay(LineStep way) {
+        this.way = way;
+    }
+    
+    public enum Type{
+        WALK,
+        ENTER_STATION,
+        TRAIN,
+        EXIT_STATION
     }
 }
