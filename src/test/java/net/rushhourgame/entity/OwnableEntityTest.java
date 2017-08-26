@@ -31,6 +31,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import static org.mockito.Mockito.spy;
 import org.mockito.Spy;
 
 /**
@@ -45,7 +46,6 @@ public class OwnableEntityTest extends AbstractEntityTest {
     protected Player other;
     protected Player admin;
     protected GameMaster gm;
-    @Spy
     protected OwnableEntity inst;
     
     @Before
@@ -65,6 +65,7 @@ public class OwnableEntityTest extends AbstractEntityTest {
             tCon.clean();
             fail();
         }
+        inst = spy(OwnableEntity.class);
     }
 
     /**

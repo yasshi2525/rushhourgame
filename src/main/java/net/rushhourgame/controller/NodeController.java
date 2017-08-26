@@ -38,6 +38,8 @@ public class NodeController extends AbstractController{
     
     public Node create(double x, double y){
         Node inst = new Node();
+        Point point = new Point();
+        inst.setPoint(point);
         inst.setX(x);
         inst.setY(y);
         em.persist(inst);

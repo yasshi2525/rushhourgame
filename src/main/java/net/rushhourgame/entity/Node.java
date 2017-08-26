@@ -25,6 +25,7 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -47,7 +48,7 @@ public class Node extends AbstractEntity implements Pointable {
     protected long id;
     
     @NotNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     protected Point point;
     
     @OneToMany(mappedBy = "_from", orphanRemoval = true)

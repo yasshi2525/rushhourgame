@@ -35,6 +35,7 @@ public class ControllerFactory {
     public static AbsorberController createAbsorberController(){
         AbsorberController inst = new AbsorberController();
         init(inst);
+        inst.nCon = createNodeController();
         return inst;
     }
     
@@ -72,6 +73,12 @@ public class ControllerFactory {
     public static DigestCalculator createDigestCalculator(){
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();
+        return inst;
+    }
+    
+    public static NodeController createNodeController(){
+        NodeController inst = new NodeController();
+        init(inst);
         return inst;
     }
     
