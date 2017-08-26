@@ -25,6 +25,7 @@ package net.rushhourgame.controller;
 
 import java.io.Serializable;
 import javax.enterprise.context.Dependent;
+import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
 import net.rushhourgame.entity.RoutingInfo;
 
@@ -36,12 +37,12 @@ import net.rushhourgame.entity.RoutingInfo;
 public class RoutingInfoController extends AbstractController implements Serializable{
     private final long serialVersionUID = 1;
     
-    public RoutingInfo create(Node src, Node next, Node dest){
+    public RoutingInfo create(Node src, Link next, Node dest){
         RoutingInfo inst = new RoutingInfo();
         
-        inst.setSrc(src);
+        inst.setStart(src);
         inst.setNext(next);
-        inst.setDest(dest);
+        inst.setGoal(dest);
         
         em.persist(inst);
         return inst;

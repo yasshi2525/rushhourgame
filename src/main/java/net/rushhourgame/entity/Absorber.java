@@ -41,8 +41,8 @@ import javax.persistence.OneToMany;
             query = "SELECT obj FROM Absorber obj WHERE obj.node.point.x > :x1 AND obj.node.point.x < :x2 AND obj.node.point.y > :y1 AND obj.node.point.y < :y2"
     )
 })
-public class Absorber extends Building implements Serializable{
-    private final long serialVersionUID = 1;
+public class Absorber extends Building{
+    private static final long serialVersionUID = 1;
     protected double scale;
     
     @OneToMany(mappedBy = "dest")

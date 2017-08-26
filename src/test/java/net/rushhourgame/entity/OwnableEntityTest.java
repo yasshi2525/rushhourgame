@@ -31,20 +31,22 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.mockito.Spy;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class PointEntityTest extends AbstractEntityTest {
+public class OwnableEntityTest extends AbstractEntityTest {
 
-    private static final Logger LOG = Logger.getLogger(PointEntityTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(OwnableEntityTest.class.getName());
     
     protected Player player;
     protected Player other;
     protected Player admin;
     protected GameMaster gm;
-    protected Node inst;
+    @Spy
+    protected OwnableEntity inst;
     
     @Before
     public void setUp() {
@@ -63,16 +65,6 @@ public class PointEntityTest extends AbstractEntityTest {
             tCon.clean();
             fail();
         }
-        inst = new SimplePointEntity();
-    }
-
-    @Test
-    public void testDistTo() {
-        Node target = new SimplePointEntity();
-        target.setX(3.0);
-        target.setY(4.0);
-        double result = inst.distTo(target);
-        assertEquals(5.0, result, 0.0);
     }
 
     /**

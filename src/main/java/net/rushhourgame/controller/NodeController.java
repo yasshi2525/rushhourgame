@@ -25,6 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import net.rushhourgame.entity.Node;
 import net.rushhourgame.entity.Point;
 
 /**
@@ -35,19 +36,19 @@ import net.rushhourgame.entity.Point;
 public class NodeController extends AbstractController{
     private final long serialVersionUID = 1;
     
-    public Point create(double x, double y){
-        Point inst = new Point();
+    public Node create(double x, double y){
+        Node inst = new Node();
         inst.setX(x);
         inst.setY(y);
         em.persist(inst);
         return inst;
     }
     
-    public List<Point> findIn(double centerX, double centerY, double scale){
+    public List<Node>findIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
-        return em.createNamedQuery("Node.findIn", Point.class)
+        return em.createNamedQuery("Node.findIn", Node.class)
                 .setParameter("x1", centerX - width / 2.0)
                 .setParameter("x2", centerX + width / 2.0)
                 .setParameter("y1", centerY - height / 2.0)

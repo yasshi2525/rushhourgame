@@ -56,7 +56,7 @@ public class AbsorberController extends PointEntityController {
         Absorber inst = new Absorber();
         inst.setOwner(owner);
         inst.setScale(scale);
-        inst.setPoint(nCon.create(x, y));
+        inst.setNode(nCon.create(x, y));
         em.persist(inst);
         return inst;
     }

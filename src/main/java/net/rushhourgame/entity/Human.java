@@ -36,7 +36,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Human extends AbstractEntity implements Pointable {
 
-    private final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;

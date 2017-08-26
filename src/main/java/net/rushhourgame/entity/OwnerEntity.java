@@ -39,7 +39,6 @@ import javax.validation.constraints.NotNull;
  */
 @MappedSuperclass
 public abstract class OwnerEntity extends AbstractEntity implements Owner {
-    private final long serialVersionUID = 1;
     
     @NotNull
     @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)

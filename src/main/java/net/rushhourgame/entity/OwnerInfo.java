@@ -41,6 +41,7 @@ import net.rushhourgame.json.UserData;
  */
 @Entity
 public class OwnerInfo implements Serializable {
+    private static final long serialVersionUID = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;

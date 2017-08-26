@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 public class Train extends OwnableEntity implements Pointable{
+    private static final long serialVersionUID = 1;
     
     protected String name;
     protected int capacity;

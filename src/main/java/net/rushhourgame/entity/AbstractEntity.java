@@ -35,7 +35,7 @@ import javax.persistence.TemporalType;
  */
 @MappedSuperclass
 public abstract class AbstractEntity implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
     
     @Temporal(TemporalType.TIMESTAMP)
     protected Date created;

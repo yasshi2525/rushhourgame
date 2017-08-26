@@ -35,7 +35,7 @@ import javax.persistence.OneToOne;
  */
 @Entity
 public class LineStep extends OwnableEntity{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
     
     @ManyToOne
     protected Line parent;

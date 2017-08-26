@@ -63,13 +63,13 @@ public class RailController extends PointEntityController{
         em.persist(to);
         
         Rail e1 = new Rail();
-        e1.setFromNode(from);
-        e1.setToNode(to);
+        e1.setFrom(from);
+        e1.setTo(to);
         em.persist(e1);
         
         Rail e2 = new Rail();
-        e2.setFromNode(to);
-        e2.setToNode(from);
+        e2.setFrom(to);
+        e2.setTo(from);
         em.persist(e2);
         
         return to;
@@ -77,7 +77,8 @@ public class RailController extends PointEntityController{
     
     
     public List<RailPoint> findNodeIn(double centerX, double centerY, double scale){
-        return findIn("Node", centerX, centerY, scale);
+        throw new UnsupportedOperationException();
+        //return findIn("Node", centerX, centerY, scale);
     }
     
     public List<Rail> findEdgeIn(double centerX, double centerY, double scale){

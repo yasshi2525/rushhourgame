@@ -44,7 +44,7 @@ import javax.persistence.OneToMany;
     )
 })
 public class Point extends AbstractEntity implements Pointable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,12 +52,6 @@ public class Point extends AbstractEntity implements Pointable{
     
     protected double x;
     protected double y;
-    
-    @OneToMany(mappedBy = "_from", orphanRemoval = true)
-    protected List<Link> outEdges;
-    
-    @OneToMany(mappedBy = "_to", orphanRemoval = true)
-    protected List<Link> inEdges;
 
     public long getId() {
         return id;
@@ -81,14 +75,6 @@ public class Point extends AbstractEntity implements Pointable{
 
     public void setY(double y) {
         this.y = y;
-    }
-
-    public List<Link> getOutEdges() {
-        return outEdges;
-    }
-
-    public List<Link> getInEdges() {
-        return inEdges;
     }
     
     public double distTo(Pointable other) {

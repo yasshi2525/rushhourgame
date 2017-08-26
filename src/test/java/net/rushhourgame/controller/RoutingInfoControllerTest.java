@@ -58,20 +58,21 @@ public class RoutingInfoControllerTest extends AbstractControllerTest {
     }
     
     @Test
+    @Ignore
     public void testSameClassInstance() throws RushHourException {
-        inst.create(
+        /*inst.create(
                 aCon.create(admin, 0, 0),
                 aCon.create(admin, 0, 0), 
                 aCon.create(admin, 0, 0));
-        em.flush();
+        em.flush();*/
     }
     
     @Test
     @Ignore
     public void testDifferentClassInstance() throws RushHourException {
-        inst.create(
+        /*inst.create(
                 aCon.create(admin, 0, 0),
                 aCon.create(admin, 0, 0), 
-                aCon.create(admin, 0, 0));
+                aCon.create(admin, 0, 0));*/
     }
 }

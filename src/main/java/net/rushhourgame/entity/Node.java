@@ -40,7 +40,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class Node extends AbstractEntity implements Pointable {
     
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +49,12 @@ public class Node extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Point point;
+    
+    @OneToMany(mappedBy = "_from", orphanRemoval = true)
+    protected List<Link> outEdges;
+    
+    @OneToMany(mappedBy = "_to", orphanRemoval = true)
+    protected List<Link> inEdges;
     
     @OneToMany
     protected List<Human> humans;
@@ -96,5 +102,13 @@ public class Node extends AbstractEntity implements Pointable {
 
     public List<Human> getHumans() {
         return humans;
+    }
+
+    public List<Link> getOutEdges() {
+        return outEdges;
+    }
+
+    public List<Link> getInEdges() {
+        return inEdges;
     }
 }

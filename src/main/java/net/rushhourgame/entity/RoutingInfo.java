@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 public class RoutingInfo extends AbstractEntity implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
