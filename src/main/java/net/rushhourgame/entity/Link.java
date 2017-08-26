@@ -35,7 +35,7 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 public class Link extends AbstractEntity{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

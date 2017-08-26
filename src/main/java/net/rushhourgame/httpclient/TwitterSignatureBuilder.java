@@ -42,7 +42,7 @@ import org.apache.commons.codec.digest.HmacUtils;
  */
 @Dependent
 public class TwitterSignatureBuilder implements Serializable{
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterSignatureBuilder.class.getName());
 
     protected String httpMethod;

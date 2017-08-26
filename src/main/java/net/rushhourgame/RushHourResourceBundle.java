@@ -40,7 +40,7 @@ import javax.inject.Inject;
 @Singleton
 public class RushHourResourceBundle extends AbstractResourceBundle{
 
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     @Inject
     protected RushHourProperties prop;
 

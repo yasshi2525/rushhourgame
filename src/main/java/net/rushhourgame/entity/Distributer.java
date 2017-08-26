@@ -35,7 +35,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class Distributer extends Building{
 
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
 
     protected int capacity;
     protected int _interval;

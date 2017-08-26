@@ -34,7 +34,7 @@ import net.rushhourgame.entity.Owner;
  */
 public class TwitterUserData implements UserData, Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
 
     @NotNull
     protected String name;

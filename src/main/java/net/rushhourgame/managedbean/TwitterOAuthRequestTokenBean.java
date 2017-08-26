@@ -50,7 +50,7 @@ import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 @ViewScoped
 public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthRequestTokenBean.class.getName());
     protected static final String OAUTH_CALLBACK = "oauth_callback";
     @Inject

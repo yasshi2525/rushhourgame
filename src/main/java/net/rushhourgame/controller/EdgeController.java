@@ -37,7 +37,7 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class EdgeController extends AbstractController{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     public Link create(Node from, Node to) throws RushHourException{
         if(from == null || to == null){

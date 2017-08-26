@@ -37,7 +37,7 @@ import javax.servlet.http.HttpSession;
  */
 @Dependent
 public class RushHourSession implements Serializable {
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RushHourSession.class.getName());
     protected static final String SESSION_NAME = "rushhour";
     

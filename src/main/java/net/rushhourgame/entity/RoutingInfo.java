@@ -29,6 +29,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -36,11 +38,12 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"start", "goal"}))
 public class RoutingInfo extends AbstractEntity implements Serializable{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected long id;
     
     @NotNull
@@ -54,6 +57,8 @@ public class RoutingInfo extends AbstractEntity implements Serializable{
     @NotNull
     @ManyToOne
     protected Node goal;
+    
+    protected double cost;
 
     public long getId() {
         return id;
@@ -85,5 +90,13 @@ public class RoutingInfo extends AbstractEntity implements Serializable{
 
     public void setGoal(Node goal) {
         this.goal = goal;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }

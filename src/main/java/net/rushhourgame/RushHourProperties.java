@@ -47,7 +47,7 @@ import javax.ejb.Startup;
 @Singleton
 public class RushHourProperties implements Serializable {
 
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RushHourProperties.class.getName());
 
     protected static RushHourProperties instanceRef;

@@ -34,7 +34,7 @@ import net.rushhourgame.entity.Point;
  */
 @Dependent
 public class NodeController extends AbstractController{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     public Node create(double x, double y){
         Node inst = new Node();

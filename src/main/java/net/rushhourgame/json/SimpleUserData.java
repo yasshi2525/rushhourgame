@@ -38,7 +38,7 @@ import javax.validation.constraints.Pattern;
  */
 public class SimpleUserData implements UserData, Serializable {
 
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(SimpleUserData.class.getName());
 
     @NotNull

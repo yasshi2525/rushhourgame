@@ -47,7 +47,7 @@ import org.primefaces.component.menu.Menu;
 @Named(value = "game")
 @ViewScoped
 public class GameViewBean implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
     
     @Inject

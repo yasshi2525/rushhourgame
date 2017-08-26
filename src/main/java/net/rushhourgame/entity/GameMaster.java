@@ -46,7 +46,7 @@ import javax.validation.constraints.NotNull;
 })
 @Entity
 public class GameMaster extends OwnerEntity implements Owner, Serializable{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;

@@ -42,7 +42,7 @@ import net.rushhourgame.json.TwitterUserDataParser;
 @Dependent
 public class TwitterUserShowClient extends TwitterClient implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterUserShowClient.class.getName());
     protected static final String USER_ID = "user_id";
 

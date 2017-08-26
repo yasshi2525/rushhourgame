@@ -35,7 +35,7 @@ import net.rushhourgame.entity.Point;
  */
 @Dependent
 public class PointEntityController extends AbstractController{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Inject
     protected NodeController nCon;

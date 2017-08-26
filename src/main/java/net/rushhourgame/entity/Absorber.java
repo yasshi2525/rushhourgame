@@ -42,7 +42,7 @@ import javax.persistence.OneToMany;
     )
 })
 public class Absorber extends Building{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     protected double scale;
     
     @OneToMany(mappedBy = "dest")

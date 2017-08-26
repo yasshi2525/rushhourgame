@@ -39,7 +39,7 @@ import net.rushhourgame.RushHourSession;
 @Named(value = "msg")
 @ViewScoped
 public class MessageBean implements Serializable{
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Inject
     protected RushHourSession rushHourSession;

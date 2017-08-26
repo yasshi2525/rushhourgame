@@ -41,7 +41,7 @@ import net.rushhourgame.entity.Player;
 @Named(value = "lang")
 @ViewScoped
 public class LanguageBean implements Serializable{
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     @Inject
     RushHourSession rushHourSession;
     @Inject

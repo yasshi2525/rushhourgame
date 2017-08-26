@@ -41,7 +41,7 @@ import net.rushhourgame.RushHourSession;
 @Named("err")
 @ViewScoped
 public class ErrorBean implements Serializable {
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ErrorBean.class.getName());
     
     @Inject

@@ -31,7 +31,7 @@ import java.util.Locale;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class RushHourSessionBean implements Serializable{
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     protected String token;
     protected Locale locale; 
 

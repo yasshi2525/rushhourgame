@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 public class Node extends AbstractEntity implements Pointable {
     
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

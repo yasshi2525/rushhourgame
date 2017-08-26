@@ -41,8 +41,7 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class OAuthController extends AbstractController {
-    
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(OAuthController.class.getName());
     
     private final OAuth dummyInst = new OAuth();

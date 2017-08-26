@@ -49,7 +49,7 @@ import net.rushhourgame.json.UserData;
 @ViewScoped
 public class AdminBean implements Serializable {
 
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
 
     @Inject
     protected PlayerController pCon;

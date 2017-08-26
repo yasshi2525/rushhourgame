@@ -44,7 +44,7 @@ import javax.persistence.OneToMany;
     )
 })
 public class Point extends AbstractEntity implements Pointable{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

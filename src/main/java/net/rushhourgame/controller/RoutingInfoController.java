@@ -24,6 +24,7 @@
 package net.rushhourgame.controller;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
@@ -35,7 +36,7 @@ import net.rushhourgame.entity.RoutingInfo;
  */
 @Dependent
 public class RoutingInfoController extends AbstractController implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     public RoutingInfo create(Node src, Link next, Node dest){
         RoutingInfo inst = new RoutingInfo();
@@ -46,5 +47,9 @@ public class RoutingInfoController extends AbstractController implements Seriali
         
         em.persist(inst);
         return inst;
+    }
+    
+    public List<RoutingInfo> createAll(List<Node> nodes){
+        throw new UnsupportedOperationException();
     }
 }

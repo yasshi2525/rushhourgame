@@ -39,7 +39,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
  */
 public class ErrorMessage implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ErrorMessage.class.getName());
     protected static ErrorMessage _UNKNOWN = new ErrorMessage(UNKNOWN, UNKNOWN_DETAIL, UNKNOWN_ACTION);
     protected static RushHourProperties prop = RushHourProperties.getInstance();

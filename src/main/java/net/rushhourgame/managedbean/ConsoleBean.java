@@ -43,7 +43,7 @@ import net.rushhourgame.exception.RushHourException;
 @Named(value = "console")
 @ViewScoped
 public class ConsoleBean implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @Inject
     protected RushHourSession session;

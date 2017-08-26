@@ -35,7 +35,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 public class Station extends Building implements Pointable{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     @NotNull
     @ManyToOne

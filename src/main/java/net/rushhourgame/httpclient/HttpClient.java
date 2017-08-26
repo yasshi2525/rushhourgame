@@ -55,7 +55,7 @@ import net.rushhourgame.exception.RushHourException;
 @Dependent
 public abstract class HttpClient implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(HttpClient.class.getName());
 
     @Inject

@@ -37,7 +37,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class OwnableEntity extends AbstractEntity implements Ownable {
 
-    private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;

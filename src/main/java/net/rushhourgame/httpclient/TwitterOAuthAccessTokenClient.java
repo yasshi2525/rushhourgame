@@ -37,7 +37,8 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class TwitterOAuthAccessTokenClient extends TwitterClient implements Serializable{
-    private final int serialVersionUID = 1;
+    
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthAccessTokenClient.class.getName());
     protected static final String OAUTH_VERIFIER = "oauth_verifier";
     

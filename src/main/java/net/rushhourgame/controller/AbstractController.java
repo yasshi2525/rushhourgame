@@ -39,7 +39,7 @@ import net.rushhourgame.RushHourProperties;
 @Dependent
 public abstract class AbstractController implements Serializable{
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(AbstractController.class.getName());
     
     @PersistenceContext

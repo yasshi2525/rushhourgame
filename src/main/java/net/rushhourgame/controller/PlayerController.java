@@ -46,8 +46,7 @@ import net.rushhourgame.json.UserData;
  */
 @Dependent
 public class PlayerController extends AbstractController {
-
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private final Player dummyInst = new Player();
     private static final Logger LOG = Logger.getLogger(PlayerController.class.getName());
     @Inject

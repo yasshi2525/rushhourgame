@@ -38,7 +38,7 @@ import static net.rushhourgame.RushHourProperties.*;
  */
 @Dependent
 public class DigestCalculator implements Serializable{
-    private final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     @Inject
     protected RushHourProperties prop;
     

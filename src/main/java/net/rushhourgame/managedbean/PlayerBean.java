@@ -53,7 +53,7 @@ import net.rushhourgame.json.UserData;
 @ViewScoped
 public class PlayerBean implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(PlayerBean.class.getName());
     @Inject
     protected RushHourProperties prop;

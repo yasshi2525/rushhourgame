@@ -60,7 +60,7 @@ import javax.validation.constraints.NotNull;
     )
 })
 public class Player extends OwnerEntity implements Serializable {
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     @Id
     protected String id;
     @NotNull

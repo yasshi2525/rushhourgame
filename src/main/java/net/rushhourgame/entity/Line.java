@@ -33,7 +33,7 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Line extends OwnableEntity{
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     protected String name;
     

@@ -40,7 +40,7 @@ import static net.rushhourgame.RushHourProperties.*;
 @Dependent
 public class TwitterOAuthRequestTokenClient extends TwitterClient implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthRequestTokenClient.class.getName());
 
     protected static final String OAUTH_CALLBACK = "oauth_callback";

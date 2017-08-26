@@ -46,7 +46,7 @@ import net.rushhourgame.RushHourProperties;
 @Dependent
 public class TwitterClient extends HttpClient implements Serializable {
 
-    private final int serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterClient.class.getName());
 
     protected static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
