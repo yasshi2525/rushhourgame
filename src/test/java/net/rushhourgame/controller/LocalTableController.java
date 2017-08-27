@@ -32,6 +32,7 @@ import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RoutingInfo;
 
 /**
  *
@@ -39,6 +40,12 @@ import net.rushhourgame.entity.Player;
  */
 public class LocalTableController {
     EntityManager em;
+    
+    private String[] tableList = {
+        "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", 
+        "Station", "RoutingInfo", "Link", "Node", "RailPoint", "Rail", "Point", 
+        "GameMaster", "Player", "OwnerInfo", "OAuth"
+    };
 
     public LocalTableController(){
         this.em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
@@ -46,12 +53,14 @@ public class LocalTableController {
 
     public void clean(){
         em.getTransaction().begin();
-        em.createQuery("DELETE FROM Absorber x").executeUpdate();
-        em.createQuery("DELETE FROM GameMaster x").executeUpdate();
-        em.createQuery("DELETE FROM Player x").executeUpdate();
-        em.createQuery("DELETE FROM OwnerInfo x").executeUpdate();
-        em.createQuery("DELETE FROM OAuth x").executeUpdate();
+        for(String tableName : tableList){
+            em.createQuery("DELETE FROM " + tableName + " x").executeUpdate();
+        }
         em.getTransaction().commit();
+    }
+    
+    public List<RoutingInfo> findRoutingInfos(){
+        return em.createQuery("SELECT x FROM RoutingInfo x", RoutingInfo.class).getResultList();
     }
     
     public List<Player> findPlayers(){
@@ -60,5 +69,9 @@ public class LocalTableController {
     
     public List<OAuth> findOAuths(){
         return em.createQuery("SELECT x FROM OAuth x", OAuth.class).getResultList();
+    }
+    
+    public <T> List<T> findAll(String tableName, T inst){
+        return em.createQuery("SELECT x FROM " + tableName + " x").getResultList();
     }
 }

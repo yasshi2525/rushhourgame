@@ -35,6 +35,7 @@ import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.OwnerInfo;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
@@ -138,9 +139,15 @@ public class PlayerController extends AbstractController {
         p.setSignIn(signIn);
         p.setInfo(info);
         
+        OAuth oAuth = oCon.findByRequestToken(requestToken);
+        if(oAuth == null){
+            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN));            
+        }
+        
         p.setOauth(oCon.findByRequestToken(requestToken));
         try{
-        em.persist(p);
+            em.persist(p);
         }catch(ConstraintViolationException e){
             e.getConstraintViolations().forEach((val)->{
                 LOG.log(Level.SEVERE, val.toString());

@@ -26,9 +26,11 @@ package net.rushhourgame.controller;
 import java.io.Serializable;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
 import net.rushhourgame.entity.RoutingInfo;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  *
@@ -38,7 +40,19 @@ import net.rushhourgame.entity.RoutingInfo;
 public class RoutingInfoController extends AbstractController implements Serializable{
     private static final long serialVersionUID = 1L;
     
-    public RoutingInfo create(Node src, Link next, Node dest){
+    public RoutingInfo create(Node src, Node dest) throws RushHourException{
+        return create(src, null, dest);
+    }
+    
+    public RoutingInfo create(Node src, Link next, Node dest) throws RushHourException{
+        if(src == null || dest == null){
+            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+        }
+        
+        if(src.equals(dest)){
+            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+        }
+        
         RoutingInfo inst = new RoutingInfo();
         
         inst.setStart(src);
@@ -49,7 +63,11 @@ public class RoutingInfoController extends AbstractController implements Seriali
         return inst;
     }
     
-    public List<RoutingInfo> createAll(List<Node> nodes){
-        throw new UnsupportedOperationException();
+    public void insertIntoNetwork(Node inst) throws RushHourException{
+        List<Node> network = em.createNamedQuery("Node.findAll", Node.class).getResultList();
+        for(Node other : network){
+            em.persist(create(inst, other));
+            em.persist(create(other, inst));
+        }
     }
 }

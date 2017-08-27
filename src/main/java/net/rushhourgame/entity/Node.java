@@ -31,6 +31,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -39,6 +41,11 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Node.findAll",
+            query = "SELECT x FROM Node x")
+})
 public class Node extends AbstractEntity implements Pointable {
     
     private static final long serialVersionUID = 1L;

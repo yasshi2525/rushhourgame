@@ -29,6 +29,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -38,7 +40,12 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"start", "goal"}))
+@NamedQueries({
+    @NamedQuery(
+            name = "RoutingInfo.find",
+            query = "SELECT x FROM RoutingInfo x WHERE x.start = :start AND x.goal = :goal")
+})
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"start_id", "goal_id"}))
 public class RoutingInfo extends AbstractEntity implements Serializable{
     private static final long serialVersionUID = 1L;
     

@@ -148,6 +148,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCreatePlayer() throws Exception {
+        oCon.createOAuthBean("new", "new_sec");
         Player newPlayer = spy.fetchPlayer("new", "newId", "new_access", "new_access_sec");
 
         assertNotNull(newPlayer);

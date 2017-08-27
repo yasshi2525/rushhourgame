@@ -50,6 +50,7 @@ public class AbstractControllerTest {
     protected static OAuthController oCon = ControllerFactory.createOAuthController();
     protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
     protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
+    protected static NodeController nCon = ControllerFactory.createNodeController();
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -65,10 +66,12 @@ public class AbstractControllerTest {
     }
     
     protected static Player createPlayer() throws RushHourException{
+        oCon.createOAuthBean("_player", "_player_sec");
         return pCon.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
     
     protected static Player createAdmin() throws RushHourException{
+        oCon.createOAuthBean("_admin", "_admin_sec");
         Player admin = pCon.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
         admin.getRoles().add(RoleType.ADMINISTRATOR);
         

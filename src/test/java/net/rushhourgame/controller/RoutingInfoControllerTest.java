@@ -23,56 +23,63 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.rushhourgame.entity.Absorber;
-import net.rushhourgame.entity.Owner;
+import javax.persistence.PersistenceException;
+import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.RoutingInfo;
 import net.rushhourgame.exception.RushHourException;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class RoutingInfoControllerTest extends AbstractControllerTest {
+
     protected RoutingInfoController inst;
-    protected Owner admin;
-    
+
     @Before
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createRoutingInfoController();
+    }
+
+    @Test
+    public void testCreateNull() {
         try {
-            admin = createAdmin();
-        } catch (RushHourException ex) {
+            inst.create(null, null);
             fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
+            assertNull(ex.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
-    @Ignore
-    public void testSameClassInstance() throws RushHourException {
-        /*inst.create(
-                aCon.create(admin, 0, 0),
-                aCon.create(admin, 0, 0), 
-                aCon.create(admin, 0, 0));
-        em.flush();*/
+    public void testCreateLoop() throws RushHourException {
+        Node node = nCon.create(0, 0);
+        try {
+            inst.create(node, node);
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
+            assertNull(ex.getErrMsg().getDetailId());
+        }
     }
-    
+
     @Test
-    @Ignore
-    public void testDifferentClassInstance() throws RushHourException {
-        /*inst.create(
-                aCon.create(admin, 0, 0),
-                aCon.create(admin, 0, 0), 
-                aCon.create(admin, 0, 0));*/
+    public void testCreateSameRelation() throws RushHourException {
+        Node node1 = nCon.create(0, 0);
+        Node node2 = nCon.create(1, 1);
+        em.flush();
+        try {
+            inst.create(node1, node2);
+            em.flush();
+            fail();
+        } catch (PersistenceException ex) {
+            em.getTransaction().rollback();
+            em.getTransaction().begin();
+        }
     }
 }

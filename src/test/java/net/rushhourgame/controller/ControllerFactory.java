@@ -78,6 +78,7 @@ public class ControllerFactory {
     
     public static NodeController createNodeController(){
         NodeController inst = new NodeController();
+        inst.rCon = createRoutingInfoController();
         init(inst);
         return inst;
     }

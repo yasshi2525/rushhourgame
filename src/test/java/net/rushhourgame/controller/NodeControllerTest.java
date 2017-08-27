@@ -24,43 +24,47 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.Point;
+import net.rushhourgame.entity.RoutingInfo;
 import net.rushhourgame.exception.RushHourException;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Dependent
-public class NodeController extends AbstractController{
-    private static final long serialVersionUID = 1L;
+public class NodeControllerTest extends AbstractControllerTest {
+    protected NodeController inst;
     
-    @Inject
-    protected RoutingInfoController rCon;
-    
-    public Node create(double x, double y) throws RushHourException{
-        Node inst = new Node();
-        Point point = new Point();
-        inst.setPoint(point);
-        inst.setX(x);
-        inst.setY(y);
-        rCon.insertIntoNetwork(inst);
-        em.persist(inst);
-        return inst;
+    @Before
+    public void setUp(){
+        super.setUp();
+        inst = ControllerFactory.createNodeController();
     }
     
-    public List<Node>findIn(double centerX, double centerY, double scale){
-        double width = Math.pow(2.0, scale);
-        double height = Math.pow(2.0, scale);
+    @Test
+    public void testCreate() throws RushHourException{
+        Node n1 = inst.create(0, 0);
+        em.flush();
+        assertEquals(0, tCon.findRoutingInfos().size());
         
-        return em.createNamedQuery("Node.findIn", Node.class)
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
-                .getResultList();
+        Node n2 = inst.create(1, 1);
+        em.flush();
+        List<RoutingInfo> network = tCon.findRoutingInfos();
+        assertEquals(2, network.size());
+        assertEquals(n2.getId(), network.get(0).getStart().getId());
+        assertEquals(n1.getId(), network.get(0).getGoal().getId());
+        assertEquals(n1.getId(), network.get(1).getStart().getId());
+        assertEquals(n2.getId(), network.get(1).getGoal().getId());
+        
+        inst.create(2, 2);
+        em.flush();
+        assertEquals(6, tCon.findRoutingInfos().size());
+        
+        inst.create(3, 3);
+        em.flush();
+        assertEquals(12, tCon.findRoutingInfos().size());
     }
 }

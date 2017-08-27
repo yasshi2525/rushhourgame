@@ -80,6 +80,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
     public void testCreateNoOAuthPlayer() {
         try {
             inst.createPlayer(null, TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, userData1);
+            fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN, ex.getErrMsg().getDetailId());
         }
