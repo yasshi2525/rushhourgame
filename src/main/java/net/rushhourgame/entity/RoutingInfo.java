@@ -24,6 +24,7 @@
 package net.rushhourgame.entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,25 +47,26 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM RoutingInfo x WHERE x.start = :start AND x.goal = :goal")
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"start_id", "goal_id"}))
-public class RoutingInfo extends AbstractEntity implements Serializable{
+public class RoutingInfo extends AbstractEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected long id;
-    
+
     @NotNull
     @ManyToOne
     protected Node start;
-    
+
     @NotNull
     @ManyToOne
     protected Link nextE;
-    
+
     @NotNull
     @ManyToOne
     protected Node goal;
-    
+
     protected double cost;
 
     public long getId() {

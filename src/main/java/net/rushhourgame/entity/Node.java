@@ -46,7 +46,7 @@ import javax.validation.constraints.NotNull;
             name = "Node.findAll",
             query = "SELECT x FROM Node x")
 })
-public class Node extends AbstractEntity implements Pointable {
+public class Node extends AbstractEntity implements Pointable, Comparable<Node> {
     
     private static final long serialVersionUID = 1L;
     
@@ -66,6 +66,10 @@ public class Node extends AbstractEntity implements Pointable {
     
     @OneToMany
     protected List<Human> humans;
+    
+    protected transient double cost;
+    
+    protected transient Node via;
 
     public long getId() {
         return id;
@@ -118,5 +122,27 @@ public class Node extends AbstractEntity implements Pointable {
 
     public List<Link> getInEdges() {
         return inEdges;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public Node getVia() {
+        return via;
+    }
+
+    public void setVia(Node via) {
+        this.via = via;
+    }
+    
+    @Override
+    public int compareTo(Node o) {
+        return this.cost > o.cost ? 1
+                    : this.cost < o.cost ? -1 : 0;
     }
 }

@@ -28,12 +28,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * 論理的な接続情報
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
 public class Link extends AbstractEntity{
     private static final long serialVersionUID = 1L;
     
