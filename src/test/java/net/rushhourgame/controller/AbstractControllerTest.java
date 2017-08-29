@@ -51,6 +51,8 @@ public class AbstractControllerTest {
     protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
     protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
     protected static NodeController nCon = ControllerFactory.createNodeController();
+    protected static RoutingInfoController rCon = ControllerFactory.createRoutingInfoController();
+    protected static LinkController lCon = ControllerFactory.createLinkController();
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

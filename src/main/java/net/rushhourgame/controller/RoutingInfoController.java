@@ -37,14 +37,14 @@ import net.rushhourgame.exception.RushHourException;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class RoutingInfoController extends AbstractController implements Serializable{
+public class RoutingInfoController extends AbstractController implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    public RoutingInfo create(Node src, Node dest) throws RushHourException{
+    public RoutingInfo create(Node src, Node dest) throws RushHourException {
         return create(src, null, dest);
     }
     
-    public RoutingInfo create(Node src, Link next, Node dest) throws RushHourException{
+    public RoutingInfo create(Node src, Link next, Node dest) throws RushHourException {
         if(src == null || dest == null){
             throw new RushHourException(ErrorMessage.createDataInconsitency(null));
         }
@@ -63,11 +63,18 @@ public class RoutingInfoController extends AbstractController implements Seriali
         return inst;
     }
     
-    public void insertIntoNetwork(Node inst) throws RushHourException{
+    public void insertIntoNetwork(Node inst) throws RushHourException {
         List<Node> network = em.createNamedQuery("Node.findAll", Node.class).getResultList();
         for(Node other : network){
             em.persist(create(inst, other));
             em.persist(create(other, inst));
         }
+    }
+    
+    public List<RoutingInfo> findNetwork(Node goal) {
+        return 
+                em.createNamedQuery("RoutingInfo.findByGoal", RoutingInfo.class)
+                .setParameter("goal", goal)
+                .getResultList();
     }
 }

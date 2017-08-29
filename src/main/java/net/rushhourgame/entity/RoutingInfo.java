@@ -44,7 +44,10 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(
             name = "RoutingInfo.find",
-            query = "SELECT x FROM RoutingInfo x WHERE x.start = :start AND x.goal = :goal")
+            query = "SELECT x FROM RoutingInfo x WHERE x.start = :start AND x.goal = :goal"),
+    @NamedQuery(
+            name = "RoutingInfo.findByGoal",
+            query = "SELECT x FROM RoutingInfo x WHERE x.goal = :goal")
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"start_id", "goal_id"}))
 public class RoutingInfo extends AbstractEntity implements Serializable {

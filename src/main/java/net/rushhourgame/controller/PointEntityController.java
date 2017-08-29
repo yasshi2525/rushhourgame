@@ -37,9 +37,6 @@ import net.rushhourgame.entity.Point;
 public class PointEntityController extends AbstractController{
     private static final long serialVersionUID = 1L;
     
-    @Inject
-    protected NodeController nCon;
-    
     protected <T> List<T> findIn(TypedQuery<T> query, double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);

@@ -28,6 +28,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -37,6 +39,17 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
+@NamedQueries({
+    @NamedQuery(
+            name = "Link.findAll",
+            query = "SELECT x FROM Link x"),
+    @NamedQuery(
+            name="Link.findIn",
+            query = "SELECT obj FROM Link obj WHERE "
+                    + "(obj._from.point.x > :x1 AND obj._from.point.x < :x2 AND obj._from.point.y > :y1 AND obj._from.point.y < :y2)"
+                    + " OR (obj._to.point.x > :x1 AND obj._to.point.x < :x2 AND obj._to.point.y > :y1 AND obj._to.point.y < :y2)"
+    )
+})
 public class Link extends AbstractEntity{
     private static final long serialVersionUID = 1L;
     

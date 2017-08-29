@@ -44,7 +44,11 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(
             name = "Node.findAll",
-            query = "SELECT x FROM Node x")
+            query = "SELECT x FROM Node x"),
+    @NamedQuery(
+            name="Node.findIn",
+            query = "SELECT obj FROM Node obj WHERE obj.point.x > :x1 AND obj.point.x < :x2 AND obj.point.y > :y1 AND obj.point.y < :y2"
+    )
 })
 public class Node extends AbstractEntity implements Pointable, Comparable<Node> {
     

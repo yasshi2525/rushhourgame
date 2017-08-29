@@ -25,34 +25,36 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.Point;
-import net.rushhourgame.exception.RushHourException;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class NodeController extends PointEntityController {
+public class LinkController extends AbstractController {
     private static final long serialVersionUID = 1L;
     
-    @Inject
-    protected RoutingInfoController rCon;
-    
-    public Node create(double x, double y) throws RushHourException{
-        Node inst = new Node();
-        Point point = new Point();
-        inst.setPoint(point);
-        inst.setX(x);
-        inst.setY(y);
-        rCon.insertIntoNetwork(inst);
-        em.persist(inst);
+    public Link create(Node from, Node to, double cost, Link.Type type) {
+        Link inst = new Link();
+        inst.setFrom(from);
+        inst.setTo(to);
+        inst.setCost(cost);
+        inst.setType(type);
+        
         return inst;
     }
     
-    public List<Node> findIn(double centerX, double centerY, double scale){
-        return super.findIn(em.createNamedQuery("Node.findIn", Node.class), centerX, centerY, scale);
+    public List<Link> findIn(double centerX, double centerY, double scale){
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return em.createNamedQuery("Link.findIn", Link.class)
+                .setParameter("x1", centerX - width / 2.0)
+                .setParameter("x2", centerX + width / 2.0)
+                .setParameter("y1", centerY - height / 2.0)
+                .setParameter("y2", centerY + height / 2.0)
+                .getResultList();
     }
 }

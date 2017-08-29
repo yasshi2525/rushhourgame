@@ -70,6 +70,12 @@ public class ControllerFactory {
         return inst;
     }
     
+    public static LinkController createLinkController(){
+        LinkController inst = new LinkController();
+        init(inst);
+        return inst;
+    }
+    
     public static DigestCalculator createDigestCalculator(){
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();

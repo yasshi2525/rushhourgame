@@ -23,36 +23,43 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.Point;
+import net.rushhourgame.entity.RoutingInfo;
 import net.rushhourgame.exception.RushHourException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-@Dependent
-public class NodeController extends PointEntityController {
-    private static final long serialVersionUID = 1L;
-    
-    @Inject
-    protected RoutingInfoController rCon;
-    
-    public Node create(double x, double y) throws RushHourException{
-        Node inst = new Node();
-        Point point = new Point();
-        inst.setPoint(point);
-        inst.setX(x);
-        inst.setY(y);
-        rCon.insertIntoNetwork(inst);
-        em.persist(inst);
-        return inst;
+public class RouteSearcherTest extends AbstractControllerTest {
+
+    @Test
+    public void testSearch1() throws RushHourException {
+        Node node1 = nCon.create(0, 0);
+        em.flush();
+        
+        List<Node> nodes = nCon.findIn(0, 0, 1);
+        List<RoutingInfo> network = rCon.findNetwork(node1);
+        List<Link> links = lCon.findIn(0, 0, 1);
+        
+        RouteSearcher instance = new RouteSearcher();
+        instance.search(network, links, nodes, node1);
+        
+        assertTrue(node1.getCost() == 0.0);
     }
+
     
-    public List<Node> findIn(double centerX, double centerY, double scale){
-        return super.findIn(em.createNamedQuery("Node.findIn", Node.class), centerX, centerY, scale);
+    @Test
+    public void testSearch2() {
+        
     }
 }
