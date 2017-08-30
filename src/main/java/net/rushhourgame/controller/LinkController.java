@@ -42,7 +42,7 @@ public class LinkController extends AbstractController {
         inst.setTo(to);
         inst.setCost(cost);
         inst.setType(type);
-        
+        em.persist(inst);
         return inst;
     }
     

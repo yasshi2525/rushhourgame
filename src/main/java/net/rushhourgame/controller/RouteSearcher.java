@@ -53,7 +53,7 @@ public class RouteSearcher {
                 double newValue = x.getCost() + link.getCost();
                 if (newValue < y.getCost()) {
                     y.setCost(newValue);
-                    y.setVia(y);
+                    y.setVia(x);
                     queue.offer(y);
                 }
             }
