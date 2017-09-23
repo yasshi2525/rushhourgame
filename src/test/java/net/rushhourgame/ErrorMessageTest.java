@@ -52,7 +52,7 @@ public class ErrorMessageTest {
     public static void setUpClass() {
         prop = new RushHourResourceBundle();
     }
-    
+
     /**
      * Test of buildTitle method, of class ErrorMessage.
      */
@@ -171,4 +171,4 @@ public class ErrorMessageTest {
         assertEquals("foo bar", instance.buildDetail(prop, locale));
         assertEquals("foo bar", instance.buildAction(prop, locale));
     }
-}
+    }
