@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -59,7 +58,7 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM Player x WHERE x.token = :token"
     )
 })
-public class Player extends OwnerEntity implements Serializable {
+public class Player extends OwnerEntity {
     private static final long serialVersionUID = 1L;
     @Id
     protected String id;

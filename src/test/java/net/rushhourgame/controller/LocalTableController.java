@@ -25,12 +25,8 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.transaction.UserTransaction;
 import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoutingInfo;
 
@@ -41,7 +37,7 @@ import net.rushhourgame.entity.RoutingInfo;
 public class LocalTableController {
     EntityManager em;
     
-    private String[] tableList = {
+    private final String[] tableList = {
         "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", 
         "Station", "RoutingInfo", "Link", "Node", "RailPoint", "Rail", "Point", 
         "GameMaster", "Player", "OwnerInfo", "OAuth"

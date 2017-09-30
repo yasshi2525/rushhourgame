@@ -25,14 +25,12 @@ package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.exception.RushHourException;
 
 /**

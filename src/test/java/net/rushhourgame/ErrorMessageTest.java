@@ -23,8 +23,6 @@
  */
 package net.rushhourgame;
 
-import net.rushhourgame.RushHourResourceBundle;
-import net.rushhourgame.ErrorMessage;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import org.junit.BeforeClass;
@@ -38,12 +36,12 @@ import org.junit.rules.ExpectedException;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class ErrorMessageTest {
-    static protected RushHourResourceBundle prop;
-    static protected String TEST1 = "rushhour.test.text1";
-    static protected String TEST2 = "rushhour.test.text2";
-    static protected String QUOTE2 = "rushhour.test.quote2";
-    static protected String UNEXIST_ID = "rushhour.test.unexistid";
-    static protected Locale locale = Locale.getDefault();
+    static private RushHourResourceBundle prop;
+    static final protected String TEST1 = "rushhour.test.text1";
+    static final protected String TEST2 = "rushhour.test.text2";
+    static final protected String QUOTE2 = "rushhour.test.quote2";
+    static final protected String UNEXIST_ID = "rushhour.test.unexistid";
+    static final protected Locale LOCALE = Locale.getDefault();
     
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -59,9 +57,9 @@ public class ErrorMessageTest {
     @Test
     public void testBuildMessage() {
         ErrorMessage instance = new ErrorMessage(TEST1, TEST1, TEST1);
-        assertEquals("message", instance.buildTitle(prop, locale));
-        assertEquals("message", instance.buildDetail(prop, locale));
-        assertEquals("message", instance.buildAction(prop, locale));
+        assertEquals("message", instance.buildTitle(prop, LOCALE));
+        assertEquals("message", instance.buildDetail(prop, LOCALE));
+        assertEquals("message", instance.buildAction(prop, LOCALE));
     }
     
     @Test
@@ -70,9 +68,9 @@ public class ErrorMessageTest {
         instance.getTitleParams().add("hoge");
         instance.getDetailParams().add("hoge");
         instance.getActionParams().add("hoge");
-        assertEquals("'hoge'", instance.buildTitle(prop, locale));
-        assertEquals("'hoge'", instance.buildDetail(prop, locale));
-        assertEquals("'hoge'", instance.buildAction(prop, locale));
+        assertEquals("'hoge'", instance.buildTitle(prop, LOCALE));
+        assertEquals("'hoge'", instance.buildDetail(prop, LOCALE));
+        assertEquals("'hoge'", instance.buildAction(prop, LOCALE));
     }
     
     @Test
@@ -83,34 +81,34 @@ public class ErrorMessageTest {
         instance.getDetailParams().add("hoge");
         instance.getActionParams().add("hoge");
         
-        assertEquals("message", instance.buildTitle(prop, locale));
-        assertEquals("message", instance.buildDetail(prop, locale));
-        assertEquals("message", instance.buildAction(prop, locale));
+        assertEquals("message", instance.buildTitle(prop, LOCALE));
+        assertEquals("message", instance.buildDetail(prop, LOCALE));
+        assertEquals("message", instance.buildAction(prop, LOCALE));
     }
     
     @Test
     public void testNullId(){
         ErrorMessage instance = new ErrorMessage();
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildTitle(prop, locale));
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildDetail(prop, locale));
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildAction(prop, locale));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildTitle(prop, LOCALE));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildDetail(prop, LOCALE));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildAction(prop, LOCALE));
     }
     
     @Test
     public void testInvalidId(){
         ErrorMessage instance = new ErrorMessage(UNEXIST_ID, UNEXIST_ID, UNEXIST_ID);
         exception.expect(MissingResourceException.class);
-        instance.buildTitle(prop, locale);
-        instance.buildDetail(prop, locale);
-        instance.buildAction(prop, locale);
+        instance.buildTitle(prop, LOCALE);
+        instance.buildDetail(prop, LOCALE);
+        instance.buildAction(prop, LOCALE);
     }
     
     @Test
     public void testNullProp(){
         ErrorMessage instance = new ErrorMessage(TEST1, TEST1, TEST1);
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildTitle(null, locale));
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildDetail(null, locale));
-        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildAction(null, locale));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildTitle(null, LOCALE));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildDetail(null, LOCALE));
+        assertEquals(ErrorMessage.NO_CONTENTS, instance.buildAction(null, LOCALE));
     }
     
     @Test
@@ -131,17 +129,17 @@ public class ErrorMessageTest {
         instance.getActionParams().add("foo");
         instance.getActionParams().add("bar");
         
-        assertEquals("foo bar", instance.buildTitle(prop, locale));
-        assertEquals("foo bar", instance.buildDetail(prop, locale));
-        assertEquals("foo bar", instance.buildAction(prop, locale));
+        assertEquals("foo bar", instance.buildTitle(prop, LOCALE));
+        assertEquals("foo bar", instance.buildDetail(prop, LOCALE));
+        assertEquals("foo bar", instance.buildAction(prop, LOCALE));
     }
     
     @Test
     public void testFormatEmpty(){
         ErrorMessage instance = new ErrorMessage(TEST2, TEST2, TEST2);
-        assertEquals("{0} {1}", instance.buildTitle(prop, locale));
-        assertEquals("{0} {1}", instance.buildDetail(prop, locale));
-        assertEquals("{0} {1}", instance.buildAction(prop, locale));
+        assertEquals("{0} {1}", instance.buildTitle(prop, LOCALE));
+        assertEquals("{0} {1}", instance.buildDetail(prop, LOCALE));
+        assertEquals("{0} {1}", instance.buildAction(prop, LOCALE));
     }
     
     @Test
@@ -150,9 +148,9 @@ public class ErrorMessageTest {
         instance.getTitleParams().add("foo");
         instance.getDetailParams().add("foo");
         instance.getActionParams().add("foo");
-        assertEquals("foo {1}", instance.buildTitle(prop, locale));
-        assertEquals("foo {1}", instance.buildDetail(prop, locale));
-        assertEquals("foo {1}", instance.buildAction(prop, locale));
+        assertEquals("foo {1}", instance.buildTitle(prop, LOCALE));
+        assertEquals("foo {1}", instance.buildDetail(prop, LOCALE));
+        assertEquals("foo {1}", instance.buildAction(prop, LOCALE));
     }
     
     @Test
@@ -167,8 +165,8 @@ public class ErrorMessageTest {
         instance.getTitleParams().add("three");
         instance.getDetailParams().add("three");
         instance.getActionParams().add("three");
-        assertEquals("foo bar", instance.buildTitle(prop, locale));
-        assertEquals("foo bar", instance.buildDetail(prop, locale));
-        assertEquals("foo bar", instance.buildAction(prop, locale));
+        assertEquals("foo bar", instance.buildTitle(prop, LOCALE));
+        assertEquals("foo bar", instance.buildDetail(prop, LOCALE));
+        assertEquals("foo bar", instance.buildAction(prop, LOCALE));
     }
     }

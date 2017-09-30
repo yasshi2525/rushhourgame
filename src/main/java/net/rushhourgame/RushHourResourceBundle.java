@@ -23,7 +23,6 @@
  */
 package net.rushhourgame;
 
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,14 +37,14 @@ import javax.inject.Inject;
  */
 @Startup
 @Singleton
-public class RushHourResourceBundle extends AbstractResourceBundle{
+public class RushHourResourceBundle extends AbstractResourceBundle {
 
     private static final long serialVersionUID = 1L;
     @Inject
     protected RushHourProperties prop;
 
-    protected static RushHourResourceBundle instance;
-    
+    private static final RushHourResourceBundle INSTANCE;
+
     private static final Logger LOG = Logger.getLogger(RushHourResourceBundle.class.getName());
 
     public static final String LABEL_RUSHHOUR = "rushhour.label.rushhour";
@@ -99,20 +98,26 @@ public class RushHourResourceBundle extends AbstractResourceBundle{
 
     public static final String SERVER_ERR_ACTION = "rushhour.message.servererror.action";
     public static final String SYSTEM_ERR_ACTION = "rushhour.message.systemerror.action";
-    
+
     public static final String GAME_NO_PRIVILEDGE = "rushhour.message.game.noPrivilege";
     public static final String GAME_NO_PRIVILEDGE_ACTION = "rushhour.message.game.noPrivilege.action";
     public static final String GAME_NO_PRIVILEDGE_OTHER_OWNED = "rushhour.message.game.noPrivilege.otherOwned";
     public static final String GAME_NO_PRIVILEDGE_ONLY_ADMIN = "rushhour.message.game.noPrivilege.onlyAdministrator";
     public static final String GAME_NO_OWNER = "rushhour.message.game.noOwner";
-    
+
     public static final String GAME_DATA_INCONSIST = "rushhour.message.game.dataInconsistency";
     public static final String GAME_DATA_INCONSIST_DUP_GM = "rushhour.message.game.dataInconsistency.duplicateGameMaster";
     public static final String GAME_DATA_INCONSIST_ACTION = "rushhour.message.game.dataInconsistency.action";
-    
+
     public static final String UNKNOWN = "rushhour.message.unknown";
     public static final String UNKNOWN_DETAIL = "rushhour.message.unknown.detail";
     public static final String UNKNOWN_ACTION = "rushhour.message.unknown.action";
+
+    static {
+        INSTANCE = new RushHourResourceBundle();
+        INSTANCE.prop = RushHourProperties.getInstance();
+        INSTANCE.init();
+    }
 
     protected RushHourResourceBundle() {
         super("message");
@@ -124,26 +129,20 @@ public class RushHourResourceBundle extends AbstractResourceBundle{
         LOG.log(Level.FINE, "{0}#init start", RushHourResourceBundle.class.getSimpleName());
         String langList = prop.get(RushHourProperties.LANG);
         if (langList == null || "".equals(langList)) {
-            LOG.log(Level.FINE, "{0}#init langList equals null or empty, so fetch default locale = {1}", 
+            LOG.log(Level.FINE, "{0}#init langList equals null or empty, so fetch default locale = {1}",
                     new Object[]{RushHourResourceBundle.class.getSimpleName(), Locale.getDefault()});
             fetch(Locale.getDefault());
-        }else{
+        } else {
             String[] langs = langList.split(",");
-            for(String lang : langs){
-                LOG.log(Level.FINE, "{0}#init fetch {1} (val = {2})", 
+            for (String lang : langs) {
+                LOG.log(Level.FINE, "{0}#init fetch {1} (val = {2})",
                         new Object[]{RushHourResourceBundle.class.getSimpleName(), new Locale(lang), lang});
                 fetch(new Locale(lang));
             }
         }
     }
-    
-    public static RushHourResourceBundle getInstance(){
-        if(instance == null){
-            instance = new RushHourResourceBundle();
-            instance.prop = RushHourProperties.getInstance();
-            instance.init();
-        }
-        
-        return instance;
+
+    public static RushHourResourceBundle getINSTANCE() {
+        return INSTANCE;
     }
 }

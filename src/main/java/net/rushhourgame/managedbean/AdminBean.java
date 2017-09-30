@@ -24,9 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import javax.enterprise.context.Dependent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -35,11 +33,8 @@ import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
-import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
-import net.rushhourgame.json.TwitterUserData;
-import net.rushhourgame.json.UserData;
 
 /**
  *

@@ -29,17 +29,13 @@ import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
 import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.TwitterUserData;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -73,8 +69,8 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         try {
-            spy.oAuthController = oCon;
-            spy.playerController = pCon;
+            spy.oAuthController = OCON;
+            spy.playerController = PCON;
             spy.rushHourSession = session;
             spy.client = client;
             spy.userShowClient = showClient;
@@ -85,8 +81,8 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             doReturn(context).when(spy).getExternalContext();
             doNothing().when(context).redirect(anyString());
             doReturn(new TwitterUserData()).when(showClient).getUserData();
-            oCon.createOAuthBean("test", "test_sec");
-            pCon.createPlayer("test", "testId", "test_access", new SimpleUserData());
+            OCON.createOAuthBean("test", "test_sec");
+            PCON.createPlayer("test", "testId", "test_access", new SimpleUserData());
         } catch (IOException | RushHourException ex) {
             Logger.getLogger(TwitterOAuthAccessTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -96,7 +92,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     @Test
     public void testInit() {
         spy.requestToken = "test";
-        spy.oauthVerifier = "hoge";
+        spy.oAuthVerifier = "hoge";
         try {
             doReturn(new Player()).when(spy).fetchPlayer(anyString(), anyString(), anyString(), anyString());
             doNothing().when(spy).registerSessionAttribute(any());
@@ -108,7 +104,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
 
     @Test
     public void testInitRequestTokenNull() {
-        spy.oauthVerifier = "hoge";
+        spy.oAuthVerifier = "hoge";
         try {
             spy.init();
             fail();
@@ -135,7 +131,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     @Test
     public void testInitUnexistRequestToken() {
         spy.requestToken = "unexist";
-        spy.oauthVerifier = "hoge";
+        spy.oAuthVerifier = "hoge";
         try {
             spy.init();
             fail();
@@ -148,7 +144,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCreatePlayer() throws Exception {
-        oCon.createOAuthBean("new", "new_sec");
+        OCON.createOAuthBean("new", "new_sec");
         Player newPlayer = spy.fetchPlayer("new", "newId", "new_access", "new_access_sec");
 
         assertNotNull(newPlayer);

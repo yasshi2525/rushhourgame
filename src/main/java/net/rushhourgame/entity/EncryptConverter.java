@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -92,7 +93,7 @@ public class EncryptConverter implements AttributeConverter<String, String> {
         IvParameterSpec ivp = createIvParameter();
 
         c.init(Cipher.ENCRYPT_MODE, key, ivp);
-        byte[] output = c.doFinal(input.getBytes());
+        byte[] output = c.doFinal(input.getBytes(StandardCharsets.UTF_8));
 
         return combineIv(output, ivp);
     }
@@ -120,7 +121,7 @@ public class EncryptConverter implements AttributeConverter<String, String> {
         c.init(Cipher.DECRYPT_MODE, key, ivp);
         byte[] output = c.doFinal(Base64.getDecoder().decode(encrypted));
 
-        return new String(output);
+        return new String(output, StandardCharsets.UTF_8);
     }
 
     protected Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {

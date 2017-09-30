@@ -24,7 +24,6 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;

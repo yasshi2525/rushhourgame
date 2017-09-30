@@ -23,7 +23,6 @@
  */
 package net.rushhourgame;
 
-import net.rushhourgame.RushHourResourceBundle;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import org.junit.Before;
@@ -41,7 +40,7 @@ public class RushHourResourceBundleTest {
     RushHourResourceBundle inst;
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    protected static Locale locale = Locale.getDefault();
+    protected final static Locale LOCALE = Locale.getDefault();
 
     @Before
     public void setUp() {
@@ -50,17 +49,17 @@ public class RushHourResourceBundleTest {
 
     @Test
     public void testFetch() {
-        inst.fetch(locale);
-        assertNotNull(inst.cacheList.get(locale));
-        assertFalse(inst.cacheList.get(locale).keySet().isEmpty());
+        inst.fetch(LOCALE);
+        assertNotNull(inst.cacheList.get(LOCALE));
+        assertFalse(inst.cacheList.get(LOCALE).keySet().isEmpty());
     }
 
     @Test
     public void testGet() {
-        assertNotNull(inst.get("rushhour.test.message", locale));
+        assertNotNull(inst.get("rushhour.test.message", LOCALE));
         exception.expect(MissingResourceException.class);
         //存在しない値は読み込めない
-        assertNull(inst.get("rushhour.test.message.unexistsparameter", locale));
+        assertNull(inst.get("rushhour.test.message.unexistsparameter", LOCALE));
         
         assertNotNull(inst.get("rushhour.test.message", null));
         exception.expect(MissingResourceException.class);
@@ -70,7 +69,7 @@ public class RushHourResourceBundleTest {
     
     @Test
     public void testEscape(){
-        assertEquals("''This is sample.''", inst.get("rushhour.test.quote1", locale));
+        assertEquals("''This is sample.''", inst.get("rushhour.test.quote1", LOCALE));
     }
 
     @Test

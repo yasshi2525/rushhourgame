@@ -24,11 +24,7 @@
 package net.rushhourgame.json;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.enterprise.inject.Model;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 

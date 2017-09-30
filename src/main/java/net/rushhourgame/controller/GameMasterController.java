@@ -38,6 +38,8 @@ import net.rushhourgame.entity.RoleType;
  */
 @Dependent
 public class GameMasterController extends AbstractController{
+    private static final long serialVersionUID = 1L;
+    
     public boolean exists(){
         return em.createNamedQuery("GameMaster.count", Long.class).getSingleResult() > 0;
     }

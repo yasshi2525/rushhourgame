@@ -25,14 +25,11 @@ package net.rushhourgame.entity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.rushhourgame.entity.AbstractEntityTest.em;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import static org.mockito.Mockito.spy;
-import org.mockito.Spy;
 
 /**
  *
@@ -59,10 +56,10 @@ public class OwnableEntityTest extends AbstractEntityTest {
         admin = new Player();
         admin.getRoles().add(RoleType.ADMINISTRATOR);
         try {
-            gm = gCon.create();
+            gm = GCON.create();
         } catch (RushHourException ex) {
             LOG.log(Level.SEVERE, null, ex);
-            tCon.clean();
+            TCON.clean();
             fail();
         }
         inst = spy(OwnableEntity.class);

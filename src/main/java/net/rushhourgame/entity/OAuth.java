@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -60,7 +59,7 @@ import javax.persistence.Table;
     )
 })
 @Entity
-public class OAuth extends AbstractEntity implements Serializable {
+public class OAuth extends AbstractEntity {
 
     private static final Logger LOG = Logger.getLogger(OAuth.class.getName());
 
@@ -72,7 +71,7 @@ public class OAuth extends AbstractEntity implements Serializable {
     @Convert(converter = EncryptConverter.class)
     protected String requestTokenSecret;
     @Convert(converter = EncryptConverter.class)
-    protected String oauthVerifier;
+    protected String oAuthVerifier;
     @Convert(converter = EncryptConverter.class)
     protected String accessToken;
     protected String accessTokenSecret;
@@ -103,12 +102,12 @@ public class OAuth extends AbstractEntity implements Serializable {
         this.requestTokenSecret = requestTokenSecret;
     }
 
-    public String getOauthVerifier() {
-        return oauthVerifier;
+    public String getOAuthVerifier() {
+        return oAuthVerifier;
     }
 
-    public void setOauthVerifier(String oauthVerifier) {
-        this.oauthVerifier = oauthVerifier;
+    public void setOAuthVerifier(String oAuthVerifier) {
+        this.oAuthVerifier = oAuthVerifier;
     }
 
     public String getAccessToken() {

@@ -24,6 +24,7 @@
 package net.rushhourgame.controller;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -44,8 +45,8 @@ public class DigestCalculator implements Serializable{
     
     public String calcDigest(String input) throws NoSuchAlgorithmException{
         MessageDigest md = MessageDigest.getInstance(prop.get(DIGEST_ALGORITHM));
-        md.update(prop.get(DIGEST_SALT).getBytes());
-        md.update(input.getBytes());
+        md.update(prop.get(DIGEST_SALT).getBytes(StandardCharsets.UTF_8));
+        md.update(input.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(md.digest());
     }
 }

@@ -38,15 +38,15 @@ public class PlayerTest extends AbstractEntityTest{
     public void testControlRole() {
         Player player = new Player();
         player.setId("hoge");
-        em.persist(player);
+        EM.persist(player);
         assertEquals(0, player.getRoles().size());
         
         player.roles.add(RoleType.PLAYER);
-        em.merge(player);
+        EM.merge(player);
         assertEquals(1, player.getRoles().size());
         
         player.roles.add(RoleType.ADMINISTRATOR);
-        em.merge(player);
+        EM.merge(player);
         assertEquals(2, player.getRoles().size());
     }
     
@@ -54,15 +54,15 @@ public class PlayerTest extends AbstractEntityTest{
     public void testPersistNoRole() {
         Player player = new Player();
         player.setId("hoge");
-        em.persist(player);
+        EM.persist(player);
         assertEquals(0, player.getRoles().size());
         
         player.roles.add(RoleType.PLAYER);
-        em.merge(player);
+        EM.merge(player);
         assertEquals(1, player.getRoles().size());
         
         player.roles.add(RoleType.ADMINISTRATOR);
-        em.merge(player);
+        EM.merge(player);
         assertEquals(2, player.getRoles().size());
     }
     
@@ -71,11 +71,11 @@ public class PlayerTest extends AbstractEntityTest{
         Player player = new Player();
         player.setId("hoge");
         player.roles.add(RoleType.PLAYER);
-        em.persist(player);
+        EM.persist(player);
         assertEquals(1, player.getRoles().size());
         
         player.roles.add(RoleType.ADMINISTRATOR);
-        em.merge(player);
+        EM.merge(player);
         assertEquals(2, player.getRoles().size());
     }
     
@@ -90,6 +90,6 @@ public class PlayerTest extends AbstractEntityTest{
         info.setTextColor("#000000");
         player.setId("hoge");
         player.setInfo(info);
-        em.persist(player);
+        EM.persist(player);
     }
 }

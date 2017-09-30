@@ -30,7 +30,6 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
-import net.rushhourgame.json.UserData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,39 +41,39 @@ import org.junit.rules.ExpectedException;
  */
 public class AbstractControllerTest {
 
-    protected static EntityManager em = LocalEntityManager.createEntityManager();
-    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
-    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
-    protected static PlayerController pCon = ControllerFactory.createPlayController();
-    protected static OAuthController oCon = ControllerFactory.createOAuthController();
-    protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
-    protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
-    protected static NodeController nCon = ControllerFactory.createNodeController();
-    protected static RoutingInfoController rCon = ControllerFactory.createRoutingInfoController();
-    protected static LinkController lCon = ControllerFactory.createLinkController();
+    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
+    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
+    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
+    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
+    protected final static PlayerController PCON = ControllerFactory.createPlayController();
+    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
+    protected final static AbsorberController ACON = ControllerFactory.createAbsorberController();
+    protected final static GameMasterController GCON = ControllerFactory.createGameMasterController();
+    protected final static NodeController NCON = ControllerFactory.createNodeController();
+    protected final static RoutingInfoController RCON = ControllerFactory.createRoutingInfoController();
+    protected final static LinkController LCON = ControllerFactory.createLinkController();
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
-        em.getTransaction().begin();
+        EM.getTransaction().begin();
     }
 
     @After
     public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+        EM.getTransaction().commit();
+        TCON.clean();
     }
     
     protected static Player createPlayer() throws RushHourException{
-        oCon.createOAuthBean("_player", "_player_sec");
-        return pCon.createPlayer("_player", "_player", "_player", new SimpleUserData());
+        OCON.createOAuthBean("_player", "_player_sec");
+        return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
     
     protected static Player createAdmin() throws RushHourException{
-        oCon.createOAuthBean("_admin", "_admin_sec");
-        Player admin = pCon.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
+        OCON.createOAuthBean("_admin", "_admin_sec");
+        Player admin = PCON.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
         admin.getRoles().add(RoleType.ADMINISTRATOR);
         
         return admin;

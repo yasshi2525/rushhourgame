@@ -42,7 +42,7 @@ public class RushHourSession implements Serializable {
     protected static final String SESSION_NAME = "rushhour";
     
     @Inject
-    HttpSession injectedSession;
+    transient HttpSession injectedSession;
     
     public void setLocale(Locale locale){
         findOrCreateBean().setLocale(locale);

@@ -23,7 +23,6 @@
  */
 package net.rushhourgame;
 
-import java.util.Locale;
 import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,7 +39,7 @@ import static net.rushhourgame.RushHourSession.SESSION_NAME;
  */
 public class RushHourSessionTest {
 
-    protected static RushHourSessionBean bean;
+    private static RushHourSessionBean bean;
 
     public RushHourSessionTest() {
     }

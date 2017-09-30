@@ -11,7 +11,7 @@
         <f:view>
             <f:metadata>
                 <f:viewParam name="oauth_token" value="#{twitterOAuthAccessToken.requestToken}"/>
-                <f:viewParam name="oauth_verifier" value="#{twitterOAuthAccessToken.oauthVerifier}"/>
+                <f:viewParam name="oauth_verifier" value="#{twitterOAuthAccessToken.OAuthVerifier}"/>
                 <f:viewAction action="#{twitterOAuthAccessToken.init()}"/>
             </f:metadata>
         </f:view>

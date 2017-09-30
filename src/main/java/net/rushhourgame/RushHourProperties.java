@@ -50,7 +50,12 @@ public class RushHourProperties implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RushHourProperties.class.getName());
 
-    protected static RushHourProperties instanceRef;
+    protected final static RushHourProperties INSTANCE;
+    
+    static {
+        INSTANCE = new RushHourProperties();
+        INSTANCE.init();
+    }
 
     // constants.properties ----------------------------------------------------
     public static final String CONFIG_PATH = "rushhour.config.path";
@@ -143,7 +148,6 @@ public class RushHourProperties implements Serializable {
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init error during default config loading.", ex);
         }
-        instanceRef = this;
     }
 
     @PreDestroy
@@ -158,10 +162,7 @@ public class RushHourProperties implements Serializable {
      * @return
      */
     public static RushHourProperties getInstance() {
-        if (instanceRef == null) {
-            new RushHourProperties().init();
-        }
-        return instanceRef;
+        return INSTANCE;
     }
 
     synchronized public String get(String key) {

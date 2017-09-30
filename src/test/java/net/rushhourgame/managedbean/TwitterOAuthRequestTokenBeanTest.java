@@ -30,10 +30,7 @@ import javax.faces.context.ExternalContext;
 import static net.rushhourgame.RushHourResourceBundle.SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -66,8 +63,8 @@ public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest{
             Logger.getLogger(TwitterOAuthRequestTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         spy.client = client;
-        spy.oAuthController = oCon;
-        spy.prop = prop;
+        spy.oAuthController = OCON;
+        spy.prop = PROP;
         doReturn(context).when(spy).getExternalContext();
     }
 
@@ -79,8 +76,8 @@ public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest{
        
         spy.requestRequestToken();
         
-        assertNotNull(oCon.findByRequestToken("test"));
-        assertEquals("test", oCon.findByRequestToken("test").getRequestToken());
+        assertNotNull(OCON.findByRequestToken("test"));
+        assertEquals("test", OCON.findByRequestToken("test").getRequestToken());
     }
 
     public void testRequestRequestTokenUnconfirmed() throws RushHourException{

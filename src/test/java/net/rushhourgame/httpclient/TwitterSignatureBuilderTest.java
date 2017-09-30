@@ -26,7 +26,6 @@ package net.rushhourgame.httpclient;
 import java.io.UnsupportedEncodingException;
 import net.rushhourgame.RushHourProperties;
 import static net.rushhourgame.RushHourProperties.*;
-import net.rushhourgame.RushHourResourceBundle;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -44,8 +43,7 @@ public class TwitterSignatureBuilderTest {
 
     protected TwitterSignatureBuilder inst;
     protected TwitterSignatureBuilder sample;
-    protected static RushHourProperties prop;
-    protected static RushHourResourceBundle resourceBundle;
+    private static RushHourProperties prop;
     protected static final String HTTP_METHOD = "GET";
     protected static final String INVALID_URL = "http://127.0.0.1/";
     protected static final String ESCAPED_URL = "http%3A%2F%2F127.0.0.1%2F";
@@ -59,7 +57,6 @@ public class TwitterSignatureBuilderTest {
     @BeforeClass
     public static void setUpClass() {
         prop = RushHourProperties.getInstance();
-        resourceBundle = RushHourResourceBundle.getInstance();
     }
 
     @AfterClass

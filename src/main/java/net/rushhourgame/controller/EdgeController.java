@@ -23,12 +23,10 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.Point;
 import net.rushhourgame.exception.RushHourException;
 
 /**

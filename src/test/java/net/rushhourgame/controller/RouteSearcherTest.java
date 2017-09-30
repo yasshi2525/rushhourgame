@@ -23,16 +23,11 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
 import net.rushhourgame.entity.RoutingInfo;
 import net.rushhourgame.exception.RushHourException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -44,12 +39,12 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testSearch1() throws RushHourException {
-        Node node1 = nCon.create(0, 0);
-        em.flush();
+        Node node1 = NCON.create(0, 0);
+        EM.flush();
         
-        List<Node> nodes = nCon.findIn(0, 0, 1);
-        List<RoutingInfo> network = rCon.findNetwork(node1);
-        List<Link> links = lCon.findIn(0, 0, 1);
+        List<Node> nodes = NCON.findIn(0, 0, 1);
+        List<RoutingInfo> network = RCON.findNetwork(node1);
+        List<Link> links = LCON.findIn(0, 0, 1);
         
         RouteSearcher instance = new RouteSearcher();
         instance.search(network, links, nodes, node1);
@@ -60,17 +55,17 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testSearch2() throws RushHourException {
-        Node node1 = nCon.create(0, 0);
-        Node node2 = nCon.create(1, 1);
-        Link link = lCon.create(node1, node2, 1, Link.Type.WALK);
-        em.flush();
-        em.clear();
-        List<Node> nodes = nCon.findIn(0, 0, 2);
+        Node node1 = NCON.create(0, 0);
+        Node node2 = NCON.create(1, 1);
+        LCON.create(node1, node2, 1, Link.Type.WALK);
+        EM.flush();
+        EM.clear();
+        List<Node> nodes = NCON.findIn(0, 0, 2);
         
         Node start = nodes.get(0);
         Node goal = nodes.get(1);
-        List<RoutingInfo> network = rCon.findNetwork(goal);
-        List<Link> links = lCon.findIn(0, 0, 2);
+        List<RoutingInfo> network = RCON.findNetwork(goal);
+        List<Link> links = LCON.findIn(0, 0, 2);
         
         RouteSearcher instance = new RouteSearcher();
         instance.search(network, links, nodes, goal);
@@ -82,19 +77,19 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testSearch2Loop() throws RushHourException {
-        Node node1 = nCon.create(0, 0);
-        Node node2 = nCon.create(1, 1);
-        lCon.create(node1, node2, 1, Link.Type.WALK);
-        lCon.create(node2, node1, 1, Link.Type.WALK);
-        em.flush();
-        em.clear();
-        List<Node> nodes = nCon.findIn(0, 0, 2);
+        Node node1 = NCON.create(0, 0);
+        Node node2 = NCON.create(1, 1);
+        LCON.create(node1, node2, 1, Link.Type.WALK);
+        LCON.create(node2, node1, 1, Link.Type.WALK);
+        EM.flush();
+        EM.clear();
+        List<Node> nodes = NCON.findIn(0, 0, 2);
         
         Node start = nodes.get(0);
         Node goal = nodes.get(1);
-        List<RoutingInfo> startlNetwork = rCon.findNetwork(start);
-        List<RoutingInfo> goalNetwork = rCon.findNetwork(goal);
-        List<Link> links = lCon.findIn(0, 0, 2);
+        List<RoutingInfo> startlNetwork = RCON.findNetwork(start);
+        List<RoutingInfo> goalNetwork = RCON.findNetwork(goal);
+        List<Link> links = LCON.findIn(0, 0, 2);
         
         RouteSearcher instance = new RouteSearcher();
         instance.search(startlNetwork, links, nodes, start);

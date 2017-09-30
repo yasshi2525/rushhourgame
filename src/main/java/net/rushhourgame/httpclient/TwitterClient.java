@@ -23,12 +23,9 @@
  */
 package net.rushhourgame.httpclient;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -44,7 +41,7 @@ import net.rushhourgame.RushHourProperties;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class TwitterClient extends HttpClient implements Serializable {
+public class TwitterClient extends HttpClient {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterClient.class.getName());
@@ -71,15 +68,12 @@ public class TwitterClient extends HttpClient implements Serializable {
         LOG.log(Level.FINE, "{0}#init", HttpClient.class.getSimpleName());
 
         // Twitter API 共通のパラメタ値を設定
-        authorizationHeaders = new TreeMap<String, String>() {
-            {
-                put(OAUTH_CONSUMER_KEY, prop.get(RushHourProperties.TWITTER_CONSUMER_KEY));
-                put(OAUTH_NONCE, createNonce());
-                put(OAUTH_SIGNATURE_METHOD, "HMAC-SHA1");
-                put(OAUTH_TIMESTAMP, String.valueOf(System.currentTimeMillis() / 1000));
-                put(OAUTH_VERSION, "1.0");
-            }
-        };
+        authorizationHeaders = new TreeMap<>();
+        authorizationHeaders.put(OAUTH_CONSUMER_KEY, prop.get(RushHourProperties.TWITTER_CONSUMER_KEY));
+        authorizationHeaders.put(OAUTH_NONCE, createNonce());
+        authorizationHeaders.put(OAUTH_SIGNATURE_METHOD, "HMAC-SHA1");
+        authorizationHeaders.put(OAUTH_TIMESTAMP, String.valueOf(System.currentTimeMillis() / 1000));
+        authorizationHeaders.put(OAUTH_VERSION, "1.0");
         requestHeaders.put(AUTHIRIZATION, authorizationHeaders);
 
         //Sigunature Key作成のための初期設定
@@ -99,7 +93,7 @@ public class TwitterClient extends HttpClient implements Serializable {
             throw new IllegalArgumentException("oAuthToken == null");
         }
         this.oAuthTokenSecret = oAuthTokenSecret;
-        sigBuilder.setoAuthTokenSecret(oAuthTokenSecret);
+        sigBuilder.setOAuthTokenSecret(oAuthTokenSecret);
     }
 
     /**
@@ -128,12 +122,10 @@ public class TwitterClient extends HttpClient implements Serializable {
         }
         LOG.log(Level.FINER, "{0}#buildHeader header = {1}",
                 new Object[]{TwitterClient.class.getSimpleName(), sb.toString()});
-        
-        return new TreeMap<String, String>() {
-            {
-                put(AUTHIRIZATION, sb.toString());
-            }
-        };
+
+        SortedMap<String, String> header = new TreeMap<>();
+        header.put(AUTHIRIZATION, sb.toString());
+        return header;
     }
 
     protected String buildSignature() throws UnsupportedEncodingException {
@@ -164,5 +156,4 @@ public class TwitterClient extends HttpClient implements Serializable {
                 .replaceAll("=", "");
     }
 
-    
 }

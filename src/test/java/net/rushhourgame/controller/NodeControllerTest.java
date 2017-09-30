@@ -47,12 +47,12 @@ public class NodeControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException{
         Node n1 = inst.create(0, 0);
-        em.flush();
-        assertEquals(0, tCon.findRoutingInfos().size());
+        EM.flush();
+        assertEquals(0, TCON.findRoutingInfos().size());
         
         Node n2 = inst.create(1, 1);
-        em.flush();
-        List<RoutingInfo> network = tCon.findRoutingInfos();
+        EM.flush();
+        List<RoutingInfo> network = TCON.findRoutingInfos();
         assertEquals(2, network.size());
         assertEquals(n2.getId(), network.get(0).getStart().getId());
         assertEquals(n1.getId(), network.get(0).getGoal().getId());
@@ -60,11 +60,11 @@ public class NodeControllerTest extends AbstractControllerTest {
         assertEquals(n2.getId(), network.get(1).getGoal().getId());
         
         inst.create(2, 2);
-        em.flush();
-        assertEquals(6, tCon.findRoutingInfos().size());
+        EM.flush();
+        assertEquals(6, TCON.findRoutingInfos().size());
         
         inst.create(3, 3);
-        em.flush();
-        assertEquals(12, tCon.findRoutingInfos().size());
+        EM.flush();
+        assertEquals(12, TCON.findRoutingInfos().size());
     }
 }

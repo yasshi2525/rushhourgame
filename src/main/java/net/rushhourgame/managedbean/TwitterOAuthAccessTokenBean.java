@@ -24,7 +24,6 @@
 package net.rushhourgame.managedbean;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
@@ -53,11 +52,11 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
     
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterOAuthAccessTokenBean.class.getName());
-    protected static String OAUTH_VERIFIER = "oauth_verifier";
-    protected static String OAUTH_TOKEN = "oauth_token";
+    protected final static String OAUTH_VERIFIER = "oauth_verifier";
+    protected final static String OAUTH_TOKEN = "oauth_token";
     
     protected String requestToken;
-    protected String oauthVerifier;
+    protected String oAuthVerifier;
     
     @Inject
     protected OAuthController oAuthController;
@@ -81,7 +80,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
      */
     @Transactional
     public void init() throws RushHourException, IOException {
-        if (requestToken == null || oauthVerifier == null) {
+        if (requestToken == null || oAuthVerifier == null) {
             // GETパラメータからリクエストトークンを受け取れない
             LOG.log(Level.SEVERE, "TwitterOAuthAccessTokenManagedBean#init requestToken is null");
             
@@ -103,11 +102,11 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
 
         // verifier を登録
         OAuth oAuth = oAuthController.findByRequestToken(requestToken);
-        oAuth.setOauthVerifier(oauthVerifier);
+        oAuth.setOAuthVerifier(oAuthVerifier);
 
         // アクセストークンの取得
         client.setOAuthToken(requestToken);
-        client.setOAuthVerifier(oauthVerifier);
+        client.setOAuthVerifier(oAuthVerifier);
         client.setOAuthTokenSecret(oAuth.getRequestTokenSecret());
         
         // リクエストの実行
@@ -194,11 +193,11 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
         this.requestToken = requestToken;
     }
     
-    public String getOauthVerifier() {
-        return oauthVerifier;
+    public String getOAuthVerifier() {
+        return oAuthVerifier;
     }
     
-    public void setOauthVerifier(String oauthVerifier) {
-        this.oauthVerifier = oauthVerifier;
+    public void setOAuthVerifier(String oauthVerifier) {
+        this.oAuthVerifier = oauthVerifier;
     }
 }

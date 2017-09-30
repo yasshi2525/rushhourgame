@@ -31,7 +31,6 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.RushHourResourceBundle;
 
 /**
  *
@@ -41,15 +40,11 @@ public class TwitterClientTest {
 
     protected TwitterClient inst;
     protected static final String INVALID_URL = "http://127.0.0.1/";
-    protected static RushHourProperties prop;
-    protected static RushHourResourceBundle resourceBundle;
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @BeforeClass
     public static void setUpClass() {
-        prop = RushHourProperties.getInstance();
-        resourceBundle = RushHourResourceBundle.getInstance();
     }
 
     @Before

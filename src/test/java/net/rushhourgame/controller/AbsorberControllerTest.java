@@ -24,12 +24,10 @@
 package net.rushhourgame.controller;
 
 import net.rushhourgame.entity.Owner;
-import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.Player;
 import org.junit.Before;
 
 /**

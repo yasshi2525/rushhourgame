@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.httpclient;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -40,7 +39,7 @@ import net.rushhourgame.json.TwitterUserDataParser;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class TwitterUserShowClient extends TwitterClient implements Serializable {
+public class TwitterUserShowClient extends TwitterClient {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TwitterUserShowClient.class.getName());
@@ -66,7 +65,7 @@ public class TwitterUserShowClient extends TwitterClient implements Serializable
 
         getParameters.put(USER_ID, userId);
         requestHeaders.get(AUTHIRIZATION).put(OAUTH_TOKEN, accessToken);
-        sigBuilder.setoAuthTokenSecret(accessTokenSecret);
+        sigBuilder.setOAuthTokenSecret(accessTokenSecret);
     }
 
     public void setPlayer(Player player) {

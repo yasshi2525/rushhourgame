@@ -58,7 +58,7 @@ public class RoutingInfoControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreateLoop() throws RushHourException {
-        Node node = nCon.create(0, 0);
+        Node node = NCON.create(0, 0);
         try {
             inst.create(node, node);
             fail();
@@ -70,16 +70,16 @@ public class RoutingInfoControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreateSameRelation() throws RushHourException {
-        Node node1 = nCon.create(0, 0);
-        Node node2 = nCon.create(1, 1);
-        em.flush();
+        Node node1 = NCON.create(0, 0);
+        Node node2 = NCON.create(1, 1);
+        EM.flush();
         try {
             inst.create(node1, node2);
-            em.flush();
+            EM.flush();
             fail();
         } catch (PersistenceException ex) {
-            em.getTransaction().rollback();
-            em.getTransaction().begin();
+            EM.getTransaction().rollback();
+            EM.getTransaction().begin();
         }
     }
 }

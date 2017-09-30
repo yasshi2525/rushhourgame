@@ -26,7 +26,6 @@ package net.rushhourgame;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -35,9 +34,9 @@ import java.util.logging.Logger;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class AbstractResourceBundle implements Serializable{
-
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(AbstractResourceBundle.class.getName());
-    protected Map<Locale, ResourceBundle> cacheList = new HashMap<>();
+    transient protected HashMap<Locale, ResourceBundle> cacheList = new HashMap<>();
     protected String baseName;
 
     public AbstractResourceBundle(String baseName) {

@@ -36,7 +36,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.RushHourSessionBean;
 
 /**
  *
@@ -51,7 +50,7 @@ public class ServletFilter implements Filter {
         handleLocale(request);
         try {
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (IOException | ServletException e) {
             LOG.log(Level.SEVERE, "ServletFilter#doFilter fail", e);
         }
     }

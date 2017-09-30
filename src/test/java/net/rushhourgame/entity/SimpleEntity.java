@@ -28,5 +28,5 @@ package net.rushhourgame.entity;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class SimpleEntity extends AbstractEntity {
-    
+    private static final long serialVersionUID = 1L;
 }

@@ -44,18 +44,18 @@ public abstract class AbstractEntity implements Serializable{
     protected Date updated;
 
     public Date getCreated() {
-        return created;
+        return created == null ? null : new Date(created.getTime());
     }
 
     public Date getUpdated() {
-        return updated;
+        return updated == null ? null : new Date(updated.getTime());
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.created = new Date(created.getTime());
     }
 
     public void setUpdated(Date updated) {
-        this.updated = updated;
+        this.updated = new Date(updated.getTime());
     }
 }

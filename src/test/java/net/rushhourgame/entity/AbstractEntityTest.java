@@ -43,25 +43,25 @@ import org.junit.rules.ExpectedException;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public abstract class AbstractEntityTest {
-    protected static EntityManager em = LocalEntityManager.createEntityManager();
-    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
-    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
-    protected static PlayerController pCon = ControllerFactory.createPlayController();
-    protected static OAuthController oCon = ControllerFactory.createOAuthController();
-    protected static AbsorberController aCon = ControllerFactory.createAbsorberController();
-    protected static GameMasterController gCon = ControllerFactory.createGameMasterController();
+    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
+    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
+    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
+    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
+    protected final static PlayerController PCON = ControllerFactory.createPlayController();
+    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
+    protected final static AbsorberController ACON = ControllerFactory.createAbsorberController();
+    protected final static GameMasterController GCON = ControllerFactory.createGameMasterController();
     @Rule
     public ExpectedException ex = ExpectedException.none();
     
     @Before
     public void setUp() {
-        em.getTransaction().begin();
+        EM.getTransaction().begin();
     }
     
     @After
     public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+        EM.getTransaction().commit();
+        TCON.clean();
     }
 }

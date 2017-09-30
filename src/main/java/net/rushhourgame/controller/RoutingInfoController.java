@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.controller;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessage;
@@ -37,7 +36,7 @@ import net.rushhourgame.exception.RushHourException;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 @Dependent
-public class RoutingInfoController extends AbstractController implements Serializable {
+public class RoutingInfoController extends AbstractController {
     private static final long serialVersionUID = 1L;
     
     public RoutingInfo create(Node src, Node dest) throws RushHourException {

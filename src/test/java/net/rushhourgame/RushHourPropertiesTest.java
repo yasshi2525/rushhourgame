@@ -23,7 +23,6 @@
  */
 package net.rushhourgame;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -80,8 +79,6 @@ public class RushHourPropertiesTest {
         
         LOG.log(Level.INFO, "{0}#tearDown delete {1}",
                 new Object[]{this.getClass().getSimpleName(), configPath});
-
-        RushHourProperties.instanceRef = null;
     }
 
     @AfterClass

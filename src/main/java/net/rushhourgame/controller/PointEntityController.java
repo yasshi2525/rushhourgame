@@ -25,9 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import javax.persistence.TypedQuery;
-import net.rushhourgame.entity.Point;
 
 /**
  *

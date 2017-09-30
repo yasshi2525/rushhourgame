@@ -24,7 +24,6 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import java.util.Locale;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;

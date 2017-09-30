@@ -32,7 +32,6 @@ import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AbsorberController;
 import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.entity.Owner;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 

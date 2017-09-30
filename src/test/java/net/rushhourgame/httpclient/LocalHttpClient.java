@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class LocalHttpClient extends HttpClient {
-
+    private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(LocalHttpClient.class.getName());
 
     @Override

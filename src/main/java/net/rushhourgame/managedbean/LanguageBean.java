@@ -56,19 +56,14 @@ public class LanguageBean implements Serializable{
     @Transactional
     public void change(String lang){
         if (lang != null) {
-            switch (lang.toLowerCase()) {
+            switch (lang) {
                 case "jp":
                     if(player != null){
                         player.getInfo().setLocale(Locale.JAPANESE);
                     }
                     rushHourSession.setLocale(Locale.JAPANESE);
                     break;
-                case "en":
-                    if(player != null){
-                        player.getInfo().setLocale(Locale.ENGLISH);
-                    }
-                    rushHourSession.setLocale(Locale.ENGLISH);
-                    break;
+
                 default:
                     if(player != null){
                         player.getInfo().setLocale(Locale.ENGLISH);

@@ -31,9 +31,9 @@ import javax.persistence.Persistence;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class LocalEntityManager {
-    protected static EntityManager em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
+    protected final static EntityManager EM = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
     
     public static EntityManager createEntityManager(){
-        return em;
+        return EM;
     }
 }

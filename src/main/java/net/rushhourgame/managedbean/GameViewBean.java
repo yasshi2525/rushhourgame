@@ -24,12 +24,9 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
-import javax.enterprise.context.Dependent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import net.rushhourgame.RushHourSession;
@@ -38,7 +35,6 @@ import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
-import org.primefaces.component.menu.Menu;
 
 /**
  *

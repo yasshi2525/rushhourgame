@@ -32,6 +32,7 @@ import net.rushhourgame.json.SimpleUserData;
  * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
 public class LocalPlayerBean extends PlayerBean {
+    private static final long serialVersionUID = 1L;
     protected SimpleUserData empty;
     protected boolean hasSessionData;
     protected String accessToken;

@@ -25,12 +25,8 @@ package net.rushhourgame.httpclient;
 
 import java.io.UnsupportedEncodingException;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
-import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
@@ -45,8 +41,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -57,8 +51,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class HttpClientTest {
 
     protected HttpClient inst;
-    protected static RushHourProperties prop;
-    protected static RushHourResourceBundle resourceBundle;
     protected static final String INVALID_URL = "http://127.0.0.1/";
 
     @Rule
@@ -72,8 +64,6 @@ public class HttpClientTest {
 
     @BeforeClass
     public static void setUpClass() {
-        prop = RushHourProperties.getInstance();
-        resourceBundle = RushHourResourceBundle.getInstance();
     }
 
     @AfterClass

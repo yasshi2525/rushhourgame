@@ -41,8 +41,8 @@ public class ErrorMessage implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ErrorMessage.class.getName());
-    protected static ErrorMessage _UNKNOWN = new ErrorMessage(UNKNOWN, UNKNOWN_DETAIL, UNKNOWN_ACTION);
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
+    protected static final ErrorMessage UNKNOWN = new ErrorMessage(RushHourResourceBundle.UNKNOWN, UNKNOWN_DETAIL, UNKNOWN_ACTION);
+    protected static final RushHourProperties PROP = RushHourProperties.getInstance();
     public static final String NO_CONTENTS = "No Contents";
    
     protected String titleId;
@@ -68,7 +68,7 @@ public class ErrorMessage implements Serializable {
      * @return
      */
     public static ErrorMessage getUnkownError() {
-        return _UNKNOWN;
+        return UNKNOWN;
     }
 
     /**
@@ -90,7 +90,7 @@ public class ErrorMessage implements Serializable {
      */
     public static ErrorMessage createSystemError(String titleId, String detailId) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
-        errMsg.getActionParams().add(prop.get(ADMINISTRATOR));
+        errMsg.getActionParams().add(PROP.get(ADMINISTRATOR));
         return errMsg;
     }
 
@@ -105,7 +105,7 @@ public class ErrorMessage implements Serializable {
     public static ErrorMessage createSystemError(String titleId, String detailId, String... detailParams) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
         errMsg.getDetailParams().addAll(Arrays.asList(detailParams));
-        errMsg.getActionParams().add(prop.get(ADMINISTRATOR));
+        errMsg.getActionParams().add(PROP.get(ADMINISTRATOR));
         return errMsg;
     }
     
@@ -182,21 +182,21 @@ public class ErrorMessage implements Serializable {
     }
 
     public String buildTitle(RushHourResourceBundle prop, Locale locale) {
-        if (prop == null || titleId == null || prop.get(titleId, locale) == null) {
+        if (prop == null || titleId == null) {
             return NO_CONTENTS;
         }
         return MessageFormat.format(prop.get(titleId, locale), titleParams.toArray());
     }
 
     public String buildDetail(RushHourResourceBundle prop, Locale locale) {
-        if (prop == null || detailId == null || prop.get(detailId, locale) == null) {
+        if (prop == null || detailId == null) {
             return NO_CONTENTS;
         }
         return MessageFormat.format(prop.get(detailId, locale), detailParams.toArray());
     }
 
     public String buildAction(RushHourResourceBundle prop, Locale locale) {
-        if (prop == null || actionId == null || prop.get(actionId, locale) == null) {
+        if (prop == null || actionId == null) {
             return NO_CONTENTS;
         }
         return MessageFormat.format(prop.get(actionId, locale), actionParams.toArray());

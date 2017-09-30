@@ -95,11 +95,11 @@ public class TwitterSignatureBuilder implements Serializable{
         this.consumerSecret = consumerSecret;
     }
 
-    public String getoAuthTokenSecret() {
+    public String getOAuthTokenSecret() {
         return oAuthTokenSecret;
     }
 
-    public void setoAuthTokenSecret(String oAuthTokenSecret) {
+    public void setOAuthTokenSecret(String oAuthTokenSecret) {
         this.oAuthTokenSecret = oAuthTokenSecret;
     }
 

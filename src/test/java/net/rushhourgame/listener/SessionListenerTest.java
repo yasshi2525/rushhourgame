@@ -33,7 +33,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -51,7 +50,7 @@ public class SessionListenerTest {
     protected HttpSession session;
     @Mock
     protected RushHourSessionBean bean;
-    protected static PlayerController pCon = ControllerFactory.createPlayController();
+    protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected SessionListener instance;
     
     public SessionListenerTest() {
@@ -70,7 +69,7 @@ public class SessionListenerTest {
         when(se.getSession()).thenReturn(session);
         
         instance = new SessionListener();
-        instance.controller = spy(pCon);
+        instance.controller = spy(PCON);
     }
     
     @After

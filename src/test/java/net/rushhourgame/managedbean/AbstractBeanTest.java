@@ -41,26 +41,26 @@ import org.junit.BeforeClass;
  */
 public class AbstractBeanTest {
 
-    protected static EntityManager em = LocalEntityManager.createEntityManager();
-    protected static LocalTableController tCon = ControllerFactory.createLocalTableController();
-    protected static PlayerController pCon = ControllerFactory.createPlayController();
-    protected static OAuthController oCon = ControllerFactory.createOAuthController();
-    protected static DigestCalculator calculator = ControllerFactory.createDigestCalculator();
-    protected static RushHourProperties prop = RushHourProperties.getInstance();
+    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
+    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
+    protected final static PlayerController PCON = ControllerFactory.createPlayController();
+    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
+    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
+    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @BeforeClass
     public static void setUpClass() {
-        tCon.clean();
+        TCON.clean();
     }
     
     @Before
     public void setUp() {
-        em.getTransaction().begin();
+        EM.getTransaction().begin();
     }
     
     @After
     public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+        EM.getTransaction().commit();
+        TCON.clean();
     }
 }

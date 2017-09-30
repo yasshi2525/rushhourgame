@@ -45,8 +45,8 @@ public class PlayerBeanTest extends AbstractBeanTest {
     protected static final String VALID_PLAIN_ACCESS_TOKEN = "valid";
     protected static final String INVALID_ACCESS_TOKEN = "invalid";
     protected static final String DISPLAY_NAME = "user1";
-    protected static SimpleUserData emptyUser;
-    protected static final UserData userData = new SimpleUserData();
+    private static SimpleUserData emptyUser;
+    protected static final UserData USER_DATA = new SimpleUserData();
     protected OAuth oAuth;
     protected Player player;
     protected String accessToken;
@@ -61,14 +61,14 @@ public class PlayerBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         try {
-            oAuth = oCon.createOAuthBean("foo", "foosec");
+            oAuth = OCON.createOAuthBean("foo", "foosec");
             OwnerInfo info = new OwnerInfo();
             info.setName(DISPLAY_NAME);
             info.setColor("#000000");
             info.setIconUrl("no_image.png");
             info.setTextColor("#000000");
             info.setLocale(Locale.getDefault());
-            player = pCon.createPlayer("foo", "user1", VALID_PLAIN_ACCESS_TOKEN, userData);
+            player = PCON.createPlayer("foo", "user1", VALID_PLAIN_ACCESS_TOKEN, USER_DATA);
             player.setInfo(info);
             accessToken = player.getToken();
         } catch (RushHourException ex) {
@@ -78,55 +78,55 @@ public class PlayerBeanTest extends AbstractBeanTest {
     
     @After
     public void tearDown() {
-        em.getTransaction().commit();
-        tCon.clean();
+        EM.getTransaction().commit();
+        TCON.clean();
     }
     
     @Test
     public void testIsSignIn() {
-        PlayerBean inst = new LocalPlayerBean(pCon, true, accessToken);
+        PlayerBean inst = new LocalPlayerBean(PCON, true, accessToken);
         assertTrue(inst.isSignIn());
     }
 
     @Test
     public void testIsSignInNoSessionData() {
-        PlayerBean inst = new LocalPlayerBean(pCon, false);
+        PlayerBean inst = new LocalPlayerBean(PCON, false);
         assertFalse(inst.isSignIn());
     }
     
     @Test
     public void testIsSignInAccessTokenNull() {
-        PlayerBean inst = new LocalPlayerBean(pCon, true);
+        PlayerBean inst = new LocalPlayerBean(PCON, true);
         assertFalse(inst.isSignIn());
     }
     
     @Test
     public void testIsSignInInvalidAccessToken() {
-        PlayerBean inst = new LocalPlayerBean(pCon, true, INVALID_ACCESS_TOKEN);
+        PlayerBean inst = new LocalPlayerBean(PCON, true, INVALID_ACCESS_TOKEN);
         assertFalse(inst.isSignIn());
     }
     
    @Test
     public void testGetName() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(pCon, true, accessToken);
+        PlayerBean inst = new LocalPlayerBean(PCON, true, accessToken);
         assertEquals(DISPLAY_NAME, inst.getName());
     }
 
     @Test
     public void testGetNameNoSessionData() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(pCon, false);
+        PlayerBean inst = new LocalPlayerBean(PCON, false);
         assertEquals(emptyUser.getName(), inst.getName());
     }
     
     @Test
     public void testGetNameAccessTokenNull() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(pCon, true);
+        PlayerBean inst = new LocalPlayerBean(PCON, true);
         assertEquals(emptyUser.getName(), inst.getName());
     }
     
     @Test
     public void testGetNameInvalidAccessToken() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(pCon, true, INVALID_ACCESS_TOKEN);
+        PlayerBean inst = new LocalPlayerBean(PCON, true, INVALID_ACCESS_TOKEN);
         assertEquals(emptyUser.getName(), inst.getName());
     }
 }

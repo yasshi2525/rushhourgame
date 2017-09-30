@@ -38,6 +38,7 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class RailController extends PointEntityController{
+    private static final long serialVersionUID = 1L;
     
     public RailPoint create(Owner owner, double x, double y) throws RushHourException{
         if(owner == null){
