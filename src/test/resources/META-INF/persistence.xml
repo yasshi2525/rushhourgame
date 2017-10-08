@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <persistence-unit name="test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>net.rushhourgame.entity.OAuth</class>
-        <class>net.rushhourgame.entity.Player</class>
-        <properties>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-            <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhsot:3306/rushhourtest"/>
-            <property name="javax.persistence.jdbc.user" value="rushhourtest"/>
-            <property name="javax.persistence.jdbc.password" value="takao109"/>
-            <property name="eclipselink.logging.level" value="FINE"/>
-        </properties>
-    </persistence-unit>
+  <persistence-unit name="test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.rushhourgame.entity.Absorber</class>
+    <class>net.rushhourgame.entity.Distributer</class>
+    <class>net.rushhourgame.entity.GameMaster</class>
+    <class>net.rushhourgame.entity.Human</class>
+    <class>net.rushhourgame.entity.Line</class>
+    <class>net.rushhourgame.entity.LineStep</class>
+    <class>net.rushhourgame.entity.Link</class>
+    <class>net.rushhourgame.entity.Node</class>
+    <class>net.rushhourgame.entity.OAuth</class>
+    <class>net.rushhourgame.entity.OwnerInfo</class>
+    <class>net.rushhourgame.entity.Player</class>
+    <class>net.rushhourgame.entity.Point</class>
+    <class>net.rushhourgame.entity.Rail</class>
+    <class>net.rushhourgame.entity.RailPoint</class>
+    <class>net.rushhourgame.entity.RoutingInfo</class>
+    <class>net.rushhourgame.entity.Station</class>
+    <class>net.rushhourgame.entity.Train</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/rushhourtest"/>
+      <property name="javax.persistence.jdbc.user" value="rushhourtest"/>
+      <property name="javax.persistence.jdbc.password" value="rushhourtest"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+    </properties>
+  </persistence-unit>
 </persistence>

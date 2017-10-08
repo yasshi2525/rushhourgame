@@ -1,5 +1,4 @@
 /tmp_test_config.properties
-/src/test/resources/META-INF/persistence.xml
 /target/
 /node_modules/
 /src/main/webapp/resources/js/build/
