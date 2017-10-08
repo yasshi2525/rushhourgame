@@ -1,7 +1,7 @@
 RushHour
 ========
 
-概要
+## 概要
 
 RushHourは通勤シミュレーションゲームです。
 各プレイヤーは鉄道会社の経営者として路線網を拡大させて行きます。
@@ -23,8 +23,8 @@ RushHourは通勤シミュレーションゲームです。
 
 MariaDBにユーザを作成する
 
-```CREATE USER 'rushhourgame'@'%' IDENTIFIED BY '<your password>'```
-```GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourgame.* TO 'rushhourgame'@'%'```
+```CREATE USER 'rushhourgame'@'%' IDENTIFIED BY '<your password>';```
+```GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourgame.* TO 'rushhourgame'@'%';```
 
 ### アプリケーションサーバのセットアップ
 
@@ -70,8 +70,8 @@ mvn install
 ### MariaDBにテスト用のユーザを作成する
 
 ```
-CREATE USER 'rushhourtest'@'%' IDENTIFIED BY 'rushhourtest'  
-GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%'
+CREATE USER 'rushhourtest'@'%' IDENTIFIED BY 'rushhourtest';  
+GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'%';
 ```
 
 ### Mavenでテストする
