@@ -49,6 +49,12 @@ public abstract class AbstractController implements Serializable{
     @Inject
     protected DigestCalculator calculator;
     
+    
+    protected boolean exists(String query) {
+        // count は intを返す場合とlongを返す場合がある(環境依存)
+        return (em.createNamedQuery(query, Number.class)
+                .getSingleResult()).longValue() == 1L;
+    }
 
     /**
      * テーブルに指定した id のエンティティが存在するか返す
@@ -59,9 +65,10 @@ public abstract class AbstractController implements Serializable{
      * @return boolean
      */
     protected boolean exists(String query, String key, String value) {
-        return em.createNamedQuery(query, Long.class)
+        // count は intを返す場合とlongを返す場合がある(環境依存)
+        return (em.createNamedQuery(query, Number.class)
                 .setParameter(key, value)
-                .getSingleResult() == 1;
+                .getSingleResult()).longValue() == 1L;
     }
 
     @SuppressWarnings("unchecked")

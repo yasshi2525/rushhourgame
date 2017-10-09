@@ -41,7 +41,7 @@ public class GameMasterController extends AbstractController{
     private static final long serialVersionUID = 1L;
     
     public boolean exists(){
-        return em.createNamedQuery("GameMaster.count", Long.class).getSingleResult() > 0;
+        return exists("GameMaster.count");
     }
     
     public GameMaster create() throws RushHourException{
