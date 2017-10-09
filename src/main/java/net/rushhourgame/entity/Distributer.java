@@ -30,7 +30,7 @@ import javax.persistence.OneToMany;
 /**
  * 住宅(人を生成するオブジェクト)
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 public class Distributer extends Building{

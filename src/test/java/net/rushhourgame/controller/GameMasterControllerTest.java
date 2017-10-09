@@ -31,7 +31,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class GameMasterControllerTest extends AbstractControllerTest{
     protected GameMasterController inst;

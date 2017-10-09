@@ -32,7 +32,7 @@ import javax.persistence.NamedQuery;
 
 /**
  * 物理的座標を持つエンティティ
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 @NamedQueries({

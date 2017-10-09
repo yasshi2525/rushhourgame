@@ -35,7 +35,7 @@ import net.rushhourgame.exception.RushHourException;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class OAuthController extends AbstractController {
@@ -76,9 +76,9 @@ public class OAuthController extends AbstractController {
 
     /**
      * DBに登録されている requestTokenか
-     * @param requestToken
-     * @return 
-     * @throws net.rushhourgame.exception.RushHourException 
+     * @param requestToken requestToken
+     * @return boolean
+     * @throws net.rushhourgame.exception.RushHourException RushHourException 
      */
     public boolean isRegisteredRequestToken(String requestToken) throws RushHourException{
         if(requestToken == null){
@@ -95,9 +95,9 @@ public class OAuthController extends AbstractController {
     
     /**
      * requestTokenは暗号化されているため、ダイジェスト値の方で探す
-     * @param requestToken
-     * @return
-     * @throws RushHourException 
+     * @param requestToken requestToken
+     * @return OAuth
+     * @throws RushHourException RushHourException
      */
     public OAuth findByRequestToken(String requestToken) throws RushHourException{
         if(requestToken == null){

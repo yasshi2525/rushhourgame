@@ -31,7 +31,7 @@ import javax.persistence.OneToMany;
 
 /**
  * 会社(人の行き先。人を吸収するオブジェクト)
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 @NamedQueries({

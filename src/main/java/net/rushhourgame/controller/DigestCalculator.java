@@ -35,7 +35,7 @@ import static net.rushhourgame.RushHourProperties.*;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class DigestCalculator implements Serializable{

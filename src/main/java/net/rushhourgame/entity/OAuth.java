@@ -35,7 +35,7 @@ import javax.persistence.Table;
 
 /**
  * 
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Table(indexes = {@Index(columnList = "requestToken"), @Index(columnList = "accessToken")})
 @NamedQueries({

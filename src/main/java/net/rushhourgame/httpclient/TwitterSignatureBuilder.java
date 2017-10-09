@@ -38,7 +38,7 @@ import org.apache.commons.codec.digest.HmacUtils;
 /**
  * https://dev.twitter.com/oauth/overview/creating-signatures の実装
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class TwitterSignatureBuilder implements Serializable{
@@ -106,8 +106,8 @@ public class TwitterSignatureBuilder implements Serializable{
     /**
      * パラメータすべてを文字列に連結する
      *
-     * @return
-     * @throws UnsupportedEncodingException
+     * @return String
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
     protected String createParameterString() throws UnsupportedEncodingException {
         LOG.log(Level.FINE, "{0}#createParameterString start", this.getClass().getSimpleName());
@@ -138,11 +138,11 @@ public class TwitterSignatureBuilder implements Serializable{
     }
 
     /**
-     * Signature base string (メソッド&URL&パラメータ)をつくる
+     * Signature base string (メソッド&amp;URL&amp;パラメータ)をつくる
      *
-     * @param parameterString
-     * @return
-     * @throws UnsupportedEncodingException
+     * @param parameterString parameterString
+     * @return String
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
     protected String createSignatureBaseString(String parameterString) throws UnsupportedEncodingException {
         LOG.log(Level.FINE, "{0}#createSignatureBaseString start", this.getClass().getSimpleName());
@@ -171,8 +171,8 @@ public class TwitterSignatureBuilder implements Serializable{
     /**
      * Signin key (Consumer keyとSecretKeyでbase stringを暗号化)
      *
-     * @return
-     * @throws UnsupportedEncodingException
+     * @return String
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
     protected String createSigningKey() throws UnsupportedEncodingException {
         LOG.log(Level.FINE, "{0}#createSigningKey start", this.getClass().getSimpleName());
@@ -197,10 +197,10 @@ public class TwitterSignatureBuilder implements Serializable{
     /**
      * 暗号化してSigunatureを取得
      *
-     * @param key
-     * @param value
-     * @return
-     * @throws UnsupportedEncodingException
+     * @param key key
+     * @param value value
+     * @return String
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
     protected String calculateSignature(String key, String value) throws UnsupportedEncodingException  {
         LOG.log(Level.FINE, "{0}#calculateSignature start", this.getClass().getSimpleName());

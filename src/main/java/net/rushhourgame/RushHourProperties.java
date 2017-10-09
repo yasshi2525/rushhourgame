@@ -41,7 +41,7 @@ import javax.ejb.Startup;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Startup
 @Singleton
@@ -159,7 +159,7 @@ public class RushHourProperties implements Serializable {
     /**
      * CDIが使えない場合
      *
-     * @return
+     * @return RushHourPropertiesインスタンス
      */
     public static RushHourProperties getInstance() {
         return INSTANCE;

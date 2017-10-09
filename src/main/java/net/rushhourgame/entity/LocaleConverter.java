@@ -30,7 +30,7 @@ import javax.persistence.Converter;
 
 /**
  * 
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Converter
 public class LocaleConverter implements AttributeConverter<Locale, String> {

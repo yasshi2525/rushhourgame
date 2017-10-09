@@ -28,7 +28,7 @@ import javax.faces.context.ExceptionHandlerFactory;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class RushHourExceptionHandlerFactory extends ExceptionHandlerFactory{
     private final ExceptionHandlerFactory parent;

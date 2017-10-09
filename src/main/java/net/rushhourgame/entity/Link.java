@@ -35,7 +35,7 @@ import javax.persistence.UniqueConstraint;
 
 /**
  * 論理的な接続情報
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))

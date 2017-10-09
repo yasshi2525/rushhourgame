@@ -36,7 +36,7 @@ import net.rushhourgame.RushHourSession;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Named("err")
 @ViewScoped

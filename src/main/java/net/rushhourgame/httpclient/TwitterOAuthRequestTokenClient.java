@@ -33,7 +33,7 @@ import static net.rushhourgame.RushHourProperties.*;
 /**
  * (1) リクエストトークンの取得
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class TwitterOAuthRequestTokenClient extends TwitterClient {

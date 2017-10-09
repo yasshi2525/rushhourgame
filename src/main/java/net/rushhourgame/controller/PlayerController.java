@@ -43,7 +43,7 @@ import net.rushhourgame.json.UserData;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class PlayerController extends AbstractController {
@@ -202,10 +202,10 @@ public class PlayerController extends AbstractController {
 
     /**
      * OAuthのひもづきも新しくする.
-     * @param p
-     * @param requestToken
-     * @param newPlainAccessToken
-     * @throws RushHourException 
+     * @param p Player
+     * @param requestToken requestToken
+     * @param newPlainAccessToken newPlainAccessToken
+     * @throws RushHourException RushHourException
      */
     public void updateToken(Player p, String requestToken, String newPlainAccessToken) throws RushHourException {
         if(newPlainAccessToken == null){

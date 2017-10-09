@@ -31,7 +31,7 @@ import javax.faces.event.PhaseListener;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class CheckPhaseListener implements PhaseListener{
 

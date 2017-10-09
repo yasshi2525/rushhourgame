@@ -38,7 +38,7 @@ import net.rushhourgame.RushHourProperties;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class TwitterClient extends HttpClient {
@@ -99,8 +99,8 @@ public class TwitterClient extends HttpClient {
     /**
      * Authorization OAuth aaa="bbb", ccc="ddd"
      *
-     * @return
-     * @throws UnsupportedEncodingException
+     * @return SortedMap
+     * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
     protected SortedMap<String, String> buildHeader() throws UnsupportedEncodingException {
         LOG.log(Level.FINE, "{0}#buildHeader start", HttpClient.class.getSimpleName());
@@ -144,7 +144,7 @@ public class TwitterClient extends HttpClient {
     /**
      * word onlyのランダムな文字列を生成
      *
-     * @return
+     * @return String
      */
     protected String createNonce() {
         byte[] base = new byte[32];

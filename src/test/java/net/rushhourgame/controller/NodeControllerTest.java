@@ -33,7 +33,7 @@ import org.junit.Test;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class NodeControllerTest extends AbstractControllerTest {
     protected NodeController inst;

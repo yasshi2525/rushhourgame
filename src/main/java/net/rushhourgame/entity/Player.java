@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Table(indexes = {@Index(columnList = "ID"), @Index(columnList = "TOKEN")})
 @Entity
@@ -90,7 +90,7 @@ public class Player extends OwnerEntity {
 
     /**
      * 外部サービス接続時のユーザID
-     * @return 
+     * @return String
      */
     public String getUserId() {
         return userId;
@@ -98,7 +98,7 @@ public class Player extends OwnerEntity {
 
     /**
      * 外部サービス接続時のユーザID
-     * @param userId 
+     * @param userId userId
      */
     public void setUserId(String userId) {
         this.userId = userId;

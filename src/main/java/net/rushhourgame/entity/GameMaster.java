@@ -33,7 +33,7 @@ import javax.persistence.NamedQuery;
 /**
  * Absorber, Distributer の所有者はこれにする。
  * 1個しか存在しない
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @NamedQueries({
     @NamedQuery(

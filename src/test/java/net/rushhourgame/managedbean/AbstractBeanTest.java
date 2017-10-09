@@ -37,7 +37,7 @@ import org.junit.BeforeClass;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class AbstractBeanTest {
 

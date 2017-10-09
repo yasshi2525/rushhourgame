@@ -25,7 +25,7 @@ package net.rushhourgame.managedbean;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public enum OperationType {
     NONE,

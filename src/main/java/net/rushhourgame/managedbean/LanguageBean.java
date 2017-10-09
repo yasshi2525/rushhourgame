@@ -36,7 +36,7 @@ import net.rushhourgame.entity.Player;
 
 /**
  * 言語選択リンク押下時の処理
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Named(value = "lang")
 @ViewScoped

@@ -33,7 +33,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class RushHourSession implements Serializable {
@@ -89,7 +89,7 @@ public class RushHourSession implements Serializable {
     
     /**
      * セッションデータからBeanを取得する。なければ作成する
-     * @return 
+     * @return RushHourSessionBean
      */
     protected RushHourSessionBean findOrCreateBean(){
         if(hasValidBean()){
@@ -123,8 +123,8 @@ public class RushHourSession implements Serializable {
     
     /**
      * セッションデータからBeanを取得する。なければ作成する
-     * @param session
-     * @return 
+     * @param session session
+     * @return RushHourSessionBean
      */
     static protected RushHourSessionBean findOrCreateBean(HttpSession session){
         if(isValidBean(session)){

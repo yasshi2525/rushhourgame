@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 論理的な位置情報を持つエンティティ
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 @NamedQueries({

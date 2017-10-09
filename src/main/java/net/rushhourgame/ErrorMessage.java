@@ -35,7 +35,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class ErrorMessage implements Serializable {
 
@@ -65,7 +65,7 @@ public class ErrorMessage implements Serializable {
     /**
      * 原因が不明のエラー(カテゴリ不明)
      *
-     * @return
+     * @return ErrorMessage
      */
     public static ErrorMessage getUnkownError() {
         return UNKNOWN;
@@ -74,8 +74,8 @@ public class ErrorMessage implements Serializable {
     /**
      * 原因が不明のエラー(カテゴリは分かる)
      *
-     * @param titleId
-     * @return
+     * @param titleId titleid
+     * @return ErrorMessage
      */
     public static ErrorMessage createUnkownError(String titleId) {
         return new ErrorMessage(titleId, UNKNOWN_DETAIL, UNKNOWN_ACTION);
@@ -84,9 +84,9 @@ public class ErrorMessage implements Serializable {
     /**
      * バグによるエラー. プロパティ値の設定ミスなど
      *
-     * @param titleId
-     * @param detailId
-     * @return
+     * @param titleId titleid
+     * @param detailId detailId
+     * @return ErrorMessage
      */
     public static ErrorMessage createSystemError(String titleId, String detailId) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
@@ -97,10 +97,10 @@ public class ErrorMessage implements Serializable {
     /**
      * バグによるエラー. プロパティ値の設定ミスなど
      *
-     * @param titleId
-     * @param detailId
-     * @param detailParams
-     * @return
+     * @param titleId titleid
+     * @param detailId detailId
+     * @param detailParams detailParams
+     * @return ErrorMessage
      */
     public static ErrorMessage createSystemError(String titleId, String detailId, String... detailParams) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
@@ -112,9 +112,9 @@ public class ErrorMessage implements Serializable {
     /**
      * 再サインインしないと直らないエラー. サインイン中のエラーなど
      *
-     * @param titleId
-     * @param detailId
-     * @return
+     * @param titleId titleId
+     * @param detailId detailId
+     * @return ErrorMessage
      */
     public static ErrorMessage createReSignInError(String titleId, String detailId) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SIGNIN_FAIL_ACTION);
@@ -124,10 +124,10 @@ public class ErrorMessage implements Serializable {
     /**
      * 再サインインしないと直らないエラー. サインイン中のエラーなど
      *
-     * @param titleId
-     * @param detailId
-     * @param detailParams
-     * @return
+     * @param titleId titleId
+     * @param detailId detailId
+     * @param detailParams detailParams
+     * @return ErrorMessage
      */
     public static ErrorMessage createReSignInError(String titleId, String detailId, String... detailParams) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SIGNIN_FAIL_ACTION);
@@ -138,9 +138,9 @@ public class ErrorMessage implements Serializable {
     /**
      * 再リクエストすればなおるエラー
      *
-     * @param titleId
-     * @param detailId
-     * @return
+     * @param titleId titleId
+     * @param detailId detailId
+     * @return ErrorMessage
      */
     public static ErrorMessage createRetryError(String titleId, String detailId) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SERVER_ERR_ACTION);
@@ -150,10 +150,10 @@ public class ErrorMessage implements Serializable {
     /**
      * 再リクエストすればなおるエラー
      *
-     * @param titleId
-     * @param detailId
-     * @param detailParams
-     * @return
+     * @param titleId titleId
+     * @param detailId detailId
+     * @param detailParams detailParams
+     * @return ErrorMessage
      */
     public static ErrorMessage createRetryError(String titleId, String detailId, String... detailParams) {
         ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SERVER_ERR_ACTION);
@@ -164,7 +164,7 @@ public class ErrorMessage implements Serializable {
     /**
      * トークンが古い/不正
      *
-     * @return
+     * @return ErrorMessage
      */
     public static ErrorMessage createInvalidToken() {
         ErrorMessage errMsg = new ErrorMessage(REQUEST_FAIL, REQUEST_FAIL_INVALID_TOKEN, SIGNIN_FAIL_ACTION);

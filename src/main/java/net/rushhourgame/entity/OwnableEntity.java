@@ -31,7 +31,7 @@ import javax.persistence.MappedSuperclass;
 
 /**
  * つねに player XOR gameMaster が成立.
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
 public abstract class OwnableEntity extends AbstractEntity implements Ownable {
@@ -83,8 +83,8 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
     /**
      * 管理者か自分の所有者ならtrue
      *
-     * @param owner
-     * @return
+     * @param owner owner
+     * @return boolean
      */
     @Override
     public boolean isPrivilegedBy(Owner owner) {

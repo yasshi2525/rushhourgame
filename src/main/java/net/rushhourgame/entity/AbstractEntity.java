@@ -31,7 +31,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
 public abstract class AbstractEntity implements Serializable{

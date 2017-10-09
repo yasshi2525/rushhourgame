@@ -44,7 +44,7 @@ import net.rushhourgame.httpclient.TwitterUserShowClient;
 
 /**
  * (2) Twitter のアクセストークンを取得する
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Named("twitterOAuthAccessToken")
 @ViewScoped
@@ -75,8 +75,8 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
     /**
      * access tokenを取得する
      *
-     * @throws net.rushhourgame.exception.RushHourException
-     * @throws java.io.IOException
+     * @throws net.rushhourgame.exception.RushHourException 例外
+     * @throws java.io.IOException 例外
      */
     @Transactional
     public void init() throws RushHourException, IOException {
@@ -126,9 +126,9 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
     /**
      * アクセストークンを oAuth テーブルに登録
      *
-     * @param oAuth
-     * @param accessToken
-     * @param accessTokenSecret
+     * @param oAuth oAuth
+     * @param accessToken accessToken
+     * @param accessTokenSecret accessTokenSecret
      */
     protected void updateOAuthAccessToken(OAuth oAuth, String accessToken, String accessTokenSecret) {
         oAuth.setAccessToken(accessToken);
@@ -139,12 +139,12 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
      * プレイヤーデータを取得.
      * 存在しない場合は作成
      *
-     * @param requestToken
-     * @param userId
-     * @param accessToken
-     * @param accessTokenSecret
-     * @return
-     * @throws net.rushhourgame.exception.RushHourException
+     * @param requestToken requeatToken
+     * @param userId userId
+     * @param accessToken accessToken
+     * @param accessTokenSecret accessTokenSecret
+     * @return Player
+     * @throws net.rushhourgame.exception.RushHourException 例外
      */
     protected Player fetchPlayer(String requestToken, String userId, 
             String accessToken, String accessTokenSecret) throws RushHourException {
@@ -177,7 +177,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
      * セッション情報にアクセストークン情報とロケールを追加.
      * セッションよりもDBに登録されているロケールが優先される
      *
-     * @param player
+     * @param player player
      */
     protected void registerSessionAttribute(Player player) {
         // セッションにアクセストークンとロケールを追加

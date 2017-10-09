@@ -40,7 +40,7 @@ import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 /**
  * (1) Twitter のリクエストトークンを取得する
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Named("twitterOAuthRequestToken")
 @ViewScoped
@@ -58,8 +58,8 @@ public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
     /**
      * リクエストトークンを取得し、リダイレクトする.
      *
-     * @throws IOException
-     * @throws net.rushhourgame.exception.RushHourException
+     * @throws IOException 例外
+     * @throws net.rushhourgame.exception.RushHourException 例外
      */
     @Transactional
     public void requestRequestToken() throws IOException, RushHourException {

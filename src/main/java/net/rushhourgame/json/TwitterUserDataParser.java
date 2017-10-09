@@ -32,7 +32,7 @@ import javax.json.stream.JsonParser;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class TwitterUserDataParser implements Serializable {

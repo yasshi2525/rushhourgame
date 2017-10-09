@@ -45,7 +45,7 @@ import static net.rushhourgame.RushHourProperties.*;
 
 /**
  * 暗号化してデータベースに登録する
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Converter
 public class EncryptConverter implements AttributeConverter<String, String> {
@@ -74,14 +74,14 @@ public class EncryptConverter implements AttributeConverter<String, String> {
 
     /**
      *
-     * @param input
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     * @throws InvalidAlgorithmParameterException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
+     * @param input input
+     * @return String
+     * @throws NoSuchAlgorithmException 例外
+     * @throws NoSuchPaddingException 例外
+     * @throws InvalidKeyException 例外
+     * @throws InvalidAlgorithmParameterException 例外
+     * @throws IllegalBlockSizeException 例外
+     * @throws BadPaddingException 例外
      */
     public String encrypt(String input) throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {

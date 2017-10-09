@@ -38,7 +38,7 @@ import net.rushhourgame.json.SimpleUserData;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Named(value = "admin")
 @ViewScoped

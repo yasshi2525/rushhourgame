@@ -34,7 +34,7 @@ import net.rushhourgame.RushHourProperties;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public abstract class AbstractController implements Serializable{
@@ -53,10 +53,10 @@ public abstract class AbstractController implements Serializable{
     /**
      * テーブルに指定した id のエンティティが存在するか返す
      *
-     * @param query
-     * @param key
-     * @param value
-     * @return
+     * @param query query
+     * @param key key
+     * @param value value
+     * @return boolean
      */
     protected boolean exists(String query, String key, String value) {
         return em.createNamedQuery(query, Integer.class)

@@ -33,7 +33,7 @@ import javax.inject.Inject;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Startup
 @Singleton

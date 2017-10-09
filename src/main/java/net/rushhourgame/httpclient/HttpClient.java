@@ -50,7 +50,7 @@ import net.rushhourgame.exception.RushHourException;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public abstract class HttpClient implements Serializable {
@@ -125,7 +125,7 @@ public abstract class HttpClient implements Serializable {
     /**
      * リクエストするURLを取得します
      *
-     * @return
+     * @return String
      */
     public String getResourceUrl() {
         return resourceUrl;
@@ -134,7 +134,7 @@ public abstract class HttpClient implements Serializable {
     /**
      * リクエストするURLを指定します. 引数がnullのときは更新しません
      *
-     * @param resourceUrl
+     * @param resourceUrl resourceUrl
      */
     public void setResourceUrl(String resourceUrl) {
         if (resourceUrl != null) {
@@ -189,7 +189,7 @@ public abstract class HttpClient implements Serializable {
     /**
      * 不正な値の場合、Exceptionを発生させる
      *
-     * @throws RushHourException
+     * @throws RushHourException RushHourException
      */
     protected void verifyResourceUrl() throws RushHourException {
         if (resourceUrl == null) {

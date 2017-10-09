@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
 public class Train extends OwnableEntity implements Pointable{

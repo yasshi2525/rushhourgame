@@ -45,7 +45,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
- * @author yasshi2525 <https://twitter.com/yasshi2525>
+ * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class HttpClientTest {
