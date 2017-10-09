@@ -59,7 +59,7 @@ public abstract class AbstractController implements Serializable{
      * @return boolean
      */
     protected boolean exists(String query, String key, String value) {
-        return em.createNamedQuery(query, Integer.class)
+        return em.createNamedQuery(query, Long.class)
                 .setParameter(key, value)
                 .getSingleResult() == 1;
     }
