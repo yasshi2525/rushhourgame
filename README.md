@@ -41,13 +41,13 @@ DB情報を登録する
 <install_dir>/glassfish/bin/asadmin create-jdbc-resource --connectionpoolid RushHourGamePool jdbc/RushHourGame  
 ```
 
-### 設定ファイルを編集する
-
-`src/main/resources/config.properties`に以下の値を設定する  
+設定ファイルを作成する  
+`vi <install_dir>/glassfish/domains/domain1/config/rushhour_config.properties`  
+以下の内容を記述する
 ```
 rushhour.twitter.consumerKey=<TwitterのDevelopersサイトで発行した値を記入>  
 rushhour.twitter.consumerSecret=<TwitterのDevelopersサイトで発行した値を記入>  
-rushhour.twitter.callbackUrl=http://127.0.0.1:<ポート番号>/RushHourGame/faces/callbackTwitter.xhtml  
+rushhour.twitter.callbackUrl=http://<ホスト名>:<ポート番号>/RushHourGame/faces/callbackTwitter.xhtml  
 ```
 
 ### コンパイル
