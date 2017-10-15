@@ -88,9 +88,9 @@ The MIT License
 
 ## Link
 
-仕様書  : <http://docs.rushhourgame.net/spec/>
-javadoc : <http://docs.rushhourgame.net/javadoc/>
-Redmine : <http://redmine.rushhourgame.net/>
+仕様書  : <http://docs.rushhourgame.net/spec/>  
+javadoc : <http://docs.rushhourgame.net/javadoc/>  
+Redmine : <http://redmine.rushhourgame.net/>  
 
 ## 作成者
 
