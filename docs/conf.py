@@ -85,7 +85,7 @@ todo_include_todos = False
 #
 #html_theme = 'alabaster'
 #html_theme = 'sphinx_rtd_theme'
-#html_theme = 'bootstrap'
+html_theme = 'bootstrap'
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -93,7 +93,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # documentation.
 #
 # html_theme_options = {}
-# html_theme_options = {'bootswatch_theme': "flatly"}
+html_theme_options = {'bootswatch_theme': "cosmo"}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
