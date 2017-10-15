@@ -86,6 +86,12 @@ CREATE DATABASE rushhourtest;
 
 The MIT License
 
+## Link
+
+仕様書  : <http://docs.rushhourgame.net/spec/>
+javadoc : <http://docs.rushhourgame.net/javadoc/>
+Redmine : <http://redmine.rushhourgame.net/>
+
 ## 作成者
 
 yasshi2525 [Twitter](https://twitter.com/yasshi2525)
