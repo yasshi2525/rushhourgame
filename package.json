@@ -4,7 +4,7 @@
   "author": "yasshi2525 <https://twitter.com/yasshi2525>",
   "contributors": [],
   "license": "MIT",
-  "repository" : "ssh://gituser@153.120.41.176:24602/opt/git/rushhourgame.git",
+  "repository" : "https://yasshi2525@github.com/yasshi2525/rushhourgame.git",
   "dependencies": {
     "jquery": "3.2.1",
     "pixi.js": "4.5.1",
