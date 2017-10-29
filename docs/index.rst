@@ -9,7 +9,9 @@ Welcome to RushHourGame's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+
+   Background
+   Purpose   
    Function
    UI
    Client
