@@ -25,8 +25,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to RushHourGame's documentation!
+RushHour 仕様書
 ========================================
+
+このドキュメントはRushHourの仕様を記述するものです。
 
 .. toctree::
    :maxdepth: 2
@@ -41,11 +43,3 @@ Welcome to RushHourGame's documentation!
    Controller
    Entity
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
