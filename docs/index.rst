@@ -26,7 +26,7 @@
    contain the root `toctree` directive.
 
 RushHour 仕様書
-========================================
+===============
 
 このドキュメントはRushHourの仕様を記述するものです。
 
@@ -42,4 +42,5 @@ RushHour 仕様書
    GameMaster
    Controller
    Entity
+   Glossary
 
