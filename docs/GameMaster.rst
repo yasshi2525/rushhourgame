@@ -20,5 +20,17 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
-GameMaster
-==========
+ゲームマスタの仕様
+==================
+
+.. _human-spec:
+
+人の移動仕様
+------------
+
+経路探索の仕方について記述します。
+
+.. _train-spec:
+
+電車の走行仕様
+--------------
