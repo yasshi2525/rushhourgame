@@ -26,31 +26,23 @@ package net.rushhourgame;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
-import static net.rushhourgame.RushHourProperties.*;
-import static net.rushhourgame.RushHourResourceBundle.*;
 
 /**
- *
- * @author yasshi2525 (https://twitter.com/yasshi2525)
+ * エラー情報を格納するBean.
+ * @author yasshi2525 <https://twitter.com/yasshi2525>
  */
-public class ErrorMessage implements Serializable {
-
+public class ErrorMessage implements Serializable{
     private static final long serialVersionUID = 1L;
-    private static final Logger LOG = Logger.getLogger(ErrorMessage.class.getName());
-    protected static final ErrorMessage UNKNOWN = new ErrorMessage(RushHourResourceBundle.UNKNOWN, UNKNOWN_DETAIL, UNKNOWN_ACTION);
-    protected static final RushHourProperties PROP = RushHourProperties.getInstance();
-    public static final String NO_CONTENTS = "No Contents";
-   
+
     protected String titleId;
     protected List<String> titleParams = new ArrayList<>();
     protected String detailId;
     protected List<String> detailParams = new ArrayList<>();
     protected String actionId;
     protected List<String> actionParams = new ArrayList<>();
+    public static final String NO_CONTENTS = "No Contents";
 
     public ErrorMessage() {
         this(null, null, null);
@@ -62,125 +54,7 @@ public class ErrorMessage implements Serializable {
         this.actionId = actionId;
     }
     
-    /**
-     * 原因が不明のエラー(カテゴリ不明)
-     *
-     * @return ErrorMessage
-     */
-    public static ErrorMessage getUnkownError() {
-        return UNKNOWN;
-    }
-
-    /**
-     * 原因が不明のエラー(カテゴリは分かる)
-     *
-     * @param titleId titleid
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createUnkownError(String titleId) {
-        return new ErrorMessage(titleId, UNKNOWN_DETAIL, UNKNOWN_ACTION);
-    }
     
-    /**
-     * バグによるエラー. プロパティ値の設定ミスなど
-     *
-     * @param titleId titleid
-     * @param detailId detailId
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createSystemError(String titleId, String detailId) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
-        errMsg.getActionParams().add(PROP.get(ADMINISTRATOR));
-        return errMsg;
-    }
-
-    /**
-     * バグによるエラー. プロパティ値の設定ミスなど
-     *
-     * @param titleId titleid
-     * @param detailId detailId
-     * @param detailParams detailParams
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createSystemError(String titleId, String detailId, String... detailParams) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SYSTEM_ERR_ACTION);
-        errMsg.getDetailParams().addAll(Arrays.asList(detailParams));
-        errMsg.getActionParams().add(PROP.get(ADMINISTRATOR));
-        return errMsg;
-    }
-    
-    /**
-     * 再サインインしないと直らないエラー. サインイン中のエラーなど
-     *
-     * @param titleId titleId
-     * @param detailId detailId
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createReSignInError(String titleId, String detailId) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SIGNIN_FAIL_ACTION);
-        return errMsg;
-    }
-
-    /**
-     * 再サインインしないと直らないエラー. サインイン中のエラーなど
-     *
-     * @param titleId titleId
-     * @param detailId detailId
-     * @param detailParams detailParams
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createReSignInError(String titleId, String detailId, String... detailParams) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SIGNIN_FAIL_ACTION);
-        errMsg.getDetailParams().addAll(Arrays.asList(detailParams));
-        return errMsg;
-    }
-    
-    /**
-     * 再リクエストすればなおるエラー
-     *
-     * @param titleId titleId
-     * @param detailId detailId
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createRetryError(String titleId, String detailId) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SERVER_ERR_ACTION);
-        return errMsg;
-    }
-
-    /**
-     * 再リクエストすればなおるエラー
-     *
-     * @param titleId titleId
-     * @param detailId detailId
-     * @param detailParams detailParams
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createRetryError(String titleId, String detailId, String... detailParams) {
-        ErrorMessage errMsg = new ErrorMessage(titleId, detailId, SERVER_ERR_ACTION);
-        errMsg.getDetailParams().addAll(Arrays.asList(detailParams));
-        return errMsg;
-    }
-    
-    /**
-     * トークンが古い/不正
-     *
-     * @return ErrorMessage
-     */
-    public static ErrorMessage createInvalidToken() {
-        ErrorMessage errMsg = new ErrorMessage(REQUEST_FAIL, REQUEST_FAIL_INVALID_TOKEN, SIGNIN_FAIL_ACTION);
-        return errMsg;
-    }
-    
-    public static ErrorMessage createNoPrivileged(String detailId){
-        ErrorMessage errMsg = new ErrorMessage(GAME_NO_PRIVILEDGE, detailId, GAME_NO_PRIVILEDGE_ACTION);
-        return errMsg;
-    }
-    
-    public static ErrorMessage createDataInconsitency(String detailId){
-        ErrorMessage errMsg = new ErrorMessage(GAME_DATA_INCONSIST, detailId, GAME_DATA_INCONSIST_ACTION);
-        return errMsg;
-    }
-
     public String buildTitle(RushHourResourceBundle prop, Locale locale) {
         if (prop == null || titleId == null) {
             return NO_CONTENTS;

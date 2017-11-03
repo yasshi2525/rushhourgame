@@ -31,7 +31,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -89,11 +89,11 @@ public class PlayerController extends AbstractController {
             Locale locale,
             SignInType signIn) throws RushHourException {
         if(plainUserId == null){
-            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID, "null"));
         }
         if(plainAccessToken == null){
-            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null"));
         }
         
@@ -106,19 +106,19 @@ public class PlayerController extends AbstractController {
             tokenDigest = calculator.calcDigest(plainAccessToken);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "PlayerController#createPlayer", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
         
         if (existsUserId(plainUserId)) {
             // ユーザID重複
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID),
                     "User Id is already registered : digest(" + userIdDigest + ")");
         }
         if (existsToken(tokenDigest)) {
             //アクセストークン重複
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN),
                     "User accessToken is already registered : " + tokenDigest);
@@ -141,7 +141,7 @@ public class PlayerController extends AbstractController {
         
         OAuth oAuth = oCon.findByRequestToken(requestToken);
         if(oAuth == null){
-            throw new RushHourException(ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN));            
         }
         
@@ -165,7 +165,7 @@ public class PlayerController extends AbstractController {
             return exists("Player.existsId", "id", id);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#existsUserId", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
     }
 
@@ -182,7 +182,7 @@ public class PlayerController extends AbstractController {
             return findBy("Player.findById", "id", id, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#findByUserId", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
     }
 
@@ -210,7 +210,7 @@ public class PlayerController extends AbstractController {
     public void updateToken(Player p, String requestToken, String newPlainAccessToken) throws RushHourException {
         if(newPlainAccessToken == null){
             throw new RushHourException(
-                    ErrorMessage.createReSignInError(SIGNIN_FAIL, 
+                    errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
                             SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null")
             );
         }
@@ -228,12 +228,12 @@ public class PlayerController extends AbstractController {
             }
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "PlayerController#updateToken", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
         
         if (existsToken(newToken)) {
             throw new RushHourException(
-                    ErrorMessage.createRetryError(ACCOUNT_FAIL, ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN),
+                    errMsgBuilder.createRetryError(ACCOUNT_FAIL, ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN),
                     "token is already existed : " + newToken
             );
         }

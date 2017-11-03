@@ -25,7 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
 import net.rushhourgame.entity.RoutingInfo;
@@ -45,11 +45,11 @@ public class RoutingInfoController extends AbstractController {
     
     public RoutingInfo create(Node src, Link next, Node dest) throws RushHourException {
         if(src == null || dest == null){
-            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         
         if(src.equals(dest)){
-            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         
         RoutingInfo inst = new RoutingInfo();

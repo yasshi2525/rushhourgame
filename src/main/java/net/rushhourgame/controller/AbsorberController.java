@@ -26,7 +26,7 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Absorber;
 import net.rushhourgame.entity.Owner;
 import net.rushhourgame.entity.RoleType;
@@ -41,7 +41,7 @@ import net.rushhourgame.exception.RushHourException;
 @Dependent
 public class AbsorberController extends PointEntityController {
     private static final long serialVersionUID = 1L;
-    
+        
     @Inject
     protected NodeController nCon;
     
@@ -51,10 +51,10 @@ public class AbsorberController extends PointEntityController {
     
     public Absorber create(Owner owner, double x, double y, double scale) throws RushHourException{
         if(owner == null){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_OWNER));
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
         if(!owner.getRoles().contains(RoleType.ADMINISTRATOR)){
-            throw new RushHourException(ErrorMessage.createNoPrivileged(GAME_NO_PRIVILEDGE_ONLY_ADMIN));
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_ONLY_ADMIN));
         }
         Absorber inst = new Absorber();
         inst.setOwner(owner);

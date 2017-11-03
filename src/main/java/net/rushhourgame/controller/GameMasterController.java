@@ -25,7 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.Locale;
 import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.GameMaster;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -46,7 +46,7 @@ public class GameMasterController extends AbstractController{
     
     public GameMaster create() throws RushHourException{
         if(exists()){
-            throw new RushHourException(ErrorMessage.createDataInconsitency(GAME_DATA_INCONSIST_DUP_GM));
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(GAME_DATA_INCONSIST_DUP_GM));
         }
         OwnerInfo info = new OwnerInfo();
         info.setColor("#888888");

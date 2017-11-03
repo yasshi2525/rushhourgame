@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 
@@ -43,6 +44,8 @@ public abstract class AbstractTwitterOAuthBean implements Serializable{
     protected RushHourProperties prop;
     @Inject
     protected RushHourResourceBundle msgProp;
+    @Inject
+    protected ErrorMessageBuilder errMsgBuilder;
     
     protected static final String ERR_PAGE = "error.xhtml";
     protected static final String MYPAGE = "index.xhtml";

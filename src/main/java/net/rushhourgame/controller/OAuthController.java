@@ -28,7 +28,7 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
@@ -46,7 +46,7 @@ public class OAuthController extends AbstractController {
 
     public OAuth createOAuthBean(String requestToken, String requestTokenSecret) throws RushHourException {
         if(requestToken == null){
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL, SIGNIN_FAIL_GET_REQ_TOKEN_INVALID_REQ_TOKEN, "null"));
         }
         try {
@@ -55,7 +55,7 @@ public class OAuthController extends AbstractController {
             String requestTokenDigest = calculator.calcDigest(requestToken);
             
             if(isRegisteredRequestToken(requestToken)){
-                throw new RushHourException(ErrorMessage.createReSignInError(
+                throw new RushHourException(errMsgBuilder.createReSignInError(
                         SIGNIN_FAIL,
                         SIGNIN_FAIL_GET_REQ_TOKEN_DUPLICATE,
                         "Your request_token is already registerd."),
@@ -70,7 +70,7 @@ public class OAuthController extends AbstractController {
             return oAuth;
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#createOAuthBean", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
     }
 
@@ -89,7 +89,7 @@ public class OAuthController extends AbstractController {
             return exists("OAuth.isValidId", "id", id);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#isRegisteredRequestToken", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
     }
     
@@ -108,7 +108,7 @@ public class OAuthController extends AbstractController {
             return findBy("OAuth.findById", "id", id, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
         }
     }
     

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
+import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
@@ -74,6 +75,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             spy.rushHourSession = session;
             spy.client = client;
             spy.userShowClient = showClient;
+            spy.errMsgBuilder = ErrorMessageBuilder.getInstance();
             doReturn(null).when(session).getLocale();
             doReturn("test_access").when(client).getAccessToken();
             doReturn("test_access_sec").when(client).getAccessTokenSecret();

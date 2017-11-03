@@ -24,7 +24,7 @@
 package net.rushhourgame.controller;
 
 import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Link;
 import net.rushhourgame.entity.Node;
 import net.rushhourgame.exception.RushHourException;
@@ -39,14 +39,14 @@ public class EdgeController extends AbstractController{
     
     public Link create(Node from, Node to) throws RushHourException{
         if(from == null || to == null){
-            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         return create(from, to, from.distTo(to));
     }
     
     public Link create(Node from, Node to, double cost) throws RushHourException{
         if(from == null || to == null){
-            throw new RushHourException(ErrorMessage.createDataInconsitency(null));
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         
         Link inst = new Link();

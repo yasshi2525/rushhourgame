@@ -30,7 +30,7 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
@@ -84,7 +84,7 @@ public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
                         client.getOAuthCallBack()
                     });
             throw new RushHourException(
-                    ErrorMessage.createReSignInError(
+                    errMsgBuilder.createReSignInError(
                             SIGNIN_FAIL,
                             SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED,
                             client.getOAuthCallBack()),

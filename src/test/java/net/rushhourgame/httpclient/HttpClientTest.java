@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.TreeMap;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
+import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
@@ -75,6 +76,7 @@ public class HttpClientTest {
         inst = new LocalHttpClient();
         inst.resourceUrl = INVALID_URL;
         inst.httpMethod = HttpClient.HttpMethod.GET;
+        inst.errMsgBuilder = ErrorMessageBuilder.getInstance();
     }
 
     @After

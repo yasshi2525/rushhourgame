@@ -30,7 +30,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.OAuth;
@@ -84,7 +84,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
             // GETパラメータからリクエストトークンを受け取れない
             LOG.log(Level.SEVERE, "TwitterOAuthAccessTokenManagedBean#init requestToken is null");
             
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_NO_REQ_TOKEN
             ), "requestToken or oAuthVerifier is null");
@@ -94,7 +94,7 @@ public class TwitterOAuthAccessTokenBean extends AbstractTwitterOAuthBean {
             // リクエストトークンがテーブルに存在しない
             LOG.log(Level.SEVERE, "TwitterOAuthAccessTokenManagedBean#init unregistered requestToken = {0}", requestToken);
             
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL,
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_UNREGISTERED_REQ_TOKEN
             ), "requestToken " + requestToken + " is not registered in OAuth table");

@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 
@@ -93,5 +94,6 @@ public class ControllerFactory {
         inst.calculator = createDigestCalculator();
         inst.em = LocalEntityManager.createEntityManager();
         inst.prop = RushHourProperties.getInstance();
+        inst.errMsgBuilder = ErrorMessageBuilder.getInstance();
     }
 }

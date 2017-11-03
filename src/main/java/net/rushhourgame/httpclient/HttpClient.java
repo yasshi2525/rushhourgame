@@ -43,7 +43,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import net.rushhourgame.ErrorMessage;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;
@@ -60,6 +60,8 @@ public abstract class HttpClient implements Serializable {
 
     @Inject
     RushHourProperties prop;
+    @Inject
+    ErrorMessageBuilder errMsgBuilder;
     protected final SortedMap<String, String> getParameters = new TreeMap<>();
     protected final SortedMap<String, String> postParameters = new TreeMap<>();
     protected final SortedMap<String, SortedMap<String, String>> requestHeaders = new TreeMap<>();
@@ -93,7 +95,7 @@ public abstract class HttpClient implements Serializable {
             // ヘッダ文字列作成時にエンコード失敗
             LOG.log(Level.SEVERE, HttpClient.class + "#request", ex);
             throw new RushHourException(
-                    ErrorMessage.createReSignInError(
+                    errMsgBuilder.createReSignInError(
                             SIGNIN_FAIL, SIGNIN_FAIL_ENCODE,
                             ex.getMessage(), resourceUrl),
                     "fail to encode " + ex.getMessage() + " for " + resourceUrl);
@@ -102,7 +104,7 @@ public abstract class HttpClient implements Serializable {
             // 接続エラー
             LOG.log(Level.SEVERE, HttpClient.class + "#request", ex);
             throw new RushHourException(
-                    ErrorMessage.createReSignInError(
+                    errMsgBuilder.createReSignInError(
                             SIGNIN_FAIL, SIGNIN_FAIL_CONNECTION_ERR,
                             resourceUrl),
                     "connection error " + resourceUrl + " : " + ex.getMessage());
@@ -174,7 +176,7 @@ public abstract class HttpClient implements Serializable {
         }
 
         if (httpMethod == null) {
-            throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
         }
         switch (httpMethod) {
             case GET:
@@ -182,7 +184,7 @@ public abstract class HttpClient implements Serializable {
             case POST:
                 return builder.post(post);
             default:
-                throw new RushHourException(ErrorMessage.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
+                throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
         }
     }
 
@@ -195,7 +197,7 @@ public abstract class HttpClient implements Serializable {
         if (resourceUrl == null) {
             LOG.log(Level.SEVERE, "{0}#verifyResourceUrl resourceUrl is null", HttpClient.class.getSimpleName());
             throw new RushHourException(
-                    ErrorMessage.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_RESOURCE),
+                    errMsgBuilder.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_RESOURCE),
                     "resourceUrl is null");
         }
     }
@@ -206,7 +208,7 @@ public abstract class HttpClient implements Serializable {
                     + " bad response status = {0} from {1}",
                     new String[]{String.valueOf(response.getStatus()), resourceUrl});
             throw new RushHourException(
-                    ErrorMessage.createReSignInError(
+                    errMsgBuilder.createReSignInError(
                             SIGNIN_FAIL, SIGNIN_FAIL_BAD_RES_STATUS,
                             String.valueOf(response.getStatus()), resourceUrl),
                     "bad response status = " + response.getStatus() + " from " + resourceUrl);
@@ -217,7 +219,7 @@ public abstract class HttpClient implements Serializable {
         if (!responseHeaders.containsKey(key)) {
             LOG.log(Level.SEVERE, "{0}#verifyResponseHeaderKey key = {1} didn''t exist",
                     new Object[]{HttpClient.class.getSimpleName(), key});
-            throw new RushHourException(ErrorMessage.createReSignInError(
+            throw new RushHourException(errMsgBuilder.createReSignInError(
                     SIGNIN_FAIL, SIGNIN_FAIL_INVALID_RESPONSE),
                     "invalid response : key = " + key + " didn't exist"
             );

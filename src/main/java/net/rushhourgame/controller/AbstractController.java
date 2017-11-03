@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
 
 /**
@@ -48,6 +49,8 @@ public abstract class AbstractController implements Serializable{
     protected RushHourProperties prop;
     @Inject
     protected DigestCalculator calculator;
+    @Inject
+    protected ErrorMessageBuilder errMsgBuilder;
     
     
     protected boolean exists(String query) {
