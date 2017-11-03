@@ -216,8 +216,8 @@ public class RushHourProperties implements Serializable {
     /**
      * keyが定数の場合、更新しない。
      *
-     * @param key
-     * @param value
+     * @param key key
+     * @param value value
      */
     synchronized public void update(String key, String value) {
         if (config.containsKey(key)) {
