@@ -30,7 +30,12 @@ import java.io.Serializable;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,12 +55,7 @@ public class RushHourProperties implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RushHourProperties.class.getName());
 
-    protected final static RushHourProperties INSTANCE;
-    
-    static {
-        INSTANCE = new RushHourProperties();
-        INSTANCE.init();
-    }
+    protected static RushHourProperties INSTANCE;
 
     // constants.properties ----------------------------------------------------
     public static final String CONFIG_PATH = "rushhour.config.path";
@@ -95,7 +95,7 @@ public class RushHourProperties implements Serializable {
     protected Properties config;
 
     /**
-     * デフォルトの設定とユーザの設定を読み込む。 
+     * デフォルトの設定とユーザの設定を読み込む。
      */
     @PostConstruct
     public void init() {
@@ -117,33 +117,34 @@ public class RushHourProperties implements Serializable {
 
             LOG.log(Level.INFO, "{0}#init success to load default config", this.getClass().getSimpleName());
 
-            
+            // ユーザ設定のロード
             Path userConfig = FileSystems.getDefault()
                     .getPath(constants.getProperty(CONFIG_PATH));
             LOG.log(Level.FINE, "{0}#init user config path = {1}",
                     new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath()});
 
-            if (Files.exists(userConfig) && !Files.isDirectory(userConfig)) {
-                // ユーザの設定をロード
+            if (Files.isDirectory(userConfig)) {
+                //ディレクトリとして存在する場合は作成しない
+                LOG.log(Level.WARNING, "{0}#init faiure to create user config file"
+                        + " because path is already exists. (path = {1})",
+                        new Object[]{this.getClass().getSimpleName()});
+                return;
+            }
+
+            if (Files.exists(userConfig)) {
+                // ユーザ設定ファイルがあれば、ロード
                 try (InputStream is = Files.newInputStream(userConfig)) {
                     config.load(is);
                 }
                 LOG.log(Level.INFO, "{0}#init success to load user config", this.getClass().getSimpleName());
 
-            } /*
-                勝手にファイルを作るのは管理上問題なので、store実行時のみファイルをつくるようにした
-                else if (!Files.exists(userConfig)) {
-                //設定ファイルを作成
+            } else {
+                // ユーザ設定ファイルがなければ新規作成
                 try (InputStream is = loader.getResourceAsStream(TEMPLATE_CONFIG_PATH)) {
                     Files.copy(is, userConfig, StandardCopyOption.REPLACE_EXISTING);
                 }
                 LOG.log(Level.INFO, "{0}#init success to create user config");
-            } else {
-                //ディレクトリとして存在する場合は作成しない
-                LOG.log(Level.WARNING, "{0}#init faiure to create user config file"
-                        + " because path is already exists. (path = {1})",
-                        new Object[]{this.getClass().getSimpleName()});
-            } */
+            }
 
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init error during default config loading.", ex);
@@ -162,6 +163,10 @@ public class RushHourProperties implements Serializable {
      * @return RushHourPropertiesインスタンス
      */
     public static RushHourProperties getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new RushHourProperties();
+            INSTANCE.init();
+        }
         return INSTANCE;
     }
 

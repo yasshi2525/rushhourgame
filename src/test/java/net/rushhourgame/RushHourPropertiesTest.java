@@ -96,12 +96,14 @@ public class RushHourPropertiesTest {
     }
 
     @Test
-    public void testInit() {
+    public void testInit() throws IOException {
         LOG.log(Level.INFO, "{0}#testInit", new Object[]{this.getClass().getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
         inst.init();
-        // ユーザ設定ファイルは作成されない
-        assertFalse(Files.exists(configPath));
+        // ユーザ設定ファイルが作成される
+        assertTrue(Files.exists(configPath));
+        
+        Files.delete(configPath);
     }
 
     @Test
