@@ -43,7 +43,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     @Inject
     protected RushHourProperties prop;
 
-    private static final RushHourResourceBundle INSTANCE;
+    private static RushHourResourceBundle instance;
 
     private static final Logger LOG = Logger.getLogger(RushHourResourceBundle.class.getName());
 
@@ -113,12 +113,6 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String UNKNOWN_DETAIL = "rushhour.message.unknown.detail";
     public static final String UNKNOWN_ACTION = "rushhour.message.unknown.action";
 
-    static {
-        INSTANCE = new RushHourResourceBundle();
-        INSTANCE.prop = RushHourProperties.getInstance();
-        INSTANCE.init();
-    }
-
     protected RushHourResourceBundle() {
         super("message");
         LOG.log(Level.INFO, "{0}#constructor", this.getClass().getSimpleName());
@@ -142,7 +136,12 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
         }
     }
 
-    public static RushHourResourceBundle getINSTANCE() {
-        return INSTANCE;
+    public static RushHourResourceBundle getInstance() {
+        if (instance == null) {
+            instance = new RushHourResourceBundle();
+            instance.prop = RushHourProperties.getInstance();
+            instance.init();
+        }
+        return instance;
     }
 }

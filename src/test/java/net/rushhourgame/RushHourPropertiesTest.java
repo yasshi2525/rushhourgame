@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -300,7 +301,7 @@ public class RushHourPropertiesTest {
         LOG.log(Level.INFO, "{0}#testConfigWatchingService", new Object[]{this.getClass().getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
 
-        ExecutorService es = mock(ExecutorService.class);
+        ManagedExecutorService es = mock(ManagedExecutorService.class);
         inst.executorService = es;
         
         inst.init();

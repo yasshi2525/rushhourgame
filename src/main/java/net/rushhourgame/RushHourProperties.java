@@ -45,6 +45,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.enterprise.concurrent.ManagedExecutorService;
 
 /**
  *
@@ -60,7 +61,7 @@ public class RushHourProperties implements Serializable {
     protected static RushHourProperties INSTANCE;
 
     @Resource
-    ExecutorService executorService;
+    ManagedExecutorService executorService;
 
     // constants.properties ----------------------------------------------------
     public static final String CONFIG_PATH = "rushhour.config.path";
