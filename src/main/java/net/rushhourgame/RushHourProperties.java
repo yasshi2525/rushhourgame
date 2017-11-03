@@ -37,10 +37,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
@@ -56,6 +58,9 @@ public class RushHourProperties implements Serializable {
     private static final Logger LOG = Logger.getLogger(RushHourProperties.class.getName());
 
     protected static RushHourProperties INSTANCE;
+
+    @Resource
+    ExecutorService executorService;
 
     // constants.properties ----------------------------------------------------
     public static final String CONFIG_PATH = "rushhour.config.path";
@@ -91,6 +96,7 @@ public class RushHourProperties implements Serializable {
     protected static final String CONSTANTS_PATH = "constants.properties";
     protected static final String TEMPLATE_CONFIG_PATH = "template_config.properties";
 
+    protected WatchService watchService;
     protected Properties constants = new Properties();
     protected Properties config = new Properties();
 
@@ -98,7 +104,7 @@ public class RushHourProperties implements Serializable {
      * デフォルトの設定とユーザの設定を読み込む。
      */
     @PostConstruct
-    public void init() {
+    synchronized public void init() {
         LOG.log(Level.FINE, "{0}#init start", this.getClass().getSimpleName());
 
         // デフォルトの設定をロード
@@ -141,9 +147,19 @@ public class RushHourProperties implements Serializable {
                 try (InputStream is = loader.getResourceAsStream(TEMPLATE_CONFIG_PATH)) {
                     Files.copy(is, userConfig, StandardCopyOption.REPLACE_EXISTING);
                 }
-                LOG.log(Level.INFO, "{0}#init success to create user config");
+                LOG.log(Level.INFO, "{0}#init success to create user config", this.getClass().getSimpleName());
             }
 
+            // CDI経由で呼び出されなかったときはExecutorSericeが使えないので、
+            // ファイル監視を行わない
+            if (executorService != null) {
+                watchService = FileSystems.getDefault().newWatchService();
+                // ファイルが更新されたらリロードされるようにする。
+                executorService.submit(
+                        new ConfigWatchingService(userConfig, watchService));
+            } else {
+                LOG.log(Level.WARNING, "{0}#init fail to start watching service because executorService is null.", this.getClass().getSimpleName());
+            }
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init error during default config loading.", ex);
         }
@@ -152,6 +168,15 @@ public class RushHourProperties implements Serializable {
     @PreDestroy
     public void autosave() {
         LOG.log(Level.INFO, "{0}#autosave", this.getClass().getSimpleName());
+        
+        if(watchService != null) {
+            try {
+                watchService.close();
+            } catch (IOException ex) {
+                Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         store();
     }
 
@@ -190,16 +215,17 @@ public class RushHourProperties implements Serializable {
 
     /**
      * keyが定数の場合、更新しない。
+     *
      * @param key
-     * @param value 
+     * @param value
      */
     synchronized public void update(String key, String value) {
         if (config.containsKey(key)) {
             config.setProperty(key, value);
             return;
         } else if (constants.containsKey(key)) {
-            LOG.log(Level.WARNING, "{0}#update cannot update constants. key = {1}", 
-                    new String[] {this.getClass().getSimpleName(), key});
+            LOG.log(Level.WARNING, "{0}#update cannot update constants. key = {1}",
+                    new String[]{this.getClass().getSimpleName(), key});
             return;
         }
         //更新対象がなければconfigに新規キーを作成
@@ -208,13 +234,10 @@ public class RushHourProperties implements Serializable {
 
     synchronized public boolean store() {
         try {
-            //Properties#storeは前のファイルの文字を置き換えていくため、以前の内容が残ってしまう
             Path userConfig = FileSystems.getDefault()
                     .getPath(constants.getProperty(CONFIG_PATH));
-            Files.deleteIfExists(userConfig);
-            Files.createFile(userConfig);
 
-            try (OutputStream os = Files.newOutputStream(userConfig, StandardOpenOption.WRITE)) {
+            try (OutputStream os = Files.newOutputStream(userConfig, StandardOpenOption.TRUNCATE_EXISTING)) {
                 config.store(os, null);
             }
             return true;
@@ -222,6 +245,68 @@ public class RushHourProperties implements Serializable {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName()
                     + "#store failed.", ex);
             return false;
+        }
+    }
+
+    /**
+     * ユーザconfigファイルの更新を検知したら、configを更新する。
+     */
+    protected class ConfigWatchingService implements Runnable {
+
+        protected Path userConfig;
+        protected WatchService watcher;
+
+        public ConfigWatchingService(Path userConfig, WatchService watcher) {
+            this.userConfig = userConfig;
+            this.watcher = watcher;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                userConfig.toAbsolutePath().getParent().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+            } catch (IOException ex) {
+                Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
+                return;
+            }
+
+            while (true) {
+                WatchKey key;
+                try {
+                    key = watcher.take();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
+                    return;
+                }
+
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = event.kind();
+
+                    if (kind == StandardWatchEventKinds.OVERFLOW) {
+                        continue;
+                    }
+
+                    if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        Path file = (Path) event.context();
+
+                        if (file.equals(userConfig)) {
+                            try (InputStream is = Files.newInputStream(userConfig)) {
+                                config.load(is);
+                            } catch (IOException ex) {
+                                Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }
+
+                if (!key.reset()) {
+                    break;
+                }
+            }
+
+            LOG.log(Level.INFO, "{0}#run end watching service",
+                    new String[]{this.getClass().getSimpleName()});
         }
     }
 }

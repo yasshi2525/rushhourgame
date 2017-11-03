@@ -23,13 +23,22 @@
  */
 package net.rushhourgame;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -39,6 +48,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 /**
@@ -108,12 +118,25 @@ public class RushHourPropertiesTest {
 
         Files.delete(configPath);
     }
-    
+
     @Test
     public void testAutosave() {
         LOG.log(Level.INFO, "{0}#testAutosave", new Object[]{this.getClass().getSimpleName()});
         inst.init();
         inst.autosave();
+    }
+    
+    @Test
+    public void testAutosaveWatchServiceIOExeption() throws IOException {
+        LOG.log(Level.INFO, "{0}#testAutosaveWatchServiceIOExeption", new Object[]{this.getClass().getSimpleName()});
+        WatchService ws = mock(WatchService.class);
+        inst.watchService = ws;
+        doThrow(IOException.class).when(ws).close();
+        
+        inst.init();
+        inst.autosave();
+        
+        verify(ws, times(1)).close();
     }
 
     @Test
@@ -122,9 +145,9 @@ public class RushHourPropertiesTest {
         Properties propMock = mock(Properties.class);
         inst.constants = propMock;
         doThrow(IOException.class).when(propMock).load(any(InputStream.class));
-        
+
         inst.init();
-        
+
         verify(propMock, times(1)).load(any(InputStream.class));
     }
 
@@ -205,7 +228,7 @@ public class RushHourPropertiesTest {
         assertEquals("updated", inst.get("rushhour.test.forupdateconfig"));
         assertTrue(Files.exists(configPath));
     }
-    
+
     @Test
     public void testUpdateConstants() {
         LOG.log(Level.INFO, "{0}#testUpdateConstants", new Object[]{this.getClass().getSimpleName()});
@@ -265,5 +288,182 @@ public class RushHourPropertiesTest {
         LOG.log(Level.INFO, "{0}#testGetConfigPrinorToConstants", new Object[]{this.getClass().getSimpleName()});
         inst.init();
         assertEquals("config", inst.get("rushhour.test.file"));
+    }
+
+    /**
+     * コンフィグファイルの既存の値を更新する
+     *
+     * @throws java.lang.InterruptedException
+     */
+    @Test
+    public void testConfigWatchingService() throws InterruptedException, IOException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingService", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
+
+        ExecutorService es = mock(ExecutorService.class);
+        inst.executorService = es;
+        
+        inst.init();
+        assertEquals("config", inst.get("rushhour.test.forupdateconfig"));
+
+        new Thread(inst.new ConfigWatchingService(configPath, inst.watchService)).start();
+
+        Thread.sleep(1000L);
+
+        //ファイルを更新する
+        try (BufferedWriter bw = Files.newBufferedWriter(configPath, StandardOpenOption.APPEND)) {
+            bw.write("rushhour.test.forupdateconfig=updated");
+        } catch (IOException ex) {
+            Logger.getLogger(RushHourPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Thread.sleep(1000L);
+        assertEquals("updated", inst.get("rushhour.test.forupdateconfig"));
+
+        // watchserviceをclose.
+        inst.autosave();
+    }
+
+    /**
+     * WatchServiceに登録するときIOException.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testConfigWatchingServiceIOException() throws InterruptedException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingServiceIOException", new Object[]{this.getClass().getSimpleName()});
+
+        Path configPath = mock(Path.class);
+        doThrow(IOException.class).when(configPath).toAbsolutePath();
+
+        WatchService watchService = mock(WatchService.class);
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(0)).take();
+    }
+
+    /**
+     * WatchServiceのイベントを取得したときInterruptedException.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testConfigWatchingServiceInterruptedException() throws InterruptedException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingServiceInterruptedException", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = mock(Path.class);
+        WatchService watchService = mock(WatchService.class);
+
+        when(configPath.toAbsolutePath()).thenReturn(configPath);
+        when(configPath.getParent()).thenReturn(configPath);
+
+        doThrow(InterruptedException.class).when(watchService).take();
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(1)).take();
+    }
+
+    /**
+     * Overflowイベントが発生して終了.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testConfigWatchingServiceOverflow() throws InterruptedException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingServiceOverflow", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = mock(Path.class);
+        WatchService watchService = mock(WatchService.class);
+        WatchKey watchKey = mock(WatchKey.class);
+        WatchEvent watchEvent = mock(WatchEvent.class);
+
+        List<WatchEvent<?>> eventList = new ArrayList<>();
+        eventList.add(watchEvent);
+
+        when(configPath.toAbsolutePath()).thenReturn(configPath);
+        when(configPath.getParent()).thenReturn(configPath);
+
+        when(watchService.take()).thenReturn(watchKey);
+
+        when(watchKey.pollEvents()).thenReturn(eventList);
+
+        when(watchEvent.kind()).thenReturn(StandardWatchEventKinds.OVERFLOW);
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(1)).take();
+        verify(watchEvent, times(1)).kind();
+    }
+
+    /**
+     * configにloadするときIOException.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testConfigWatchingServiceLoadIOException() throws InterruptedException, IOException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingServiceLoadIOException", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
+        Files.createFile(configPath);
+        Properties config = spy(Properties.class);
+        doThrow(IOException.class).when(config).load(any(InputStream.class));
+
+        inst.config = config;
+
+        try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
+            new Thread(inst.new ConfigWatchingService(configPath, watchService)).start();
+
+            Thread.sleep(1000L);
+
+            //ファイルを更新する
+            try (BufferedWriter bw = Files.newBufferedWriter(configPath, StandardOpenOption.APPEND)) {
+                bw.write("rushhour.test.forupdateconfig=updated");
+            } catch (IOException ex) {
+                Logger.getLogger(RushHourPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            Thread.sleep(1000L);
+        }
+
+        verify(config, times(1)).load(any(InputStream.class));
+    }
+    
+    /**
+     * watchkeyのresetに失敗.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testConfigWatchingServiceResetFail() throws InterruptedException {
+        LOG.log(Level.INFO, "{0}#testConfigWatchingServiceResetFail", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = mock(Path.class);
+        WatchService watchService = mock(WatchService.class);
+        WatchKey watchKey = mock(WatchKey.class);
+
+        when(configPath.toAbsolutePath()).thenReturn(configPath);
+        when(configPath.getParent()).thenReturn(configPath);
+
+        when(watchService.take()).thenReturn(watchKey);
+
+        when(watchKey.pollEvents()).thenReturn(new ArrayList<>());
+
+        when(watchKey.reset()).thenReturn(false);
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(1)).take();
+        verify(watchKey, times(1)).reset();
     }
 }
