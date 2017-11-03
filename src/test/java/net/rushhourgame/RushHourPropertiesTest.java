@@ -29,6 +29,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -37,6 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -70,13 +73,13 @@ public class RushHourPropertiesTest {
     public void tearDown() throws IOException {
         LOG.log(Level.INFO, "{0}#tearDown", new Object[]{this.getClass().getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
-        
+
         // 作成したファイルを削除
         Files.deleteIfExists(configPath);
-        if(Files.exists(configPath)){
+        if (Files.exists(configPath)) {
             fail("fail to remove user config file.");
         }
-        
+
         LOG.log(Level.INFO, "{0}#tearDown delete {1}",
                 new Object[]{this.getClass().getSimpleName(), configPath});
     }
@@ -86,11 +89,11 @@ public class RushHourPropertiesTest {
         LOG.log(Level.INFO, "{0}#tearDownClass", new Object[]{RushHourPropertiesTest.class.getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
         Files.deleteIfExists(configPath);
-        
-        if(Files.exists(configPath)){
+
+        if (Files.exists(configPath)) {
             fail("fail to remove user config file.");
         }
-        
+
         LOG.log(Level.INFO, "{0}#tearDown delete {1}",
                 new Object[]{RushHourPropertiesTest.class.getClass().getSimpleName(), configPath});
     }
@@ -102,8 +105,27 @@ public class RushHourPropertiesTest {
         inst.init();
         // ユーザ設定ファイルが作成される
         assertTrue(Files.exists(configPath));
-        
+
         Files.delete(configPath);
+    }
+    
+    @Test
+    public void testAutosave() {
+        LOG.log(Level.INFO, "{0}#testAutosave", new Object[]{this.getClass().getSimpleName()});
+        inst.init();
+        inst.autosave();
+    }
+
+    @Test
+    public void testInitIOException() throws IOException {
+        LOG.log(Level.INFO, "{0}#testInitIOException", new Object[]{this.getClass().getSimpleName()});
+        Properties propMock = mock(Properties.class);
+        inst.constants = propMock;
+        doThrow(IOException.class).when(propMock).load(any(InputStream.class));
+        
+        inst.init();
+        
+        verify(propMock, times(1)).load(any(InputStream.class));
     }
 
     @Test
@@ -137,13 +159,13 @@ public class RushHourPropertiesTest {
         LOG.log(Level.INFO, "{0}#testInitDirExists", new Object[]{this.getClass().getSimpleName()});
         Path dirPath = FileSystems.getDefault().getPath(CONFIG_PATH);
         Files.createDirectory(dirPath);
-        
+
         Path filePath = FileSystems.getDefault().getPath(CONFIG_PATH + "/tmp");
         Files.createFile(filePath);
         inst.init();
         assertTrue(Files.exists(filePath));
         assertFalse(inst.store());
-        
+
         Files.delete(filePath);
         Files.delete(dirPath);
     }
@@ -169,18 +191,34 @@ public class RushHourPropertiesTest {
     }
 
     @Test
-    public void testUpdate() {
-        LOG.log(Level.INFO, "{0}#testUpdate", new Object[]{this.getClass().getSimpleName()});
+    public void testUpdateConfig() {
+        LOG.log(Level.INFO, "{0}#testUpdateConfig", new Object[]{this.getClass().getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
         inst.init();
-        assertEquals("config", inst.get("rushhour.test.forupdate"));
-        inst.update("rushhour.test.forupdate", "updated");
-        assertEquals("updated", inst.get("rushhour.test.forupdate"));
+        assertEquals("config", inst.get("rushhour.test.forupdateconfig"));
+        inst.update("rushhour.test.forupdateconfig", "updated");
+        assertEquals("updated", inst.get("rushhour.test.forupdateconfig"));
         inst.store();
 
         inst = new RushHourProperties();
         inst.init();
-        assertEquals("updated", inst.get("rushhour.test.forupdate"));
+        assertEquals("updated", inst.get("rushhour.test.forupdateconfig"));
+        assertTrue(Files.exists(configPath));
+    }
+    
+    @Test
+    public void testUpdateConstants() {
+        LOG.log(Level.INFO, "{0}#testUpdateConstants", new Object[]{this.getClass().getSimpleName()});
+        Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
+        inst.init();
+        assertEquals("constants", inst.get("rushhour.test.forupdateconst"));
+        inst.update("rushhour.test.forupdateconst", "updated");
+        assertEquals("constants", inst.get("rushhour.test.forupdateconst"));
+        inst.store();
+
+        inst = new RushHourProperties();
+        inst.init();
+        assertEquals("constants", inst.get("rushhour.test.forupdateconst"));
         assertTrue(Files.exists(configPath));
     }
 

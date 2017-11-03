@@ -91,8 +91,8 @@ public class RushHourProperties implements Serializable {
     protected static final String CONSTANTS_PATH = "constants.properties";
     protected static final String TEMPLATE_CONFIG_PATH = "template_config.properties";
 
-    protected Properties constants;
-    protected Properties config;
+    protected Properties constants = new Properties();
+    protected Properties config = new Properties();
 
     /**
      * デフォルトの設定とユーザの設定を読み込む。
@@ -101,11 +101,9 @@ public class RushHourProperties implements Serializable {
     public void init() {
         LOG.log(Level.FINE, "{0}#init start", this.getClass().getSimpleName());
 
-        constants = new Properties();
-        config = new Properties();
-
         // デフォルトの設定をロード
         try {
+            // warの中のファイルをロードするためClassLoaderを使用する
             ClassLoader loader = RushHourProperties.class.getClassLoader();
 
             try (InputStream is = loader.getResourceAsStream(CONSTANTS_PATH)) {
@@ -190,12 +188,18 @@ public class RushHourProperties implements Serializable {
         }
     }
 
+    /**
+     * keyが定数の場合、更新しない。
+     * @param key
+     * @param value 
+     */
     synchronized public void update(String key, String value) {
         if (config.containsKey(key)) {
             config.setProperty(key, value);
             return;
         } else if (constants.containsKey(key)) {
-            constants.setProperty(key, value);
+            LOG.log(Level.WARNING, "{0}#update cannot update constants. key = {1}", 
+                    new String[] {this.getClass().getSimpleName(), key});
             return;
         }
         //更新対象がなければconfigに新規キーを作成
