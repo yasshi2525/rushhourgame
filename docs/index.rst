@@ -42,5 +42,6 @@ RushHour 仕様書
    GameMaster
    Controller
    Entity
+   Message
    Glossary
 
