@@ -126,6 +126,8 @@ html_static_path = ['_static']
 #    ]
 #}
 
+html_logo = 'icon.png'
+html_favicon = 'favicon.ico'
 
 # -- Options for HTMLHelp output ------------------------------------------
 
