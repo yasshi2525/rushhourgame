@@ -3,4 +3,5 @@
 /node_modules/
 /src/main/webapp/resources/js/build/
 /docs/_build/
+/docs/_ext/__pycache__/
 /nbproject
