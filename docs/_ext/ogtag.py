@@ -79,6 +79,9 @@ def get_og_tags(context, doctree, config):
     '''.format(ctx=context, desc=og_desc, page_url=page_url, cfg=config)
     if og_image:
         tags += '<meta property="og:image" content="{url}">'.format(url=og_image)
+    else:
+        # 画像がないときは icon.png を設定
+        tags += '<meta property="og:image" content="{icon_url}">'.format(icon_url=urljoin(site_url, '_static/icon.png'))
     return tags
 
 
