@@ -22,3 +22,18 @@
 
 Controller
 ==========
+
+Controllerは :term:`ユーザ` または :term:`ゲームマスタ` の
+要求を実現するモジュールです。ビジネスロジック層に該当します。
+
+.. seqdiag::
+
+    seqdiag {
+        GameMaster => Controller [label = "someAction()"] {
+            Controller -> EntityManager [label = "find()"];
+            Controller <-- EntityManager [label = "List<Entity>"];
+            Controller => Entity [label = "someAction()"];
+            Controller => Entity [label = "someAction()"];
+            Controller => EntityManager [label = "persist(Entity)"];
+        }
+    }

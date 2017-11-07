@@ -38,6 +38,12 @@ import sphinx_rtd_theme
 extensions = [
     'sphinx.ext.autodoc',
     'ogtag',
+    'sphinxcontrib.blockdiag',
+    'sphinxcontrib.seqdiag',
+    'sphinxcontrib.actdiag',
+    'sphinxcontrib.nwdiag',
+    'sphinxcontrib.rackdiag',
+    'sphinxcontrib.packetdiag',
 ]
 
 og_site_url = 'http://docs.rushhourgame.net/spec/'
@@ -128,6 +134,13 @@ html_static_path = ['_static']
 
 html_show_sourcelink = False
 html_favicon = 'favicon.ico'
+
+blockdiag_html_image_format = 'SVG'
+seqdiag_html_image_format = 'SVG'
+actdiag_html_image_format = 'SVG'
+nwdiag_html_image_format = 'SVG'
+rackiag_html_image_format = 'SVG'
+packetdiag_html_image_format = 'SVG'
 
 # -- Options for HTMLHelp output ------------------------------------------
 
