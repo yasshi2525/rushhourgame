@@ -37,6 +37,7 @@ RushHour 仕様書
    Background
    Purpose   
    Function
+   Architecture
    UI
    Client
    GameMaster

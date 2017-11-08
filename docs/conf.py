@@ -142,6 +142,11 @@ nwdiag_html_image_format = 'SVG'
 rackiag_html_image_format = 'SVG'
 packetdiag_html_image_format = 'SVG'
 
+blockdiag_fontpath = [
+  'C:\WINDOWS\Fonts\MEIRYO.TTC',
+  '/usr/share/fonts/vlgothic/VL-Gothic-Regular.ttf',
+]
+
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
