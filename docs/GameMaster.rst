@@ -20,8 +20,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
+.. _gamemaster-spec:
+
 ゲームマスタの仕様
 ==================
+
+:term:`ゲームマスタ` は定期的に処理を実行して、ゲームの進行を行います。
 
 .. _human-spec:
 

@@ -40,11 +40,10 @@
         データベース [shape = "flowchart.database"];
         外部サーバ [shape = "cloud"];
         タイマサービス [shape = "roundedbox"];
-        ゲームマスタ [shape = "actor"];
 
         "ユーザ,管理者" <-> Client層 [label = "HTTP"];
         外部サーバ <-> Client層 [label = "HTTP"];
-        タイマサービス -> ゲームマスタ -> Controller層;
+        タイマサービス -> Client層;
         Client層 <-> Controller層 <-> Entity層;
         Controller層 <-> "O/Rマッパ" -- データベース;
     }
@@ -58,6 +57,9 @@ Client層は、ソフトウェア内外を結びつけるインタフェース�
 操作を受けつけ、適切なControllerを呼び出し、受け取った結果を出力します。
 
 認証サーバとのHTTP通信などの、外部サービスへの接続もClient層が担います。
+
+タイマサービスは、 :term:`ゲームマスタ` の動きを実現するために使用されます。
+詳細は :ref:`gamemaster-spec` を参照して下さい。
 
 Controller層
 -------------
