@@ -41,11 +41,11 @@
         外部サーバ [shape = "cloud"];
         タイマサービス [shape = "roundedbox"];
 
-        "ユーザ,管理者" <-> Client層 [label = "HTTP"];
-        外部サーバ <-> Client層 [label = "HTTP"];
+        "ユーザ,管理者" -> Client層 [label = "HTTP"];
+        外部サーバ -> Client層 [label = "HTTP"];
         タイマサービス -> Client層;
-        Client層 <-> Controller層 <-> Entity層;
-        Controller層 <-> "O/Rマッパ" -- データベース;
+        Client層 -> Controller層 -> Entity層;
+        Controller層 -> "O/Rマッパ" -- データベース;
     }
 
 Client層
