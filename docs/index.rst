@@ -32,15 +32,17 @@ RushHour 仕様書
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: 目次
+   :numbered: 1
 
+   self
    Background
    Purpose   
    Function
-   Architecture
    UI
-   Client
    GameMaster
+   Architecture
+   Client
    Controller
    Entity
    Message
