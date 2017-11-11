@@ -33,7 +33,7 @@ RushHour 仕様書
 .. toctree::
    :maxdepth: 2
    :caption: 目次
-   :numbered: 1
+   :numbered: 3
 
    self
    Background
