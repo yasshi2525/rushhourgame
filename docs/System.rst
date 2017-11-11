@@ -23,9 +23,6 @@
 システム構成
 ============
 
-システム全体図
---------------
-
 RushHourはWebアプリケーションです。
 外部システムとの関わりを定義します。
 
@@ -76,73 +73,3 @@ RushHour本体である、Webアプリケーション内の構成は :ref:`archi
 .. note ::
 
     各機能はデータベースとやりとりをしますが、簡略化のため関連線の表記を省略しています。
-
-システム構成
-------------
-
-.. note ::
-
-    以下は筆者yasshy2525がホスト ``rushhourgame.net`` で運用するときの構成です。
-    将来的には、閲覧者が自身の環境にインストールできるようにしたいです。
-    その際はRushHourが動作する環境を明記し、インストール手順ドキュメントを公開します。
-
-.. list-table:: システム構成
-    :header-rows: 1
-    
-    * - 要素
-      - 
-
-    * - OS
-      - Cent OS 7
-
-    * - Webサーバ
-      - Nginx
-
-    * - アプリケーションサーバ
-      - Payara Server 4.1.1 以上
-
-    * - DBMS
-      - Maria DB 5.5 以上
-
-    * - 使用言語
-      - * Java
-        * JavaScript
-
-    * - バージョン管理
-      - GitHub
-
-    * - 依存性管理  
-      - * Maven
-        * npm
-
-    * - ビルドツール
-      - * Maven
-        * gulp
-
-    * - 継続的インテグレーションツール
-      - Jenkins
-
-    * - ドキュメント作成ツール
-      - * Sphinx
-        * javadoc
-
-    * - Webアプリケーションフレームワーク
-      - * Java Server Faces 2.2
-        * PrimeFaces
-
-    * - レンダリングエンジン
-      - Pixi.js
-
-    * - トランザクション管理
-      - Java Transaction API 1.2
-
-    * - O/R マッパ
-      - EclipseLink 2.6.4
-
-    * - 単体テストフレームワーク
-      - * JUnit
-        * Mockito (モック)
-        * jacocco (カバレッジ測定)
-
-    * - タスク管理
-      - Redmine
