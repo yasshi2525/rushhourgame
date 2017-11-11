@@ -82,6 +82,20 @@ CREATE DATABASE rushhourtest;
 
 ```mvn test```
 
+## (Optional) ドキュメント
+
+### 仕様書をビルドする
+
+```
+pip install Sphinx sphinx-rtd-theme sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-nwdiag sphinxcontrib-seqdiag sphinxcontrib-websupport  
+cd docs  
+make html  
+```
+
+### javadocを作成する
+
+```javadoc:javadoc```
+
 ## Licence
 
 The MIT License
