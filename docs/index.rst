@@ -37,7 +37,8 @@ RushHour 仕様書
 
    self
    Background
-   Purpose   
+   Purpose
+   System
    Function
    UI
    GameMaster

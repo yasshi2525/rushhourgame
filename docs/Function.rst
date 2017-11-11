@@ -20,6 +20,8 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
+.. _function-spec:
+
 機能
 ====
 
