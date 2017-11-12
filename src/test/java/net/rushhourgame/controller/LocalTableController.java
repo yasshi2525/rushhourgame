@@ -38,7 +38,7 @@ public class LocalTableController {
     EntityManager em;
     
     private final String[] tableList = {
-        "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", 
+        "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", "Platform", "TicketGate",
         "Station", "RoutingInfo", "Link", "Node", "RailPoint", "Rail", "Point", 
         "Player", "PlayerInfo", "OAuth"
     };

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,48 +33,40 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Station extends PointableEntity {
+public class Platform extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
-    protected String name;
+    @OneToOne
+    protected Station station;
 
-    @OneToOne(mappedBy = "station")
-    protected Platform platform;
+    @NotNull
+    @ManyToOne
+    protected RailPoint railPoint;
 
-    @OneToOne(mappedBy = "station")
-    protected TicketGate ticketGate;
+    protected int capacity;
 
-    public void collectHuman() {
-        throw new UnsupportedOperationException();
+    public Station getStation() {
+        return station;
     }
 
-    public void freeHuman() {
-        throw new UnsupportedOperationException();
+    public void setStation(Station station) {
+        this.station = station;
     }
 
-    public Platform getPlatform() {
-        return platform;
+    public RailPoint getRailPoint() {
+        return railPoint;
     }
 
-    public void setPlatform(Platform platform) {
-        this.platform = platform;
+    public void setRailPoint(RailPoint railPoint) {
+        this.railPoint = railPoint;
     }
 
-    public TicketGate getTicketGate() {
-        return ticketGate;
+    public int getCapacity() {
+        return capacity;
     }
 
-    public void setTicketGate(TicketGate ticketGate) {
-        this.ticketGate = ticketGate;
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }

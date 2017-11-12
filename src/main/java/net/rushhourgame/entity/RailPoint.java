@@ -48,7 +48,7 @@ public class RailPoint extends OwnableEntity implements Pointable{
     protected List<Rail> inEdges;
     
     @OneToMany(mappedBy = "railPoint")
-    protected List<Station> stations;
+    protected List<Platform> platforms;
     
     public double getX() {
         return point.getX();
@@ -79,7 +79,7 @@ public class RailPoint extends OwnableEntity implements Pointable{
         return inEdges;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public List<Platform> getPlatforms() {
+        return platforms;
     }
 }
