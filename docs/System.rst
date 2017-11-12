@@ -35,9 +35,9 @@ RushHour本体である、Webアプリケーション内の構成は :ref:`archi
 .. blockdiag::
     
     blockdiag {
-        ユーザ [shape = actor];
+        プレイヤ [shape = actor];
         管理者 [shape = actor];
-        ユーザ用Webサーバ [label = "Webサーバ"];
+        プレイヤ用Webサーバ [label = "Webサーバ"];
         管理者用Webサーバ [label = "Webサーバ"];
         認証サーバ [shape = "cloud"];
         データベース [shape = flowchart.database];
@@ -56,9 +56,9 @@ RushHour本体である、Webアプリケーション内の構成は :ref:`archi
             認証機能, 鉄道管理機能, マップ閲覧機能, ゲーム進行機能, ゲーム管理機能
         }
 
-        ユーザ <-> ユーザ用Webサーバ <-> 認証機能 <-> 認証サーバ;
-                  ユーザ用Webサーバ <-> 鉄道管理機能;
-                  ユーザ用Webサーバ <-> マップ閲覧機能;
+        プレイヤ <-> プレイヤ用Webサーバ <-> 認証機能 <-> 認証サーバ;
+                  プレイヤ用Webサーバ <-> 鉄道管理機能;
+                  プレイヤ用Webサーバ <-> マップ閲覧機能;
         
         管理者 <-> 管理者用Webサーバ <-> ゲーム管理機能;
         ゲーム進行機能 <- タイマサービス;

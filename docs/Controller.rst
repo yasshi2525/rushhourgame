@@ -23,7 +23,7 @@
 Controller
 ==========
 
-Controllerは :term:`ユーザ` または :term:`ゲームマスタ` の
+Controllerは :term:`プレイヤ` または :term:`ゲームマスタ` の
 要求を実現するモジュールです。ビジネスロジック層に該当します。
 
 .. seqdiag::

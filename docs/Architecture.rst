@@ -38,12 +38,12 @@
 .. blockdiag::
     
     blockdiag {
-        "ユーザ,管理者" [shape = "actor"];
+        "プレイヤ,管理者" [shape = "actor"];
         データベース [shape = "flowchart.database"];
         外部サーバ [shape = "cloud"];
         タイマサービス [shape = "roundedbox"];
 
-        "ユーザ,管理者" -> Client層 [label = "HTTP"];
+        "プレイヤ,管理者" -> Client層 [label = "HTTP"];
         外部サーバ -> Client層 [label = "HTTP"];
         タイマサービス -> Client層;
         Client層 -> Controller層 -> Entity層;
@@ -55,7 +55,7 @@ Client層
 
 Client層は、ソフトウェア内外を結びつけるインタフェースです。
 
-:term:`ユーザ` または :term:`管理者` の
+:term:`プレイヤ` または :term:`管理者` の
 操作を受けつけ、適切なControllerを呼び出し、受け取った結果を出力します。
 
 認証サーバとのHTTP通信などの、外部サービスへの接続もClient層が担います。
