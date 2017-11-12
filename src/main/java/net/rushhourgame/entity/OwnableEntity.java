@@ -30,7 +30,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
- * つねに player XOR gameMaster が成立.
+ * 
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
@@ -47,8 +47,6 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
                     name = "fk_owner_info_id",
                     foreignKeyDefinition = "FOREIGN KEY (info_id) REFERENCES ownerinfo (id) ON DELETE CASCADE"))*/
     protected Player player;
-    @ManyToOne
-    protected GameMaster gameMaster;
 
     public long getId() {
         return id;
@@ -59,9 +57,6 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
     }
 
     public Owner getOwner() {
-        if (gameMaster != null) {
-            return gameMaster;
-        }
         return player;
     }
 
@@ -69,11 +64,7 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
         if (owner == null) {
             throw new NullPointerException("owner is null");
         }
-        if (owner instanceof GameMaster) {
-            gameMaster = (GameMaster) owner;
-            player = null;
-        } else if (owner instanceof Player) {
-            gameMaster = null;
+        if (owner instanceof Player) {
             player = (Player) owner;
         } else {
             throw new IllegalArgumentException("owner is not GameMaster nor Player");
@@ -103,10 +94,7 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
             return false;
         }
 
-        if (owner instanceof GameMaster && gameMaster != null) {
-            return ((GameMaster) owner).id == gameMaster.id;
-            
-        } else if (owner instanceof Player && player != null) {
+        if (owner instanceof Player && player != null) {
             return player.id.equals(((Player) owner).id);
             
         } else {

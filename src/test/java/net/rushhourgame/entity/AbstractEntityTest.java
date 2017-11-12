@@ -30,7 +30,6 @@ import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.controller.AbsorberController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
-import net.rushhourgame.controller.GameMasterController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import org.junit.After;
@@ -50,7 +49,6 @@ public abstract class AbstractEntityTest {
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static AbsorberController ACON = ControllerFactory.createAbsorberController();
-    protected final static GameMasterController GCON = ControllerFactory.createGameMasterController();
     @Rule
     public ExpectedException ex = ExpectedException.none();
     

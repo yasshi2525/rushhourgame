@@ -42,7 +42,6 @@ public class OwnableEntityTest extends AbstractEntityTest {
     protected Player player;
     protected Player other;
     protected Player admin;
-    protected GameMaster gm;
     protected OwnableEntity inst;
     
     @Before
@@ -55,13 +54,6 @@ public class OwnableEntityTest extends AbstractEntityTest {
         other.getRoles().add(RoleType.PLAYER);
         admin = new Player();
         admin.getRoles().add(RoleType.ADMINISTRATOR);
-        try {
-            gm = GCON.create();
-        } catch (RushHourException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            TCON.clean();
-            fail();
-        }
         inst = spy(OwnableEntity.class);
     }
 
@@ -82,13 +74,10 @@ public class OwnableEntityTest extends AbstractEntityTest {
     public void testGetPlayerOwner() {
         inst.player = player;
         assertEquals(player, inst.getOwner());
-        assertNotEquals(gm, inst.getOwner());
     }
     
     @Test
     public void testGetGMOwner() {
-        inst.gameMaster = gm;
-        assertEquals(gm, inst.getOwner());
         assertNotEquals(player, inst.getOwner());
     }
     
@@ -96,13 +85,10 @@ public class OwnableEntityTest extends AbstractEntityTest {
     public void testSetPlayerOwner(){
         inst.setOwner(player);
         assertEquals(player, inst.getOwner());
-        assertNotEquals(gm, inst.getOwner());
     }
     
     @Test
     public void testSetGMOwner(){
-        inst.setOwner(gm);
-        assertEquals(gm, inst.getOwner());
         assertNotEquals(player, inst.getOwner());
     }
     
@@ -110,20 +96,5 @@ public class OwnableEntityTest extends AbstractEntityTest {
     public void testSetNullOwner(){
         ex.expect(NullPointerException.class);
         inst.setOwner(null);
-    }
-    
-    @Test
-    public void testChangeOwner(){
-        inst.setOwner(player);
-        assertEquals(player, inst.getOwner());
-        assertNotEquals(gm, inst.getOwner());
-        
-        inst.setOwner(gm);
-        assertEquals(gm, inst.getOwner());
-        assertNotEquals(player, inst.getOwner());
-        
-        inst.setOwner(player);
-        assertEquals(player, inst.getOwner());
-        assertNotEquals(gm, inst.getOwner());
     }
 }

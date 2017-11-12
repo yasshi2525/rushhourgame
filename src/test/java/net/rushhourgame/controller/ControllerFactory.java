@@ -59,12 +59,6 @@ public class ControllerFactory {
         return inst;
     }
     
-    public static GameMasterController createGameMasterController(){
-        GameMasterController inst = new GameMasterController();
-        init(inst);
-        return inst;
-    }
-    
     public static RoutingInfoController createRoutingInfoController(){
         RoutingInfoController inst = new RoutingInfoController();
         init(inst);
