@@ -44,7 +44,8 @@ extensions = [
     'sphinxcontrib.nwdiag',
     'sphinxcontrib.rackdiag',
     'sphinxcontrib.packetdiag',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'myasuda.sphinx.erdiagram',
 ]
 
 og_site_url = 'http://docs.rushhourgame.net/spec/'
@@ -147,6 +148,8 @@ blockdiag_fontpath = [
   'C:\WINDOWS\Fonts\MEIRYO.TTC',
   '/usr/share/fonts/vlgothic/VL-Gothic-Regular.ttf',
 ]
+
+graphviz_output_format = "svg"
 
 # -- Options for HTMLHelp output ------------------------------------------
 

@@ -40,6 +40,7 @@ RushHour 仕様書
    Purpose
    System
    Function
+   DataModel
    UI
    GameMaster
    Architecture
