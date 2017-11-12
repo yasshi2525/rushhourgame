@@ -30,7 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.OwnerInfo;
+import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -62,7 +62,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
         super.setUp();
         try {
             oAuth = OCON.createOAuthBean("foo", "foosec");
-            OwnerInfo info = new OwnerInfo();
+            PlayerInfo info = new PlayerInfo();
             info.setName(DISPLAY_NAME);
             info.setColor("#000000");
             info.setIconUrl("no_image.png");

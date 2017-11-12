@@ -283,8 +283,6 @@
     * oAuth がサービス名を持たない。
     * oAuth が外部サービスログインIDを持たない。
     * player がサインインタイプを持っている。
-    * プレイヤ情報が OwnerInfo になっている。
-    * absorber, distributer が OwnableEntity
     * 線路ノードが RailPoint
     * 線路エッジが Rail
     * 駅舎とプラットフォームが同じStation

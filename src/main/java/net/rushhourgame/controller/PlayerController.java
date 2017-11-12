@@ -35,7 +35,7 @@ import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Player;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.OwnerInfo;
+import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.UserData;
@@ -122,7 +122,7 @@ public class PlayerController extends AbstractController {
                     SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN),
                     "User accessToken is already registered : " + tokenDigest);
         }
-        OwnerInfo info = new OwnerInfo();
+        PlayerInfo info = new PlayerInfo();
         info.include(userData);
         if (locale != null) {
             info.setLocale(locale);

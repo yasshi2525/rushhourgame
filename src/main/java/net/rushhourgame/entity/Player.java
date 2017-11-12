@@ -24,6 +24,7 @@
 package net.rushhourgame.entity;
 
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -58,7 +59,7 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM Player x WHERE x.token = :token"
     )
 })
-public class Player extends OwnerEntity {
+public class Player extends AbstractEntity {
     private static final long serialVersionUID = 1L;
     @Id
     protected String id;
@@ -71,6 +72,19 @@ public class Player extends OwnerEntity {
     protected OAuth oauth;
     @NotNull
     protected SignInType signIn;
+    
+        
+    @NotNull
+    @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    protected PlayerInfo info;
+
+    public PlayerInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(PlayerInfo info) {
+        this.info = info;
+    }
     
     public String getId() {
         return id;

@@ -39,7 +39,7 @@ import net.rushhourgame.json.UserData;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class OwnerInfo implements Serializable {
+public class PlayerInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

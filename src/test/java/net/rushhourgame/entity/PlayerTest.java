@@ -37,7 +37,7 @@ public class PlayerTest extends AbstractEntityTest{
     @Test
     public void testSetJPName(){
         Player player = new Player();
-        OwnerInfo info = new OwnerInfo();
+        PlayerInfo info = new PlayerInfo();
         info.setColor("#000000");
         info.setIconUrl("#000000");
         info.setLocale(Locale.getDefault());
