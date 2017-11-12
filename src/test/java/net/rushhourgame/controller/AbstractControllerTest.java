@@ -27,7 +27,6 @@ import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
@@ -69,12 +68,5 @@ public class AbstractControllerTest {
         OCON.createOAuthBean("_player", "_player_sec");
         return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
-    
-    protected static Player createAdmin() throws RushHourException{
-        OCON.createOAuthBean("_admin", "_admin_sec");
-        Player admin = PCON.createPlayer("_admin", "_admin", "_admin", new SimpleUserData());
-        admin.getRoles().add(RoleType.ADMINISTRATOR);
-        
-        return admin;
-    }
+
 }

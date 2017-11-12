@@ -27,9 +27,9 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Rail;
 import net.rushhourgame.entity.RailPoint;
-import net.rushhourgame.entity.Owner;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -40,7 +40,7 @@ import net.rushhourgame.exception.RushHourException;
 public class RailController extends PointEntityController{
     private static final long serialVersionUID = 1L;
     
-    public RailPoint create(Owner owner, double x, double y) throws RushHourException{
+    public RailPoint create(Player owner, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
@@ -51,7 +51,7 @@ public class RailController extends PointEntityController{
         return n;
     }
     
-    public RailPoint extend(Owner owner, RailPoint from, double x, double y) throws RushHourException{
+    public RailPoint extend(Player owner, RailPoint from, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }

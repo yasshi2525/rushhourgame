@@ -33,7 +33,6 @@ import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RoleType;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.OwnerInfo;
@@ -132,7 +131,6 @@ public class PlayerController extends AbstractController {
         }
         
         Player p = new Player();
-        p.getRoles().add(RoleType.PLAYER);
         p.setId(userIdDigest);
         p.setUserId(plainUserId);
         p.setToken(tokenDigest);

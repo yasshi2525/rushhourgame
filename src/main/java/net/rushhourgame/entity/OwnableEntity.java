@@ -28,6 +28,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 
 /**
  * 
@@ -41,11 +42,8 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
 
+    @NotNull
     @ManyToOne
-    /*@JoinColumn(
-            foreignKey = @ForeignKey(
-                    name = "fk_owner_info_id",
-                    foreignKeyDefinition = "FOREIGN KEY (info_id) REFERENCES ownerinfo (id) ON DELETE CASCADE"))*/
     protected Player player;
 
     public long getId() {
@@ -56,50 +54,37 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
         this.id = id;
     }
 
-    public Owner getOwner() {
+    public Player getOwner() {
         return player;
     }
 
-    public void setOwner(Owner owner) {
+    public void setOwner(Player owner) {
         if (owner == null) {
             throw new NullPointerException("owner is null");
         }
-        if (owner instanceof Player) {
-            player = (Player) owner;
-        } else {
-            throw new IllegalArgumentException("owner is not GameMaster nor Player");
-        }
+        player = owner;
     }
 
     /**
-     * 管理者か自分の所有者ならtrue
+     * 自分の所有者ならtrue
      *
      * @param owner owner
      * @return boolean
      */
     @Override
-    public boolean isPrivilegedBy(Owner owner) {
+    public boolean isPrivilegedBy(Player owner) {
         if (owner == null) {
             return false;
-        }
-        if (owner.getRoles().contains(RoleType.ADMINISTRATOR)) {
-            return true;
         }
         return isOwnedBy(owner);
     }
 
     @Override
-    public boolean isOwnedBy(Owner owner) {
+    public boolean isOwnedBy(Player owner) {
         if (owner == null) {
             return false;
         }
-
-        if (owner instanceof Player && player != null) {
-            return player.id.equals(((Player) owner).id);
-            
-        } else {
-            return false;
-        }
+        return player.id.equals((owner).id);
     }
 
 }

@@ -38,15 +38,11 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
-public abstract class OwnerEntity extends AbstractEntity implements Owner {
+public abstract class OwnerEntity extends AbstractEntity {
     
     @NotNull
     @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     protected OwnerInfo info;
-    
-    @ElementCollection(targetClass = RoleType.class)
-    @Enumerated(EnumType.STRING)
-    protected Set<RoleType> roles = new HashSet<>();
 
     public OwnerInfo getInfo() {
         return info;
@@ -54,9 +50,5 @@ public abstract class OwnerEntity extends AbstractEntity implements Owner {
 
     public void setInfo(OwnerInfo info) {
         this.info = info;
-    }
-    
-    public Set<RoleType> getRoles() {
-        return roles;
     }
 }

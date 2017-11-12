@@ -35,51 +35,6 @@ public class PlayerTest extends AbstractEntityTest{
     protected static final String JP_NAME = "日本語名";
 
     @Test
-    public void testControlRole() {
-        Player player = new Player();
-        player.setId("hoge");
-        EM.persist(player);
-        assertEquals(0, player.getRoles().size());
-        
-        player.roles.add(RoleType.PLAYER);
-        EM.merge(player);
-        assertEquals(1, player.getRoles().size());
-        
-        player.roles.add(RoleType.ADMINISTRATOR);
-        EM.merge(player);
-        assertEquals(2, player.getRoles().size());
-    }
-    
-    @Test
-    public void testPersistNoRole() {
-        Player player = new Player();
-        player.setId("hoge");
-        EM.persist(player);
-        assertEquals(0, player.getRoles().size());
-        
-        player.roles.add(RoleType.PLAYER);
-        EM.merge(player);
-        assertEquals(1, player.getRoles().size());
-        
-        player.roles.add(RoleType.ADMINISTRATOR);
-        EM.merge(player);
-        assertEquals(2, player.getRoles().size());
-    }
-    
-    @Test
-    public void testLoadRole() {
-        Player player = new Player();
-        player.setId("hoge");
-        player.roles.add(RoleType.PLAYER);
-        EM.persist(player);
-        assertEquals(1, player.getRoles().size());
-        
-        player.roles.add(RoleType.ADMINISTRATOR);
-        EM.merge(player);
-        assertEquals(2, player.getRoles().size());
-    }
-    
-    @Test
     public void testSetJPName(){
         Player player = new Player();
         OwnerInfo info = new OwnerInfo();

@@ -29,16 +29,16 @@ package net.rushhourgame.entity;
  */
 public interface Ownable {
 
-    public void setOwner(Owner owner);
+    public void setOwner(Player owner);
 
-    public Owner getOwner();
+    public Player getOwner();
 
     /**
      * 引数のownerからの操作を受け付けるか
      * @param owner owner
      * @return boolean
      */
-    public boolean isPrivilegedBy(Owner owner);
+    public boolean isPrivilegedBy(Player owner);
     
-    public boolean isOwnedBy(Owner owner);
+    public boolean isOwnedBy(Player owner);
 }

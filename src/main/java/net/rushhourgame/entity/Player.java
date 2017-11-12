@@ -111,11 +111,7 @@ public class Player extends OwnerEntity {
     public void setOauth(OAuth oauth) {
         this.oauth = oauth;
     }
-
-    public Set<RoleType> getRoles() {
-        return roles;
-    }
-
+    
     public SignInType getSignIn() {
         return signIn;
     }

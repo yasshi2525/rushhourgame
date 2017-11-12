@@ -32,7 +32,6 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RoleType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 
@@ -69,10 +68,6 @@ public class AdminBean implements Serializable {
                 userData.setName(ADMIN_USER);
                 
                 p = pCon.createPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, userData, session.getLocale());
-            }
-            //Admin権限の付与
-            if (!p.getRoles().contains(RoleType.ADMINISTRATOR)) {
-                p.getRoles().add(RoleType.ADMINISTRATOR);
             }
             session.setToken(p.getToken());
         }

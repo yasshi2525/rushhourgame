@@ -41,7 +41,6 @@ public class OwnableEntityTest extends AbstractEntityTest {
     
     protected Player player;
     protected Player other;
-    protected Player admin;
     protected OwnableEntity inst;
     
     @Before
@@ -49,11 +48,7 @@ public class OwnableEntityTest extends AbstractEntityTest {
         super.setUp();
         player = new Player();
         player.id="user1";
-        player.getRoles().add(RoleType.PLAYER);
         other = new Player();
-        other.getRoles().add(RoleType.PLAYER);
-        admin = new Player();
-        admin.getRoles().add(RoleType.ADMINISTRATOR);
         inst = spy(OwnableEntity.class);
     }
 
@@ -65,7 +60,6 @@ public class OwnableEntityTest extends AbstractEntityTest {
         inst.player = player;
 
         assertTrue(inst.isPrivilegedBy(player));
-        assertTrue(inst.isPrivilegedBy(admin));
         assertFalse(inst.isPrivilegedBy(other));
         assertFalse(inst.isPrivilegedBy(null));
     }

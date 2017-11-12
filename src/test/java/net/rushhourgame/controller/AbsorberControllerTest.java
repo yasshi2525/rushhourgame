@@ -23,11 +23,11 @@
  */
 package net.rushhourgame.controller;
 
-import net.rushhourgame.entity.Owner;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Player;
 import org.junit.Before;
 
 /**
@@ -36,8 +36,7 @@ import org.junit.Before;
  */
 public class AbsorberControllerTest extends AbstractControllerTest {
 
-    protected Owner admin;
-    protected Owner player;
+    protected Player player;
     protected AbsorberController inst;
 
     @Before
@@ -46,24 +45,8 @@ public class AbsorberControllerTest extends AbstractControllerTest {
         inst = ControllerFactory.createAbsorberController();
         try {
             player = createPlayer();
-            admin = createAdmin();
         } catch (RushHourException e) {
             fail();
-        }
-    }
-
-    @Test
-    public void testCreate() throws RushHourException {
-        assertNotNull(inst.create(admin, 0.0, 0.0));
-    }
-
-    @Test
-    public void testCreateByPlayer() {
-        try {
-            assertNotNull(inst.create(player, 0.0, 0.0));
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_NO_PRIVILEDGE_ONLY_ADMIN, ex.getErrMsg().getDetailId());
         }
     }
 

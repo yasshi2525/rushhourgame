@@ -25,7 +25,6 @@ package net.rushhourgame.controller;
 
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RoleType;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -252,12 +251,5 @@ public class PlayerControllerTest extends AbstractControllerTest {
         Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
         EM.remove(player);
         assertEquals(0, TCON.findPlayers().size());
-    }
-
-    @Test
-    public void testRole() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-        assertTrue(player.getRoles().contains(RoleType.PLAYER));
     }
 }
