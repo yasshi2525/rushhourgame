@@ -33,7 +33,7 @@ import javax.persistence.OneToMany;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Distributer extends Building{
+public class Distributer extends PointableEntity{
 
     private static final long serialVersionUID = 1L;
 

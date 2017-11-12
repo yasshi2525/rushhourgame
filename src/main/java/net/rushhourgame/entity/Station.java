@@ -32,7 +32,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Station extends Building {
+public class Station extends PointableEntity {
     private static final long serialVersionUID = 1L;
     
     @NotNull

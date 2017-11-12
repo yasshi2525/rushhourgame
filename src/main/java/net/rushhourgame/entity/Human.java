@@ -34,15 +34,9 @@ import javax.persistence.ManyToOne;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Human extends AbstractEntity implements Pointable {
+public class Human extends PointableEntity implements Pointable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-
-    protected double x;
-    protected double y;
 
     @ManyToOne
     protected Link current;
@@ -99,29 +93,6 @@ public class Human extends AbstractEntity implements Pointable {
         throw new UnsupportedOperationException();
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
 
     public int getLive() {
         return live;
@@ -153,11 +124,5 @@ public class Human extends AbstractEntity implements Pointable {
 
     public void setCurrent(Link current) {
         this.current = current;
-    }
-
-    @Override
-    public double distTo(Pointable other) {
-        return Math.sqrt((other.getX() - x) * (other.getX() - x)
-                + (other.getY() - y) * (other.getY() - y));
     }
 }

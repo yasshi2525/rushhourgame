@@ -28,43 +28,35 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
-public abstract class Building extends OwnableEntity implements Pointable {
+public abstract class PointableEntity extends OwnableEntity implements Pointable {
 
-    @NotNull
-    @ManyToOne
-    protected Node node;
-
-    public void setNode(Node node) {
-        this.node = node;
-    }
-    
-    public Node getNode() {
-        return node;
-    }
+    protected double x;
+    protected double y;
 
     @Override
     public void setX(double x) {
-        node.setX(x);
+        this.x = x;
     }
 
     @Override
     public void setY(double y) {
-        node.setY(y);
+        this.y = y;
     }
 
     @Override
     public double getX() {
-        return node.getX();
+        return x;
     }
 
     @Override
     public double getY() {
-        return node.getY();
+        return y;
     }
 
     @Override
-    public double distTo(Pointable p) {
-        return node.distTo(p);
+    public double distTo(Pointable other) {
+        return Math.sqrt((other.getX() - x) * (other.getX() - x)
+                + (other.getY() - y) * (other.getY() - y));
     }
 
 }

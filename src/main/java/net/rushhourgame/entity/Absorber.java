@@ -37,10 +37,10 @@ import javax.persistence.OneToMany;
 @NamedQueries({
     @NamedQuery(
             name="Absorber.findIn",
-            query = "SELECT obj FROM Absorber obj WHERE obj.node.point.x > :x1 AND obj.node.point.x < :x2 AND obj.node.point.y > :y1 AND obj.node.point.y < :y2"
+            query = "SELECT obj FROM Absorber obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )
 })
-public class Absorber extends Building{
+public class Absorber extends PointableEntity{
     private static final long serialVersionUID = 1L;
     protected double scale;
     
