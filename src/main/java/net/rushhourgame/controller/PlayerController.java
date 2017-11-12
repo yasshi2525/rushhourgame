@@ -131,7 +131,7 @@ public class PlayerController extends AbstractController {
         }
         
         Player p = new Player();
-        p.setId(userIdDigest);
+        p.setUserIdDigest(userIdDigest);
         p.setUserId(plainUserId);
         p.setToken(tokenDigest);
         p.setSignIn(signIn);
@@ -159,8 +159,8 @@ public class PlayerController extends AbstractController {
             return false;
         }
         try {
-            String id = calculator.calcDigest(userId);
-            return exists("Player.existsId", "id", id);
+            String userIdDigest = calculator.calcDigest(userId);
+            return exists("Player.existsUserIdDigest", "userIdDigest", userIdDigest);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#existsUserId", ex);
             throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
@@ -176,8 +176,8 @@ public class PlayerController extends AbstractController {
             return null;
         }
         try {
-            String id = calculator.calcDigest(userId);
-            return findBy("Player.findById", "id", id, dummyInst);
+            String userIdDigest = calculator.calcDigest(userId);
+            return findBy("Player.findByUserIdDigest", "userIdDigest", userIdDigest, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#findByUserId", ex);
             throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);

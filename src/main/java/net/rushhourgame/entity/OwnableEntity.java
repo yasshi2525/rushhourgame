@@ -38,21 +38,10 @@ import javax.validation.constraints.NotNull;
 public abstract class OwnableEntity extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
 
     @NotNull
     @ManyToOne
     protected Player player;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public Player getOwner() {
         return player;
@@ -84,7 +73,7 @@ public abstract class OwnableEntity extends AbstractEntity implements Ownable {
         if (owner == null) {
             return false;
         }
-        return player.id.equals((owner).id);
+        return player.userIdDigest.equals((owner).userIdDigest);
     }
 
 }

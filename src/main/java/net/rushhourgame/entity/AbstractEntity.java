@@ -25,6 +25,9 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,11 +40,23 @@ import javax.persistence.TemporalType;
 public abstract class AbstractEntity implements Serializable{
     private static final long serialVersionUID = 1L;
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+    
     @Temporal(TemporalType.TIMESTAMP)
     protected Date created;
     
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updated;
+    
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public Date getCreated() {
         return created == null ? null : new Date(created.getTime());

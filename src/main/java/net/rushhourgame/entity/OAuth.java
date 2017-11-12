@@ -40,15 +40,15 @@ import javax.persistence.Table;
 @Table(indexes = {@Index(columnList = "requestToken"), @Index(columnList = "accessToken")})
 @NamedQueries({
     @NamedQuery(
-            name = "OAuth.isValidId",
-            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-            + " FROM OAuth x WHERE x.id = :id"), 
+            name = "OAuth.isValidRequestTokenDigest",
+            query = "SELECT CASE WHEN count(x.requestTokenDigest) > 0 THEN true ELSE false END"
+            + " FROM OAuth x WHERE x.requestTokenDigest = :requestTokenDigest"), 
     @NamedQuery(
-            name = "OAuth.findById",
-            query = "SELECT x FROM OAuth x WHERE x.id = :id"),
+            name = "OAuth.findByRequestTokenDigest",
+            query = "SELECT x FROM OAuth x WHERE x.requestTokenDigest = :requestTokenDigest"),
     @NamedQuery(
             name = "OAuth.isValidRequestToken",
-            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
+            query = "SELECT CASE WHEN count(x.requestTokenDigest) > 0 THEN true ELSE false END"
             + " FROM OAuth x WHERE x.requestToken = :requestToken"), 
     @NamedQuery(
             name = "OAuth.findByRequestToken",
@@ -64,8 +64,8 @@ public class OAuth extends AbstractEntity {
     private static final Logger LOG = Logger.getLogger(OAuth.class.getName());
 
     private static final long serialVersionUID = 1L;
-    @Id
-    protected String id;
+
+    protected String requestTokenDigest;
     @Convert(converter = EncryptConverter.class)
     protected String requestToken;
     @Convert(converter = EncryptConverter.class)
@@ -78,12 +78,12 @@ public class OAuth extends AbstractEntity {
     @OneToOne(mappedBy = "oauth")
     protected Player player;
     
-    public String getId() {
-        return id;
+    public String getRequestTokenDigest() {
+        return requestTokenDigest;
     }
     
-    public void setId(String id) {
-        this.id = id;
+    public void setRequestTokenDigest(String requestTokenDigest) {
+        this.requestTokenDigest = requestTokenDigest;
     }
 
     public String getRequestToken() {

@@ -63,7 +63,7 @@ public class OAuthController extends AbstractController {
             }
             
             OAuth oAuth = new OAuth();
-            oAuth.setId(requestTokenDigest);
+            oAuth.setRequestTokenDigest(requestTokenDigest);
             oAuth.setRequestToken(requestToken);
             oAuth.setRequestTokenSecret(requestTokenSecret);
             em.persist(oAuth);
@@ -85,8 +85,8 @@ public class OAuthController extends AbstractController {
             return false;
         }
         try {
-            String id = calculator.calcDigest(requestToken);
-            return exists("OAuth.isValidId", "id", id);
+            String requestTokenDigest = calculator.calcDigest(requestToken);
+            return exists("OAuth.isValidRequestTokenDigest", "requestTokenDigest", requestTokenDigest);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#isRegisteredRequestToken", ex);
             throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
@@ -104,8 +104,8 @@ public class OAuthController extends AbstractController {
             return null;
         }
         try {
-            String id = calculator.calcDigest(requestToken);
-            return findBy("OAuth.findById", "id", id, dummyInst);
+            String requestTokenDigest = calculator.calcDigest(requestToken);
+            return findBy("OAuth.findByRequestTokenDigest", "requestTokenDigest", requestTokenDigest, dummyInst);
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);
             throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);

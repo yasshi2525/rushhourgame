@@ -208,7 +208,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         OCON.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
 
-        assertEquals(created.getId(), inst.findByUserId(created.getUserId()).getId());
+        assertEquals(created.getUserIdDigest(), inst.findByUserId(created.getUserId()).getUserIdDigest());
         assertNull(inst.findByUserId(UNEXIST_USER_ID));
     }
 
@@ -217,7 +217,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         OCON.createOAuthBean("foo", "foosec");
         Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
 
-        assertEquals(created.getId(), inst.findByToken(created.getToken()).getId());
+        assertEquals(created.getUserIdDigest(), inst.findByToken(created.getToken()).getUserIdDigest());
         assertNull(inst.findByToken(UNEXIST_ACCESS_TOKEN));
     }
 

@@ -40,20 +40,20 @@ import javax.validation.constraints.NotNull;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Table(indexes = {@Index(columnList = "ID"), @Index(columnList = "TOKEN")})
+@Table(indexes = {@Index(columnList = "USERIDDIGEST"), @Index(columnList = "TOKEN")})
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "Player.existsId",
-            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-            + " FROM Player x WHERE x.id = :id")
+            name = "Player.existsUserIdDigest",
+            query = "SELECT CASE WHEN count(x.userIdDigest) > 0 THEN true ELSE false END"
+            + " FROM Player x WHERE x.userIdDigest = :userIdDigest")
     ,@NamedQuery(
             name = "Player.existsToken",
-            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
+            query = "SELECT CASE WHEN count(x.userIdDigest) > 0 THEN true ELSE false END"
             + " FROM Player x WHERE x.token = :token")
     ,@NamedQuery(
-            name = "Player.findById",
-            query = "SELECT x FROM Player x WHERE x.id = :id")
+            name = "Player.findByUserIdDigest",
+            query = "SELECT x FROM Player x WHERE x.userIdDigest = :userIdDigest")
     ,@NamedQuery(
             name = "Player.findByToken",
             query = "SELECT x FROM Player x WHERE x.token = :token"
@@ -61,8 +61,7 @@ import javax.validation.constraints.NotNull;
 })
 public class Player extends AbstractEntity {
     private static final long serialVersionUID = 1L;
-    @Id
-    protected String id;
+    protected String userIdDigest;
     @NotNull
     @Convert(converter = EncryptConverter.class)
     protected String userId;
@@ -86,12 +85,12 @@ public class Player extends AbstractEntity {
         this.info = info;
     }
     
-    public String getId() {
-        return id;
+    public String getUserIdDigest() {
+        return userIdDigest;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserIdDigest(String userIdDigest) {
+        this.userIdDigest = userIdDigest;
     }
     
     public void setToken(String token) {

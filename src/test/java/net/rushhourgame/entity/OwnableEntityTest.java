@@ -47,7 +47,7 @@ public class OwnableEntityTest extends AbstractEntityTest {
     public void setUp() {
         super.setUp();
         player = new Player();
-        player.id="user1";
+        player.userIdDigest="user1";
         other = new Player();
         inst = spy(OwnableEntity.class);
     }
