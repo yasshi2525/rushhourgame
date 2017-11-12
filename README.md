@@ -87,7 +87,7 @@ CREATE DATABASE rushhourtest;
 ### 仕様書をビルドする
 
 ```
-pip install Sphinx sphinx-rtd-theme sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-nwdiag sphinxcontrib-seqdiag sphinxcontrib-websupport pyyaml sphinx_erdiagram  
+pip install Sphinx sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-nwdiag sphinxcontrib-seqdiag sphinxcontrib-websupport pyyaml sphinx_erdiagram  
 cd docs  
 make html  
 ```
