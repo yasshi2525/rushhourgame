@@ -35,7 +35,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Distributer extends AbstractEntity implements Pointable, RelayPointForHuman {
+public class Residence extends AbstractEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;
     

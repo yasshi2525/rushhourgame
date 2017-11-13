@@ -2,8 +2,7 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>net.rushhourgame.entity.Absorber</class>
-    <class>net.rushhourgame.entity.Distributer</class>
+    <class>net.rushhourgame.entity.Company</class>
     <class>net.rushhourgame.entity.Human</class>
     <class>net.rushhourgame.entity.Line</class>
     <class>net.rushhourgame.entity.LineStep</class>
@@ -13,6 +12,7 @@
     <class>net.rushhourgame.entity.PlayerInfo</class>
     <class>net.rushhourgame.entity.Rail</class>
     <class>net.rushhourgame.entity.RailPoint</class>
+    <class>net.rushhourgame.entity.Residence</class>
     <class>net.rushhourgame.entity.Station</class>
     <class>net.rushhourgame.entity.StepForHuman</class>
     <class>net.rushhourgame.entity.TicketGate</class>

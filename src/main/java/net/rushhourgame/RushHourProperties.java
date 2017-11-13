@@ -91,7 +91,7 @@ public class RushHourProperties implements Serializable {
     public static final String LANG = "rushhour.lang";
 
     public static final String GAME_DEF_OAUTH_PURGE_DAY = "rushhour.game.default.oauth.purgeday";
-    public static final String GAME_DEF_ABS_SCALE = "rushhour.game.default.absorber.scale";
+    public static final String GAME_DEF_ABS_SCALE = "rushhour.game.default.company.scale";
 
     //--------------------------------------------------------------------------
     protected static final String CONSTANTS_PATH = "constants.properties";

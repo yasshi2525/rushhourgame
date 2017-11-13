@@ -33,8 +33,8 @@ import net.rushhourgame.RushHourProperties;
  */
 public class ControllerFactory {
 
-    public static AbsorberController createAbsorberController() {
-        AbsorberController inst = new AbsorberController();
+    public static CompanyController createCompanyController() {
+        CompanyController inst = new CompanyController();
         init(inst);
         return inst;
     }

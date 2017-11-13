@@ -27,7 +27,7 @@ import net.rushhourgame.controller.LocalTableController;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
 import net.rushhourgame.controller.OAuthController;
@@ -48,7 +48,7 @@ public abstract class AbstractEntityTest {
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static AbsorberController ACON = ControllerFactory.createAbsorberController();
+    protected final static CompanyController ACON = ControllerFactory.createCompanyController();
     @Rule
     public ExpectedException ex = ExpectedException.none();
     

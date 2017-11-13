@@ -29,7 +29,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import net.rushhourgame.entity.Absorber;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.AbstractEntity;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.StepForHuman;
@@ -54,7 +54,7 @@ public class StepForHumanStationToCompany extends AbstractEntity implements Step
     
     @NotNull
     @ManyToOne
-    protected Absorber _to;
+    protected Company _to;
     
     @Override
     public RelayPointForHuman getFrom() {

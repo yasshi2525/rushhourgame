@@ -23,43 +23,40 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import net.rushhourgame.ErrorMessageBuilder;
-import net.rushhourgame.entity.Absorber;
-import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.exception.RushHourException;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.exception.RushHourException;
+import org.junit.Before;
 
 /**
- * 
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class AbsorberController extends PointEntityController {
-    private static final long serialVersionUID = 1L;
-        
-    
-    public Absorber create(Player owner, double x, double y) throws RushHourException{
-        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));
-    }
-    
-    public Absorber create(Player owner, double x, double y, double scale) throws RushHourException{
-        if(owner == null){
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
+public class CompanyControllerTest extends AbstractControllerTest {
+
+    protected Player player;
+    protected CompanyController inst;
+
+    @Before
+    public void setUp() {
+        super.setUp();
+        inst = ControllerFactory.createCompanyController();
+        try {
+            player = createPlayer();
+        } catch (RushHourException e) {
+            fail();
         }
-        Absorber inst = new Absorber();
-        inst.setScale(scale);
-        inst.setX(x);
-        inst.setY(y);
-        em.persist(inst);
-        return inst;
     }
-    
-    public List<Absorber> findIn(double centerX, double centerY, double scale){
-        return super.findIn(em.createNamedQuery("Absorber.findIn", Absorber.class), 
-                centerX, centerY, scale);
+
+    @Test
+    public void testCreateByNull() {
+        try {
+            assertNotNull(inst.create(null, 0.0, 0.0));
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_NO_OWNER, ex.getErrMsg().getDetailId());
+        }
     }
 }

@@ -30,7 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
-import net.rushhourgame.entity.Distributer;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
@@ -50,7 +50,7 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     
     @NotNull
     @ManyToOne
-    protected Distributer _from;
+    protected Residence _from;
     
     @NotNull
     @ManyToOne

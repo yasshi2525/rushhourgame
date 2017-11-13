@@ -45,11 +45,11 @@ public class Human extends AbstractEntity implements Pointable {
 
     @NotNull
     @ManyToOne
-    protected Distributer src;
+    protected Residence src;
 
     @NotNull
     @ManyToOne
-    protected Absorber dest;
+    protected Company dest;
 
     public void idle() {
 
@@ -115,19 +115,19 @@ public class Human extends AbstractEntity implements Pointable {
         liveCount++;
     }
 
-    public Distributer getSrc() {
+    public Residence getSrc() {
         return src;
     }
 
-    public void setSrc(Distributer src) {
+    public void setSrc(Residence src) {
         this.src = src;
     }
 
-    public Absorber getDest() {
+    public Company getDest() {
         return dest;
     }
 
-    public void setDest(Absorber dest) {
+    public void setDest(Company dest) {
         this.dest = dest;
     }
 

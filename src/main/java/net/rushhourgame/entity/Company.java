@@ -38,11 +38,11 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name="Absorber.findIn",
-            query = "SELECT obj FROM Absorber obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+            name="Company.findIn",
+            query = "SELECT obj FROM Company obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )
 })
-public class Absorber extends AbstractEntity implements Pointable, RelayPointForHuman {
+public class Company extends AbstractEntity implements Pointable, RelayPointForHuman {
     private static final long serialVersionUID = 1L;
     protected double scale;
     

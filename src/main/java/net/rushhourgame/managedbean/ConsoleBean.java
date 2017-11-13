@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
@@ -48,7 +48,7 @@ public class ConsoleBean implements Serializable{
     protected RushHourSession session;
     
     @Inject
-    protected AbsorberController aCon;
+    protected CompanyController cCon;
     
     @Inject
     protected PlayerController pCon;
@@ -64,8 +64,8 @@ public class ConsoleBean implements Serializable{
     }
     
     @Transactional
-    public void createAbsorber() throws RushHourException{
-        aCon.create(player, x, y);
+    public void createCompany() throws RushHourException{
+        cCon.create(player, x, y);
     }
 
     public double getX() {

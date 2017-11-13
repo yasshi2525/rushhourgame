@@ -279,8 +279,6 @@
     
     上記ER図と実装に以下の乖離がある。
 
-    * 住宅が Distribulter
-    * 会社が Absorber
     * oAuth がサービス名を持たない。
     * oAuth が外部サービスログインIDを持たない。
     * player がサインインタイプを持っている。

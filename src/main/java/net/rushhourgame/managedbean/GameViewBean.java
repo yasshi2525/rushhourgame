@@ -30,7 +30,7 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.controller.AbsorberController;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
@@ -49,7 +49,7 @@ public class GameViewBean implements Serializable{
     @Inject
     protected PlayerController pCon;
     @Inject
-    protected AbsorberController aCon;
+    protected CompanyController aCon;
     @Inject
     protected RushHourSession rhSession;
     protected Player player;
