@@ -28,18 +28,24 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.troute.LineStepDeparture;
+import net.rushhourgame.entity.troute.LineStepMoving;
+import net.rushhourgame.entity.troute.LineStepStopping;
 
 /**
- *
+ * 路線ステップ
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class LineStep extends OwnableEntity{
+public class LineStep extends AbstractEntity implements Ownable {
     private static final long serialVersionUID = 1L;
     
+    @NotNull
     @ManyToOne
     protected Line parent;
     
+    @NotNull
     @OneToOne
     protected LineStep next;
     
@@ -53,6 +59,15 @@ public class LineStep extends OwnableEntity{
     
     @OneToMany
     protected List<Train> trains;
+    
+    @OneToOne(mappedBy = "parent")
+    protected LineStepMoving moving;
+    
+    @OneToOne(mappedBy = "parent")
+    protected LineStepStopping stopping;
+    
+    @OneToOne(mappedBy = "parent")
+    protected LineStepDeparture departure;
 
     public Line getParent() {
         return parent;
@@ -97,6 +112,26 @@ public class LineStep extends OwnableEntity{
     public List<Train> getTrains() {
         return trains;
     }
+
+    @Override
+    public void setOwner(Player owner) {
+        parent.setOwner(owner);
+    }
+
+    @Override
+    public Player getOwner() {
+        return parent.getOwner();
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return parent.isPrivilegedBy(owner);
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return parent.isOwnedBy(owner);
+    }
     
     public enum TargetType{
         RAIL_LINE, STATION
@@ -105,4 +140,5 @@ public class LineStep extends OwnableEntity{
     public enum ActionType{
         STOP, PASS
     }
+    
 }

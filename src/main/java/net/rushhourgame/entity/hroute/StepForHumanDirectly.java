@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,68 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.entity.hroute;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.Absorber;
+import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.Distributer;
+import net.rushhourgame.entity.RelayPointForHuman;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
- * 線路エッジ
+ * 人用移動ステップ直接移動
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Rail extends AbstractEntity implements Ownable {
-
-    private static final long serialVersionUID = 1L;
-
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id" }))
+public class StepForHumanDirectly extends AbstractEntity implements StepForHumanMethod {
+    private static final long serialVersionUID = 1;
+    
+    @NotNull
+    @OneToOne
+    protected StepForHuman parent;
+    
     @NotNull
     @ManyToOne
-    protected Player owner;
-
+    protected Distributer _from;
+    
     @NotNull
     @ManyToOne
-    protected RailPoint _from;
+    protected Absorber _to;
 
-    @NotNull
-    @ManyToOne
-    protected RailPoint _to;
-
-    public RailPoint getFrom() {
+    @Override
+    public RelayPointForHuman getFrom() {
         return _from;
     }
 
-    public void setFrom(RailPoint from) {
-        _from = from;
-    }
-
-    public RailPoint getTo() {
+    @Override
+    public RelayPointForHuman getTo() {
         return _to;
     }
 
-    public void setTo(RailPoint to) {
-        _to = to;
-    }
-
-    public double getDist() {
+    @Override
+    public double getCost() {
         return _from.distTo(_to);
-    }
-
-    public Player getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Player owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public boolean isPrivilegedBy(Player owner) {
-        return hasPrivilege(this.owner, owner);
-    }
-
-    @Override
-    public boolean isOwnedBy(Player owner) {
-        return isOwn(this.owner, owner);
     }
 }

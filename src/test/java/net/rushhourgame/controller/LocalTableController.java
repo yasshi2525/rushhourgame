@@ -38,7 +38,7 @@ public class LocalTableController {
     
     private final String[] tableList = {
         "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", "Platform", "TicketGate",
-        "Station", "RailPoint", "Rail", "Point", 
+        "Station", "RailPoint", "Rail", 
         "Player", "PlayerInfo", "OAuth"
     };
 

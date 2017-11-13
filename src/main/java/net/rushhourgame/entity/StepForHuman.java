@@ -23,6 +23,13 @@
  */
 package net.rushhourgame.entity;
 
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanMethod;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,30 +38,67 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 /**
- * 論理的な接続情報
+ * 人用移動ステップ
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@MappedSuperclass
-public abstract class StepForHuman extends AbstractEntity {
+@Entity
+public class StepForHuman extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-
-    protected double cost;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanResidenceToStation fromResidence;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanIntoStation intoStation;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanThroughTrain throughTrain;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanOutOfStation outOfStation;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanStationToCompany toCompany;
+    
+    @OneToOne(mappedBy = "parent")
+    protected StepForHumanDirectly directly;
 
     public double getCost() {
-        return cost;
+        return seekMethodInstance().getCost();
     }
 
-    public void setCost(double cost) {
-        this.cost = cost;
+    @NotNull
+    public RelayPointForHuman getFrom() {
+        return seekMethodInstance().getFrom();
     }
 
-    public abstract HumanStandable getFrom();
-
-    public abstract HumanStandable getTo();
+    @NotNull
+    public RelayPointForHuman getTo() {
+        return seekMethodInstance().getTo();
+    }
+    
+    @NotNull
+    protected StepForHumanMethod seekMethodInstance() {
+        if (fromResidence != null) {
+            return fromResidence;
+        } else if (intoStation != null) {
+            return intoStation;
+        } else if (throughTrain != null) {
+            return throughTrain;
+        } else if (outOfStation != null) {
+            return outOfStation;
+        } else if (toCompany != null) {
+            return toCompany;
+        } else {
+            return directly;
+        }
+    }
 }

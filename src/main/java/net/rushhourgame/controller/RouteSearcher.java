@@ -26,7 +26,7 @@ package net.rushhourgame.controller;
 import java.util.List;
 import java.util.PriorityQueue;
 import net.rushhourgame.entity.StepForHuman;
-import net.rushhourgame.entity.HumanStandable;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
  *
@@ -34,21 +34,21 @@ import net.rushhourgame.entity.HumanStandable;
  */
 public class RouteSearcher {
 
-    public synchronized void search(List<StepForHuman> links, List<HumanStandable> nodes, HumanStandable goal) {
-        for (HumanStandable node : nodes) {
+    public synchronized void search(List<StepForHuman> links, List<RelayPointForHuman> nodes, RelayPointForHuman goal) {
+        for (RelayPointForHuman node : nodes) {
             node.setCost(Double.MAX_VALUE);
         }
 
         goal.setCost(0);
 
-        PriorityQueue<HumanStandable> queue = new PriorityQueue<>();
+        PriorityQueue<RelayPointForHuman> queue = new PriorityQueue<>();
         queue.add(goal);
 
         while (!queue.isEmpty()) {
-            HumanStandable x = queue.poll();
+            RelayPointForHuman x = queue.poll();
 
             for (StepForHuman link : x.getInEdges()) {
-                HumanStandable y = link.getFrom();
+                RelayPointForHuman y = link.getFrom();
                 double newValue = x.getCost() + link.getCost();
                 if (newValue < y.getCost()) {
                     y.setCost(newValue);

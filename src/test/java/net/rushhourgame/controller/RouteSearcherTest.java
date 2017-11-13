@@ -28,7 +28,7 @@ import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import net.rushhourgame.entity.HumanStandable;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
  *

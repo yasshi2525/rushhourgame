@@ -30,45 +30,66 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 線路ノード
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class RailPoint extends OwnableEntity implements Pointable{
+public class RailPoint extends AbstractEntity implements Pointable, Ownable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     @ManyToOne
-    protected Point point;
+    protected Player owner;
     
+    protected double x;
+    protected double y;
+
     @OneToMany(mappedBy = "_from")
     protected List<Rail> outEdges;
-    
+
     @OneToMany(mappedBy = "_to")
     protected List<Rail> inEdges;
-    
+
     @OneToMany(mappedBy = "railPoint")
     protected List<Platform> platforms;
-    
+
     public double getX() {
-        return point.getX();
+        return x;
     }
 
     public void setX(double x) {
-        point.setX(x);
+        this.x = x;
     }
 
     public double getY() {
-        return point.getY();
+        return y;
     }
 
     public void setY(double y) {
-        point.setY(y);
+        this.y = y;
     }
-    
-    @Override
+
     public double distTo(Pointable other) {
-        return point.distTo(other);
+        return calcDist(x, y, other);
+    }
+
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return hasPrivilege(this.owner, owner);
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return isOwn(this.owner, owner);
     }
 
     public List<Rail> getOutEdges() {

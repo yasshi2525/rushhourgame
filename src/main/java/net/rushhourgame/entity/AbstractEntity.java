@@ -31,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -72,5 +73,21 @@ public abstract class AbstractEntity implements Serializable{
 
     public void setUpdated(Date updated) {
         this.updated = new Date(updated.getTime());
+    }
+    
+    protected double calcDist(double x, double y, Pointable other) {
+        return Math.sqrt((other.getX() - x) * (other.getX() - x)
+                + (other.getY() - y) * (other.getY() - y));
+    }
+    
+    protected boolean hasPrivilege(@NotNull Player owner, Player other) {
+        return isOwn(owner, other);
+    }
+    
+    protected boolean isOwn(@NotNull Player owner, Player other) {
+        if (other == null) {
+            return false;
+        }
+        return owner.getId() == other.getId();
     }
 }

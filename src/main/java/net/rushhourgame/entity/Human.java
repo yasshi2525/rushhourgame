@@ -28,21 +28,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 人
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Human extends PointableEntity implements Pointable {
+public class Human extends AbstractEntity implements Pointable {
 
     private static final long serialVersionUID = 1L;
 
-    protected int live;
+    protected double x;
+    protected double y;
+    protected int liveCount;
 
+    @NotNull
     @ManyToOne
     protected Distributer src;
 
+    @NotNull
     @ManyToOne
     protected Absorber dest;
 
@@ -86,13 +91,28 @@ public class Human extends PointableEntity implements Pointable {
         throw new UnsupportedOperationException();
     }
 
-
-    public int getLive() {
-        return live;
+    public double getX() {
+        return x;
     }
 
-    public void setLive(int live) {
-        this.live = live;
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public int getLiveCount() {
+        return liveCount;
+    }
+
+    public void incrementLiveCount() {
+        liveCount++;
     }
 
     public Distributer getSrc() {
@@ -109,5 +129,10 @@ public class Human extends PointableEntity implements Pointable {
 
     public void setDest(Absorber dest) {
         this.dest = dest;
+    }
+
+    @Override
+    public double distTo(Pointable p) {
+        return calcDist(x, y, p);
     }
 }

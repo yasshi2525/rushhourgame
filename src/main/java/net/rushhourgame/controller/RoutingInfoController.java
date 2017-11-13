@@ -28,7 +28,7 @@ import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
-import net.rushhourgame.entity.HumanStandable;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
  *
@@ -38,11 +38,11 @@ import net.rushhourgame.entity.HumanStandable;
 public class RoutingInfoController extends AbstractController {
     private static final long serialVersionUID = 1L;
     
-    public RoutingInfo create(HumanStandable src, HumanStandable dest) throws RushHourException {
+    public RoutingInfo create(RelayPointForHuman src, RelayPointForHuman dest) throws RushHourException {
         return create(src, null, dest);
     }
     
-    public RoutingInfo create(HumanStandable src, StepForHuman next, HumanStandable dest) throws RushHourException {
+    public RoutingInfo create(RelayPointForHuman src, StepForHuman next, RelayPointForHuman dest) throws RushHourException {
         if(src == null || dest == null){
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
@@ -61,15 +61,15 @@ public class RoutingInfoController extends AbstractController {
         return inst;
     }
     
-    public void insertIntoNetwork(HumanStandable inst) throws RushHourException {
-        List<HumanStandable> network = em.createNamedQuery("Node.findAll", HumanStandable.class).getResultList();
-        for(HumanStandable other : network){
+    public void insertIntoNetwork(RelayPointForHuman inst) throws RushHourException {
+        List<RelayPointForHuman> network = em.createNamedQuery("Node.findAll", RelayPointForHuman.class).getResultList();
+        for(RelayPointForHuman other : network){
             em.persist(create(inst, other));
             em.persist(create(other, inst));
         }
     }
     
-    public List<RoutingInfo> findNetwork(HumanStandable goal) {
+    public List<RoutingInfo> findNetwork(RelayPointForHuman goal) {
         return 
                 em.createNamedQuery("RoutingInfo.findByGoal", RoutingInfo.class)
                 .setParameter("goal", goal)

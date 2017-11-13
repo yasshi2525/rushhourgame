@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,59 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.entity.troute;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.LineStep;
+import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Rail;
 
 /**
- * 
+ * 路線ステップ停車
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@MappedSuperclass
-public abstract class OwnableEntity extends AbstractEntity implements Ownable {
-
-    private static final long serialVersionUID = 1L;
-
+@Entity
+public class LineStepStopping extends AbstractEntity {
+    @NotNull
+    @OneToOne
+    protected LineStep parent;
+    
     @NotNull
     @ManyToOne
-    protected Player player;
-
-    public Player getOwner() {
-        return player;
-    }
-
-    public void setOwner(Player owner) {
-        if (owner == null) {
-            throw new NullPointerException("owner is null");
-        }
-        player = owner;
-    }
-
-    /**
-     * 自分の所有者ならtrue
-     *
-     * @param owner owner
-     * @return boolean
-     */
-    @Override
-    public boolean isPrivilegedBy(Player owner) {
-        if (owner == null) {
-            return false;
-        }
-        return isOwnedBy(owner);
-    }
-
-    @Override
-    public boolean isOwnedBy(Player owner) {
-        if (owner == null) {
-            return false;
-        }
-        return player.userIdDigest.equals((owner).userIdDigest);
-    }
-
+    protected Rail running;
+    
+    @NotNull
+    @ManyToOne
+    protected Platform goal;
 }

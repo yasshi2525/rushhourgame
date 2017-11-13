@@ -35,7 +35,7 @@ import javax.validation.constraints.Pattern;
 import net.rushhourgame.json.UserData;
 
 /**
- *
+ * プレイヤ情報
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity

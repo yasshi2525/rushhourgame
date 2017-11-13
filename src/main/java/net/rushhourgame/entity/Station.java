@@ -29,14 +29,20 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 駅
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Station extends PointableEntity {
+public class Station extends AbstractEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
+    @ManyToOne
+    protected Player owner;
+
+    protected double x;
+    protected double y;
     protected String name;
 
     @OneToOne(mappedBy = "station")
@@ -77,4 +83,44 @@ public class Station extends PointableEntity {
         this.name = name;
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    @Override
+    public double distTo(Pointable p) {
+        return calcDist(x, y, p);
+    }
+
+    @Override
+    public Player getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return hasPrivilege(this.owner, owner);
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return isOwn(this.owner, owner);
+    }
 }

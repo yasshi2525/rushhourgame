@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,38 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.entity.hroute;
 
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
- * 他のインスタンスとEdgeで結ばれるもの
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface HumanStandable extends Pointable, Comparable<HumanStandable> {
+public interface StepForHumanMethod {
 
-    public List<StepForHuman> getOutEdges();
+    public RelayPointForHuman getFrom();
 
-    public List<StepForHuman> getInEdges();
-
+    public RelayPointForHuman getTo();
+    
     public double getCost();
-
-    public void setCost(double cost);
-
-    public HumanStandable getVia();
-
-    public void setVia(HumanStandable via);
-
-    public int compareTo(HumanStandable o);
 }

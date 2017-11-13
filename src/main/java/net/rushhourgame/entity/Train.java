@@ -30,12 +30,16 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 電車
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Train extends OwnableEntity implements Pointable{
+public class Train extends AbstractEntity implements Pointable, Ownable {
     private static final long serialVersionUID = 1L;
+    
+    @NotNull
+    @ManyToOne
+    protected Player owner;
     
     protected String name;
     protected int capacity;
@@ -141,5 +145,25 @@ public class Train extends OwnableEntity implements Pointable{
         for(Human h : hs){
             h.getInTrain(this);
         }
+    }
+
+    @Override
+    public Player getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return hasPrivilege(this.owner, owner);
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return isOwn(this.owner, owner);
     }
 }

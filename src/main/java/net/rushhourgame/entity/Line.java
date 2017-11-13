@@ -25,15 +25,21 @@ package net.rushhourgame.entity;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
- *
+ * 路線
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Line extends OwnableEntity{
+public class Line extends AbstractEntity implements Ownable {
     private static final long serialVersionUID = 1L;
+    
+    @NotNull
+    @ManyToOne
+    protected Player owner;
     
     protected String name;
     
@@ -50,5 +56,25 @@ public class Line extends OwnableEntity{
 
     public List<LineStep> getSteps() {
         return steps;
+    }
+
+    @Override
+    public Player getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return hasPrivilege(this.owner, owner);
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return isOwn(this.owner, owner);
     }
 }

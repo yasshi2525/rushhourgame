@@ -25,9 +25,11 @@ package net.rushhourgame.entity;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
  * 会社(人の行き先。人を吸収するオブジェクト)
@@ -40,9 +42,12 @@ import javax.persistence.OneToMany;
             query = "SELECT obj FROM Absorber obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )
 })
-public class Absorber extends PointableEntity{
+public class Absorber extends AbstractEntity implements Pointable, RelayPointForHuman {
     private static final long serialVersionUID = 1L;
     protected double scale;
+    
+    protected double x;
+    protected double y;
     
     @OneToMany(mappedBy = "dest")
     private List<Human> humans;
@@ -57,5 +62,61 @@ public class Absorber extends PointableEntity{
 
     public List<Human> getHumans() {
         return humans;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    @Override
+    public double distTo(Pointable p) {
+        return calcDist(x, y, p);
+    }
+
+    @Override
+    public List<StepForHuman> getOutEdges() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<StepForHuman> getInEdges() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double getCost() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setCost(double cost) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public RelayPointForHuman getVia() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setVia(RelayPointForHuman via) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int compareTo(RelayPointForHuman o) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -34,8 +34,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
-import net.rushhourgame.entity.HumanStandable;
 import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
  *
@@ -45,11 +45,11 @@ public class RoutingInfo extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
-    protected HumanStandable start;
+    protected RelayPointForHuman start;
 
     protected StepForHuman nextE;
 
-    protected HumanStandable goal;
+    protected RelayPointForHuman goal;
 
     protected double cost;
 
@@ -61,11 +61,11 @@ public class RoutingInfo extends AbstractEntity {
         this.id = id;
     }
 
-    public HumanStandable getStart() {
+    public RelayPointForHuman getStart() {
         return start;
     }
 
-    public void setStart(HumanStandable start) {
+    public void setStart(RelayPointForHuman start) {
         this.start = start;
     }
 
@@ -77,11 +77,11 @@ public class RoutingInfo extends AbstractEntity {
         this.nextE = nextE;
     }
 
-    public HumanStandable getGoal() {
+    public RelayPointForHuman getGoal() {
         return goal;
     }
 
-    public void setGoal(HumanStandable goal) {
+    public void setGoal(RelayPointForHuman goal) {
         this.goal = goal;
     }
 

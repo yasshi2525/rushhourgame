@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,68 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.entity.troute;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.LineStep;
+import net.rushhourgame.entity.Rail;
 
 /**
- * 線路エッジ
+ * 路線ステップ移動
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Rail extends AbstractEntity implements Ownable {
-
-    private static final long serialVersionUID = 1L;
-
+public class LineStepMoving extends AbstractEntity {
+    @NotNull
+    @OneToOne
+    protected LineStep parent;
+    
     @NotNull
     @ManyToOne
-    protected Player owner;
-
-    @NotNull
-    @ManyToOne
-    protected RailPoint _from;
-
-    @NotNull
-    @ManyToOne
-    protected RailPoint _to;
-
-    public RailPoint getFrom() {
-        return _from;
-    }
-
-    public void setFrom(RailPoint from) {
-        _from = from;
-    }
-
-    public RailPoint getTo() {
-        return _to;
-    }
-
-    public void setTo(RailPoint to) {
-        _to = to;
-    }
-
-    public double getDist() {
-        return _from.distTo(_to);
-    }
-
-    public Player getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Player owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public boolean isPrivilegedBy(Player owner) {
-        return hasPrivilege(this.owner, owner);
-    }
-
-    @Override
-    public boolean isOwnedBy(Player owner) {
-        return isOwn(this.owner, owner);
-    }
+    protected Rail running;
 }

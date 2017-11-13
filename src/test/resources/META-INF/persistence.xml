@@ -11,12 +11,21 @@
     <class>net.rushhourgame.entity.Platform</class>
     <class>net.rushhourgame.entity.Player</class>
     <class>net.rushhourgame.entity.PlayerInfo</class>
-    <class>net.rushhourgame.entity.Point</class>
     <class>net.rushhourgame.entity.Rail</class>
     <class>net.rushhourgame.entity.RailPoint</class>
     <class>net.rushhourgame.entity.Station</class>
+    <class>net.rushhourgame.entity.StepForHuman</class>
     <class>net.rushhourgame.entity.TicketGate</class>
     <class>net.rushhourgame.entity.Train</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanDirectly</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanIntoStation</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanOutOfStation</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanResidenceToStation</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanStationToCompany</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanThroughTrain</class>
+    <class>net.rushhourgame.entity.troute.LineStepDeparture</class>
+    <class>net.rushhourgame.entity.troute.LineStepMoving</class>
+    <class>net.rushhourgame.entity.troute.LineStepStopping</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

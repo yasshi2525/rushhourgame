@@ -23,60 +23,36 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
- * 物理的座標を持つエンティティ
+ * 他のインスタンスとEdgeで結ばれるもの
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Entity
-@NamedQueries({
-    @NamedQuery(
-            name="Point.findIn",
-            query = "SELECT obj FROM Point obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
-    )
-})
-public class Point extends AbstractEntity implements Pointable{
-    private static final long serialVersionUID = 1L;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    protected double x;
-    protected double y;
+public interface RelayPointForHuman extends Pointable, Comparable<RelayPointForHuman> {
 
-    public long getId() {
-        return id;
-    }
+    public List<StepForHuman> getOutEdges();
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public List<StepForHuman> getInEdges();
 
-    public double getX() {
-        return x;
-    }
+    public double getCost();
 
-    public void setX(double x) {
-        this.x = x;
-    }
+    public void setCost(double cost);
 
-    public double getY() {
-        return y;
-    }
+    public RelayPointForHuman getVia();
 
-    public void setY(double y) {
-        this.y = y;
-    }
-    
-    public double distTo(Pointable other) {
-        return Math.sqrt((other.getX() - x) * (other.getX() - x)
-                + (other.getY() - y) * (other.getY() - y));
-    }
+    public void setVia(RelayPointForHuman via);
+
+    public int compareTo(RelayPointForHuman o);
 }

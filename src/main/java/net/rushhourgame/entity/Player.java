@@ -37,7 +37,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
- *
+ * プレイヤ
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Table(indexes = {@Index(columnList = "USERIDDIGEST"), @Index(columnList = "TOKEN")})

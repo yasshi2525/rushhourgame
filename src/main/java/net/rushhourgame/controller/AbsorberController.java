@@ -51,7 +51,6 @@ public class AbsorberController extends PointEntityController {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
         Absorber inst = new Absorber();
-        inst.setOwner(owner);
         inst.setScale(scale);
         inst.setX(x);
         inst.setY(y);
