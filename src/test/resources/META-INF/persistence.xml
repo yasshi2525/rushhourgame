@@ -7,17 +7,14 @@
     <class>net.rushhourgame.entity.Human</class>
     <class>net.rushhourgame.entity.Line</class>
     <class>net.rushhourgame.entity.LineStep</class>
-    <class>net.rushhourgame.entity.Link</class>
-    <class>net.rushhourgame.entity.Node</class>
     <class>net.rushhourgame.entity.OAuth</class>
+    <class>net.rushhourgame.entity.Platform</class>
     <class>net.rushhourgame.entity.Player</class>
     <class>net.rushhourgame.entity.PlayerInfo</class>
     <class>net.rushhourgame.entity.Point</class>
     <class>net.rushhourgame.entity.Rail</class>
     <class>net.rushhourgame.entity.RailPoint</class>
-    <class>net.rushhourgame.entity.RoutingInfo</class>
     <class>net.rushhourgame.entity.Station</class>
-    <class>net.rushhourgame.entity.Platform</class>
     <class>net.rushhourgame.entity.TicketGate</class>
     <class>net.rushhourgame.entity.Train</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>

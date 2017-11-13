@@ -21,40 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.controller;
+package net.rushhourgame.entity;
 
 import java.util.List;
-import javax.enterprise.context.Dependent;
-import net.rushhourgame.entity.Link;
-import net.rushhourgame.entity.Node;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 /**
+ * 他のインスタンスとEdgeで結ばれるもの
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class LinkController extends AbstractController {
-    private static final long serialVersionUID = 1L;
-    
-    public Link create(Node from, Node to, double cost, Link.Type type) {
-        Link inst = new Link();
-        inst.setFrom(from);
-        inst.setTo(to);
-        inst.setCost(cost);
-        inst.setType(type);
-        em.persist(inst);
-        return inst;
-    }
-    
-    public List<Link> findIn(double centerX, double centerY, double scale){
-        double width = Math.pow(2.0, scale);
-        double height = Math.pow(2.0, scale);
-        
-        return em.createNamedQuery("Link.findIn", Link.class)
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
-                .getResultList();
-    }
+public interface HumanStandable extends Pointable, Comparable<HumanStandable> {
+
+    public List<StepForHuman> getOutEdges();
+
+    public List<StepForHuman> getInEdges();
+
+    public double getCost();
+
+    public void setCost(double cost);
+
+    public HumanStandable getVia();
+
+    public void setVia(HumanStandable via);
+
+    public int compareTo(HumanStandable o);
 }

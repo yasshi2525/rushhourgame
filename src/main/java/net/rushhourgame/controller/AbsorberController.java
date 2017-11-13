@@ -41,8 +41,6 @@ import net.rushhourgame.exception.RushHourException;
 public class AbsorberController extends PointEntityController {
     private static final long serialVersionUID = 1L;
         
-    @Inject
-    protected NodeController nCon;
     
     public Absorber create(Player owner, double x, double y) throws RushHourException{
         return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));

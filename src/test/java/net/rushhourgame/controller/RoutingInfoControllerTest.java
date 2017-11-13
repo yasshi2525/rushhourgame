@@ -25,11 +25,11 @@ package net.rushhourgame.controller;
 
 import javax.persistence.PersistenceException;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.Node;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import net.rushhourgame.entity.HumanStandable;
 
 /**
  *
@@ -56,30 +56,4 @@ public class RoutingInfoControllerTest extends AbstractControllerTest {
         }
     }
 
-    @Test
-    public void testCreateLoop() throws RushHourException {
-        Node node = NCON.create(0, 0);
-        try {
-            inst.create(node, node);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
-            assertNull(ex.getErrMsg().getDetailId());
-        }
-    }
-
-    @Test
-    public void testCreateSameRelation() throws RushHourException {
-        Node node1 = NCON.create(0, 0);
-        Node node2 = NCON.create(1, 1);
-        EM.flush();
-        try {
-            inst.create(node1, node2);
-            EM.flush();
-            fail();
-        } catch (PersistenceException ex) {
-            EM.getTransaction().rollback();
-            EM.getTransaction().begin();
-        }
-    }
 }

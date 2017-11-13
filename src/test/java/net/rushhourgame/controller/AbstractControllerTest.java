@@ -47,9 +47,7 @@ public class AbstractControllerTest {
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static AbsorberController ACON = ControllerFactory.createAbsorberController();
-    protected final static NodeController NCON = ControllerFactory.createNodeController();
     protected final static RoutingInfoController RCON = ControllerFactory.createRoutingInfoController();
-    protected final static LinkController LCON = ControllerFactory.createLinkController();
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

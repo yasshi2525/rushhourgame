@@ -32,59 +32,45 @@ import net.rushhourgame.RushHourProperties;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class ControllerFactory {
-    
-    public static AbsorberController createAbsorberController(){
+
+    public static AbsorberController createAbsorberController() {
         AbsorberController inst = new AbsorberController();
         init(inst);
-        inst.nCon = createNodeController();
         return inst;
     }
-    
-    public static OAuthController createOAuthController(){
+
+    public static OAuthController createOAuthController() {
         OAuthController inst = new OAuthController();
         init(inst);
         return inst;
     }
-    
-    public static PlayerController createPlayController(){
+
+    public static PlayerController createPlayController() {
         PlayerController inst = new PlayerController();
         init(inst);
         inst.oCon = createOAuthController();
         return inst;
     }
-    
-    public static LocalTableController createLocalTableController(){
+
+    public static LocalTableController createLocalTableController() {
         LocalTableController inst = new LocalTableController();
         inst.em = LocalEntityManager.createEntityManager();
         return inst;
     }
-    
-    public static RoutingInfoController createRoutingInfoController(){
+
+    public static RoutingInfoController createRoutingInfoController() {
         RoutingInfoController inst = new RoutingInfoController();
         init(inst);
         return inst;
     }
-    
-    public static LinkController createLinkController(){
-        LinkController inst = new LinkController();
-        init(inst);
-        return inst;
-    }
-    
-    public static DigestCalculator createDigestCalculator(){
+
+    public static DigestCalculator createDigestCalculator() {
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();
         return inst;
     }
-    
-    public static NodeController createNodeController(){
-        NodeController inst = new NodeController();
-        inst.rCon = createRoutingInfoController();
-        init(inst);
-        return inst;
-    }
-    
-    protected static void init(AbstractController inst){
+
+    protected static void init(AbstractController inst) {
         inst.calculator = createDigestCalculator();
         inst.em = LocalEntityManager.createEntityManager();
         inst.prop = RushHourProperties.getInstance();

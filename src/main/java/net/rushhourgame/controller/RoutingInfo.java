@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,43 +32,26 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.HumanStandable;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
- * 論理的な接続情報
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
-@NamedQueries({
-    @NamedQuery(
-            name = "Link.findAll",
-            query = "SELECT x FROM Link x"),
-    @NamedQuery(
-            name="Link.findIn",
-            query = "SELECT obj FROM Link obj WHERE "
-                    + "(obj._from.point.x > :x1 AND obj._from.point.x < :x2 AND obj._from.point.y > :y1 AND obj._from.point.y < :y2)"
-                    + " OR (obj._to.point.x > :x1 AND obj._to.point.x < :x2 AND obj._to.point.y > :y1 AND obj._to.point.y < :y2)"
-    )
-})
-public class Link extends AbstractEntity{
+public class RoutingInfo extends AbstractEntity {
+
     private static final long serialVersionUID = 1L;
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    
-    @ManyToOne
-    protected Node _from;
-    
-    @ManyToOne
-    protected Node _to;
-    
-    @ManyToOne
-    protected LineStep way;
-    
+
+    protected HumanStandable start;
+
+    protected StepForHuman nextE;
+
+    protected HumanStandable goal;
+
     protected double cost;
-    
-    protected Type type;
 
     public long getId() {
         return id;
@@ -78,20 +61,28 @@ public class Link extends AbstractEntity{
         this.id = id;
     }
 
-    public Node getFrom() {
-        return _from;
+    public HumanStandable getStart() {
+        return start;
     }
 
-    public void setFrom(Node from) {
-        this._from = from;
+    public void setStart(HumanStandable start) {
+        this.start = start;
     }
 
-    public Node getTo() {
-        return _to;
+    public StepForHuman getNext() {
+        return nextE;
     }
 
-    public void setTo(Node to) {
-        this._to = to;
+    public void setNext(StepForHuman nextE) {
+        this.nextE = nextE;
+    }
+
+    public HumanStandable getGoal() {
+        return goal;
+    }
+
+    public void setGoal(HumanStandable goal) {
+        this.goal = goal;
     }
 
     public double getCost() {
@@ -100,28 +91,5 @@ public class Link extends AbstractEntity{
 
     public void setCost(double cost) {
         this.cost = cost;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public LineStep getWay() {
-        return way;
-    }
-
-    public void setWay(LineStep way) {
-        this.way = way;
-    }
-    
-    public enum Type{
-        WALK,
-        ENTER_STATION,
-        TRAIN,
-        EXIT_STATION
     }
 }

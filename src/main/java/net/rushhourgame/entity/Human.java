@@ -38,16 +38,13 @@ public class Human extends PointableEntity implements Pointable {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
-    protected Link current;
-
     protected int live;
 
     @ManyToOne
-    Distributer src;
+    protected Distributer src;
 
     @ManyToOne
-    Absorber dest;
+    protected Absorber dest;
 
     public void idle() {
 
@@ -62,31 +59,27 @@ public class Human extends PointableEntity implements Pointable {
     }
 
     public void enterStation() {
-        if (current.getType() == Link.Type.ENTER_STATION) {
-            shiftTask();
-        }
+        throw new UnsupportedOperationException();
     }
 
     public void exitStation() {
-        if (current.getType() == Link.Type.EXIT_STATION) {
-            shiftTask();
-        }
+        throw new UnsupportedOperationException();
     }
 
     public void getInTrain(Train t) {
-        if (current.getWay().getId() == t.getCurrent().getId()) {
+        /*if (true) {
             x = t.getX();
             y = t.getY();
             shiftTask();
-        }
+        }*/
     }
 
     public void getOffTrain(Station st) {
-        if (current.getTo().getId() == st.getPlatform().getId()) {
+        /*if (true) {
             x = st.getX();
             y = st.getY();
             shiftTask();
-        }
+        }*/
     }
 
     protected void shiftTask() {
@@ -116,13 +109,5 @@ public class Human extends PointableEntity implements Pointable {
 
     public void setDest(Absorber dest) {
         this.dest = dest;
-    }
-
-    public Link getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(Link current) {
-        this.current = current;
     }
 }

@@ -25,9 +25,8 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import java.util.PriorityQueue;
-import net.rushhourgame.entity.Link;
-import net.rushhourgame.entity.Node;
-import net.rushhourgame.entity.RoutingInfo;
+import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.HumanStandable;
 
 /**
  *
@@ -35,21 +34,21 @@ import net.rushhourgame.entity.RoutingInfo;
  */
 public class RouteSearcher {
 
-    public synchronized void search(List<RoutingInfo> network, List<Link> links, List<Node> nodes, Node goal) {
-        for (Node node : nodes) {
+    public synchronized void search(List<StepForHuman> links, List<HumanStandable> nodes, HumanStandable goal) {
+        for (HumanStandable node : nodes) {
             node.setCost(Double.MAX_VALUE);
         }
 
         goal.setCost(0);
 
-        PriorityQueue<Node> queue = new PriorityQueue<>();
+        PriorityQueue<HumanStandable> queue = new PriorityQueue<>();
         queue.add(goal);
 
         while (!queue.isEmpty()) {
-            Node x = queue.poll();
+            HumanStandable x = queue.poll();
 
-            for (Link link : x.getInEdges()) {
-                Node y = link.getFrom();
+            for (StepForHuman link : x.getInEdges()) {
+                HumanStandable y = link.getFrom();
                 double newValue = x.getCost() + link.getCost();
                 if (newValue < y.getCost()) {
                     y.setCost(newValue);
@@ -57,15 +56,6 @@ public class RouteSearcher {
                     queue.offer(y);
                 }
             }
-        }
-
-        for (RoutingInfo r : network) {
-            Node start = r.getStart();
-            Link link = links.stream().filter(
-                    obj -> obj.getFrom().equals(start) && obj.getTo().equals(start.getVia())
-            ).findFirst().get();
-            r.setNext(link);
-            r.setCost(start.getCost());
         }
     }
 

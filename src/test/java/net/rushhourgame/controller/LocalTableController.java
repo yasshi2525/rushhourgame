@@ -28,7 +28,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RoutingInfo;
 
 /**
  *
@@ -39,7 +38,7 @@ public class LocalTableController {
     
     private final String[] tableList = {
         "Human", "Absorber", "Distributer", "Train", "LineStep", "Line", "Platform", "TicketGate",
-        "Station", "RoutingInfo", "Link", "Node", "RailPoint", "Rail", "Point", 
+        "Station", "RailPoint", "Rail", "Point", 
         "Player", "PlayerInfo", "OAuth"
     };
 

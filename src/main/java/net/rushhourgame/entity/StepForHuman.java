@@ -21,40 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.controller;
+package net.rushhourgame.entity;
 
-import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessageBuilder;
-import net.rushhourgame.entity.Link;
-import net.rushhourgame.entity.Node;
-import net.rushhourgame.exception.RushHourException;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
+ * 論理的な接続情報
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class EdgeController extends AbstractController{
+@MappedSuperclass
+public abstract class StepForHuman extends AbstractEntity {
+
     private static final long serialVersionUID = 1L;
-    
-    public Link create(Node from, Node to) throws RushHourException{
-        if(from == null || to == null){
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        return create(from, to, from.distTo(to));
-    }
-    
-    public Link create(Node from, Node to, double cost) throws RushHourException{
-        if(from == null || to == null){
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        
-        Link inst = new Link();
-        inst.setFrom(from);
-        inst.setTo(to);
-        inst.setCost(cost);
-        em.persist(inst);
-        return inst;
+
+    protected double cost;
+
+    public double getCost() {
+        return cost;
     }
 
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public abstract HumanStandable getFrom();
+
+    public abstract HumanStandable getTo();
 }
