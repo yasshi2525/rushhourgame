@@ -10,8 +10,8 @@
     <class>net.rushhourgame.entity.Platform</class>
     <class>net.rushhourgame.entity.Player</class>
     <class>net.rushhourgame.entity.PlayerInfo</class>
-    <class>net.rushhourgame.entity.Rail</class>
-    <class>net.rushhourgame.entity.RailPoint</class>
+    <class>net.rushhourgame.entity.RailEdge</class>
+    <class>net.rushhourgame.entity.RailNode</class>
     <class>net.rushhourgame.entity.Residence</class>
     <class>net.rushhourgame.entity.Station</class>
     <class>net.rushhourgame.entity.StepForHuman</class>

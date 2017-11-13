@@ -32,7 +32,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class Rail extends AbstractEntity implements Ownable {
+public class RailEdge extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,25 +42,25 @@ public class Rail extends AbstractEntity implements Ownable {
 
     @NotNull
     @ManyToOne
-    protected RailPoint _from;
+    protected RailNode _from;
 
     @NotNull
     @ManyToOne
-    protected RailPoint _to;
+    protected RailNode _to;
 
-    public RailPoint getFrom() {
+    public RailNode getFrom() {
         return _from;
     }
 
-    public void setFrom(RailPoint from) {
+    public void setFrom(RailNode from) {
         _from = from;
     }
 
-    public RailPoint getTo() {
+    public RailNode getTo() {
         return _to;
     }
 
-    public void setTo(RailPoint to) {
+    public void setTo(RailNode to) {
         _to = to;
     }
 

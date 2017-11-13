@@ -44,7 +44,7 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     @NotNull
     @ManyToOne
-    protected RailPoint railPoint;
+    protected RailNode railPoint;
 
     protected int capacity;
 
@@ -56,11 +56,11 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
         this.station = station;
     }
 
-    public RailPoint getRailPoint() {
+    public RailNode getRailPoint() {
         return railPoint;
     }
 
-    public void setRailPoint(RailPoint railPoint) {
+    public void setRailPoint(RailNode railPoint) {
         this.railPoint = railPoint;
     }
 

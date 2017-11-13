@@ -29,7 +29,7 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
 import net.rushhourgame.entity.LineStep;
-import net.rushhourgame.entity.Rail;
+import net.rushhourgame.entity.RailEdge;
 
 /**
  * 路線ステップ移動
@@ -43,5 +43,5 @@ public class LineStepMoving extends AbstractEntity {
     
     @NotNull
     @ManyToOne
-    protected Rail running;
+    protected RailEdge running;
 }

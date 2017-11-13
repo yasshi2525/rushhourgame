@@ -52,7 +52,7 @@ public class LineStep extends AbstractEntity implements Ownable {
     protected TargetType target;
     
     @ManyToOne
-    protected Rail onRail;
+    protected RailEdge onRail;
     
     @ManyToOne
     protected Station onStation;
@@ -93,11 +93,11 @@ public class LineStep extends AbstractEntity implements Ownable {
         this.target = target;
     }
 
-    public Rail getOnRail() {
+    public RailEdge getOnRail() {
         return onRail;
     }
 
-    public void setOnRail(Rail onRail) {
+    public void setOnRail(RailEdge onRail) {
         this.onRail = onRail;
     }
 

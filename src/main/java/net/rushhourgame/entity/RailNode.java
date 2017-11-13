@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class RailPoint extends AbstractEntity implements Pointable, Ownable {
+public class RailNode extends AbstractEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +46,10 @@ public class RailPoint extends AbstractEntity implements Pointable, Ownable {
     protected double y;
 
     @OneToMany(mappedBy = "_from")
-    protected List<Rail> outEdges;
+    protected List<RailEdge> outEdges;
 
     @OneToMany(mappedBy = "_to")
-    protected List<Rail> inEdges;
+    protected List<RailEdge> inEdges;
 
     @OneToMany(mappedBy = "railPoint")
     protected List<Platform> platforms;
@@ -92,11 +92,11 @@ public class RailPoint extends AbstractEntity implements Pointable, Ownable {
         return isOwn(this.owner, owner);
     }
 
-    public List<Rail> getOutEdges() {
+    public List<RailEdge> getOutEdges() {
         return outEdges;
     }
 
-    public List<Rail> getInEdges() {
+    public List<RailEdge> getInEdges() {
         return inEdges;
     }
 

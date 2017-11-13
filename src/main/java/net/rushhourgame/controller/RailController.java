@@ -28,8 +28,8 @@ import javax.enterprise.context.Dependent;
 import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.Rail;
-import net.rushhourgame.entity.RailPoint;
+import net.rushhourgame.entity.RailEdge;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -40,35 +40,35 @@ import net.rushhourgame.exception.RushHourException;
 public class RailController extends PointEntityController{
     private static final long serialVersionUID = 1L;
     
-    public RailPoint create(Player owner, double x, double y) throws RushHourException{
+    public RailNode create(Player owner, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
-        RailPoint n = new RailPoint();
+        RailNode n = new RailNode();
         n.setX(x);
         n.setY(y);
         em.persist(n);
         return n;
     }
     
-    public RailPoint extend(Player owner, RailPoint from, double x, double y) throws RushHourException{
+    public RailNode extend(Player owner, RailNode from, double x, double y) throws RushHourException{
         if(owner == null){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
         if(!from.isOwnedBy(owner)){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        RailPoint to = new RailPoint();
+        RailNode to = new RailNode();
         to.setX(x);
         to.setY(y);
         em.persist(to);
         
-        Rail e1 = new Rail();
+        RailEdge e1 = new RailEdge();
         e1.setFrom(from);
         e1.setTo(to);
         em.persist(e1);
         
-        Rail e2 = new Rail();
+        RailEdge e2 = new RailEdge();
         e2.setFrom(to);
         e2.setTo(from);
         em.persist(e2);
@@ -77,19 +77,19 @@ public class RailController extends PointEntityController{
     }
     
     
-    public List<RailPoint> findNodeIn(double centerX, double centerY, double scale){
+    public List<RailNode> findNodeIn(double centerX, double centerY, double scale){
         throw new UnsupportedOperationException();
         //return findIn("Node", centerX, centerY, scale);
     }
     
-    public List<Rail> findEdgeIn(double centerX, double centerY, double scale){
+    public List<RailEdge> findEdgeIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
         return em.createQuery("SELECT e FROM Edge e WHERE"
                         + "    (:x1 < e.fromNode.x AND e.fromNode.x < :x2 AND :y1 < e.fromNode.y AND e.fromNode.y < :y2)"
                         + " OR (:x1 < e.toNode.x   AND e.toNode.x   < :x2 AND :y1 < e.toNode.y   AND e.toNode.y   < :y2)", 
-                Rail.class)
+                RailEdge.class)
                 .setParameter("x1", centerX - width / 2.0)
                 .setParameter("x2", centerX + width / 2.0)
                 .setParameter("y1", centerY - height / 2.0)
