@@ -84,6 +84,6 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
 
     @Override
     public double getCost() {
-        return _from.distTo(_to);
+        throw new UnsupportedOperationException();
     }
 }

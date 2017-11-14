@@ -38,6 +38,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
     @NamedQuery(
+            name = "Company.findAll",
+            query = "SELECT x FROM Company x"
+    ),
+    @NamedQuery(
             name="Company.findIn",
             query = "SELECT obj FROM Company obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )

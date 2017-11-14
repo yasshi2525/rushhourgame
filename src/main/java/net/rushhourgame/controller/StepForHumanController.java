@@ -31,6 +31,7 @@ import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanMethod;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.exception.RushHourRuntimeException;
@@ -69,9 +70,37 @@ public class StepForHumanController extends AbstractController {
             persistStepForHuman(createStationToCompany(t, newInst));
         }
     }
+    
+    public void addResidence(Residence newInst) throws RushHourException {
+        if (newInst == null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        List<Company> companies
+                = em.createNamedQuery("Company.findAll", Company.class).getResultList();
+
+        for (Company c : companies) {
+            persistStepForHuman(createDirectly(newInst, c));
+        }
+
+        List<TicketGate> gates
+                = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+
+        for (TicketGate t : gates) {
+            persistStepForHuman(createResidenceToStation(newInst, t));
+        }
+    }
 
     protected StepForHumanDirectly createDirectly(Residence from, Company to) {
         StepForHumanDirectly inst = new StepForHumanDirectly();
+        inst.setFrom(from);
+        inst.setTo(to);
+        createParent(inst);
+        return inst;
+    }
+    
+    protected StepForHumanResidenceToStation createResidenceToStation(Residence from, TicketGate to) {
+        StepForHumanResidenceToStation inst = new StepForHumanResidenceToStation();
         inst.setFrom(from);
         inst.setTo(to);
         createParent(inst);

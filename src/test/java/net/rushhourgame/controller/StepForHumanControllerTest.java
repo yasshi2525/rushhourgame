@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.rushhourgame.ErrorMessage;
@@ -50,6 +51,8 @@ import org.junit.Before;
 public class StepForHumanControllerTest extends AbstractControllerTest {
 
     protected StepForHumanController inst;
+    protected double TEST_X = 10.0;
+    protected double TEST_Y = 20.0;
 
     @Before
     public void setUp() {
@@ -60,11 +63,88 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddCompanyToEmptyWorld() throws RushHourException {
         // このなかで addCompanyが呼ばれる
-        CCON.create(0, 0);
+        CCON.create(TEST_X, TEST_Y);
         
         // StepForHumanができていない
         assertParentNumEquals(0);
         assertDirectlyNumEquals(0);
+        assertIntoStationNumEquals(0);
+        assertOutOfStationNumEquals(0);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+    }
+    
+    @Test
+    public void testAddResidenceToEmptyWorld() throws RushHourException {
+        // このなかで addResidenceが呼ばれる
+        RCON.create(TEST_X, TEST_Y);
+        
+        // StepForHumanができていない
+        assertParentNumEquals(0);
+        assertDirectlyNumEquals(0);
+        assertIntoStationNumEquals(0);
+        assertOutOfStationNumEquals(0);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+    }
+    
+    /**
+     * 住宅1 に 会社1 を追加すると Directly が追加される
+     * @throws net.rushhourgame.exception.RushHourException
+     */
+    @Test
+    public void testAddCompanyToOneResidenceWorld() throws RushHourException {
+        RCON.create(10, 10);
+        CCON.create(20, 10);
+        
+        assertParentNumEquals(1);
+        assertDirectlyNumEquals(1);
+        assertIntoStationNumEquals(0);
+        assertOutOfStationNumEquals(0);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+        
+        StepForHumanDirectly directly = findDirectly().get(0);
+        assertTrue(directly.getCost() == 10.0);
+    }
+    
+    /**
+     * 会社1 に 住宅1 を追加すると Directly が追加される
+     * @throws net.rushhourgame.exception.RushHourException
+     */
+    @Test
+    public void testAddResidenceToOneCompanyWorld() throws RushHourException {
+        CCON.create(20, 10);
+        RCON.create(10, 10);
+        
+        assertParentNumEquals(1);
+        assertDirectlyNumEquals(1);
+        assertIntoStationNumEquals(0);
+        assertOutOfStationNumEquals(0);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+        
+        StepForHumanDirectly directly = findDirectly().get(0);
+        assertTrue(directly.getCost() == 10.0);
+    }
+    
+    /**
+     * 住宅2 * 会社2 で計4の Directly が作成される
+     * @throws RushHourException 
+     */
+    @Test
+    public void testTwoResidenceTwoCompany() throws RushHourException {
+        RCON.create(TEST_X, TEST_Y);
+        RCON.create(TEST_X, TEST_Y);
+        CCON.create(TEST_X, TEST_Y);
+        CCON.create(TEST_X, TEST_Y);
+        
+        assertParentNumEquals(4);
+        assertDirectlyNumEquals(4);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
         assertFromResidenceNumEquals(0);
@@ -82,32 +162,71 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         }
     }
     
+    @Test
+    public void testAddNullResidence() {
+        try {
+            inst.addResidence(null);
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
+        }
+    }
+    
+    protected List<StepForHuman> findParent() {
+        return TCON.findAll("StepForHuman", new StepForHuman());
+    }
+    
+    protected List<StepForHumanDirectly> findDirectly() {
+        return TCON.findAll("StepForHumanDirectly", new StepForHumanDirectly());
+    }
+    
+    protected List<StepForHumanIntoStation> findIntoStation() {
+        return TCON.findAll("StepForHumanIntoStation", new StepForHumanIntoStation());
+    }
+    
+    protected List<StepForHumanOutOfStation> findOutOfStation() {
+        return TCON.findAll("StepForHumanOutOfStation", new StepForHumanOutOfStation());
+    }
+    
+    protected List<StepForHumanResidenceToStation> findFromResidence() {
+        return TCON.findAll("StepForHumanResidenceToStation", new StepForHumanResidenceToStation());
+    }
+    
+    protected List<StepForHumanStationToCompany> findToCompany() {
+        return TCON.findAll("StepForHumanStationToCompany", new StepForHumanStationToCompany());
+    }
+    
+    protected List<StepForHumanThroughTrain> findThroughTrain() {
+        return TCON.findAll("StepForHumanThroughTrain", new StepForHumanThroughTrain());
+    }
+    
+    
     protected void assertParentNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHuman", new StepForHuman()).size());
+        assertEquals(expected, findParent().size());
     }
     
     protected void assertDirectlyNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanDirectly", new StepForHumanDirectly()).size());
+        assertEquals(expected, findDirectly().size());
     }
     
     protected void assertIntoStationNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanIntoStation", new StepForHumanIntoStation()).size());
+        assertEquals(expected, findIntoStation().size());
     }
     
     protected void assertOutOfStationNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanOutOfStation", new StepForHumanOutOfStation()).size());
+        assertEquals(expected, findOutOfStation().size());
     }
     
     protected void assertFromResidenceNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanResidenceToStation", new StepForHumanResidenceToStation()).size());
+        assertEquals(expected, findFromResidence().size());
     }
     
     protected void assertToCompanyNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanStationToCompany", new StepForHumanStationToCompany()).size());
+        assertEquals(expected, findToCompany().size());
     }
     
     protected void assertThroughTrainNumEquals(int expected) {
-        assertEquals(expected, TCON.findAll("StepForHumanThroughTrain", new StepForHumanThroughTrain()).size());
+        assertEquals(expected, findThroughTrain().size());
     }
     
     

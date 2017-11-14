@@ -41,6 +41,10 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(
             name = "Residence.findAll",
             query = "SELECT x FROM Residence x"
+    ),
+    @NamedQuery(
+            name="Residence.findIn",
+            query = "SELECT obj FROM Residence obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )
 })
 public class Residence extends AbstractEntity implements Pointable, RelayPointForHuman {

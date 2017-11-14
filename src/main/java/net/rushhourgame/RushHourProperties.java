@@ -92,6 +92,8 @@ public class RushHourProperties implements Serializable {
 
     public static final String GAME_DEF_OAUTH_PURGE_DAY = "rushhour.game.default.oauth.purgeday";
     public static final String GAME_DEF_CMP_SCALE = "rushhour.game.default.company.scale";
+    public static final String GAME_DEF_RSD_CAPACITY = "rushhour.game.default.residence.capacity";
+    public static final String GAME_DEF_RSD_INTERVAL = "rushhour.game.default.residence.interval";
 
     //--------------------------------------------------------------------------
     protected static final String CONSTANTS_PATH = "constants.properties";

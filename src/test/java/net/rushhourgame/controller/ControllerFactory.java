@@ -33,6 +33,13 @@ import net.rushhourgame.RushHourProperties;
  */
 public class ControllerFactory {
 
+    public static ResidenceController createResidenceController() {
+        ResidenceController inst = new ResidenceController();
+        inst.sCon = createStepForHumanController();
+        init(inst);
+        return inst;
+    }
+    
     public static CompanyController createCompanyController() {
         CompanyController inst = new CompanyController();
         inst.sCon = createStepForHumanController();
