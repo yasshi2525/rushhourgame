@@ -23,13 +23,81 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
 import javax.enterprise.context.Dependent;
+import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.TicketGate;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanMethod;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.exception.RushHourRuntimeException;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
-public class StepForHumanController {
-    
+public class StepForHumanController extends AbstractController {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 会社に到達する人用移動ステップを作成する
+     *
+     * @param newInst
+     * @throws RushHourException
+     */
+    public void addCompany(Company newInst) throws RushHourException {
+        if (newInst == null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        List<Residence> residences
+                = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+
+        for (Residence r : residences) {
+            persistStepForHuman(createDirectly(r, newInst));
+        }
+
+        List<TicketGate> gates
+                = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+
+        for (TicketGate t : gates) {
+            persistStepForHuman(createStationToCompany(t, newInst));
+        }
+    }
+
+    protected StepForHumanDirectly createDirectly(Residence from, Company to) {
+        StepForHumanDirectly inst = new StepForHumanDirectly();
+        inst.setFrom(from);
+        inst.setTo(to);
+        createParent(inst);
+        return inst;
+    }
+
+    protected StepForHumanStationToCompany createStationToCompany(TicketGate from, Company to) {
+        StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
+        inst.setFrom(from);
+        inst.setTo(to);
+        createParent(inst);
+        return inst;
+    }
+
+    protected StepForHuman createParent(StepForHumanMethod child) {
+        StepForHuman parent = new StepForHuman();
+        child.setParent(parent);
+        return parent;
+    }
+
+    /**
+     * 親も一緒に永続化する.
+     * @param child 
+     */
+    protected void persistStepForHuman(StepForHumanMethod child) {
+        em.persist(child);
+    }
+
 }

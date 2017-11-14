@@ -24,6 +24,7 @@
 package net.rushhourgame.entity.hroute;
 
 import net.rushhourgame.entity.RelayPointForHuman;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
  *
@@ -31,6 +32,10 @@ import net.rushhourgame.entity.RelayPointForHuman;
  */
 public interface StepForHumanMethod {
 
+    public StepForHuman getParent();
+    
+    public void setParent(StepForHuman parent);
+    
     public RelayPointForHuman getFrom();
 
     public RelayPointForHuman getTo();

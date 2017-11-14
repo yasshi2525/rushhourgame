@@ -40,21 +40,21 @@ import net.rushhourgame.exception.RushHourException;
 @Dependent
 public class CompanyController extends PointEntityController {
     private static final long serialVersionUID = 1L;
-        
     
-    public Company create(Player owner, double x, double y) throws RushHourException{
-        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
+    @Inject
+    protected StepForHumanController sCon;
+    
+    public Company create(double x, double y) throws RushHourException{
+        return create(x, y, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
     }
     
-    public Company create(Player owner, double x, double y, double scale) throws RushHourException{
-        if(owner == null){
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
+    public Company create(double x, double y, double scale) throws RushHourException{
         Company inst = new Company();
         inst.setScale(scale);
         inst.setX(x);
         inst.setY(y);
         em.persist(inst);
+        sCon.addCompany(inst);
         return inst;
     }
     

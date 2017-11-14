@@ -35,6 +35,7 @@ public class ControllerFactory {
 
     public static CompanyController createCompanyController() {
         CompanyController inst = new CompanyController();
+        inst.sCon = createStepForHumanController();
         init(inst);
         return inst;
     }
@@ -71,6 +72,12 @@ public class ControllerFactory {
         inst.prop = RushHourProperties.getInstance();
         return inst;
     }
+    
+    public static StepForHumanController createStepForHumanController() {
+        StepForHumanController inst = new StepForHumanController();
+        init(inst);
+        return inst;
+    } 
 
     protected static void init(AbstractController inst) {
         inst.em = LocalEntityManager.createEntityManager();

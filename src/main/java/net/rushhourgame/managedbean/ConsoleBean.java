@@ -65,7 +65,7 @@ public class ConsoleBean implements Serializable{
     
     @Transactional
     public void createCompany() throws RushHourException{
-        cCon.create(player, x, y);
+        cCon.create(x, y);
     }
 
     public double getX() {

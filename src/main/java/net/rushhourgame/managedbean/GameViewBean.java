@@ -68,7 +68,7 @@ public class GameViewBean implements Serializable{
             case CREATE_RAIL:
                 
         }
-        aCon.create(player, mouseX, mouseY);
+        aCon.create(mouseX, mouseY);
     }
 
     public int getMouseX() {

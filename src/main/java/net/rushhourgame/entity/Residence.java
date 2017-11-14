@@ -26,6 +26,8 @@ package net.rushhourgame.entity;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -35,6 +37,12 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Residence.findAll",
+            query = "SELECT x FROM Residence x"
+    )
+})
 public class Residence extends AbstractEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;

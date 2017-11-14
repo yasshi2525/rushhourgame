@@ -25,6 +25,8 @@ package net.rushhourgame.entity;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +36,12 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "TicketGate.findAll",
+            query = "SELECT x FROM TicketGate x"
+    )
+})
 public class TicketGate extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
 
     @NotNull

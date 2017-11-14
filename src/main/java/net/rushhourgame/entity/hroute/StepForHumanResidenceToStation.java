@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity.hroute;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -45,7 +46,7 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     private static final long serialVersionUID = 1;
     
     @NotNull
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     protected StepForHuman parent;
     
     @NotNull
@@ -56,6 +57,15 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     @ManyToOne
     protected TicketGate _to;
     
+    
+    public StepForHuman getParent() {
+        return parent;
+    }
+
+    public void setParent(StepForHuman parent) {
+        this.parent = parent;
+    }
+    
     @Override
     public RelayPointForHuman getFrom() {
         return _from;
@@ -64,6 +74,14 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     @Override
     public RelayPointForHuman getTo() {
         return _to;
+    }
+
+    public void setFrom(Residence _from) {
+        this._from = _from;
+    }
+
+    public void setTo(TicketGate _to) {
+        this._to = _to;
     }
 
     @Override

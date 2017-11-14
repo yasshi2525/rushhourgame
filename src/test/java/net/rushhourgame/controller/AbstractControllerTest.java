@@ -46,7 +46,7 @@ public class AbstractControllerTest {
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static CompanyController ACON = ControllerFactory.createCompanyController();
+    protected final static CompanyController CCON = ControllerFactory.createCompanyController();
     protected final static RoutingInfoController RCON = ControllerFactory.createRoutingInfoController();
     @Rule
     public ExpectedException exception = ExpectedException.none();

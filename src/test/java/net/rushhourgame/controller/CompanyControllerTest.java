@@ -23,11 +23,17 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import org.junit.Before;
 
 /**
@@ -36,27 +42,38 @@ import org.junit.Before;
  */
 public class CompanyControllerTest extends AbstractControllerTest {
 
-    protected Player player;
     protected CompanyController inst;
+    private static final double TEST_X = 5.1;
+    private static final double TEST_Y = 10.1;
+    private static final double TEST_SCALE = 15.1;
 
     @Before
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createCompanyController();
-        try {
-            player = createPlayer();
-        } catch (RushHourException e) {
-            fail();
-        }
     }
-
+    
     @Test
-    public void testCreateByNull() {
-        try {
-            assertNotNull(inst.create(null, 0.0, 0.0));
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_NO_OWNER, ex.getErrMsg().getDetailId());
-        }
+    public void testCreate() throws RushHourException {
+        Company created = inst.create(TEST_X, TEST_Y);
+        assertNotNull(created);
+        assertTrue(TEST_X == created.getX());
+        assertTrue(TEST_Y == created.getY());
+        assertTrue(Double.parseDouble(PROP.get(GAME_DEF_CMP_SCALE)) == created.getScale());
+        
+        EM.flush();
+        assertEquals(1, TCON.findAll("Company", new Company()).size());
+    }
+    
+    @Test
+    public void testCreate3arg() throws RushHourException {
+        Company created = inst.create(TEST_X, TEST_Y, TEST_SCALE);
+        assertNotNull(created);
+        assertTrue(TEST_X == created.getX());
+        assertTrue(TEST_Y == created.getY());
+        assertTrue(TEST_SCALE == created.getScale());
+        
+        EM.flush();
+        assertEquals(1, TCON.findAll("Company", new Company()).size());
     }
 }
