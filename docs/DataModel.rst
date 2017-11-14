@@ -97,6 +97,7 @@
             columns:
                 - 駅ID : { pk : true, fk : true }
                 - 改札口ID
+                - 改札数
 
         プラットフォーム:
             columns:

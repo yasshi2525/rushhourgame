@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 改札口
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
@@ -39,12 +40,22 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     @OneToOne
     protected Station station;
 
+    protected int gateNum;
+
     public Station getStation() {
         return station;
     }
 
     public void setStation(Station station) {
         this.station = station;
+    }
+
+    public int getGateNum() {
+        return gateNum;
+    }
+
+    public void setGateNum(int gateNum) {
+        this.gateNum = gateNum;
     }
 
     @Override
