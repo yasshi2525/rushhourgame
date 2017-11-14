@@ -43,7 +43,7 @@ public class CompanyController extends PointEntityController {
         
     
     public Company create(Player owner, double x, double y) throws RushHourException{
-        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_ABS_SCALE)));
+        return create(owner, x, y, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
     }
     
     public Company create(Player owner, double x, double y, double scale) throws RushHourException{
