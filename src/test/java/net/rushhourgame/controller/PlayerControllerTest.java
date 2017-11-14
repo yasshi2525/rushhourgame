@@ -69,7 +69,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         assertNotNull(created.getInfo());
         assertNotNull(created.getId());
         assertNotNull(created.getOauth());
-        assertEquals(1, TCON.findPlayers().size());
+        assertEquals(1, TCON.findAll("Player", Player.class).size());
     }
 
     @Test
@@ -250,6 +250,6 @@ public class PlayerControllerTest extends AbstractControllerTest {
         OCON.createOAuthBean("foo", "foosec");
         Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
         EM.remove(player);
-        assertEquals(0, TCON.findPlayers().size());
+        assertEquals(0, TCON.findAll("Player", Player.class).size());
     }
 }

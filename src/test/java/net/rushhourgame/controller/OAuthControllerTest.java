@@ -58,7 +58,7 @@ public class OAuthControllerTest extends AbstractControllerTest{
         assertEquals(TEST_REQ_TOKEN, created.getRequestToken());
         assertEquals(TEST_REQ_TOKEN_SECRET, created.getRequestTokenSecret());
         assertEquals(null, created.getOAuthVerifier());
-        assertEquals(1, TCON.findOAuths().size());
+        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
     }
 
     /**
@@ -97,7 +97,7 @@ public class OAuthControllerTest extends AbstractControllerTest{
     public void testDeleteOAuth() throws RushHourException, NoSuchAlgorithmException{
         OAuth created = inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
         EM.remove(created);
-        assertEquals(0, TCON.findOAuths().size());
+        assertEquals(0, TCON.findAll("OAuth", OAuth.class).size());
     }
     
     @Test

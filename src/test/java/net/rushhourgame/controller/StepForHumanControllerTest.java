@@ -173,31 +173,31 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     }
     
     protected List<StepForHuman> findParent() {
-        return TCON.findAll("StepForHuman", new StepForHuman());
+        return TCON.findAll("StepForHuman", StepForHuman.class);
     }
     
     protected List<StepForHumanDirectly> findDirectly() {
-        return TCON.findAll("StepForHumanDirectly", new StepForHumanDirectly());
+        return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
     }
     
     protected List<StepForHumanIntoStation> findIntoStation() {
-        return TCON.findAll("StepForHumanIntoStation", new StepForHumanIntoStation());
+        return TCON.findAll("StepForHumanIntoStation", StepForHumanIntoStation.class);
     }
     
     protected List<StepForHumanOutOfStation> findOutOfStation() {
-        return TCON.findAll("StepForHumanOutOfStation", new StepForHumanOutOfStation());
+        return TCON.findAll("StepForHumanOutOfStation", StepForHumanOutOfStation.class);
     }
     
     protected List<StepForHumanResidenceToStation> findFromResidence() {
-        return TCON.findAll("StepForHumanResidenceToStation", new StepForHumanResidenceToStation());
+        return TCON.findAll("StepForHumanResidenceToStation", StepForHumanResidenceToStation.class);
     }
     
     protected List<StepForHumanStationToCompany> findToCompany() {
-        return TCON.findAll("StepForHumanStationToCompany", new StepForHumanStationToCompany());
+        return TCON.findAll("StepForHumanStationToCompany", StepForHumanStationToCompany.class);
     }
     
     protected List<StepForHumanThroughTrain> findThroughTrain() {
-        return TCON.findAll("StepForHumanThroughTrain", new StepForHumanThroughTrain());
+        return TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
     }
     
     

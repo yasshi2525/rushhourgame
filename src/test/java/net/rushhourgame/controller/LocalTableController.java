@@ -59,19 +59,7 @@ public class LocalTableController {
         em.getTransaction().commit();
     }
     
-    public List<RoutingInfo> findRoutingInfos(){
-        return em.createQuery("SELECT x FROM RoutingInfo x", RoutingInfo.class).getResultList();
-    }
-    
-    public List<Player> findPlayers(){
-        return em.createQuery("SELECT x FROM Player x", Player.class).getResultList();
-    }
-    
-    public List<OAuth> findOAuths(){
-        return em.createQuery("SELECT x FROM OAuth x", OAuth.class).getResultList();
-    }
-    
-    public <T> List<T> findAll(String tableName, T inst){
-        return em.createQuery("SELECT x FROM " + tableName + " x").getResultList();
+    public <T> List<T> findAll(String tableName, Class<T> inst){
+        return em.createQuery("SELECT x FROM " + tableName + " x", inst).getResultList();
     }
 }
