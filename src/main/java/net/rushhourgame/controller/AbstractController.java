@@ -48,8 +48,6 @@ public abstract class AbstractController implements Serializable{
     @Inject
     protected RushHourProperties prop;
     @Inject
-    protected DigestCalculator calculator;
-    @Inject
     protected ErrorMessageBuilder errMsgBuilder;
     
     

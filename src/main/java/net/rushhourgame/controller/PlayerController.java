@@ -52,6 +52,9 @@ public class PlayerController extends AbstractController {
     @Inject
     protected OAuthController oCon;
     
+    @Inject
+    protected DigestCalculator calculator;
+    
     public Player createPlayer(
             String requestToken, 
             String plainUserId, 

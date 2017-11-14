@@ -41,12 +41,14 @@ public class ControllerFactory {
 
     public static OAuthController createOAuthController() {
         OAuthController inst = new OAuthController();
+        inst.calculator = createDigestCalculator();
         init(inst);
         return inst;
     }
 
     public static PlayerController createPlayController() {
         PlayerController inst = new PlayerController();
+        inst.calculator = createDigestCalculator();
         init(inst);
         inst.oCon = createOAuthController();
         return inst;
@@ -71,7 +73,6 @@ public class ControllerFactory {
     }
 
     protected static void init(AbstractController inst) {
-        inst.calculator = createDigestCalculator();
         inst.em = LocalEntityManager.createEntityManager();
         inst.prop = RushHourProperties.getInstance();
         inst.errMsgBuilder = ErrorMessageBuilder.getInstance();

@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -43,6 +44,9 @@ public class OAuthController extends AbstractController {
     private static final Logger LOG = Logger.getLogger(OAuthController.class.getName());
     
     private final OAuth dummyInst = new OAuth();
+    
+    @Inject
+    protected DigestCalculator calculator;
 
     public OAuth createOAuthBean(String requestToken, String requestTokenSecret) throws RushHourException {
         if(requestToken == null){
