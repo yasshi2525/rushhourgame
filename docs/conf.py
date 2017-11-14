@@ -46,7 +46,6 @@ extensions = [
     'sphinxcontrib.packetdiag',
     'sphinx.ext.todo',
     'myasuda.sphinx.erdiagram',
-    'sphinxcontrib.plantuml',
 ]
 
 og_site_url = 'http://docs.rushhourgame.net/spec/'

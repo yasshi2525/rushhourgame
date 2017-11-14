@@ -87,23 +87,11 @@ CREATE DATABASE rushhourtest;
 ### 前提ツール
 
 - Python 3  
-- Java SE Development Kit 8  
-- [plantuml](https://pypi.python.org/pypi/sphinxcontrib-plantuml) 
 
 #### Pythonライブラリのインストール  
 
 ```
 pip install Sphinx sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-nwdiag sphinxcontrib-seqdiag sphinxcontrib-websupport pyyaml sphinx_erdiagram  
-```
-
-#### plantuml.jar にパスを通す
-
-```
-% cat <<EOT > /usr/local/bin/plantuml  
-#!/bin/sh -e  
-java -jar /path/to/plantuml.jar "$@"  
-EOT  
-% chmod +x /usr/local/bin/plantuml  
 ```
 
 ### 仕様書をビルドする
