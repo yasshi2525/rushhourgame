@@ -66,7 +66,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(TEST_X, TEST_Y);
         
         // StepForHumanができていない
-        assertEquals(0, inst.findAll().count());
+        assertEquals(0, inst.findAll().size());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -81,7 +81,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         RCON.create(TEST_X, TEST_Y);
         
         // StepForHumanができていない
-        assertEquals(0, inst.findAll().count());
+        assertEquals(0, inst.findAll().size());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -99,7 +99,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         RCON.create(10, 10);
         CCON.create(20, 10);
         
-        assertEquals(1, inst.findAll().count());
+        assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -120,7 +120,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(20, 10);
         RCON.create(10, 10);
         
-        assertEquals(1, inst.findAll().count());
+        assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -143,7 +143,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(TEST_X, TEST_Y);
         CCON.create(TEST_X, TEST_Y);
         
-        assertEquals(4, inst.findAll().count());
+        assertEquals(4, inst.findAll().size());
         assertDirectlyNumEquals(4);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);

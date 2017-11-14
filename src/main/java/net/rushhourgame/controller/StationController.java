@@ -25,54 +25,33 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import net.rushhourgame.ErrorMessageBuilder;
-import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.Company;
+import static net.rushhourgame.RushHourProperties.*;
+import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.exception.RushHourException;
-import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
- *
+ * 
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
-public class RoutingInfoController extends AbstractController {
+public class StationController extends PointEntityController {
     private static final long serialVersionUID = 1L;
     
-    public RoutingInfo create(RelayPointForHuman src, RelayPointForHuman dest) throws RushHourException {
-        return create(src, null, dest);
+    @Inject
+    protected StepForHumanController sCon;
+    
+    public List<Platform> findPlatformAll() {
+        return em.createNamedQuery("Platform.findAll", Platform.class).getResultList();
     }
     
-    public RoutingInfo create(RelayPointForHuman src, StepForHuman next, RelayPointForHuman dest) throws RushHourException {
-        if(src == null || dest == null){
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        
-        if(src.equals(dest)){
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        
-        RoutingInfo inst = new RoutingInfo();
-        
-        inst.setStart(src);
-        inst.setNext(next);
-        inst.setGoal(dest);
-        
-        em.persist(inst);
-        return inst;
-    }
-    
-    public void insertIntoNetwork(RelayPointForHuman inst) throws RushHourException {
-        List<RelayPointForHuman> network = em.createNamedQuery("Node.findAll", RelayPointForHuman.class).getResultList();
-        for(RelayPointForHuman other : network){
-            em.persist(create(inst, other));
-            em.persist(create(other, inst));
-        }
-    }
-    
-    public List<RoutingInfo> findNetwork(RelayPointForHuman goal) {
-        return 
-                em.createNamedQuery("RoutingInfo.findByGoal", RoutingInfo.class)
-                .setParameter("goal", goal)
-                .getResultList();
+    public List<TicketGate> findTicketGate() {
+        return em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
     }
 }

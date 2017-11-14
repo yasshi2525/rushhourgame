@@ -43,6 +43,12 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Platform.findAll",
+            query = "SELECT x FROM Platform x"
+    )
+})
 public class Platform extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;

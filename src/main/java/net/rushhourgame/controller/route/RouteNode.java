@@ -23,6 +23,8 @@
  */
 package net.rushhourgame.controller.route;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import net.rushhourgame.entity.RelayPointForHuman;
 
@@ -30,12 +32,13 @@ import net.rushhourgame.entity.RelayPointForHuman;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class RouteNode {
+public class RouteNode implements Comparable<RouteNode> {
+
     protected final RelayPointForHuman original;
     protected double cost;
     protected RouteNode via;
-    protected Stream<RouteEdge> inEdges;
-    protected Stream<RouteEdge> outEdges;
+    protected List<RouteEdge> inEdges = new ArrayList<>();
+    protected List<RouteEdge> outEdges = new ArrayList<>();
 
     public RouteNode(RelayPointForHuman original) {
         this.original = original;
@@ -61,20 +64,18 @@ public class RouteNode {
         this.via = via;
     }
 
-    public Stream<RouteEdge> getInEdges() {
+    public List<RouteEdge> getInEdges() {
         return inEdges;
     }
 
-    public void setInEdges(Stream<RouteEdge> inEdges) {
-        this.inEdges = inEdges;
-    }
-
-    public Stream<RouteEdge> getOutEdges() {
+    public List<RouteEdge> getOutEdges() {
         return outEdges;
     }
 
-    public void setOutEdges(Stream<RouteEdge> outEdges) {
-        this.outEdges = outEdges;
+    @Override
+    public int compareTo(RouteNode o) {
+        return this.cost > o.cost ? 1
+                : this.cost < o.cost ? -1 : 0;
     }
 
 }

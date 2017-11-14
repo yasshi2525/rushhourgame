@@ -25,6 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.entity.Company;
@@ -50,9 +51,7 @@ public class StepForHumanController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
 
-    public Stream<StepForHuman> findAll() {
-        List<StepForHuman> edges = new ArrayList<>();
-        
+    public List<StepForHuman> findAll() {
         // 人用移動ステップをすべて取得する。
         // concat にしたのは List.addAllより早そうと思ったから
         return Stream.concat(
@@ -70,7 +69,7 @@ public class StepForHumanController extends AbstractController {
                                 )
                         )
                 )
-        );
+        ).collect(Collectors.toList());
     }
 
     public List<StepForHumanDirectly> findDirectlyAll() {

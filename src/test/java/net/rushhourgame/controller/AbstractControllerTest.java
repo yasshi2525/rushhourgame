@@ -56,7 +56,10 @@ public class AbstractControllerTest {
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
-    protected final static RoutingInfoController RICON = ControllerFactory.createRoutingInfoController();
+    protected final static StationController STCON = ControllerFactory.createStationController();
+    protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
+    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

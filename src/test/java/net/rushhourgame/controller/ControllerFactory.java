@@ -46,6 +46,13 @@ public class ControllerFactory {
         init(inst);
         return inst;
     }
+    
+    public static StationController createStationController() {
+        StationController inst = new StationController();
+        inst.sCon = createStepForHumanController();
+        init(inst);
+        return inst;
+    }
 
     public static OAuthController createOAuthController() {
         OAuthController inst = new OAuthController();
@@ -68,12 +75,6 @@ public class ControllerFactory {
         return inst;
     }
 
-    public static RoutingInfoController createRoutingInfoController() {
-        RoutingInfoController inst = new RoutingInfoController();
-        init(inst);
-        return inst;
-    }
-
     public static DigestCalculator createDigestCalculator() {
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();
@@ -85,6 +86,16 @@ public class ControllerFactory {
         init(inst);
         return inst;
     } 
+    
+    public static RouteSearcher createRouteSearcher() {
+        RouteSearcher inst = new RouteSearcher();
+        inst.cCon = createCompanyController();
+        inst.rCon = createResidenceController();
+        inst.stCon = createStationController();
+        inst.sCon = createStepForHumanController();
+        init(inst);
+        return inst;
+    }
 
     protected static void init(AbstractController inst) {
         inst.em = LocalEntityManager.createEntityManager();
