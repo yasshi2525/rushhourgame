@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.controller.route;
 
-import java.util.List;
 import java.util.stream.Stream;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.RelayPointForHuman;
 
 /**
- * 他のインスタンスとEdgeで結ばれるもの
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RelayPointForHuman extends Pointable {
+public class RouteNode {
+    protected final RelayPointForHuman original;
+    protected double cost;
+    protected RouteNode via;
+    protected Stream<RouteEdge> inEdges;
+    protected Stream<RouteEdge> outEdges;
 
-    public Stream<StepForHuman> getOutEdges();
+    public RouteNode(RelayPointForHuman original) {
+        this.original = original;
+    }
 
-    public Stream<StepForHuman> getInEdges();
+    public RelayPointForHuman getOriginal() {
+        return original;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public RouteNode getVia() {
+        return via;
+    }
+
+    public void setVia(RouteNode via) {
+        this.via = via;
+    }
+
+    public Stream<RouteEdge> getInEdges() {
+        return inEdges;
+    }
+
+    public void setInEdges(Stream<RouteEdge> inEdges) {
+        this.inEdges = inEdges;
+    }
+
+    public Stream<RouteEdge> getOutEdges() {
+        return outEdges;
+    }
+
+    public void setOutEdges(Stream<RouteEdge> outEdges) {
+        this.outEdges = outEdges;
+    }
+
 }

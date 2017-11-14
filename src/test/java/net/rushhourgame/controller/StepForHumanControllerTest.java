@@ -66,7 +66,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(TEST_X, TEST_Y);
         
         // StepForHumanができていない
-        assertParentNumEquals(0);
+        assertEquals(0, inst.findAll().count());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -81,7 +81,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         RCON.create(TEST_X, TEST_Y);
         
         // StepForHumanができていない
-        assertParentNumEquals(0);
+        assertEquals(0, inst.findAll().count());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -99,7 +99,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         RCON.create(10, 10);
         CCON.create(20, 10);
         
-        assertParentNumEquals(1);
+        assertEquals(1, inst.findAll().count());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -120,7 +120,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(20, 10);
         RCON.create(10, 10);
         
-        assertParentNumEquals(1);
+        assertEquals(1, inst.findAll().count());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -143,7 +143,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         CCON.create(TEST_X, TEST_Y);
         CCON.create(TEST_X, TEST_Y);
         
-        assertParentNumEquals(4);
+        assertEquals(4, inst.findAll().count());
         assertDirectlyNumEquals(4);
         assertIntoStationNumEquals(0);
         assertOutOfStationNumEquals(0);
@@ -172,10 +172,6 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         }
     }
     
-    protected List<StepForHuman> findParent() {
-        return TCON.findAll("StepForHuman", StepForHuman.class);
-    }
-    
     protected List<StepForHumanDirectly> findDirectly() {
         return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
     }
@@ -198,11 +194,6 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     
     protected List<StepForHumanThroughTrain> findThroughTrain() {
         return TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
-    }
-    
-    
-    protected void assertParentNumEquals(int expected) {
-        assertEquals(expected, findParent().size());
     }
     
     protected void assertDirectlyNumEquals(int expected) {

@@ -26,6 +26,8 @@ package net.rushhourgame.entity.hroute;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -42,12 +44,14 @@ import net.rushhourgame.entity.TicketGate;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id" }))
-public class StepForHumanOutOfStation extends AbstractEntity implements StepForHumanMethod {
+@NamedQueries({
+    @NamedQuery(
+            name = "StepForHumanOutOfStation.findAll",
+            query = "SELECT x FROM StepForHumanOutOfStation x"
+    )
+})
+public class StepForHumanOutOfStation extends AbstractEntity implements StepForHuman {
     private static final long serialVersionUID = 1;
-    
-    @NotNull
-    @OneToOne(cascade = CascadeType.PERSIST)
-    protected StepForHuman parent;
     
     @NotNull
     @ManyToOne
@@ -56,14 +60,6 @@ public class StepForHumanOutOfStation extends AbstractEntity implements StepForH
     @NotNull
     @ManyToOne
     protected TicketGate _to;
-    
-    public StepForHuman getParent() {
-        return parent;
-    }
-
-    public void setParent(StepForHuman parent) {
-        this.parent = parent;
-    }
     
     @Override
     public RelayPointForHuman getFrom() {

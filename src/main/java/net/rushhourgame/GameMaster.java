@@ -21,24 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity.hroute;
+package net.rushhourgame;
 
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.StepForHuman;
+import javax.ejb.Singleton;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface StepForHumanMethod {
-
-    public StepForHuman getParent();
+@Singleton
+public class GameMaster {
     
-    public void setParent(StepForHuman parent);
-    
-    public RelayPointForHuman getFrom();
-
-    public RelayPointForHuman getTo();
-    
-    public double getCost();
 }

@@ -24,11 +24,17 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 
 /**
  * 改札口
@@ -49,6 +55,19 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     protected Station station;
 
     protected int gateNum;
+    
+    @OneToMany(mappedBy = "_from")
+    protected List<StepForHumanIntoStation> stFromList;
+    
+    @OneToMany(mappedBy = "_to")
+    protected List<StepForHumanOutOfStation> stToList;
+    
+    @OneToMany(mappedBy = "_to")
+    protected List<StepForHumanResidenceToStation> rsdList;
+    
+    @OneToMany(mappedBy = "_from")
+    protected List<StepForHumanStationToCompany> cmpList;
+    
 
     public Station getStation() {
         return station;
@@ -110,39 +129,14 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     public boolean isOwnedBy(Player owner) {
         return station.isOwnedBy(owner);
     }
-
+    
     @Override
-    public List<StepForHuman> getOutEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Stream<StepForHuman> getOutEdges() {
+        return Stream.concat(stFromList.stream(), cmpList.stream());
     }
 
     @Override
-    public List<StepForHuman> getInEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public double getCost() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setCost(double cost) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public RelayPointForHuman getVia() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setVia(RelayPointForHuman via) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int compareTo(RelayPointForHuman o) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Stream<StepForHuman> getInEdges() {
+        return Stream.concat(stToList.stream(), rsdList.stream());
     }
 }

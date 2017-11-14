@@ -65,7 +65,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_INTERVAL)), created.getInterval());
         
         EM.flush();
-        assertEquals(1, TCON.findAll("Residence", Residence.class).size());
+        assertEquals(1, RCON.findAll().size());
     }
     
     @Test
@@ -78,6 +78,6 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(TEST_INTERVAL, created.getInterval());
         
         EM.flush();
-        assertEquals(1, TCON.findAll("Residence", Residence.class).size());
+        assertEquals(1, RCON.findAll().size());
     }
 }

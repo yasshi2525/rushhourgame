@@ -66,4 +66,8 @@ public class ResidenceController extends PointEntityController {
         return super.findIn(em.createNamedQuery("Residence.findIn", Residence.class), 
                 centerX, centerY, scale);
     }
+    
+    public List<Residence> findAll() {
+        return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+    }
 }

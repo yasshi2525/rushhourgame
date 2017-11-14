@@ -23,18 +23,23 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
-import net.rushhourgame.entity.hroute.StepForHumanMethod;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.exception.RushHourRuntimeException;
+import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 
 /**
  *
@@ -44,6 +49,53 @@ import net.rushhourgame.exception.RushHourRuntimeException;
 public class StepForHumanController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
+
+    public Stream<StepForHuman> findAll() {
+        List<StepForHuman> edges = new ArrayList<>();
+        
+        // 人用移動ステップをすべて取得する。
+        // concat にしたのは List.addAllより早そうと思ったから
+        return Stream.concat(
+                findDirectlyAll().stream(),
+                Stream.concat(
+                        findFromResidenceAll().stream(),
+                        Stream.concat(
+                                findIntoStationAll().stream(),
+                                Stream.concat(
+                                        findThroughTrainAll().stream(),
+                                        Stream.concat(
+                                                findOutOfStationAll().stream(),
+                                                findToCompanyAll().stream()
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    public List<StepForHumanDirectly> findDirectlyAll() {
+        return em.createNamedQuery("StepForHumanDirectly.findAll", StepForHumanDirectly.class).getResultList();
+    }
+
+    public List<StepForHumanResidenceToStation> findFromResidenceAll() {
+        return em.createNamedQuery("StepForHumanResidenceToStation.findAll", StepForHumanResidenceToStation.class).getResultList();
+    }
+
+    public List<StepForHumanIntoStation> findIntoStationAll() {
+        return em.createNamedQuery("StepForHumanIntoStation.findAll", StepForHumanIntoStation.class).getResultList();
+    }
+
+    public List<StepForHumanThroughTrain> findThroughTrainAll() {
+        return em.createNamedQuery("StepForHumanThroughTrain.findAll", StepForHumanThroughTrain.class).getResultList();
+    }
+
+    public List<StepForHumanOutOfStation> findOutOfStationAll() {
+        return em.createNamedQuery("StepForHumanOutOfStation.findAll", StepForHumanOutOfStation.class).getResultList();
+    }
+
+    public List<StepForHumanStationToCompany> findToCompanyAll() {
+        return em.createNamedQuery("StepForHumanStationToCompany.findAll", StepForHumanStationToCompany.class).getResultList();
+    }
 
     /**
      * 会社に到達する人用移動ステップを作成する
@@ -70,7 +122,7 @@ public class StepForHumanController extends AbstractController {
             persistStepForHuman(createStationToCompany(t, newInst));
         }
     }
-    
+
     public void addResidence(Residence newInst) throws RushHourException {
         if (newInst == null) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
@@ -95,15 +147,13 @@ public class StepForHumanController extends AbstractController {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
         inst.setTo(to);
-        createParent(inst);
         return inst;
     }
-    
+
     protected StepForHumanResidenceToStation createResidenceToStation(Residence from, TicketGate to) {
         StepForHumanResidenceToStation inst = new StepForHumanResidenceToStation();
         inst.setFrom(from);
         inst.setTo(to);
-        createParent(inst);
         return inst;
     }
 
@@ -111,21 +161,15 @@ public class StepForHumanController extends AbstractController {
         StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
         inst.setFrom(from);
         inst.setTo(to);
-        createParent(inst);
         return inst;
-    }
-
-    protected StepForHuman createParent(StepForHumanMethod child) {
-        StepForHuman parent = new StepForHuman();
-        child.setParent(parent);
-        return parent;
     }
 
     /**
      * 親も一緒に永続化する.
-     * @param child 
+     *
+     * @param child
      */
-    protected void persistStepForHuman(StepForHumanMethod child) {
+    protected void persistStepForHuman(StepForHuman child) {
         em.persist(child);
     }
 

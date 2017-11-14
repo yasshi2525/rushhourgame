@@ -23,15 +23,23 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RelayPointForHuman;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 /**
@@ -68,4 +76,48 @@ public class AbstractControllerTest {
         return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
 
+    /**
+     * JPAの挙動をたしかめるためのテスト.
+     * persistしたインスタンスと、JPQLで取得したインスタンスは同一
+     * @throws RushHourException 
+     */
+    @Test
+    public void testSameReferrence() throws RushHourException {
+        Company original = CCON.create(1, 1);
+        EM.flush();
+        Company fromJPQL = TCON.findAll("Company", Company.class).get(0);
+        
+        assertEquals(original, fromJPQL);
+    }
+    
+    /**
+     * JPAの挙動をたしかめるためのテスト.
+     * JPQLを複数回実行しても、同じインスタンスが返ってくる
+     * @throws RushHourException 
+     */
+    @Test
+    public void testSameReferrenceJPQL() throws RushHourException {
+        Company original = CCON.create(1, 1);
+        EM.flush();
+        Company fromJPQL1 = TCON.findAll("Company", Company.class).get(0);
+        Company fromJPQL2 = TCON.findAll("Company", Company.class).get(0);
+        
+        assertEquals(fromJPQL1, fromJPQL2);
+    }
+    
+    /**
+     * JPAの挙動をたしかめるためのテスト.
+     * 関連で取得したインスタンスが他のJPQLで取得したインスタンスと同じものである
+     * @throws RushHourException 
+     */
+    @Test
+    public void testSameReferrenceJPQLrelation() throws RushHourException {
+        Company c = CCON.create(1, 1);
+        Residence r = RCON.create(2, 2);
+        EM.flush();
+        Company fromCompanyJPQL = TCON.findAll("Company", Company.class).get(0);
+        
+        RelayPointForHuman fromEdgeJPQL = TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class).get(0).getTo();
+        assertEquals(fromCompanyJPQL, fromEdgeJPQL);
+    }
 }

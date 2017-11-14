@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,82 +23,18 @@
  */
 package net.rushhourgame.entity;
 
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
-import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
-import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
-import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
-import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
-import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
-import net.rushhourgame.entity.hroute.StepForHumanMethod;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.RelayPointForHuman;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
- * 人用移動ステップ
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Entity
-public class StepForHuman extends AbstractEntity {
+public interface StepForHuman {
+    
+    public RelayPointForHuman getFrom();
 
-    private static final long serialVersionUID = 1L;
+    public RelayPointForHuman getTo();
     
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanResidenceToStation fromResidence;
-    
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanIntoStation intoStation;
-    
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanThroughTrain throughTrain;
-    
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanOutOfStation outOfStation;
-    
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanStationToCompany toCompany;
-    
-    @OneToOne(mappedBy = "parent")
-    protected StepForHumanDirectly directly;
-
-    public double getCost() {
-        return seekMethodInstance().getCost();
-    }
-
-    @NotNull
-    public RelayPointForHuman getFrom() {
-        return seekMethodInstance().getFrom();
-    }
-
-    @NotNull
-    public RelayPointForHuman getTo() {
-        return seekMethodInstance().getTo();
-    }
-    
-    @NotNull
-    protected StepForHumanMethod seekMethodInstance() {
-        if (fromResidence != null) {
-            return fromResidence;
-        } else if (intoStation != null) {
-            return intoStation;
-        } else if (throughTrain != null) {
-            return throughTrain;
-        } else if (outOfStation != null) {
-            return outOfStation;
-        } else if (toCompany != null) {
-            return toCompany;
-        } else {
-            return directly;
-        }
-    }
+    public double getCost();
 }

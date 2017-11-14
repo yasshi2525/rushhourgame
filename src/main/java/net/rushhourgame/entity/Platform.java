@@ -23,16 +23,23 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 
 /**
  * プラットフォーム
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
@@ -47,6 +54,18 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     @NotNull
     @ManyToOne
     protected RailNode railPoint;
+
+    @OneToMany(mappedBy = "_from")
+    protected List<StepForHumanThroughTrain> tFromList;
+
+    @OneToMany(mappedBy = "_to")
+    protected List<StepForHumanThroughTrain> tToList;
+
+    @OneToMany(mappedBy = "_to")
+    protected List<StepForHumanIntoStation> stToList;
+
+    @OneToMany(mappedBy = "_from")
+    protected List<StepForHumanOutOfStation> stFromList;
 
     protected int capacity;
 
@@ -120,38 +139,12 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     }
 
     @Override
-    public List<StepForHuman> getOutEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Stream<StepForHuman> getOutEdges() {
+        return Stream.concat(tFromList.stream(), stFromList.stream());
     }
 
     @Override
-    public List<StepForHuman> getInEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Stream<StepForHuman> getInEdges() {
+        return Stream.concat(tToList.stream(), stToList.stream());
     }
-
-    @Override
-    public double getCost() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setCost(double cost) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public RelayPointForHuman getVia() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setVia(RelayPointForHuman via) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int compareTo(RelayPointForHuman o) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
 }

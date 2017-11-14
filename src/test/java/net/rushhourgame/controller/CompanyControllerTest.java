@@ -62,7 +62,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_CMP_SCALE)) == created.getScale());
         
         EM.flush();
-        assertEquals(1, TCON.findAll("Company", Company.class).size());
+        assertEquals(1, inst.findAll().size());
     }
     
     @Test
@@ -74,6 +74,6 @@ public class CompanyControllerTest extends AbstractControllerTest {
         assertTrue(TEST_SCALE == created.getScale());
         
         EM.flush();
-        assertEquals(1, TCON.findAll("Company", Company.class).size());
+        assertEquals(1, inst.findAll().size());
     }
 }

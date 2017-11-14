@@ -14,7 +14,6 @@
     <class>net.rushhourgame.entity.RailNode</class>
     <class>net.rushhourgame.entity.Residence</class>
     <class>net.rushhourgame.entity.Station</class>
-    <class>net.rushhourgame.entity.StepForHuman</class>
     <class>net.rushhourgame.entity.TicketGate</class>
     <class>net.rushhourgame.entity.Train</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanDirectly</class>

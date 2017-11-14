@@ -31,6 +31,7 @@ import net.rushhourgame.entity.Company;
 import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -61,5 +62,9 @@ public class CompanyController extends PointEntityController {
     public List<Company> findIn(double centerX, double centerY, double scale){
         return super.findIn(em.createNamedQuery("Company.findIn", Company.class), 
                 centerX, centerY, scale);
+    }
+    
+    public List<Company> findAll() {
+        return em.createNamedQuery("Company.findAll", Company.class).getResultList();
     }
 }
