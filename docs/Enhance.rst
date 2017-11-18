@@ -20,41 +20,45 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
-.. RushHourGame documentation master file, created by
-   sphinx-quickstart on Sun Sep 24 19:39:09 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+拡張手順
+=========
 
-RushHour 仕様書
-===============
+ここではRushHourをエンハンスするときの追加手順を記述します。
 
-このドキュメントはRushHourの仕様を記述するものです。
+デフォルトパラメータの追加
+--------------------------
 
-.. toctree::
-   :maxdepth: 2
-   :caption: 目次
-   :numbered: 2
+定数として用いる値を追加する手順を示します。
 
-   self
-   Background
-   Purpose
-   System
-   Function
-   DataModel
-   UI
-   GameMaster
-   Architecture
-   Client
-   Controller
-   Entity
-   Message
-   Enhance
-   Glossary
+プロパティファイルの編集
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-ToDoリスト
-----------
+プロパティを追加します。単体テストでも使うため、テスト用プロパティも追加します。
 
-書きかけの項目がある際、ToDoを作ります。
-一覧を以下に示します。
+`main/resources/template_config.properties`
+`test/resources/template_config.properties`
 
-.. todolist::
+例::
+
+    rushhour.game.default.platform.capacity=20
+
+プロパティ管理クラスの編集
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+プロパティ管理クラスに定数を追加します。
+
+`class net.rushhourgame.RushHourProperties`
+
+例::
+
+    public static final String GAME_DEF_GATE_NUM = "rushhour.game.default.platform.capacity";
+
+呼び出し方法
+^^^^^^^^^^^^
+
+RushHourPropertiesのインスタンス prop とすると
+
+例:: 
+    
+    Integer.parseInt(prop.get(RushHourProperties.GAME_DEF_GATE_NUM));
+
