@@ -88,10 +88,8 @@
         駅:
             columns:
                 - 所有プレイヤID : { pk : true, fk : true }
-                - X座標値 : { pk : true }
-                - Y座標値 : { pk : true }
+                - 駅名 : { pk : true }
                 - 駅ID
-                - 駅名
 
         改札口:
             columns:
