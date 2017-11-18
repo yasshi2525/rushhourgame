@@ -25,6 +25,8 @@ package net.rushhourgame.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -32,6 +34,14 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "RailEdge.findIn",
+            query = "SELECT obj FROM RailEdge obj"
+                    + " WHERE (obj._from.x > :x1 AND obj._from.x < :x2 AND obj._from.y > :y1 AND obj._from.y < :y2)"
+                    + " OR (obj._to.x > :x1 AND obj._to.x < :x2 AND obj._to.y > :y1 AND obj._to.y < :y2)"
+    )
+})
 public class RailEdge extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;

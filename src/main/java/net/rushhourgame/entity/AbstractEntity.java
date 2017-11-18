@@ -85,7 +85,7 @@ public abstract class AbstractEntity implements Serializable{
     }
     
     protected boolean isOwn(@NotNull Player owner, Player other) {
-        if (other == null) {
+        if (owner == null || other == null) {
             return false;
         }
         return owner.getId() == other.getId();

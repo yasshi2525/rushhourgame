@@ -78,6 +78,11 @@ public class AbstractControllerTest {
         OCON.createOAuthBean("_player", "_player_sec");
         return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
+    
+    protected static Player createOther() throws RushHourException{
+        OCON.createOAuthBean("_other", "_other_sec");
+        return PCON.createPlayer("_other", "_other", "_other", new SimpleUserData());
+    }
 
     /**
      * JPAの挙動をたしかめるためのテスト.

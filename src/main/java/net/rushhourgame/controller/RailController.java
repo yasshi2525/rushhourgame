@@ -45,6 +45,7 @@ public class RailController extends PointEntityController{
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
         RailNode n = new RailNode();
+        n.setOwner(owner);
         n.setX(x);
         n.setY(y);
         em.persist(n);
@@ -55,20 +56,26 @@ public class RailController extends PointEntityController{
         if(owner == null){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
+        if(from == null){
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
         if(!from.isOwnedBy(owner)){
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
         RailNode to = new RailNode();
+        to.setOwner(owner);
         to.setX(x);
         to.setY(y);
         em.persist(to);
         
         RailEdge e1 = new RailEdge();
+        e1.setOwner(owner);
         e1.setFrom(from);
         e1.setTo(to);
         em.persist(e1);
         
         RailEdge e2 = new RailEdge();
+        e2.setOwner(owner);
         e2.setFrom(to);
         e2.setTo(from);
         em.persist(e2);
@@ -78,18 +85,14 @@ public class RailController extends PointEntityController{
     
     
     public List<RailNode> findNodeIn(double centerX, double centerY, double scale){
-        throw new UnsupportedOperationException();
-        //return findIn("Node", centerX, centerY, scale);
+        return findIn(em.createNamedQuery("RailNode.findIn", RailNode.class), centerX, centerY, scale);
     }
     
     public List<RailEdge> findEdgeIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
-        return em.createQuery("SELECT e FROM Edge e WHERE"
-                        + "    (:x1 < e.fromNode.x AND e.fromNode.x < :x2 AND :y1 < e.fromNode.y AND e.fromNode.y < :y2)"
-                        + " OR (:x1 < e.toNode.x   AND e.toNode.x   < :x2 AND :y1 < e.toNode.y   AND e.toNode.y   < :y2)", 
-                RailEdge.class)
+        return em.createNamedQuery("RailEdge.findIn", RailEdge.class)
                 .setParameter("x1", centerX - width / 2.0)
                 .setParameter("x2", centerX + width / 2.0)
                 .setParameter("y1", centerY - height / 2.0)

@@ -47,6 +47,12 @@ public class ControllerFactory {
         return inst;
     }
     
+    public static RailController createRailController() {
+        RailController inst = new RailController();
+        init(inst);
+        return inst;
+    }
+    
     public static StationController createStationController() {
         StationController inst = new StationController();
         inst.sCon = createStepForHumanController();
