@@ -138,9 +138,9 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     
     /**
      * StepForHuman から RouteEdge を作成する
-     * @param originalEdges
-     * @param nodes
-     * @return List<RouteEdge>
+     * @param originalEdges StepForHuman
+     * @param nodes RouteEdge
+     * @return List&gt;RouteEdge&lt;
      */
     protected List<RouteEdge> buildRouteEdges(List<StepForHuman> originalEdges, List<RouteNode> nodes) {
         return originalEdges.stream().map(original -> {
@@ -167,8 +167,8 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     /**
      * nodesの要素にviaとcostをセットして終える. ダイクストラ法で探す
      *
-     * @param nodes
-     * @param goal
+     * @param nodes 出発地一覧
+     * @param goal 目的地
      */
     protected void search(List<RouteNode> nodes, RouteNode goal) {
         

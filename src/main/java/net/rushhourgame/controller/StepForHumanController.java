@@ -99,8 +99,8 @@ public class StepForHumanController extends AbstractController {
     /**
      * 会社に到達する人用移動ステップを作成する
      *
-     * @param newInst
-     * @throws RushHourException
+     * @param newInst Company
+     * @throws RushHourException newInstがnull
      */
     public void addCompany(Company newInst) throws RushHourException {
         if (newInst == null) {
@@ -163,11 +163,6 @@ public class StepForHumanController extends AbstractController {
         return inst;
     }
 
-    /**
-     * 親も一緒に永続化する.
-     *
-     * @param child
-     */
     protected void persistStepForHuman(StepForHuman child) {
         em.persist(child);
     }
