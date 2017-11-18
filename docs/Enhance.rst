@@ -62,3 +62,21 @@ RushHourPropertiesのインスタンス prop とすると
     
     Integer.parseInt(prop.get(RushHourProperties.GAME_DEF_GATE_NUM));
 
+Controllerの追加
+-----------------
+
+`class net.rushhourgame.controller.AbstractController` を継承します。
+
+単体テスト
+^^^^^^^^^^^
+
+`class net.rushhourgame.controller.ControllerFactory` に
+`create追加するコントローラ名` メソッドを追加します。
+
+`class net.rushhourgame.controller.XXXControllerTest` を追加し、
+`class net.rushhourgame.controller.AbstractControllerTest` を継承します。
+
+XXXControllerTestに::
+
+    protected final static XXXController XCON = ControllerFactory.createXXXController();
+    
