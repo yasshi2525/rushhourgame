@@ -62,6 +62,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
     @OneToMany(mappedBy = "railPoint")
     protected List<Platform> platforms;
 
+    @Override
     public double getX() {
         return x;
     }
@@ -70,6 +71,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
         this.x = x;
     }
 
+    @Override
     public double getY() {
         return y;
     }
@@ -78,6 +80,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
         this.y = y;
     }
 
+    @Override
     public double distTo(Pointable other) {
         return calcDist(x, y, other);
     }

@@ -58,16 +58,6 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     @OneToMany
     protected List<Human> passengers;
 
-    @Override
-    public void setX(double x) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
-    @Override
-    public void setY(double y) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-
     public LineStep getCurrent() {
         return current;
     }
@@ -111,6 +101,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         }
     }
     
+    @Override
     public double getX() {
         switch(current.getTarget()){
             case STATION:
@@ -123,6 +114,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         return Double.NaN;
     }
 
+    @Override
     public double getY() {
         switch(current.getTarget()){
             case STATION:

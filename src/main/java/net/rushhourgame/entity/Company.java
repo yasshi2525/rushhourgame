@@ -87,7 +87,6 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
         return x;
     }
 
-    @Override
     public void setX(double x) {
         this.x = x;
     }
@@ -97,7 +96,6 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
         return y;
     }
 
-    @Override
     public void setY(double y) {
         this.y = y;
     }

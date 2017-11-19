@@ -113,6 +113,7 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
         return humans;
     }
 
+    @Override
     public double getX() {
         return x;
     }
@@ -121,6 +122,7 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
         this.x = x;
     }
 
+    @Override
     public double getY() {
         return y;
     }

@@ -91,6 +91,7 @@ public class Human extends AbstractEntity implements Pointable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double getX() {
         return x;
     }
@@ -99,6 +100,7 @@ public class Human extends AbstractEntity implements Pointable {
         this.x = x;
     }
 
+    @Override
     public double getY() {
         return y;
     }

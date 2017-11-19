@@ -90,16 +90,6 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     }
 
     @Override
-    public void setX(double x) {
-        station.setX(x);
-    }
-
-    @Override
-    public void setY(double y) {
-        station.setY(y);
-    }
-
-    @Override
     public double getX() {
         return station.getX();
     }

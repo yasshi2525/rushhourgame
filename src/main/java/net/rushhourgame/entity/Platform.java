@@ -102,16 +102,6 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     }
 
     @Override
-    public void setX(double x) {
-        railPoint.setX(x);
-    }
-
-    @Override
-    public void setY(double y) {
-        railPoint.setY(y);
-    }
-
-    @Override
     public double getX() {
         return railPoint.getX();
     }
