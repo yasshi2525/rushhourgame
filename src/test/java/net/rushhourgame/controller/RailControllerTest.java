@@ -156,6 +156,18 @@ public class RailControllerTest extends AbstractControllerTest {
         assertEquals(created1, created1.getOutEdges().get(0).getFrom());
         assertEquals(created2, created1.getOutEdges().get(0).getTo());
     }
+    
+    @Test
+    public void testExtendDuplicate() throws RushHourException {
+        Player player = createPlayer();
+        RailNode create = inst.create(player, TEST_X, TEST_Y);
+        try {
+            inst.extend(player, create, TEST_X, TEST_Y);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
+    }
 
     @Test
     public void testExtendOwnerNull() throws RushHourException {

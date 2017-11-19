@@ -56,14 +56,17 @@ public class RailController extends PointEntityController{
     }
     
     public RailNode extend(Player owner, RailNode from, double x, double y) throws RushHourException{
-        if(owner == null){
+        if (owner == null) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
         }
-        if(from == null){
+        if (from == null) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        if(!from.isOwnedBy(owner)){
+        if (!from.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        if (exists("RailNode.exists", owner, x, y)) {
+            throw new RushHourException(errMsgBuilder.createRailNodeDuplication(x, y));
         }
         RailNode to = new RailNode();
         to.setOwner(owner);
