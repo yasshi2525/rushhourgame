@@ -50,6 +50,9 @@ public class CompanyController extends PointEntityController {
     }
     
     public Company create(double x, double y, double scale) throws RushHourException{
+        if (exists("Company.exists", x, y)) {
+            throw new RushHourException(errMsgBuilder.createCompanyDuplication(x, y));
+        }
         Company inst = new Company();
         inst.setScale(scale);
         inst.setX(x);

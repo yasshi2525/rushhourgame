@@ -52,7 +52,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
         super.setUp();
         inst = ControllerFactory.createCompanyController();
     }
-    
+
     @Test
     public void testCreate() throws RushHourException {
         Company created = inst.create(TEST_X, TEST_Y);
@@ -60,11 +60,11 @@ public class CompanyControllerTest extends AbstractControllerTest {
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_CMP_SCALE)) == created.getScale());
-        
+
         EM.flush();
         assertEquals(1, inst.findAll().size());
     }
-    
+
     @Test
     public void testCreate3arg() throws RushHourException {
         Company created = inst.create(TEST_X, TEST_Y, TEST_SCALE);
@@ -72,8 +72,18 @@ public class CompanyControllerTest extends AbstractControllerTest {
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
         assertTrue(TEST_SCALE == created.getScale());
-        
+
         EM.flush();
         assertEquals(1, inst.findAll().size());
+    }
+
+    @Test
+    public void testCreateDuplication() throws RushHourException {
+        inst.create(TEST_X, TEST_Y);
+        try {
+            inst.create(TEST_X, TEST_Y);
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
     }
 }

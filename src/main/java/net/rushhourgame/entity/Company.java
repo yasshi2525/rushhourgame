@@ -32,6 +32,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
@@ -51,8 +53,14 @@ import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
     @NamedQuery(
             name = "Company.findIn",
             query = "SELECT obj FROM Company obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+    ),
+    @NamedQuery(
+            name = "Company.exists",
+            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
+                    + " FROM Company obj WHERE obj.x = :x AND obj.y = :y"
     )
 })
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"x", "y"}))
 public class Company extends AbstractEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;

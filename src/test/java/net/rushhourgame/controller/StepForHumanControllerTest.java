@@ -53,6 +53,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     protected StepForHumanController inst;
     protected double TEST_X = 10.0;
     protected double TEST_Y = 20.0;
+    protected double TEST_X2 = 30.0;
+    protected double TEST_Y2 = 40.0;
 
     @Before
     public void setUp() {
@@ -154,9 +156,9 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testTwoResidenceTwoCompany() throws RushHourException {
         RCON.create(TEST_X, TEST_Y);
-        RCON.create(TEST_X, TEST_Y);
+        RCON.create(TEST_X2, TEST_Y2);
         CCON.create(TEST_X, TEST_Y);
-        CCON.create(TEST_X, TEST_Y);
+        CCON.create(TEST_X2, TEST_Y2);
         
         assertEquals(4, inst.findAll().size());
         assertDirectlyNumEquals(4);

@@ -169,6 +169,22 @@ public class ErrorMessageBuilder implements Serializable {
         return errMsg;
     }
     
+    public ErrorMessage createResidenceDuplication(double x, double y) {
+        ErrorMessage errMsg = createDuplication();
+        errMsg.getTitleParams().add(prop.get(LABEL_RESIDENCE));
+        errMsg.getDetailParams().add(prop.get(LABEL_RESIDENCE));
+        errMsg.getDetailParams().add(prop.get(Arrays.toString(new Double[] {x, y})));
+        return errMsg;
+    }
+    
+    public ErrorMessage createCompanyDuplication(double x, double y) {
+        ErrorMessage errMsg = createDuplication();
+        errMsg.getTitleParams().add(prop.get(LABEL_COMPANY));
+        errMsg.getDetailParams().add(prop.get(LABEL_COMPANY));
+        errMsg.getDetailParams().add(prop.get(Arrays.toString(new Double[] {x, y})));
+        return errMsg;
+    }
+    
     public ErrorMessage createRailNodeDuplication(double x, double y) {
         ErrorMessage errMsg = createDuplication();
         errMsg.getTitleParams().add(prop.get(LABEL_RAIL));

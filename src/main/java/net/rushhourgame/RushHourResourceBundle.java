@@ -60,6 +60,8 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_LANG_EN = "rushhour.label.lang.en";
     public static final String LABEL_LANG_JP = "rushhour.label.lang.jp";
     public static final String LABEL_LOGOUT = "rushhour.label.logout";
+    public static final String LABEL_RESIDENCE = "rushhour.label.residence";
+    public static final String LABEL_COMPANY = "rushhour.label.company";
     public static final String LABEL_RAIL = "rushhour.label.rail";
     public static final String LABEL_STATION = "rushhour.label.station";
     public static final String LABEL_STATION_NAME = "rushhour.label.station.name";

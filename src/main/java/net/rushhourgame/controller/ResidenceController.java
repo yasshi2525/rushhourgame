@@ -52,6 +52,9 @@ public class ResidenceController extends PointEntityController {
     }
     
     public Residence create(double x, double y, int capacity, int interval) throws RushHourException{
+        if (exists("Residence.exists", x, y)) {
+            throw new RushHourException(errMsgBuilder.createResidenceDuplication(x, y));
+        }
         Residence inst = new Residence();
         inst.setCapacity(capacity);
         inst.setInterval(interval);

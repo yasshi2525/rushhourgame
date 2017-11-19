@@ -80,4 +80,14 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         EM.flush();
         assertEquals(1, RCON.findAll().size());
     }
+    
+    @Test
+    public void testCreateDuplication() throws RushHourException {
+        inst.create(TEST_X, TEST_Y);
+        try {
+            inst.create(TEST_X, TEST_Y);
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
+    }
 }
