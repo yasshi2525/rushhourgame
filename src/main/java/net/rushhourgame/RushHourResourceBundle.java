@@ -62,6 +62,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_LOGOUT = "rushhour.label.logout";
     public static final String LABEL_RAIL = "rushhour.label.rail";
     public static final String LABEL_STATION = "rushhour.label.station";
+    public static final String LABEL_STATION_NAME = "rushhour.label.station.name";
     public static final String LABEL_ROUTE = "rushhour.label.route";
     public static final String LABEL_TRAIN = "rushhour.label.train";
     public static final String LABEL_CREATE = "rushhour.label.create";
@@ -104,6 +105,10 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String GAME_NO_PRIVILEDGE_OTHER_OWNED = "rushhour.message.game.noPrivilege.otherOwned";
     public static final String GAME_NO_PRIVILEDGE_ONLY_ADMIN = "rushhour.message.game.noPrivilege.onlyAdministrator";
     public static final String GAME_NO_OWNER = "rushhour.message.game.noOwner";
+    
+    public static final String GAME_DUP = "rushhour.message.game.duplication";
+    public static final String GAME_DUP_DETAIL = "rushhour.message.game.duplication.detail";
+    public static final String GAME_DUP_ACTION = "rushhour.message.game.duplication.action";
 
     public static final String GAME_DATA_INCONSIST = "rushhour.message.game.dataInconsistency";
     public static final String GAME_DATA_INCONSIST_DUP_GM = "rushhour.message.game.dataInconsistency.duplicateGameMaster";

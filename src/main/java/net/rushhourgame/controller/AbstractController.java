@@ -32,6 +32,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.entity.Ownable;
+import net.rushhourgame.entity.Player;
 
 /**
  *
@@ -49,13 +51,6 @@ public abstract class AbstractController implements Serializable{
     protected RushHourProperties prop;
     @Inject
     protected ErrorMessageBuilder errMsgBuilder;
-    
-    
-    protected boolean exists(String query) {
-        // count は intを返す場合とlongを返す場合がある(環境依存)
-        return (em.createNamedQuery(query, Number.class)
-                .getSingleResult()).longValue() == 1L;
-    }
 
     /**
      * テーブルに指定した id のエンティティが存在するか返す
@@ -68,6 +63,13 @@ public abstract class AbstractController implements Serializable{
     protected boolean exists(String query, String key, String value) {
         // count は intを返す場合とlongを返す場合がある(環境依存)
         return (em.createNamedQuery(query, Number.class)
+                .setParameter(key, value)
+                .getSingleResult()).longValue() == 1L;
+    }
+    
+    protected boolean exists(String query, Player owner, String key, String value) {
+        return (em.createNamedQuery(query, Number.class)
+                .setParameter("owner", owner)
                 .setParameter(key, value)
                 .getSingleResult()).longValue() == 1L;
     }

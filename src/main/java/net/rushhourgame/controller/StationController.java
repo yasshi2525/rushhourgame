@@ -70,6 +70,9 @@ public class StationController extends PointEntityController {
         if (!node.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
+        if (exists("Station.existsName", owner, "name", name)) {
+            throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
+        }
 
         Station s = new Station();
         s.setOwner(owner);
@@ -96,6 +99,13 @@ public class StationController extends PointEntityController {
         }
         if (!station.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        // 変更なしのときは何もしない
+        if (station.getName().equals(name)) {
+            return;
+        }
+        if (exists("Station.existsName", owner, "name", name)) {
+            throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
         }
         station.setName(name);
     }

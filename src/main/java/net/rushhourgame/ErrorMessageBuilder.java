@@ -169,6 +169,18 @@ public class ErrorMessageBuilder implements Serializable {
         return errMsg;
     }
     
+    public ErrorMessage createStationNameDuplication(String name) {
+        ErrorMessage errMsg = createDuplication();
+        errMsg.getTitleParams().add(prop.get(LABEL_STATION_NAME));
+        errMsg.getDetailParams().add(prop.get(LABEL_STATION_NAME));
+        errMsg.getDetailParams().add(prop.get(name));
+        return errMsg;
+    }
+    
+    protected ErrorMessage createDuplication() {
+        return new ErrorMessage(GAME_DUP, GAME_DUP_DETAIL, GAME_DUP_ACTION);
+    }
+    
         
     /**
      * CDIが使えない環境用. 

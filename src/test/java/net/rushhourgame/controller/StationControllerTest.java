@@ -69,19 +69,19 @@ public class StationControllerTest extends AbstractControllerTest {
         RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
         Station created = inst.create(player, node, TEST_NAME);
 
-        assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)), 
+        assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
                 created.getTicketGate().getGateNum());
-        assertEquals(Integer.parseInt(PROP.get(GAME_DEF_PLT_CAPACITY)), 
+        assertEquals(Integer.parseInt(PROP.get(GAME_DEF_PLT_CAPACITY)),
                 created.getPlatform().getCapacity());
 
     }
-    
+
     @Test
     public void testFull() throws RushHourException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
         Station created = inst.create(player, node, TEST_NAME, TEST_NUM, TEST_CAPACITY);
-        
+
         //test station
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
@@ -90,7 +90,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertTrue(created.isOwnedBy(player));
         assertTrue(created.isPrivilegedBy(player));
         assertEquals(TEST_NAME, created.getName());
-        
+
         //test gate
         TicketGate gate = created.getTicketGate();
         assertNotNull(gate);
@@ -101,7 +101,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertEquals(TEST_NUM, gate.getGateNum());
         assertTrue(gate.isOwnedBy(player));
         assertTrue(gate.isPrivilegedBy(player));
-        
+
         //test platform
         Platform platform = created.getPlatform();
         assertNotNull(platform);
@@ -112,7 +112,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertEquals(TEST_CAPACITY, platform.getCapacity());
         assertTrue(platform.isOwnedBy(player));
         assertTrue(platform.isPrivilegedBy(player));
-        
+
         EM.flush();
         EM.refresh(node);
 
@@ -130,7 +130,7 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testCreateNullNode() throws RushHourException {
         Player player = createPlayer();
@@ -142,7 +142,7 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testCreateOtherOwner() throws RushHourException {
         Player player = createPlayer();
@@ -155,7 +155,7 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testCreateNameNull() throws RushHourException {
         Player player = createPlayer();
@@ -168,19 +168,63 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
+    @Test
+    public void testCreateDuplicateName() throws RushHourException {
+        Player owner = createPlayer();
+        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+        RailNode node2 = RAILCON.extend(owner, node1, TEST_X2, TEST_Y2);
+        inst.create(owner, node1, "Station1");
+
+        EM.flush();
+
+        try {
+            inst.create(owner, node2, "Station1");
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
+    }
+
+    /**
+     * 他人の駅となら重複可
+     *
+     * @throws RushHourException
+     */
+    @Test
+    public void testCreateOtherDuplicateName() throws RushHourException {
+        Player owner = createPlayer();
+        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+
+        Player other = createOther();
+        RailNode node2 = RAILCON.create(other, TEST_X2, TEST_Y2);
+
+        inst.create(owner, node1, "Station1");
+
+        EM.flush();
+
+        inst.create(other, node2, "Station1");
+    }
+
     @Test
     public void testEditName() throws RushHourException {
         Station created = createStation();
-        
+
         inst.editStationName(created, created.getOwner(), "changed");
         assertEquals("changed", created.getName());
     }
-    
+
+    @Test
+    public void testEditSameName() throws RushHourException {
+        Station created = createStation();
+
+        inst.editStationName(created, created.getOwner(), created.getName());
+    }
+
     @Test
     public void testEditNameNullStation() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editStationName(null, created.getOwner(), "changed");
             fail();
@@ -188,11 +232,11 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEditNameNullOwner() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editStationName(created, null, "changed");
             fail();
@@ -200,12 +244,12 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEditNameOtherOwner() throws RushHourException {
         Station created = createStation();
         Player other = createOther();
-        
+
         try {
             inst.editStationName(created, other, "changed");
             fail();
@@ -213,11 +257,11 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEditNameNullName() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editStationName(created, created.getOwner(), null);
             fail();
@@ -227,17 +271,51 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testEditNameDuplication() throws RushHourException {
+        Player owner = createPlayer();
+        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+        RailNode node2 = RAILCON.extend(owner, node1, TEST_X2, TEST_Y2);
+        inst.create(owner, node1, "Station1");
+        Station created = inst.create(owner, node2, "Station2");
+
+        try {
+            inst.editStationName(created, owner, "Station1");
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
+    }
+
+    /**
+     * 他人の駅なら重複可能
+     * @throws RushHourException 
+     */
+    @Test
+    public void testEditNameDuplicationOther() throws RushHourException {
+        Player owner = createPlayer();
+        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+        
+        Player other = createOther();
+        RailNode node2 = RAILCON.create(other, TEST_X2, TEST_Y2);
+        
+        Station created = inst.create(owner, node1, "Station1");
+        inst.create(other, node2, "Station2");
+
+        inst.editStationName(created, owner, "Station2");
+    }
+
+    @Test
     public void testEditPlatformCapacity() throws RushHourException {
         Station created = createStation();
-        
+
         inst.editPlatformCapacity(created, created.getOwner(), 1000);
         assertEquals(1000, created.getPlatform().getCapacity());
     }
-    
+
     @Test
     public void testEditPlatformCapacityNullStation() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editPlatformCapacity(null, created.getOwner(), 1000);
             fail();
@@ -245,11 +323,11 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEditPlatformCapacityNullOwner() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editPlatformCapacity(created, null, 1000);
             fail();
@@ -257,12 +335,12 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEditPlatformCapacityOtherOwner() throws RushHourException {
         Station created = createStation();
         Player other = createOther();
-        
+
         try {
             inst.editPlatformCapacity(created, other, 1000);
             fail();
@@ -270,19 +348,19 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEditTicketGameNum() throws RushHourException {
         Station created = createStation();
-        
+
         inst.editTicketGateNum(created, created.getOwner(), 100);
         assertEquals(100, created.getTicketGate().getGateNum());
     }
-    
+
     @Test
     public void testEditTicketGameNumNullStation() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editTicketGateNum(null, created.getOwner(), 100);
             fail();
@@ -290,11 +368,11 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEditTicketGameNumNullOwner() throws RushHourException {
         Station created = createStation();
-        
+
         try {
             inst.editTicketGateNum(created, null, 100);
             fail();
@@ -302,12 +380,12 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEditTicketGameNumOtherOwner() throws RushHourException {
         Station created = createStation();
         Player other = createOther();
-        
+
         try {
             inst.editTicketGateNum(created, other, 100);
             fail();

@@ -27,6 +27,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -34,9 +36,17 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 駅
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Station.existsName",
+            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
+                    + " FROM Station x WHERE x.owner = :owner AND x.name = :name"
+    )
+})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Station extends AbstractEntity implements Pointable, Ownable {
 
@@ -45,7 +55,7 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
     @NotNull
     @ManyToOne
     protected Player owner;
-    
+
     @NotNull
     protected String name;
 
