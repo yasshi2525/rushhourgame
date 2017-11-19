@@ -25,10 +25,13 @@ package net.rushhourgame.entity;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -40,8 +43,14 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(
             name = "RailNode.findIn",
             query = "SELECT obj FROM RailNode obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+    ),
+    @NamedQuery(
+            name = "RailNode.exists",
+            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
+                    + " FROM RailNode obj WHERE obj.owner = :owner AND obj.x = :x AND obj.y = :y"
     )
 })
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "x", "y"}))
 public class RailNode extends AbstractEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;

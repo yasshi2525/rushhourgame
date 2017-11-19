@@ -89,6 +89,26 @@ public class RailControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testCreateDuplication() throws RushHourException {
+        Player player = createPlayer();
+        inst.create(player, TEST_X, TEST_Y);
+        try {
+            RailNode created2 = inst.create(player, TEST_X, TEST_Y);
+        } catch (RushHourException e) {
+            assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testCreateOtherDuplication() throws RushHourException {
+        Player player = createPlayer();
+        inst.create(player, TEST_X, TEST_Y);
+        
+        Player other = createOther();
+        inst.create(other, TEST_X, TEST_Y);
+    }
+
+    @Test
     public void testExtend() throws RushHourException {
         Player player = createPlayer();
         RailNode created1 = inst.create(player, TEST_X, TEST_Y);
@@ -97,17 +117,17 @@ public class RailControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(created1);
         EM.refresh(created2);
-        
+
         // 1 --> 2
         RailEdge edge1 = created1.getOutEdges().get(0);
         // 1 <-- 2
         RailEdge edge2 = created1.getInEdges().get(0);
-                
+
         assertTrue(created1.distTo(created2) == 10);
         assertTrue(created2.distTo(created1) == 10);
         assertTrue(edge1.getDist() == 10);
         assertTrue(edge2.getDist() == 10);
-        
+
         assertNotNull(created2);
         assertEquals(player, edge1.getOwner());
         assertEquals(player, edge2.getOwner());
@@ -115,12 +135,12 @@ public class RailControllerTest extends AbstractControllerTest {
         assertTrue(edge2.isOwnedBy(player));
         assertTrue(edge1.isPrivilegedBy(player));
         assertTrue(edge2.isPrivilegedBy(player));
-        
+
         // check 1 --> (2)
         assertEquals(1, created2.getInEdges().size());
         assertEquals(created1, created2.getInEdges().get(0).getFrom());
         assertEquals(created2, created2.getInEdges().get(0).getTo());
-        
+
         // check 1 <-- (2) 
         assertEquals(1, created2.getOutEdges().size());
         assertEquals(created2, created2.getOutEdges().get(0).getFrom());
@@ -130,13 +150,13 @@ public class RailControllerTest extends AbstractControllerTest {
         assertEquals(1, created1.getInEdges().size());
         assertEquals(created2, created1.getInEdges().get(0).getFrom());
         assertEquals(created1, created1.getInEdges().get(0).getTo());
-        
+
         // check (1) --> 2 
         assertEquals(1, created1.getOutEdges().size());
         assertEquals(created1, created1.getOutEdges().get(0).getFrom());
         assertEquals(created2, created1.getOutEdges().get(0).getTo());
     }
-    
+
     @Test
     public void testExtendOwnerNull() throws RushHourException {
         Player player = createPlayer();
@@ -148,7 +168,7 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testExtendFromNull() throws RushHourException {
         Player player = createPlayer();
@@ -160,7 +180,6 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-
 
     /**
      * 違う人が線路を伸ばそうとした

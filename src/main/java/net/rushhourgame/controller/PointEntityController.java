@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.persistence.TypedQuery;
+import net.rushhourgame.entity.Player;
 
 /**
  *
@@ -34,6 +35,21 @@ import javax.persistence.TypedQuery;
 @Dependent
 public class PointEntityController extends AbstractController{
     private static final long serialVersionUID = 1L;
+    
+    protected boolean exists(String query, double x, double y) {
+        return (em.createNamedQuery(query, Number.class)
+                .setParameter("x", x)
+                .setParameter("y", y)
+                .getSingleResult()).longValue() == 1L;
+    }
+    
+    protected boolean exists(String query, Player owner, double x, double y) {
+        return (em.createNamedQuery(query, Number.class)
+                .setParameter("owner", owner)
+                .setParameter("x", x)
+                .setParameter("y", y)
+                .getSingleResult()).longValue() == 1L;
+    }
     
     protected <T> List<T> findIn(TypedQuery<T> query, double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);

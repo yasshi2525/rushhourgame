@@ -41,8 +41,11 @@ public class RailController extends PointEntityController{
     private static final long serialVersionUID = 1L;
     
     public RailNode create(Player owner, double x, double y) throws RushHourException{
-        if(owner == null){
+        if (owner == null) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
+        }
+        if (exists("RailNode.exists", owner, x, y)) {
+            throw new RushHourException(errMsgBuilder.createRailNodeDuplication(x, y));
         }
         RailNode n = new RailNode();
         n.setOwner(owner);
