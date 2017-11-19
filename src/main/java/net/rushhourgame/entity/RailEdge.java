@@ -27,6 +27,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -42,6 +44,7 @@ import javax.validation.constraints.NotNull;
                     + " OR (obj._to.x > :x1 AND obj._to.x < :x2 AND obj._to.y > :y1 AND obj._to.y < :y2)"
     )
 })
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
 public class RailEdge extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;

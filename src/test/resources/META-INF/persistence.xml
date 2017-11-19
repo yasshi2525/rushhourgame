@@ -16,6 +16,7 @@
     <class>net.rushhourgame.entity.Station</class>
     <class>net.rushhourgame.entity.TicketGate</class>
     <class>net.rushhourgame.entity.Train</class>
+    <class>net.rushhourgame.entity.TrainDeployed</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanDirectly</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanIntoStation</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanOutOfStation</class>

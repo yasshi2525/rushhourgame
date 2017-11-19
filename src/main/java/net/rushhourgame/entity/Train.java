@@ -27,116 +27,94 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
  * 電車
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Train extends AbstractEntity implements Pointable, Ownable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     @ManyToOne
     protected Player owner;
-    
+
     protected String name;
     protected int capacity;
     protected double speed;
     protected double mobility;
-    protected double process;
-    
-    @NotNull
-    @ManyToOne
-    protected Line on;
-    
-    @NotNull
-    @ManyToOne
-    protected LineStep current;
-    
+
     @OneToMany
     protected List<Human> passengers;
 
-    public LineStep getCurrent() {
-        return current;
-    }
+    @OneToOne(mappedBy = "train")
+    protected TrainDeployed deployed;
 
     @Override
-    public double distTo(Pointable other) {
-        return Math.sqrt((other.getX() - getX()) * (other.getX() - getX())
-                + (other.getY() - getY()) * (other.getY() - getY()));
-    }
-    
-    protected void incrementProcess(double val) {
-        process += val;
-        if(process >= 1.0){
-            process = 1.0;
-        }
-    }
-    
-    
-    public void nextStep(){
-        current = current.getNext();
-        process = 0.0;
-    }
-    
-    public void run(){
-        if(current == null || current.getTarget() != LineStep.TargetType.RAIL_LINE){
-            return;
-        }
-        incrementProcess(speed / current.getOnRail().getDist());
-        if(process >= 1.0){
-            nextStep();
-        }
-    }
-    
-    public void idle(){
-        if(current == null || current.getTarget() != LineStep.TargetType.STATION){
-            return;
-        }
-        incrementProcess(mobility);
-        if(process >= 1.0){
-            nextStep();
-        }
-    }
-    
-    @Override
     public double getX() {
-        switch(current.getTarget()){
-            case STATION:
-                return current.getOnStation().getX();
-            case RAIL_LINE:
-                return current.getOnRail().getFrom().getX()
-                        + (current.getOnRail().getTo().getX() - current.getOnRail().getFrom().getX())
-                        * process;
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-        return Double.NaN;
+        return deployed.getX();
     }
 
     @Override
     public double getY() {
-        switch(current.getTarget()){
-            case STATION:
-                return current.getOnStation().getY();
-            case RAIL_LINE:
-                return current.getOnRail().getFrom().getY()
-                        + (current.getOnRail().getTo().getY() - current.getOnRail().getFrom().getY())
-                        * process;
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
-        return Double.NaN;
+        return deployed.getY();
     }
-    
-    public void freeHuman(List<Human> hs){
-        for(Human h : hs){
-            h.getOffTrain(current.getOnStation());
+
+    @Override
+    public double distTo(Pointable p) {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
+        return deployed.distTo(p);
     }
-    
-    public void collectHuman(List<Human> hs){
-        for(Human h : hs){
-            h.getInTrain(this);
+
+    public void nextStep() {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
+        deployed.nextStep();
+    }
+
+    public void run() {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        deployed.run();
+    }
+
+    public void idle() {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        deployed.idle();
+    }
+
+    public void freeHuman(List<Human> hs) {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        deployed.freeHuman(hs);
+    }
+
+    public void collectHuman(List<Human> hs) {
+        if (deployed == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        deployed.collectHuman(hs);
     }
 
     @Override
@@ -156,5 +134,21 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     @Override
     public boolean isOwnedBy(Player owner) {
         return isOwn(this.owner, owner);
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public double getMobility() {
+        return mobility;
+    }
+
+    public void setMobility(double mobility) {
+        this.mobility = mobility;
     }
 }
