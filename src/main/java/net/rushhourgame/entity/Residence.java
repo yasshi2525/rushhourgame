@@ -136,7 +136,7 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
 
     @Override
     public Stream<StepForHuman> getInEdges() {
-        return Collections.EMPTY_LIST.stream();
+        return Collections.<StepForHuman>emptyList().stream();
     }
 
     @Override

@@ -109,7 +109,7 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
 
     @Override
     public Stream<StepForHuman> getOutEdges() {
-        return Collections.EMPTY_LIST.stream();
+        return Collections.<StepForHuman>emptyList().stream();
     }
 
     @Override

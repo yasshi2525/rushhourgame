@@ -30,6 +30,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -50,10 +51,13 @@ import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 })
 public class TicketGate extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
 
+    private static final long serialVersionUID = 1L;
+
     @NotNull
     @OneToOne
     protected Station station;
 
+    @Min(1)
     protected int gateNum;
     
     @OneToMany(mappedBy = "_from")

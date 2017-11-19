@@ -29,8 +29,10 @@ import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
@@ -56,6 +58,7 @@ public class AbstractControllerTest {
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
+    protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
@@ -82,5 +85,11 @@ public class AbstractControllerTest {
     protected static Player createOther() throws RushHourException{
         OCON.createOAuthBean("_other", "_other_sec");
         return PCON.createPlayer("_other", "_other", "_other", new SimpleUserData());
+    }
+    
+    protected static Station createStation() throws RushHourException {
+        Player owner = createPlayer();
+        RailNode ndoe = RAILCON.create(owner, 0, 0);
+        return STCON.create(owner, ndoe, "_test");
     }
 }

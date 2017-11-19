@@ -90,6 +90,21 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertThroughTrainNumEquals(0);
     }
     
+    @Test
+    public void testAddStationToEmptyWorld() throws RushHourException {
+        // このなかで、addStationが呼ばれる。
+        createStation();
+        
+        // TicketGate <-> Platform
+        assertEquals(2, inst.findAll().size());
+        assertDirectlyNumEquals(0);
+        assertIntoStationNumEquals(1);
+        assertOutOfStationNumEquals(1);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+    }
+    
     /**
      * 住宅1 に 会社1 を追加すると Directly が追加される
      * @throws net.rushhourgame.exception.RushHourException
@@ -153,6 +168,25 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     }
     
     @Test
+    public void testAddStationToOneRsdCmpWorld() throws RushHourException {
+        RCON.create(TEST_X, TEST_Y);
+        CCON.create(TEST_X, TEST_Y);
+        createStation();
+        
+        // R -> Gate <-> Platform
+        //      Gate  -> C
+        // R     ->      C
+        
+        assertEquals(5, inst.findAll().size());
+        assertDirectlyNumEquals(1);
+        assertIntoStationNumEquals(1);
+        assertOutOfStationNumEquals(1);
+        assertFromResidenceNumEquals(1);
+        assertToCompanyNumEquals(1);
+        assertThroughTrainNumEquals(0);
+    }
+    
+    @Test
     public void testAddNullCompany() {
         try {
             inst.addCompany(null);
@@ -166,6 +200,16 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testAddNullResidence() {
         try {
             inst.addResidence(null);
+            fail();
+        } catch (RushHourException ex) {
+            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testAddNullStation() {
+        try {
+            inst.addStation(null);
             fail();
         } catch (RushHourException ex) {
             assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());

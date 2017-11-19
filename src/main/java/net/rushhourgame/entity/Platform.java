@@ -32,6 +32,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -73,6 +74,7 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanOutOfStation> stFromList;
 
+    @Min(1)
     protected int capacity;
 
     public Station getStation() {
@@ -101,27 +103,27 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     @Override
     public void setX(double x) {
-        station.setX(x);
+        railPoint.setX(x);
     }
 
     @Override
     public void setY(double y) {
-        station.setY(y);
+        railPoint.setY(y);
     }
 
     @Override
     public double getX() {
-        return station.getX();
+        return railPoint.getX();
     }
 
     @Override
     public double getY() {
-        return station.getY();
+        return railPoint.getY();
     }
 
     @Override
     public double distTo(Pointable p) {
-        return station.distTo(p);
+        return railPoint.distTo(p);
     }
 
     @Override

@@ -29,7 +29,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.Dependent;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
@@ -141,6 +143,32 @@ public class StepForHumanController extends AbstractController {
             persistStepForHuman(createResidenceToStation(newInst, t));
         }
     }
+    
+    public void addStation(Station newInst) throws RushHourException {
+        if (newInst == null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        
+        // 家 -> 改札口
+        List<Residence> residences
+                = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+
+        for (Residence r : residences) {
+            persistStepForHuman(createResidenceToStation(r, newInst.getTicketGate()));
+        }
+        
+        // 改札口 -> 会社
+        List<Company> companies
+                = em.createNamedQuery("Company.findAll", Company.class).getResultList();
+
+        for (Company c : companies) {
+            persistStepForHuman(createStationToCompany(newInst.getTicketGate(), c));
+        }
+        
+        // 改札口 <-> プラットフォーム
+        persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
+        persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
+    }
 
     protected StepForHumanDirectly createDirectly(Residence from, Company to) {
         StepForHumanDirectly inst = new StepForHumanDirectly();
@@ -158,6 +186,20 @@ public class StepForHumanController extends AbstractController {
 
     protected StepForHumanStationToCompany createStationToCompany(TicketGate from, Company to) {
         StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
+        inst.setFrom(from);
+        inst.setTo(to);
+        return inst;
+    }
+    
+    protected StepForHumanIntoStation createIntoStation(TicketGate from, Platform to) {
+        StepForHumanIntoStation inst = new StepForHumanIntoStation();
+        inst.setFrom(from);
+        inst.setTo(to);
+        return inst;
+    }
+    
+    protected StepForHumanOutOfStation createOutOfStation(Platform from, TicketGate to) {
+        StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
         inst.setFrom(from);
         inst.setTo(to);
         return inst;

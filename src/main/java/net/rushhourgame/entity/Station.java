@@ -23,9 +23,13 @@
  */
 package net.rushhourgame.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -33,6 +37,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Station extends AbstractEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;
@@ -40,15 +45,14 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
     @NotNull
     @ManyToOne
     protected Player owner;
-
-    protected double x;
-    protected double y;
+    
+    @NotNull
     protected String name;
 
-    @OneToOne(mappedBy = "station")
+    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST)
     protected Platform platform;
 
-    @OneToOne(mappedBy = "station")
+    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST)
     protected TicketGate ticketGate;
 
     public void collectHuman() {
@@ -83,25 +87,29 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
         this.name = name;
     }
 
+    @Override
     public double getX() {
-        return x;
+        return platform.getX();
     }
 
+    @Override
     public void setX(double x) {
-        this.x = x;
+        platform.setX(x);
     }
 
+    @Override
     public double getY() {
-        return y;
+        return platform.getX();
     }
 
+    @Override
     public void setY(double y) {
-        this.y = y;
+        platform.setY(y);
     }
 
     @Override
     public double distTo(Pointable p) {
-        return calcDist(x, y, p);
+        return platform.distTo(p);
     }
 
     @Override
