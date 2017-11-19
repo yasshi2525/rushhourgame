@@ -114,11 +114,6 @@ public class LineStep extends AbstractEntity implements Ownable {
     }
 
     @Override
-    public void setOwner(Player owner) {
-        parent.setOwner(owner);
-    }
-
-    @Override
     public Player getOwner() {
         return parent.getOwner();
     }

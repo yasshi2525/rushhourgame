@@ -82,6 +82,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
         return calcDist(x, y, other);
     }
 
+    @Override
     public Player getOwner() {
         return owner;
     }

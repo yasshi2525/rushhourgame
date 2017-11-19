@@ -127,11 +127,6 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     }
 
     @Override
-    public void setOwner(Player owner) {
-        station.setOwner(owner);
-    }
-
-    @Override
     public Player getOwner() {
         return station.getOwner();
     }

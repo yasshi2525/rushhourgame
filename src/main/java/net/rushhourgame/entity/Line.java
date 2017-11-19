@@ -63,7 +63,6 @@ public class Line extends AbstractEntity implements Ownable {
         return owner;
     }
 
-    @Override
     public void setOwner(Player owner) {
         this.owner = owner;
     }

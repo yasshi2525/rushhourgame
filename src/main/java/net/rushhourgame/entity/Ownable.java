@@ -29,8 +29,6 @@ package net.rushhourgame.entity;
  */
 public interface Ownable {
 
-    public void setOwner(Player owner);
-
     public Player getOwner();
 
     /**

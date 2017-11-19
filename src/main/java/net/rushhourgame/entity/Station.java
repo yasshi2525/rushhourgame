@@ -117,7 +117,6 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
         return owner;
     }
 
-    @Override
     public void setOwner(Player owner) {
         this.owner = owner;
     }

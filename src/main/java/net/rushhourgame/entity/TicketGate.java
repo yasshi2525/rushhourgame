@@ -115,11 +115,6 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     }
 
     @Override
-    public void setOwner(Player owner) {
-        station.setOwner(owner);
-    }
-
-    @Override
     public Player getOwner() {
         return station.getOwner();
     }

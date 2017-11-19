@@ -78,6 +78,7 @@ public class RailEdge extends AbstractEntity implements Ownable {
         return _from.distTo(_to);
     }
 
+    @Override
     public Player getOwner() {
         return owner;
     }

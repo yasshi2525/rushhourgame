@@ -53,10 +53,12 @@ public class RoutingInfo extends AbstractEntity {
 
     protected double cost;
 
+    @Override
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
