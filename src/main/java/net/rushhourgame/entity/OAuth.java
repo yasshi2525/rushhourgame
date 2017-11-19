@@ -26,7 +26,6 @@ package net.rushhourgame.entity;
 import java.util.logging.Logger;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;

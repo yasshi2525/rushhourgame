@@ -38,7 +38,6 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -48,8 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
 /**
@@ -295,6 +292,7 @@ public class RushHourPropertiesTest {
      * コンフィグファイルの既存の値を更新する
      *
      * @throws java.lang.InterruptedException
+     * @throws java.io.IOException
      */
     @Test
     public void testConfigWatchingService() throws InterruptedException, IOException {
@@ -409,6 +407,7 @@ public class RushHourPropertiesTest {
      * configにloadするときIOException.
      *
      * @throws InterruptedException
+     * @throws java.io.IOException
      */
     @Test
     public void testConfigWatchingServiceLoadIOException() throws InterruptedException, IOException {

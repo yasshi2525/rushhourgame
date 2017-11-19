@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,13 +31,11 @@ import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
-import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.exception.RushHourException;
-import net.rushhourgame.exception.RushHourRuntimeException;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;

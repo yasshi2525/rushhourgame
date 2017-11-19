@@ -55,14 +55,17 @@ public class SimpleUserData implements UserData, Serializable {
         textColor = "#000000";
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getIconUrl() {
         return iconUrl;
     }
 
+    @Override
     public String getColor() {
         return color;
     }

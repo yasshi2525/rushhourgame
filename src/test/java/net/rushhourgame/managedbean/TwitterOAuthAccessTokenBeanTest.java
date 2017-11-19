@@ -67,6 +67,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     }
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         try {

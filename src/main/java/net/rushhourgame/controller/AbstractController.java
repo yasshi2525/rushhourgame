@@ -32,7 +32,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.entity.Ownable;
 import net.rushhourgame.entity.Player;
 
 /**

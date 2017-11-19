@@ -30,7 +30,6 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.RailEdge;
 
 /**
  * 路線ステップ発車
@@ -38,6 +37,9 @@ import net.rushhourgame.entity.RailEdge;
  */
 @Entity
 public class LineStepDeparture extends AbstractEntity {
+
+    private static final long serialVersionUID = 1L;
+    
     @NotNull
     @OneToOne
     protected LineStep parent;

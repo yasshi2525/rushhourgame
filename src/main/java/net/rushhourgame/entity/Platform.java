@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.Entity;

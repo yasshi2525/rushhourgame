@@ -37,7 +37,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -101,7 +100,7 @@ public class RushHourProperties implements Serializable {
     protected static final String CONSTANTS_PATH = "constants.properties";
     protected static final String TEMPLATE_CONFIG_PATH = "template_config.properties";
 
-    protected WatchService watchService;
+    transient protected WatchService watchService;
     protected Properties constants = new Properties();
     protected Properties config = new Properties();
 

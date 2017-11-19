@@ -60,6 +60,7 @@ public class TwitterUserData implements UserData, Serializable {
         return profile_link_color;
     }
     
+    @Override
     public String getName() {
         return name;
     }

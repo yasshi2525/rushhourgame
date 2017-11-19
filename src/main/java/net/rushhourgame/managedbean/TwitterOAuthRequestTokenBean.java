@@ -30,7 +30,6 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;

@@ -54,9 +54,6 @@ public class HttpClientTest {
     protected HttpClient inst;
     protected static final String INVALID_URL = "http://127.0.0.1/";
 
-    @Rule
-    public ExpectedException ex = ExpectedException.none();
-
     @Mock
     protected Response response;
     

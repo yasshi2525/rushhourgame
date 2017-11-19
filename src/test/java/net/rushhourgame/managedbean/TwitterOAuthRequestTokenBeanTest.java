@@ -55,6 +55,7 @@ public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest{
     ExternalContext context;
     
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         try {

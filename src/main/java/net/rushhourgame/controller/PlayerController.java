@@ -31,7 +31,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Player;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.OAuth;

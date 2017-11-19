@@ -25,7 +25,6 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
-import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;

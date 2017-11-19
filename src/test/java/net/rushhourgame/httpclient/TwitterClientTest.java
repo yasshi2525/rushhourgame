@@ -40,8 +40,6 @@ public class TwitterClientTest {
 
     protected TwitterClient inst;
     protected static final String INVALID_URL = "http://127.0.0.1/";
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @BeforeClass
     public static void setUpClass() {

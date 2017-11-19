@@ -47,7 +47,6 @@ public class PlayerBeanTest extends AbstractBeanTest {
     protected static final String DISPLAY_NAME = "user1";
     private static SimpleUserData emptyUser;
     protected static final UserData USER_DATA = new SimpleUserData();
-    protected OAuth oAuth;
     protected Player player;
     protected String accessToken;
     
@@ -58,10 +57,11 @@ public class PlayerBeanTest extends AbstractBeanTest {
     }
     
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         try {
-            oAuth = OCON.createOAuthBean("foo", "foosec");
+            OCON.createOAuthBean("foo", "foosec");
             PlayerInfo info = new PlayerInfo();
             info.setName(DISPLAY_NAME);
             info.setColor("#000000");
@@ -77,6 +77,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
     }
     
     @After
+    @Override
     public void tearDown() {
         EM.getTransaction().commit();
         TCON.clean();

@@ -47,6 +47,7 @@ public class TwitterOAuthRequestTokenClient extends TwitterClient {
     protected static final String RES_OAUTH_CONFIRM = "oauth_callback_confirmed";
 
     @PostConstruct
+    @Override
     public void init() {
         super.init();
         LOG.log(Level.FINE, "{0}#init", this.getClass().getSimpleName());

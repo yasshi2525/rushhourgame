@@ -23,18 +23,12 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
-import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
-import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import org.junit.Before;
 
 /**
@@ -50,6 +44,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     private static final int TEST_INTERVAL = 3;
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createResidenceController();

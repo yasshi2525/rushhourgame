@@ -102,6 +102,7 @@ public class TwitterClient extends HttpClient {
      * @return SortedMap
      * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
+    @Override
     protected SortedMap<String, String> buildHeader() throws UnsupportedEncodingException {
         LOG.log(Level.FINE, "{0}#buildHeader start", HttpClient.class.getSimpleName());
 

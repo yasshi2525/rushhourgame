@@ -49,8 +49,6 @@ public abstract class AbstractEntityTest {
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static CompanyController ACON = ControllerFactory.createCompanyController();
-    @Rule
-    public ExpectedException ex = ExpectedException.none();
     
     @Before
     public void setUp() {

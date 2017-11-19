@@ -38,6 +38,9 @@ import net.rushhourgame.entity.RailEdge;
  */
 @Entity
 public class LineStepStopping extends AbstractEntity {
+
+    private static final long serialVersionUID = 1L;
+    
     @NotNull
     @OneToOne
     protected LineStep parent;

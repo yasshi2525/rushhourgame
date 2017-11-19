@@ -24,18 +24,10 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.rushhourgame.ErrorMessage;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.controller.AbstractControllerTest.EM;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -57,6 +49,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     protected double TEST_Y2 = 40.0;
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createStepForHumanController();

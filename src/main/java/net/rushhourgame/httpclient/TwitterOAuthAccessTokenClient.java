@@ -50,6 +50,7 @@ public class TwitterOAuthAccessTokenClient extends TwitterClient {
     protected String oauthVerifier;
     
     @PostConstruct
+    @Override
     public void init(){
         super.init();
         LOG.log(Level.FINE, "{0}#init", this.getClass().getSimpleName());

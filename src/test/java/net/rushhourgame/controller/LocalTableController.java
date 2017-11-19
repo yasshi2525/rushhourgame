@@ -26,8 +26,6 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import net.rushhourgame.entity.OAuth;
-import net.rushhourgame.entity.Player;
 
 /**
  *

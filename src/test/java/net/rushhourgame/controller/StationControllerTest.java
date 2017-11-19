@@ -23,23 +23,16 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
-import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TicketGate;
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
-import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
-import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import org.junit.Before;
 
 /**
@@ -134,7 +127,7 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateNullNode() throws RushHourException {
         Player player = createPlayer();
-        RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
+        RAILCON.create(player, TEST_X, TEST_Y);
         try {
             inst.create(player, null, TEST_NAME);
             fail();

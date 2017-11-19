@@ -50,6 +50,7 @@ public class TwitterUserShowClient extends TwitterClient {
     protected TwitterUserData data;
 
     @PostConstruct
+    @Override
     public void init() {
         super.init();
         LOG.log(Level.FINE, "{0}#init start", this.getClass().getSimpleName());

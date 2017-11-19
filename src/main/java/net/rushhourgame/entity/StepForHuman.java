@@ -23,9 +23,6 @@
  */
 package net.rushhourgame.entity;
 
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.StepForHuman;
-
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)

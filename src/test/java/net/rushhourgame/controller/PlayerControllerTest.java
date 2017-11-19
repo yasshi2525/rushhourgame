@@ -52,6 +52,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
     protected static final String UNEXIST_ACCESS_TOKEN = "unexist_access_token_999";
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createPlayController();

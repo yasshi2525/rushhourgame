@@ -23,25 +23,17 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
-import net.rushhourgame.entity.StepForHuman;
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 /**
@@ -62,9 +54,6 @@ public class AbstractControllerTest {
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-    
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {

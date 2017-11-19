@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.OAuth;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.exception.RushHourException;

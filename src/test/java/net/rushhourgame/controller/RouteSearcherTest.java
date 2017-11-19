@@ -24,13 +24,9 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import jdk.Exported;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -154,7 +150,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
-        List<RouteEdge> edges = inst.buildRouteEdges(SCON.findAll(), nodes);
+        inst.buildRouteEdges(SCON.findAll(), nodes);
         
         RouteNode begin = nodes.get(0);
         RouteNode goal = nodes.get(1);

@@ -27,16 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
-import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 
 /**
  * 住宅(人を生成するオブジェクト)

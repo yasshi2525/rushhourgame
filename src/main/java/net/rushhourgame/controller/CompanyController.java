@@ -26,12 +26,8 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Company;
 import static net.rushhourgame.RushHourProperties.*;
-import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.exception.RushHourException;
 
 /**

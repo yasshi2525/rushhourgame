@@ -24,11 +24,7 @@
 package net.rushhourgame;
 
 import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

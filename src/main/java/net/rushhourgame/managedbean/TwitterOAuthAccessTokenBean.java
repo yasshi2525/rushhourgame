@@ -30,7 +30,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
-import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.OAuth;

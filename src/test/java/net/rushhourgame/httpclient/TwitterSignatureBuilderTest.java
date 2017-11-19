@@ -48,8 +48,6 @@ public class TwitterSignatureBuilderTest {
     protected static final String INVALID_URL = "http://127.0.0.1/";
     protected static final String ESCAPED_URL = "http%3A%2F%2F127.0.0.1%2F";
     protected static final String OATUTH_SECRET = "oauth_secret_dummy";
-    @Rule
-    public ExpectedException ex = ExpectedException.none();
 
     public TwitterSignatureBuilderTest() {
     }

@@ -59,7 +59,7 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQL() throws RushHourException {
-        Company original = CCON.create(1, 1);
+        CCON.create(1, 1);
         EM.flush();
         Company fromJPQL1 = TCON.findAll("Company", Company.class).get(0);
         Company fromJPQL2 = TCON.findAll("Company", Company.class).get(0);
@@ -74,8 +74,8 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQLrelation() throws RushHourException {
-        Company c = CCON.create(1, 1);
-        Residence r = RCON.create(2, 2);
+        CCON.create(1, 1);
+        RCON.create(2, 2);
         EM.flush();
         Company fromCompanyJPQL = TCON.findAll("Company", Company.class).get(0);
         

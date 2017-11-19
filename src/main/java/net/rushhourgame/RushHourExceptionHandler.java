@@ -48,6 +48,7 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
         this.wrapped = wrapped;
     }
 
+    @Override
     public void handle() throws FacesException {
         Iterator i = getUnhandledExceptionQueuedEvents().iterator();
         while (i.hasNext()) {

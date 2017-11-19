@@ -44,6 +44,7 @@ public class OAuthControllerTest extends AbstractControllerTest{
     protected OAuthController inst;
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createOAuthController();
