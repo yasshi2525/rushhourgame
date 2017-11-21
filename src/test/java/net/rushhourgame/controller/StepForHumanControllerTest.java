@@ -147,6 +147,34 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getCost() == 10.0);
     }
+       
+    @Test
+    public void testAddCompanyToStationWorld() throws RushHourException {
+        createStation();
+        CCON.create(20, 10);
+        
+        assertEquals(3, inst.findAll().size());
+        assertDirectlyNumEquals(0);
+        assertIntoStationNumEquals(1);
+        assertOutOfStationNumEquals(1);
+        assertFromResidenceNumEquals(0);
+        assertToCompanyNumEquals(1);
+        assertThroughTrainNumEquals(0);
+    }
+    
+    @Test
+    public void testAddResidenceToStationWorld() throws RushHourException {
+        createStation();
+        RCON.create(20, 10);
+        
+        assertEquals(3, inst.findAll().size());
+        assertDirectlyNumEquals(0);
+        assertIntoStationNumEquals(1);
+        assertOutOfStationNumEquals(1);
+        assertFromResidenceNumEquals(1);
+        assertToCompanyNumEquals(0);
+        assertThroughTrainNumEquals(0);
+    }
     
     /**
      * 住宅2 * 会社2 で計4の Directly が作成される
