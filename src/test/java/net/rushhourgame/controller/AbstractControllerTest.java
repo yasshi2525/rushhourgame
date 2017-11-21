@@ -23,7 +23,14 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Set;
 import javax.persistence.EntityManager;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotNull;
+import javax.validation.executable.ExecutableValidator;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Player;
@@ -32,7 +39,11 @@ import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 
@@ -55,6 +66,15 @@ public class AbstractControllerTest {
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
 
+    protected static ValidatorFactory validatorFactory;
+    protected static ExecutableValidator validatorForExecutables;
+    
+    @BeforeClass
+    public static void setUpClass() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validatorForExecutables = validatorFactory.getValidator().forExecutables();
+    }
+    
     @Before
     public void setUp() {
         EM.getTransaction().begin();
@@ -64,6 +84,11 @@ public class AbstractControllerTest {
     public void tearDown() {
         EM.getTransaction().commit();
         TCON.clean();
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+        validatorFactory.close();
     }
     
     protected static Player createPlayer() throws RushHourException{
@@ -81,4 +106,16 @@ public class AbstractControllerTest {
         RailNode ndoe = RAILCON.create(owner, 0, 0);
         return STCON.create(owner, ndoe, "_test");
     }
+    
+    protected static <U, T> void assertViolatedAnnotationTypeIs(Class<U> annotation, Set<ConstraintViolation<T>> violations) {
+        assertEquals(1, violations.size() );
+        assertEquals(annotation, 
+                violations.iterator().next().getConstraintDescriptor().getAnnotation().annotationType());
+    }
+    
+    protected static <T> void assertViolatedValueIs(Object violatedValue, Set<ConstraintViolation<T>> violations) {
+        assertEquals(1, violations.size() );
+        assertEquals(violatedValue, violations.iterator().next().getInvalidValue());
+    }
+    
 }

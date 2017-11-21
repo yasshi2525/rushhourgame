@@ -37,3 +37,5 @@ Controllerは :term:`プレイヤ` または :term:`ゲームマスタ` の
             Controller => EntityManager [label = "persist(Entity)"];
         }
     }
+
+引数のバリデーションは、実装量削減のため、Bean Validationを用います。

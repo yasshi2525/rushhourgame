@@ -23,11 +23,16 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
+import static net.rushhourgame.controller.AbstractControllerTest.validatorForExecutables;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
@@ -113,27 +118,31 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreateNullOwner() throws RushHourException {
+    public void testCreateNullOwner() throws RushHourException, NoSuchMethodException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
-        try {
-            inst.create(null, node, TEST_NAME);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
-        }
+        
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("create", Player.class, RailNode.class, String.class),
+                new Object[]{null, node, TEST_NAME});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
-    public void testCreateNullNode() throws RushHourException {
+    public void testCreateNullNode() throws RushHourException, NoSuchMethodException {
         Player player = createPlayer();
         RAILCON.create(player, TEST_X, TEST_Y);
-        try {
-            inst.create(player, null, TEST_NAME);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("create", Player.class, RailNode.class, String.class),
+                new Object[]{player, null, TEST_NAME});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -150,16 +159,18 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreateNameNull() throws RushHourException {
+    public void testCreateNameNull() throws RushHourException, NoSuchMethodException {
         Player player = createPlayer();
         Player other = createOther();
         RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
-        try {
-            inst.create(other, node, null);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("create", Player.class, RailNode.class, String.class),
+                new Object[]{player, node, null});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -215,27 +226,29 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testEditNameNullStation() throws RushHourException {
+    public void testEditNameNullStation() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editStationName(null, created.getOwner(), "changed");
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editStationName", Station.class, Player.class, String.class),
+                new Object[]{null, created.getOwner(), "changed"});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
-    public void testEditNameNullOwner() throws RushHourException {
+    public void testEditNameNullOwner() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editStationName(created, null, "changed");
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editStationName", Station.class, Player.class, String.class),
+                new Object[]{created, null, "changed"});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -252,15 +265,16 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testEditNameNullName() throws RushHourException {
+    public void testEditNameNullName() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editStationName(created, created.getOwner(), null);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editStationName", Station.class, Player.class, String.class),
+                new Object[]{created, created.getOwner(),  null});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -306,27 +320,29 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testEditPlatformCapacityNullStation() throws RushHourException {
+    public void testEditPlatformCapacityNullStation() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editPlatformCapacity(null, created.getOwner(), 1000);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editPlatformCapacity", Station.class, Player.class, int.class),
+                new Object[]{null, created.getOwner(), 1000});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
-    public void testEditPlatformCapacityNullOwner() throws RushHourException {
+    public void testEditPlatformCapacityNullOwner() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
-
-        try {
-            inst.editPlatformCapacity(created, null, 1000);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
-        }
+        
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editPlatformCapacity", Station.class, Player.class, int.class),
+                new Object[]{created, null,  1000});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -341,6 +357,19 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
+        
+    @Test
+    public void testEditInvalidPlatformCapacity() throws RushHourException, NoSuchMethodException {
+        Station created = createStation();
+
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editPlatformCapacity", Station.class, Player.class, int.class),
+                new Object[]{created, created.getOwner(), 0});
+        
+        assertViolatedValueIs(0, violations);
+        assertViolatedAnnotationTypeIs(Min.class, violations);
+    }
 
     @Test
     public void testEditTicketGameNum() throws RushHourException {
@@ -351,27 +380,29 @@ public class StationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testEditTicketGameNumNullStation() throws RushHourException {
+    public void testEditTicketGameNumNullStation() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editTicketGateNum(null, created.getOwner(), 100);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editTicketGateNum", Station.class, Player.class, int.class),
+                new Object[]{null, created.getOwner(),  100});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
-    public void testEditTicketGameNumNullOwner() throws RushHourException {
+    public void testEditTicketGameNumNullOwner() throws RushHourException, NoSuchMethodException {
         Station created = createStation();
 
-        try {
-            inst.editTicketGateNum(created, null, 100);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_NO_OWNER, e.getErrMsg().getDetailId());
-        }
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editTicketGateNum", Station.class, Player.class, int.class),
+                new Object[]{created, null,  100});
+        
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -385,5 +416,18 @@ public class StationControllerTest extends AbstractControllerTest {
         } catch (RushHourException e) {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
+    }
+     
+    @Test
+    public void testEditInvalidTicketGameNum() throws RushHourException, NoSuchMethodException {
+        Station created = createStation();
+
+        Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                StationController.class.getMethod("editTicketGateNum", Station.class, Player.class, int.class),
+                new Object[]{created, created.getOwner(), 0});
+        
+        assertViolatedValueIs(0, violations);
+        assertViolatedAnnotationTypeIs(Min.class, violations);
     }
 }

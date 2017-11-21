@@ -24,10 +24,16 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -182,33 +188,39 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     }
     
     @Test
-    public void testAddNullCompany() {
-        try {
-            inst.addCompany(null);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
-        }
+    public void testAddNullCompany() throws NoSuchMethodException {
+        Set<ConstraintViolation<StepForHumanController>> violations
+                = validatorForExecutables.validateParameters(
+                        inst,
+                        StepForHumanController.class.getMethod("addCompany", Company.class),
+                        new Object[]{null});
+
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
     
     @Test
-    public void testAddNullResidence() {
-        try {
-            inst.addResidence(null);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
-        }
+    public void testAddNullResidence() throws NoSuchMethodException {
+        Set<ConstraintViolation<StepForHumanController>> violations
+                = validatorForExecutables.validateParameters(
+                        inst,
+                        StepForHumanController.class.getMethod("addResidence", Residence.class),
+                        new Object[]{null});
+
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
     
     @Test
-    public void testAddNullStation() {
-        try {
-            inst.addStation(null);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(GAME_DATA_INCONSIST, ex.getErrMsg().getTitleId());
-        }
+    public void testAddNullStation() throws NoSuchMethodException {
+        Set<ConstraintViolation<StepForHumanController>> violations
+                = validatorForExecutables.validateParameters(
+                        inst,
+                        StepForHumanController.class.getMethod("addStation", Station.class),
+                        new Object[]{null});
+
+        assertViolatedValueIs(null, violations);
+        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
     
     protected List<StepForHumanDirectly> findDirectly() {

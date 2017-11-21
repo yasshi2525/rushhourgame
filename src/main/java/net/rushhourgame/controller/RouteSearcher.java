@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
@@ -74,11 +75,11 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         routes.clear();
     }
 
-    public boolean isReachable(Residence r, Company c) {
+    public boolean isReachable(@NotNull Residence r, @NotNull Company c) {
         return routes.get(c).stream().anyMatch(node -> node.getOriginal().equals(r));
     }
     
-    public RouteNode getStart(Residence r, Company c) {
+    public RouteNode getStart(@NotNull Residence r, @NotNull Company c) {
         return routes.get(c).stream().filter(node -> node.getOriginal().equals(r)).findFirst().get();
     }
 

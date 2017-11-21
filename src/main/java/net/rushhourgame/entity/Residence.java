@@ -32,6 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Min;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 
@@ -62,7 +63,9 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
 
     private static final long serialVersionUID = 1L;
 
+    @Min(1)
     protected int capacity;
+    @Min(1)
     protected int _interval;
     protected int count;
 

@@ -43,8 +43,10 @@ public class PlayerTest extends AbstractEntityTest{
         info.setLocale(Locale.getDefault());
         info.setName(JP_NAME);
         info.setTextColor("#000000");
-        player.setUserIdDigest("hoge");
+        player.setUserId("hoge");
+        player.setUserIdDigest("hogeDigest");
         player.setInfo(info);
+        player.setSignIn(SignInType.LOCAL);
         EM.persist(player);
     }
 }

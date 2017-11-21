@@ -26,6 +26,8 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import net.rushhourgame.entity.Company;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.exception.RushHourException;
@@ -44,8 +46,8 @@ public class CompanyController extends PointEntityController {
     public Company create(double x, double y) throws RushHourException{
         return create(x, y, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
     }
-    
-    public Company create(double x, double y, double scale) throws RushHourException{
+
+    public Company create(double x, double y, @DecimalMin(value = "0.0", inclusive = false) double scale) throws RushHourException{
         if (exists("Company.exists", x, y)) {
             throw new RushHourException(errMsgBuilder.createCompanyDuplication(x, y));
         }

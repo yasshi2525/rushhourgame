@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.validation.constraints.Min;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.exception.RushHourException;
@@ -47,7 +48,7 @@ public class ResidenceController extends PointEntityController {
                 Integer.parseInt(prop.get(GAME_DEF_RSD_INTERVAL)));
     }
     
-    public Residence create(double x, double y, int capacity, int interval) throws RushHourException{
+    public Residence create(double x, double y, @Min(1) int capacity, @Min(1) int interval) throws RushHourException{
         if (exists("Residence.exists", x, y)) {
             throw new RushHourException(errMsgBuilder.createResidenceDuplication(x, y));
         }

@@ -23,6 +23,9 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.constraints.Min;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -49,7 +52,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         super.setUp();
         inst = ControllerFactory.createResidenceController();
     }
-    
+
     @Test
     public void testCreate() throws RushHourException {
         Residence created = inst.create(TEST_X, TEST_Y);
@@ -58,11 +61,11 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertTrue(TEST_Y == created.getY());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_CAPACITY)), created.getCapacity());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_INTERVAL)), created.getInterval());
-        
+
         EM.flush();
         assertEquals(1, RCON.findAll().size());
     }
-    
+
     @Test
     public void testCreate4arg() throws RushHourException {
         Residence created = inst.create(TEST_X, TEST_Y, TEST_CAPACITY, TEST_INTERVAL);
@@ -71,11 +74,11 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertTrue(TEST_Y == created.getY());
         assertEquals(TEST_CAPACITY, created.getCapacity());
         assertEquals(TEST_INTERVAL, created.getInterval());
-        
+
         EM.flush();
         assertEquals(1, RCON.findAll().size());
     }
-    
+
     @Test
     public void testCreateDuplication() throws RushHourException {
         inst.create(TEST_X, TEST_Y);
@@ -84,5 +87,29 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
+    }
+
+    @Test
+    public void testCreateInvalidCapacity() throws RushHourException, NoSuchMethodException {
+        Set<ConstraintViolation<ResidenceController>> violations
+                = validatorForExecutables.validateParameters(
+                        inst,
+                        ResidenceController.class.getMethod("create", double.class, double.class, int.class, int.class),
+                        new Object[]{TEST_X, TEST_Y, 0, TEST_INTERVAL});
+
+        assertViolatedValueIs(0, violations);
+        assertViolatedAnnotationTypeIs(Min.class, violations);
+    }
+
+    @Test
+    public void testCreateInvalidInterval() throws RushHourException, NoSuchMethodException {
+        Set<ConstraintViolation<ResidenceController>> violations
+                = validatorForExecutables.validateParameters(
+                        inst,
+                        ResidenceController.class.getMethod("create", double.class, double.class, int.class, int.class),
+                        new Object[]{TEST_X, TEST_Y, TEST_INTERVAL, 0});
+
+        assertViolatedValueIs(0, violations);
+        assertViolatedAnnotationTypeIs(Min.class, violations);
     }
 }

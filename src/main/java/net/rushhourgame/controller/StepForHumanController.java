@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.Dependent;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Residence;
@@ -101,10 +102,7 @@ public class StepForHumanController extends AbstractController {
      * @param newInst Company
      * @throws RushHourException newInstがnull
      */
-    public void addCompany(Company newInst) throws RushHourException {
-        if (newInst == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public void addCompany(@NotNull Company newInst) throws RushHourException {
 
         List<Residence> residences
                 = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
@@ -121,10 +119,7 @@ public class StepForHumanController extends AbstractController {
         }
     }
 
-    public void addResidence(Residence newInst) throws RushHourException {
-        if (newInst == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public void addResidence(@NotNull Residence newInst) throws RushHourException {
 
         List<Company> companies
                 = em.createNamedQuery("Company.findAll", Company.class).getResultList();
@@ -141,10 +136,7 @@ public class StepForHumanController extends AbstractController {
         }
     }
     
-    public void addStation(Station newInst) throws RushHourException {
-        if (newInst == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public void addStation(@NotNull Station newInst) throws RushHourException {
         
         // 家 -> 改札口
         List<Residence> residences

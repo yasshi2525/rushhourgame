@@ -26,6 +26,8 @@ package net.rushhourgame.controller;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Platform;
@@ -47,23 +49,14 @@ public class StationController extends PointEntityController {
     @Inject
     protected StepForHumanController sCon;
 
-    public Station create(Player owner, RailNode node, String name) throws RushHourException {
+    public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name) throws RushHourException {
         return create(owner, node, name,
                 Integer.parseInt(prop.get(GAME_DEF_GATE_NUM)),
                 Integer.parseInt(prop.get(GAME_DEF_PLT_CAPACITY)));
     }
 
-    public Station create(Player owner, RailNode node, String name,
-            int gatenum, int platformCapacity) throws RushHourException {
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
-        if (node == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        if (name == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name,
+            @Min(1) int gatenum, @Min(1) int platformCapacity) throws RushHourException {
         if (!node.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
@@ -84,16 +77,7 @@ public class StationController extends PointEntityController {
         return s;
     }
 
-    public void editStationName(Station station, Player owner, String name) throws RushHourException {
-        if (station == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
-        if (name == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public void editStationName(@NotNull Station station, @NotNull Player owner, @NotNull String name) throws RushHourException {
         if (!station.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
@@ -107,13 +91,7 @@ public class StationController extends PointEntityController {
         station.setName(name);
     }
 
-    public void editPlatformCapacity(Station station, Player owner, int capacity) throws RushHourException {
-        if (station == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
+    public void editPlatformCapacity(@NotNull Station station, @NotNull Player owner, @Min(1) int capacity) throws RushHourException {
         if (!station.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
@@ -121,13 +99,7 @@ public class StationController extends PointEntityController {
         station.getPlatform().setCapacity(capacity);
     }
 
-    public void editTicketGateNum(Station station, Player owner, int num) throws RushHourException {
-        if (station == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
+    public void editTicketGateNum(@NotNull Station station, @NotNull Player owner, @Min(1) int num) throws RushHourException {
         if (!station.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }

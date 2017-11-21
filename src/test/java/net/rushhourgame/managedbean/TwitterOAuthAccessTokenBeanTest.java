@@ -61,6 +61,8 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     @Mock
     protected TwitterUserShowClient showClient;
     @Mock
+    protected TwitterUserData userData;
+    @Mock
     protected ExternalContext context;
 
     public TwitterOAuthAccessTokenBeanTest() {
@@ -83,7 +85,11 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             doReturn("test_user_id").when(client).getUserId();
             doReturn(context).when(spy).getExternalContext();
             doNothing().when(context).redirect(anyString());
-            doReturn(new TwitterUserData()).when(showClient).getUserData();
+            doReturn("test_name").when(userData).getName();
+            doReturn("#123456").when(userData).getColor();
+            doReturn("#123456").when(userData).getTextColor();
+            doReturn("test_url").when(userData).getIconUrl();
+            doReturn(userData).when(showClient).getUserData();
             OCON.createOAuthBean("test", "test_sec");
             PCON.createPlayer("test", "testId", "test_access", new SimpleUserData());
         } catch (IOException | RushHourException ex) {

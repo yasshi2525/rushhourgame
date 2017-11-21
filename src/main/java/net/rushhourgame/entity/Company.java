@@ -32,6 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.DecimalMin;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 
@@ -61,6 +62,8 @@ import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 public class Company extends AbstractEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;
+    
+    @DecimalMin(value = "0.0", inclusive = false)
     protected double scale;
 
     protected double x;

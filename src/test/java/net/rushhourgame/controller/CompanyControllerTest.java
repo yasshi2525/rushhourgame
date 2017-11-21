@@ -23,6 +23,10 @@
  */
 package net.rushhourgame.controller;
 
+import java.lang.reflect.Method;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.constraints.DecimalMin;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -71,6 +75,17 @@ public class CompanyControllerTest extends AbstractControllerTest {
 
         EM.flush();
         assertEquals(1, inst.findAll().size());
+    }
+
+    @Test
+    public void testCreateMinusScale() throws RushHourException, NoSuchMethodException {
+        Set<ConstraintViolation<CompanyController>> violations = validatorForExecutables.validateParameters(
+                inst,
+                CompanyController.class.getMethod("create", double.class, double.class, double.class),
+                new Object[]{TEST_X, TEST_Y, 0.0});
+        
+        assertViolatedValueIs(0.0, violations);
+        assertViolatedAnnotationTypeIs(DecimalMin.class, violations);
     }
 
     @Test

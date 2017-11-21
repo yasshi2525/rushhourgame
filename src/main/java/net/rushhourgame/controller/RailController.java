@@ -25,6 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;
@@ -39,10 +40,7 @@ import net.rushhourgame.exception.RushHourException;
 public class RailController extends PointEntityController{
     private static final long serialVersionUID = 1L;
     
-    public RailNode create(Player owner, double x, double y) throws RushHourException{
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
+    public RailNode create(@NotNull Player owner, double x, double y) throws RushHourException{
         if (exists("RailNode.exists", owner, x, y)) {
             throw new RushHourException(errMsgBuilder.createRailNodeDuplication(x, y));
         }
@@ -54,13 +52,7 @@ public class RailController extends PointEntityController{
         return n;
     }
     
-    public RailNode extend(Player owner, RailNode from, double x, double y) throws RushHourException{
-        if (owner == null) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_OWNER));
-        }
-        if (from == null) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
+    public RailNode extend(@NotNull Player owner, @NotNull RailNode from, double x, double y) throws RushHourException{
         if (!from.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
