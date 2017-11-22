@@ -197,6 +197,14 @@ public class ErrorMessageBuilder implements Serializable {
         return errMsg;
     }
     
+    public ErrorMessage createLineNameDuplication(String name) {
+        ErrorMessage errMsg = createDuplication();
+        errMsg.getTitleParams().add(prop.get(LABEL_LINE));
+        errMsg.getDetailParams().add(prop.get(LABEL_LINE_NAME));
+        errMsg.getDetailParams().add(prop.get(name));
+        return errMsg;
+    }
+    
     protected ErrorMessage createDuplication() {
         return new ErrorMessage(GAME_DUP, GAME_DUP_DETAIL, GAME_DUP_ACTION);
     }

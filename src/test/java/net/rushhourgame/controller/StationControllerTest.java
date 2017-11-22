@@ -56,6 +56,7 @@ public class StationControllerTest extends AbstractControllerTest {
     private static final int TEST_NUM = 3;
 
     @Before
+    @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createStationController();

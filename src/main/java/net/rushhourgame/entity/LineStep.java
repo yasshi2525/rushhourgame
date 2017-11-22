@@ -24,50 +24,65 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepMoving;
+import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
 
 /**
  * 路線ステップ
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "LineStep.isImcompleted",
+            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
+            + " FROM LineStep obj WHERE obj.parent = :line AND obj.next IS NULL"
+    )
+})
 public class LineStep extends AbstractEntity implements Ownable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     @ManyToOne
     protected Line parent;
-    
-    @NotNull
+
     @OneToOne
     protected LineStep next;
-    
+
     protected TargetType target;
-    
+
     @ManyToOne
     protected RailEdge onRail;
-    
+
     @ManyToOne
     protected Station onStation;
-    
+
     @OneToMany
     protected List<Train> trains;
-    
+
     @OneToOne(mappedBy = "parent")
     protected LineStepMoving moving;
-    
+
     @OneToOne(mappedBy = "parent")
     protected LineStepStopping stopping;
-    
+
     @OneToOne(mappedBy = "parent")
     protected LineStepDeparture departure;
+
+    @OneToOne(mappedBy = "parent")
+    protected LineStepPassing passing;
 
     public Line getParent() {
         return parent;
@@ -127,13 +142,29 @@ public class LineStep extends AbstractEntity implements Ownable {
     public boolean isOwnedBy(Player owner) {
         return parent.isOwnedBy(owner);
     }
-    
-    public enum TargetType{
+
+    public LineStepMoving getMoving() {
+        return moving;
+    }
+
+    public LineStepStopping getStopping() {
+        return stopping;
+    }
+
+    public LineStepDeparture getDeparture() {
+        return departure;
+    }
+
+    public LineStepPassing getPassing() {
+        return passing;
+    }
+
+    public enum TargetType {
         RAIL_LINE, STATION
     }
-    
-    public enum ActionType{
+
+    public enum ActionType {
         STOP, PASS
     }
-    
+
 }

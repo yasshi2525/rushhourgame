@@ -65,7 +65,8 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_RAIL = "rushhour.label.rail";
     public static final String LABEL_STATION = "rushhour.label.station";
     public static final String LABEL_STATION_NAME = "rushhour.label.station.name";
-    public static final String LABEL_ROUTE = "rushhour.label.route";
+    public static final String LABEL_LINE = "rushhour.label.line";
+    public static final String LABEL_LINE_NAME = "rushhour.label.line.name";
     public static final String LABEL_TRAIN = "rushhour.label.train";
     public static final String LABEL_CREATE = "rushhour.label.create";
     public static final String LABEL_EDIT = "rushhour.label.edit";

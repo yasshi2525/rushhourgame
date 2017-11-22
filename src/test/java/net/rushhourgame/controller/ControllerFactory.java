@@ -59,6 +59,12 @@ public class ControllerFactory {
         init(inst);
         return inst;
     }
+    
+    public static LineController createLineController() {
+        LineController inst = new LineController();
+        init(inst);
+        return inst;
+    }
 
     public static OAuthController createOAuthController() {
         OAuthController inst = new OAuthController();

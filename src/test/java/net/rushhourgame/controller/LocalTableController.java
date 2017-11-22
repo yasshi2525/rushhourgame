@@ -39,6 +39,7 @@ public class LocalTableController {
         "StepForHumanOutOfStation", "StepForHumanResidenceToStation",
         "StepForHumanStationToCompany", "StepForHumanThroughTrain",
         "Human", "Company", "Residence", "Train", 
+        "LineStepDeparture", "LineStepStopping", "LineStepMoving", "LineStepPassing", 
         "LineStep", "Line", "Platform", "TicketGate",
         "Station", "RailEdge", "RailNode", 
         "Player", "PlayerInfo", "OAuth"

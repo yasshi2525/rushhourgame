@@ -26,6 +26,8 @@ package net.rushhourgame.entity;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -36,6 +38,13 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Line.existsName",
+            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
+                    + " FROM Line obj WHERE obj.owner = :owner AND obj.name = :name"
+    )
+})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Line extends AbstractEntity implements Ownable {
     private static final long serialVersionUID = 1L;
@@ -44,9 +53,10 @@ public class Line extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Player owner;
     
+    @NotNull
     protected String name;
     
-    @OneToMany
+    @OneToMany(mappedBy = "parent")
     List<LineStep> steps;
 
     public String getName() {

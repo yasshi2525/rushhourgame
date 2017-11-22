@@ -63,9 +63,10 @@ public class AbstractControllerTest {
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static StationController STCON = ControllerFactory.createStationController();
+    protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-
+    
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
     

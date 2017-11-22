@@ -105,7 +105,7 @@ public class MessageBean implements Serializable{
         return res.get(LABEL_STATION, rushHourSession.getLocale());
     }
     public String getRoute(){
-        return res.get(LABEL_ROUTE, rushHourSession.getLocale());
+        return res.get(LABEL_LINE, rushHourSession.getLocale());
     }
     public String getTrain(){
         return res.get(LABEL_TRAIN, rushHourSession.getLocale());

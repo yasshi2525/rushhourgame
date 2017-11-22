@@ -34,21 +34,17 @@ import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.RailEdge;
 
 /**
- * 路線ステップ停車
+ * 路線ステップ通過
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class LineStepStopping extends AbstractEntity {
+public class LineStepPassing extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
     
     @NotNull
     @OneToOne(cascade = CascadeType.PERSIST)
     protected LineStep parent;
-    
-    @NotNull
-    @ManyToOne
-    protected RailEdge running;
     
     @NotNull
     @ManyToOne
@@ -60,14 +56,6 @@ public class LineStepStopping extends AbstractEntity {
 
     public void setParent(LineStep parent) {
         this.parent = parent;
-    }
-
-    public RailEdge getRunning() {
-        return running;
-    }
-
-    public void setRunning(RailEdge running) {
-        this.running = running;
     }
 
     public Platform getGoal() {

@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity.troute;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -41,10 +42,26 @@ public class LineStepMoving extends AbstractEntity {
     private static final long serialVersionUID = 1L;
     
     @NotNull
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     protected LineStep parent;
     
     @NotNull
     @ManyToOne
     protected RailEdge running;
+
+    public LineStep getParent() {
+        return parent;
+    }
+
+    public void setParent(LineStep parent) {
+        this.parent = parent;
+    }
+
+    public RailEdge getRunning() {
+        return running;
+    }
+
+    public void setRunning(RailEdge running) {
+        this.running = running;
+    }
 }
