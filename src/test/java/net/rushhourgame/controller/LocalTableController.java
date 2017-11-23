@@ -51,6 +51,10 @@ public class LocalTableController {
 
     public void clean(){
         em.getTransaction().begin();
+        
+        // LineStepのnextへの参照が外部キー制約により削除できなくなったため
+        em.createQuery("UPDATE LineStep x SET x.next = null").executeUpdate();
+        
         for(String tableName : tableList){
             em.createQuery("DELETE FROM " + tableName + " x").executeUpdate();
         }
