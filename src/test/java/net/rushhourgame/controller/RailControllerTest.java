@@ -72,7 +72,7 @@ public class RailControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(created);
 
-        assertEquals(0, created.getPlatforms().size());
+        assertNull(created.getPlatform());
         assertEquals(0, created.getInEdges().size());
         assertEquals(0, created.getOutEdges().size());
     }

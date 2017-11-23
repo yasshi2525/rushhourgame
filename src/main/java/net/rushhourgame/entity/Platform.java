@@ -58,7 +58,7 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     protected Station station;
 
     @NotNull
-    @ManyToOne
+    @OneToOne
     protected RailNode railNode;
 
     @OneToMany(mappedBy = "_from")

@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.GAME_NO_PRIVILEDGE_OTHER_OWNED;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
@@ -68,7 +69,7 @@ public class LineController extends AbstractController {
         // どのedgeからくるのかわからないため、stoppingは生成しない
         LineStep parent = new LineStep();
         parent.setParent(line);
-        parent.registerDeparture(start);
+        parent.registerDeparture(start.getPlatform());
 
         em.persist(parent);
 
@@ -104,5 +105,87 @@ public class LineController extends AbstractController {
             // hasVisited の中の 各stepに紐づくchildがいないとき
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
+    }
+
+    public LineStep extend(@NotNull LineStep current, @NotNull Player owner, @NotNull RailEdge edge) throws RushHourException {
+        return extend(current, owner, edge, false);
+    }
+
+    public LineStep extend(@NotNull LineStep base, @NotNull Player owner, @NotNull RailEdge extend, boolean passing) throws RushHourException {
+        if (!base.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        if (!extend.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        if (base.getNext() != null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        // startとnextがつながっていない
+        if (!base.getGoalRailNode().equals(extend.getFrom())) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        // 駅にとまっている場合、まず駅から発車する
+        if (base.getStopping() != null) {
+            base = createDeparture(base.getStopping());
+        }
+
+        RailNode to = extend.getTo();
+        em.refresh(to);
+        
+        if (to.getPlatform() != null) {
+            // 駅につく
+            if (!passing) {
+                base = createStopping(base, extend, to.getPlatform());
+            } else {
+                base = createMoving(base, extend);
+                base = createPassing(base, to.getPlatform());
+            }
+        } else {
+            base = createMoving(base, extend);
+        }
+
+        return base;
+    }
+
+    protected LineStep createDeparture(LineStepStopping base) {
+        LineStep newStep = new LineStep();
+        newStep.setParent(base.getParent().getParent());
+        newStep.registerDeparture(base.getGoal());
+        em.persist(newStep);
+
+        base.getParent().setNext(newStep);
+        return newStep;
+    }
+
+    protected LineStep createStopping(LineStep base, RailEdge extend, Platform goal) {
+        LineStep newStep = new LineStep();
+        newStep.setParent(base.getParent());
+        newStep.registerStopping(extend, goal);
+        em.persist(newStep);
+
+        base.setNext(newStep);
+        return newStep;
+    }
+
+    protected LineStep createMoving(LineStep base, RailEdge extend) {
+        LineStep newStep = new LineStep();
+        newStep.setParent(base.getParent());
+        newStep.registerMoving(extend);
+        em.persist(newStep);
+
+        base.setNext(newStep);
+        return newStep;
+    }
+
+    protected LineStep createPassing(LineStep base, Platform goal) {
+        LineStep newStep = new LineStep();
+        newStep.setParent(base.getParent());
+        newStep.registerPassing(goal);
+        em.persist(newStep);
+
+        base.setNext(newStep);
+        return newStep;
     }
 }

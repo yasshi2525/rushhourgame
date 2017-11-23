@@ -196,12 +196,12 @@ public class LineStep extends AbstractEntity implements Ownable {
         }
     }
     
-    public void registerDeparture(Station st) {
+    public void registerDeparture(Platform platform) {
         verifyUnregistered();
         
         LineStepDeparture child = new LineStepDeparture();
         child.setParent(this);
-        child.setStaying(st.getPlatform());
+        child.setStaying(platform);
         
         departure = child;
     }
@@ -216,23 +216,23 @@ public class LineStep extends AbstractEntity implements Ownable {
         moving = child;
     }
     
-    public void registerStopping(RailEdge e, Station st) {
+    public void registerStopping(RailEdge e, Platform platform) {
         verifyUnregistered();
         
         LineStepStopping child = new LineStepStopping();
         child.setParent(this);
         child.setRunning(e);
-        child.setGoal(st.getPlatform());
+        child.setGoal(platform);
         
         stopping = child;
     }
     
-    public void registerPassing(Station st) {
+    public void registerPassing(Platform platform) {
         verifyUnregistered();
         
         LineStepPassing child = new LineStepPassing();
         child.setParent(this);
-        child.setGoal(st.getPlatform());
+        child.setGoal(platform);
         
         passing = child;
     }

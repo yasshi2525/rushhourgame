@@ -114,7 +114,7 @@ public class StationControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(node);
 
-        assertEquals(1, node.getPlatforms().size());
+        assertEquals(platform, node.getPlatform());
     }
 
 

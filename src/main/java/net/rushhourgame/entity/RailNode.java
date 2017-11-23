@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -67,8 +68,8 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
     @OneToMany(mappedBy = "_to")
     protected List<RailEdge> inEdges;
 
-    @OneToMany(mappedBy = "railNode")
-    protected List<Platform> platforms;
+    @OneToOne(mappedBy = "railNode")
+    protected Platform platform;
 
     @Override
     public double getX() {
@@ -120,7 +121,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
         return inEdges;
     }
 
-    public List<Platform> getPlatforms() {
-        return platforms;
+    public Platform getPlatform() {
+        return platform;
     }
 }
