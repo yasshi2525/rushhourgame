@@ -67,7 +67,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
     @OneToMany(mappedBy = "_to")
     protected List<RailEdge> inEdges;
 
-    @OneToMany(mappedBy = "railPoint")
+    @OneToMany(mappedBy = "railNode")
     protected List<Platform> platforms;
 
     @Override

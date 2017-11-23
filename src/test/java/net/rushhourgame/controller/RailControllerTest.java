@@ -71,6 +71,7 @@ public class RailControllerTest extends AbstractControllerTest {
         assertTrue(created.isPrivilegedBy(player));
 
         EM.flush();
+        EM.refresh(created);
 
         assertEquals(0, created.getPlatforms().size());
         assertEquals(0, created.getInEdges().size());

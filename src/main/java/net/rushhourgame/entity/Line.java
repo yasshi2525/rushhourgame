@@ -89,4 +89,10 @@ public class Line extends AbstractEntity implements Ownable {
     public boolean isOwnedBy(Player owner) {
         return isOwn(this.owner, owner);
     }
+    
+    public boolean hasVisited(RailEdge edge) {
+        return steps.stream().anyMatch(step -> {
+            return edge.equals(step.getOnRailEdge());
+        });
+    }
 }

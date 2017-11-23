@@ -43,7 +43,7 @@ public class LineStepPassing extends AbstractEntity {
     private static final long serialVersionUID = 1L;
     
     @NotNull
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     protected LineStep parent;
     
     @NotNull

@@ -59,7 +59,7 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     @NotNull
     @ManyToOne
-    protected RailNode railPoint;
+    protected RailNode railNode;
 
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanThroughTrain> tFromList;
@@ -84,12 +84,12 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
         this.station = station;
     }
 
-    public RailNode getRailPoint() {
-        return railPoint;
+    public RailNode getRailNode() {
+        return railNode;
     }
 
-    public void setRailPoint(RailNode railPoint) {
-        this.railPoint = railPoint;
+    public void setRailNode(RailNode railNode) {
+        this.railNode = railNode;
     }
 
     public int getCapacity() {
@@ -102,17 +102,17 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     @Override
     public double getX() {
-        return railPoint.getX();
+        return railNode.getX();
     }
 
     @Override
     public double getY() {
-        return railPoint.getY();
+        return railNode.getY();
     }
 
     @Override
     public double distTo(Pointable p) {
-        return railPoint.distTo(p);
+        return railNode.distTo(p);
     }
 
     @Override

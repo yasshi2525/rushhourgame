@@ -57,7 +57,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     @Test
     public void testFindRelayPointAllOneCompany() throws RushHourException {
         CCON.create(0, 0);
-        EM.flush();
         assertEquals(1, inst.findRelayPointAll().size());
     }
     
@@ -65,7 +64,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testFindRelayPointAllRsdCmp() throws RushHourException {
         RCON.create(0, 0);
         CCON.create(0, 0);
-        EM.flush();
         assertEquals(2, inst.findRelayPointAll().size());
     }
     
@@ -78,7 +76,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testBuildRouteNodesRsdCmp() throws RushHourException {
         RCON.create(0, 0);
         CCON.create(0, 0);
-        EM.flush();
         assertEquals(2, inst.buildRouteNodes(inst.findRelayPointAll()).size());
     }
     
@@ -92,7 +89,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testBuildRouteEdgesRsdCmp() throws RushHourException {
         RCON.create(0, 0);
         CCON.create(0, 0);
-        EM.flush();
         
         List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
         assertEquals(1L, inst.buildRouteEdges(SCON.findAll(), nodes).size());
@@ -107,7 +103,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     @Test
     public void testSearchOnlyCmp() throws RushHourException {
         CCON.create(0, 0);
-        EM.flush();
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
@@ -127,7 +122,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testSearchUnreach() throws RushHourException {
         CCON.create(10, 10);
         CCON.create(20, 20);
-        EM.flush();
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
@@ -146,7 +140,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testSearch() throws RushHourException {
         RCON.create(10, 10);
         CCON.create(10, 20);
-        EM.flush();
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
@@ -171,7 +164,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testIsReachableRsdCmp() throws RushHourException {
         Residence r = RCON.create(10, 10);
         Company c = CCON.create(10, 20);
-        EM.flush();
         assertTrue(inst.call());
         assertTrue(inst.isReachable(r, c));
     }
@@ -182,7 +174,6 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Company c1 = CCON.create(10, 20);
         Residence r2 = RCON.create(100, 100);
         Company c2 = CCON.create(200, 200);
-        EM.flush();
         
         assertTrue(inst.call());
         

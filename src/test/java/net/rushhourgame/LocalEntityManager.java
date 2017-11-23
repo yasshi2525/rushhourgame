@@ -24,6 +24,7 @@
 package net.rushhourgame;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 /**

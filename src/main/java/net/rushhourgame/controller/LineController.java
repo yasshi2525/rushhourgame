@@ -23,12 +23,16 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.GAME_NO_PRIVILEDGE_OTHER_OWNED;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailEdge;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepStopping;
@@ -40,48 +44,65 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class LineController extends AbstractController {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     public Line create(@NotNull Player owner, @NotNull String name) throws RushHourException {
         if (exists("Line.existsName", owner, "name", name)) {
             throw new RushHourException(errMsgBuilder.createLineNameDuplication(name));
         }
-        
+
         Line inst = new Line();
         inst.setName(name);
         inst.setOwner(owner);
         em.persist(inst);
-        
+
         return inst;
     }
-    
+
     public LineStep start(@NotNull Line line, @NotNull Player owner, @NotNull Station start) throws RushHourException {
         if (!line.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        
+
         // どのedgeからくるのかわからないため、stoppingは生成しない
-        
-        LineStep parent = createParent(line);
-        LineStepDeparture departure = createDeparture(parent, start);
-        
-        em.persist(departure);
-        
-        return parent;
-    }
-    
-    protected LineStep createParent(Line line) {
         LineStep parent = new LineStep();
         parent.setParent(line);
+        parent.registerDeparture(start);
+
+        em.persist(parent);
+
         return parent;
     }
-    
-    protected LineStepDeparture createDeparture(LineStep parent, Station st) {
-        LineStepDeparture departure = new LineStepDeparture();
-        departure.setParent(parent);
-        departure.setStaying(st.getPlatform());
-        
-        return departure;
+
+    public List<RailEdge> findNext(@NotNull LineStep current, @NotNull Player owner) throws RushHourException {
+        if (!current.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+
+        RailNode startNode;
+        try {
+            startNode = current.getGoalRailNode();
+        } catch (IllegalStateException e) {
+            // currentに紐づくchildがいないとき
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        // 線路ノードに隣接する線路エッジをロード
+        em.refresh(startNode);
+
+        // 路線に属する全ステップをロード
+        Line line = current.getParent();
+        em.refresh(line);
+
+        try {
+            // 隣接線路エッジの中から、未到達のものだけフィルタリング
+            return startNode.getOutEdges().stream()
+                    .filter(e -> !line.hasVisited(e))
+                    .collect(Collectors.toList());
+        } catch (IllegalStateException e) {
+            // hasVisited の中の 各stepに紐づくchildがいないとき
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
     }
 }

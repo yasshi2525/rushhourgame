@@ -44,11 +44,6 @@ import org.junit.rules.ExpectedException;
 public abstract class AbstractEntityTest {
     protected final static EntityManager EM = LocalEntityManager.createEntityManager();
     protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
-    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
-    protected final static PlayerController PCON = ControllerFactory.createPlayController();
-    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static CompanyController ACON = ControllerFactory.createCompanyController();
     
     @Before
     public void setUp() {

@@ -36,6 +36,7 @@ import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepMoving;
 import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  * 路線ステップ
@@ -72,16 +73,16 @@ public class LineStep extends AbstractEntity implements Ownable {
     @OneToMany
     protected List<Train> trains;
 
-    @OneToOne(mappedBy = "parent")
+    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
     protected LineStepMoving moving;
 
-    @OneToOne(mappedBy = "parent")
+    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
     protected LineStepStopping stopping;
 
-    @OneToOne(mappedBy = "parent")
+    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
     protected LineStepDeparture departure;
 
-    @OneToOne(mappedBy = "parent")
+    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
     protected LineStepPassing passing;
 
     public Line getParent() {
@@ -167,4 +168,84 @@ public class LineStep extends AbstractEntity implements Ownable {
         STOP, PASS
     }
 
+    public RailNode getGoalRailNode() {
+        if (departure != null) {
+            return departure.getStaying().getRailNode();
+        } else if (moving != null) {
+            return moving.getRunning().getTo();
+        } else if (passing != null) {
+            return passing.getGoal().getRailNode();
+        } else if (stopping!= null) {
+            return stopping.getGoal().getRailNode();
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
+        }
+    }
+    
+    public RailEdge getOnRailEdge() {
+        if (departure != null) {
+            return null;
+        } else if (moving != null) {
+            return moving.getRunning();
+        } else if (passing != null) {
+            return null;
+        } else if (stopping!= null) {
+            return stopping.getRunning();
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
+        }
+    }
+    
+    public void registerDeparture(Station st) {
+        verifyUnregistered();
+        
+        LineStepDeparture child = new LineStepDeparture();
+        child.setParent(this);
+        child.setStaying(st.getPlatform());
+        
+        departure = child;
+    }
+    
+    public void registerMoving(RailEdge e) {
+        verifyUnregistered();
+        
+        LineStepMoving child = new LineStepMoving();
+        child.setParent(this);
+        child.setRunning(e);
+        
+        moving = child;
+    }
+    
+    public void registerStopping(RailEdge e, Station st) {
+        verifyUnregistered();
+        
+        LineStepStopping child = new LineStepStopping();
+        child.setParent(this);
+        child.setRunning(e);
+        child.setGoal(st.getPlatform());
+        
+        stopping = child;
+    }
+    
+    public void registerPassing(Station st) {
+        verifyUnregistered();
+        
+        LineStepPassing child = new LineStepPassing();
+        child.setParent(this);
+        child.setGoal(st.getPlatform());
+        
+        passing = child;
+    }
+    
+    protected void verifyUnregistered() {
+        if (departure != null) {
+            throw new IllegalStateException("departure was already registered.");
+        } else if (moving != null) {
+            throw new IllegalStateException("moving was already registered.");
+        } else if (passing != null) {
+            throw new IllegalStateException("passing was already registered.");
+        } else if (stopping!= null) {
+            throw new IllegalStateException("stopping was already registered.");
+        }
+    }
 }

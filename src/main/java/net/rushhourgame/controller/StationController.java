@@ -119,7 +119,7 @@ public class StationController extends PointEntityController {
         Platform p = new Platform();
         p.setStation(s);
         p.setCapacity(capacity);
-        p.setRailPoint(node);
+        p.setRailNode(node);
 
         return p;
     }

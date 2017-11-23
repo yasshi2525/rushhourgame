@@ -181,8 +181,6 @@ public class StationControllerTest extends AbstractControllerTest {
         RailNode node2 = RAILCON.extend(owner, node1, TEST_X2, TEST_Y2);
         inst.create(owner, node1, "Station1");
 
-        EM.flush();
-
         try {
             inst.create(owner, node2, "Station1");
             fail();
@@ -205,8 +203,6 @@ public class StationControllerTest extends AbstractControllerTest {
         RailNode node2 = RAILCON.create(other, TEST_X2, TEST_Y2);
 
         inst.create(owner, node1, "Station1");
-
-        EM.flush();
 
         inst.create(other, node2, "Station1");
     }

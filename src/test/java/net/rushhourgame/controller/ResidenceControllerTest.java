@@ -62,7 +62,6 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_CAPACITY)), created.getCapacity());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_INTERVAL)), created.getInterval());
 
-        EM.flush();
         assertEquals(1, RCON.findAll().size());
     }
 
@@ -75,7 +74,6 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(TEST_CAPACITY, created.getCapacity());
         assertEquals(TEST_INTERVAL, created.getInterval());
 
-        EM.flush();
         assertEquals(1, RCON.findAll().size());
     }
 
