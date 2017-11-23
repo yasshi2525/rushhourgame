@@ -31,20 +31,21 @@ import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class GameViewBeanTest extends AbstractBeanTest{
     @Spy
     protected GameViewBean inst;
-    @Mock
-    protected RushHourSession session;
     
     protected Player player;
     
@@ -55,7 +56,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
     @Override
     public void setUp() {
         super.setUp();
-        MockitoAnnotations.initMocks(this);
         
         inst.pCon = PCON;
         inst.rCon = RAILCON;

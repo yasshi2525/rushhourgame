@@ -23,20 +23,14 @@
  */
 package net.rushhourgame.managedbean;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.rushhourgame.RushHourSession;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.entity.Player;
-import net.rushhourgame.exception.RushHourException;
+import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -44,50 +38,43 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class ConsoleBeanTest extends AbstractBeanTest{
+public class MessageBeanTest extends AbstractBeanTest{
     
-    protected ConsoleBean inst;
-    
-    protected Player player;
-    
-    protected static final double TEST_X = 10.1;
-    protected static final double TEST_Y = 20.1;
+    protected MessageBean inst;
     
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        try {
-            player = createPlayer();
-        } catch (RushHourException ex) {
-            Logger.getLogger(ConsoleBeanTest.class.getName()).log(Level.SEVERE, null, ex);
-            fail();
-        }
-        
-        inst = new ConsoleBean();
-        inst.pCon = PCON;
-        inst.cCon = CCON;
-        inst.session = session;
-        doReturn(player.getToken()).when(session).getToken();
+        inst = new MessageBean();
+        inst.rushHourSession = session;
+        inst.res = msg;
+        doReturn(Locale.JAPANESE).when(session).getLocale();
+        doReturn("_test").when(msg).get(anyString(), any(Locale.class));
     }
 
     @Test
-    public void testInit() {
-        inst.init();
-        assertEquals(player, inst.player);
+    public void test() {
+        assertNotNull(inst.getRushHour());
+        assertNotNull(inst.getRushHourVer());
+        assertNotNull(inst.getError());
+        assertNotNull(inst.getDetail());
+        assertNotNull(inst.getAction());
+        assertNotNull(inst.getTopTitle());
+        assertNotNull(inst.getTwitterSignIn());
+        assertNotNull(inst.getFetchAccessToken());
+        assertNotNull(inst.getWelcome());
+        assertNotNull(inst.getLang());
+        assertNotNull(inst.getLangEn());
+        assertNotNull(inst.getLangJp());
+        assertNotNull(inst.getLogOut());
+        assertNotNull(inst.getRail());
+        assertNotNull(inst.getStation());
+        assertNotNull(inst.getRoute());
+        assertNotNull(inst.getTrain());
+        assertNotNull(inst.getCreate());
+        assertNotNull(inst.getEdit());
+        assertNotNull(inst.getRemove());
+        assertNotNull(inst.getGoBack());
     }
-
-    @Test
-    public void testCreateCompany() throws RushHourException {
-        inst.setX(TEST_X);
-        inst.setY(TEST_Y);
-        
-        inst.createCompany();
-        
-        assertEquals(1, CCON.findIn(TEST_X, TEST_Y, 2).size());
-        
-        assertTrue(TEST_X == inst.getX());
-        assertTrue(TEST_Y == inst.getY());
-    }
-    
 }

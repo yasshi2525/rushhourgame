@@ -24,49 +24,57 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
+import java.util.Map;
+import javax.faces.context.ExternalContext;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.RushHourSession;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class ErrorBeanTest extends AbstractBeanTest {
 
     @Spy
     protected ErrorBean inst;
-
+    
     @Mock
-    protected RushHourSession session;
+    protected ExternalContext context;
+    
+    @Mock
+    protected Map<String, Object> requestMap;
 
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        MockitoAnnotations.initMocks(this);
-        inst.msgProps = MSG;
+        inst.msgProps = msg;
         inst.rushHourSession = session;
-        doReturn(Locale.JAPANESE).when(session).getLocale();
+        doReturn(context).when(inst).getExternalContext();
+        doReturn(requestMap).when(context).getRequestMap();
     }
 
     @Test
     public void testInit() {
         ErrorMessage msg = new ErrorMessage();
-        doReturn(msg).when(inst).getErrorMessage();
+        doReturn(msg).when(requestMap).get("error");
         inst.init();
         assertEquals(msg, inst.contents);
     }
 
     @Test
     public void testInitNull() {
-        doReturn(null).when(inst).getErrorMessage();
+        doReturn(null).when(requestMap).get("error");
         inst.init();
         assertNotNull(inst.contents);
     }
@@ -74,7 +82,7 @@ public class ErrorBeanTest extends AbstractBeanTest {
     @Test(expected = NullPointerException.class)
     public void testGetErrorMessage() {
         // JSF上でないので NPE が発生
-        inst.getErrorMessage();
+        new ErrorBean().getExternalContext();
     }
 
     @Test

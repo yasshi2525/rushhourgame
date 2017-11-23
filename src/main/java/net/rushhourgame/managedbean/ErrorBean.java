@@ -26,6 +26,7 @@ package net.rushhourgame.managedbean;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -54,7 +55,7 @@ public class ErrorBean implements Serializable {
 
     @PostConstruct
     public void init(){
-        Object obj = getErrorMessage();
+        Object obj = getExternalContext().getRequestMap().get("error");
         if(obj instanceof ErrorMessage){
             contents = (ErrorMessage) obj;
         }else{
@@ -62,8 +63,8 @@ public class ErrorBean implements Serializable {
         }
     }
     
-    protected Object getErrorMessage() {
-        return FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("error");
+    protected ExternalContext getExternalContext() {
+        return FacesContext.getCurrentInstance().getExternalContext();
     }
     
     public String getTitle(){

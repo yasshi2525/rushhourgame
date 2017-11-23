@@ -54,8 +54,6 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
 
     @Spy
     protected TwitterOAuthAccessTokenBean spy;
-    @Spy
-    protected RushHourSession session;
     @Mock
     protected TwitterOAuthAccessTokenClient client;
     @Mock
@@ -79,7 +77,6 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             spy.client = client;
             spy.userShowClient = showClient;
             spy.errMsgBuilder = ErrorMessageBuilder.getInstance();
-            doReturn(null).when(session).getLocale();
             doReturn("test_access").when(client).getAccessToken();
             doReturn("test_access_sec").when(client).getAccessTokenSecret();
             doReturn("test_user_id").when(client).getUserId();

@@ -23,10 +23,12 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.util.Locale;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
+import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
@@ -40,6 +42,11 @@ import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
@@ -54,8 +61,13 @@ public class AbstractBeanTest {
     protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static RushHourResourceBundle MSG = RushHourResourceBundle.getInstance();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
+    
+    @Mock
+    protected RushHourSession session;
+    
+    @Mock
+    protected RushHourResourceBundle msg;
     
     @BeforeClass
     public static void setUpClass() {
