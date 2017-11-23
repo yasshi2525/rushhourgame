@@ -33,13 +33,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- *
+ * JPAの挙動をたしかめるためのテスト
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class JPATest extends AbstractControllerTest {
         
     /**
-     * JPAの挙動をたしかめるためのテスト.
      * persistしたインスタンスと、JPQLで取得したインスタンスは同一
      * @throws RushHourException 
      */
@@ -52,7 +51,6 @@ public class JPATest extends AbstractControllerTest {
     }
     
     /**
-     * JPAの挙動をたしかめるためのテスト.
      * JPQLを複数回実行しても、同じインスタンスが返ってくる
      * @throws RushHourException 
      */
@@ -66,7 +64,6 @@ public class JPATest extends AbstractControllerTest {
     }
     
     /**
-     * JPAの挙動をたしかめるためのテスト.
      * 関連で取得したインスタンスが他のJPQLで取得したインスタンスと同じものである
      * @throws RushHourException 
      */
