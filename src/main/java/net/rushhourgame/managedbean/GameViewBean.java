@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.controller.RailController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
@@ -49,7 +50,7 @@ public class GameViewBean implements Serializable{
     @Inject
     protected PlayerController pCon;
     @Inject
-    protected CompanyController aCon;
+    protected RailController rCon;
     @Inject
     protected RushHourSession rhSession;
     protected Player player;
@@ -66,9 +67,9 @@ public class GameViewBean implements Serializable{
     public void onClick() throws RushHourException{
         switch(operation){
             case CREATE_RAIL:
-                
+                rCon.create(player, mouseX, mouseY);
+                break;
         }
-        aCon.create(mouseX, mouseY);
     }
 
     public int getMouseX() {
