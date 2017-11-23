@@ -86,28 +86,4 @@ public class ResidenceControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
     }
-
-    @Test
-    public void testCreateInvalidCapacity() throws RushHourException, NoSuchMethodException {
-        Set<ConstraintViolation<ResidenceController>> violations
-                = validatorForExecutables.validateParameters(
-                        inst,
-                        ResidenceController.class.getMethod("create", double.class, double.class, int.class, int.class),
-                        new Object[]{TEST_X, TEST_Y, 0, TEST_INTERVAL});
-
-        assertViolatedValueIs(0, violations);
-        assertViolatedAnnotationTypeIs(Min.class, violations);
-    }
-
-    @Test
-    public void testCreateInvalidInterval() throws RushHourException, NoSuchMethodException {
-        Set<ConstraintViolation<ResidenceController>> violations
-                = validatorForExecutables.validateParameters(
-                        inst,
-                        ResidenceController.class.getMethod("create", double.class, double.class, int.class, int.class),
-                        new Object[]{TEST_X, TEST_Y, TEST_INTERVAL, 0});
-
-        assertViolatedValueIs(0, violations);
-        assertViolatedAnnotationTypeIs(Min.class, violations);
-    }
 }

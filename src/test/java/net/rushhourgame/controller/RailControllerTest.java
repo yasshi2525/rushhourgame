@@ -31,7 +31,6 @@ import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.controller.AbstractControllerTest.validatorForExecutables;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
@@ -76,17 +75,6 @@ public class RailControllerTest extends AbstractControllerTest {
         assertEquals(0, created.getPlatforms().size());
         assertEquals(0, created.getInEdges().size());
         assertEquals(0, created.getOutEdges().size());
-    }
-
-    @Test
-    public void testCreateOwnerNull() throws NoSuchMethodException {
-        Set<ConstraintViolation<RailController>> violations = validatorForExecutables.validateParameters(
-                inst,
-                RailController.class.getMethod("create", Player.class, double.class, double.class),
-                new Object[]{null, TEST_X, TEST_Y});
-        
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     @Test
@@ -168,34 +156,6 @@ public class RailControllerTest extends AbstractControllerTest {
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
-    }
-
-    @Test
-    public void testExtendOwnerNull() throws RushHourException, NoSuchMethodException {
-        Player player = createPlayer();
-        RailNode create = inst.create(player, TEST_X, TEST_Y);
-        
-        Set<ConstraintViolation<RailController>> violations = validatorForExecutables.validateParameters(
-                inst,
-                RailController.class.getMethod("extend", Player.class, RailNode.class, double.class, double.class),
-                new Object[]{null, create, TEST_X, TEST_Y});
-        
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-
-    @Test
-    public void testExtendFromNull() throws RushHourException, NoSuchMethodException {
-        Player player = createPlayer();
-        inst.create(player, TEST_X, TEST_Y);
-        
-        Set<ConstraintViolation<RailController>> violations = validatorForExecutables.validateParameters(
-                inst,
-                RailController.class.getMethod("extend", Player.class, RailNode.class, double.class, double.class),
-                new Object[]{player, null, TEST_X, TEST_Y});
-        
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
     }
 
     /**

@@ -69,31 +69,6 @@ public class LineControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreateNullOwner() throws RushHourException, NoSuchMethodException {
-
-        Set<ConstraintViolation<LineController>> violations = validatorForExecutables.validateParameters(
-                inst,
-                LineController.class.getMethod("create", Player.class, String.class),
-                new Object[]{null, TEST_NAME});
-
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-
-    @Test
-    public void testCreateNullName() throws RushHourException, NoSuchMethodException {
-        Player owner = createPlayer();
-
-        Set<ConstraintViolation<LineController>> violations = validatorForExecutables.validateParameters(
-                inst,
-                LineController.class.getMethod("create", Player.class, String.class),
-                new Object[]{owner, null});
-
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-
-    @Test
     public void testCreateDuplicateName() throws RushHourException {
         Player owner = createPlayer();
         inst.create(owner, TEST_NAME);

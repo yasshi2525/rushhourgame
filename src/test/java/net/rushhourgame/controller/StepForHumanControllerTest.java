@@ -215,42 +215,6 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertThroughTrainNumEquals(0);
     }
     
-    @Test
-    public void testAddNullCompany() throws NoSuchMethodException {
-        Set<ConstraintViolation<StepForHumanController>> violations
-                = validatorForExecutables.validateParameters(
-                        inst,
-                        StepForHumanController.class.getMethod("addCompany", Company.class),
-                        new Object[]{null});
-
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-    
-    @Test
-    public void testAddNullResidence() throws NoSuchMethodException {
-        Set<ConstraintViolation<StepForHumanController>> violations
-                = validatorForExecutables.validateParameters(
-                        inst,
-                        StepForHumanController.class.getMethod("addResidence", Residence.class),
-                        new Object[]{null});
-
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-    
-    @Test
-    public void testAddNullStation() throws NoSuchMethodException {
-        Set<ConstraintViolation<StepForHumanController>> violations
-                = validatorForExecutables.validateParameters(
-                        inst,
-                        StepForHumanController.class.getMethod("addStation", Station.class),
-                        new Object[]{null});
-
-        assertViolatedValueIs(null, violations);
-        assertViolatedAnnotationTypeIs(NotNull.class, violations);
-    }
-    
     protected List<StepForHumanDirectly> findDirectly() {
         return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
     }
