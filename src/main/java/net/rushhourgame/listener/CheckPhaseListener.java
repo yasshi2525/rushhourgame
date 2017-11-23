@@ -33,9 +33,10 @@ import javax.faces.event.PhaseListener;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class CheckPhaseListener implements PhaseListener{
+public class CheckPhaseListener implements PhaseListener {
 
     private static final Logger LOG = Logger.getLogger(CheckPhaseListener.class.getName());
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void afterPhase(PhaseEvent event) {

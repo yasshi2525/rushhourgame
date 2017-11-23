@@ -26,11 +26,15 @@ package net.rushhourgame.managedbean;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
 import net.rushhourgame.controller.LocalTableController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,6 +50,7 @@ public class AbstractBeanTest {
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
+    protected final static CompanyController CCON = ControllerFactory.createCompanyController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @BeforeClass
@@ -62,5 +67,10 @@ public class AbstractBeanTest {
     public void tearDown() {
         EM.getTransaction().commit();
         TCON.clean();
+    }
+    
+    protected static Player createPlayer() throws RushHourException{
+        OCON.createOAuthBean("_player", "_player_sec");
+        return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
     }
 }
