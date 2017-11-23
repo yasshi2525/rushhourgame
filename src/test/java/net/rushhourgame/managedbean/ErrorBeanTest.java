@@ -79,16 +79,19 @@ public class ErrorBeanTest extends AbstractBeanTest {
 
     @Test
     public void testGetTitle() {
+        inst.contents = new ErrorMessage();
         assertEquals(ErrorMessage.NO_CONTENTS, inst.getTitle());
     }
 
     @Test
     public void testGetDetail() {
+        inst.contents = new ErrorMessage();
         assertEquals(ErrorMessage.NO_CONTENTS, inst.getDetail());
     }
 
     @Test
     public void testGetAction() {
+        inst.contents = new ErrorMessage();
         assertEquals(ErrorMessage.NO_CONTENTS, inst.getAction());
     }
 
