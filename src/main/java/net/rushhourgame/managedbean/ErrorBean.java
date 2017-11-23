@@ -54,12 +54,16 @@ public class ErrorBean implements Serializable {
 
     @PostConstruct
     public void init(){
-        Object obj = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("error");
+        Object obj = getErrorMessage();
         if(obj instanceof ErrorMessage){
             contents = (ErrorMessage) obj;
         }else{
             contents = new ErrorMessage();
         }
+    }
+    
+    protected Object getErrorMessage() {
+        return FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("error");
     }
     
     public String getTitle(){

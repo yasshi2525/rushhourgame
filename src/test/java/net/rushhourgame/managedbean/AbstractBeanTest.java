@@ -26,6 +26,7 @@ package net.rushhourgame.managedbean;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
@@ -51,6 +52,7 @@ public class AbstractBeanTest {
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
+    protected final static RushHourResourceBundle MSG = RushHourResourceBundle.getInstance();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @BeforeClass
