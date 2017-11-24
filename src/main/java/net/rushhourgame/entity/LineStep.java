@@ -45,17 +45,11 @@ import net.rushhourgame.entity.troute.LineStepStopping;
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "LineStep.isImcompleted",
-            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
-            + " FROM LineStep obj WHERE obj.parent = :line AND obj.next IS NULL"
-    )
-    ,
-    @NamedQuery(
             name = "LineStep.findTop",
             query = "SELECT obj FROM LineStep obj WHERE"
             + " obj.parent = :line"
             + " AND NOT EXISTS (SELECT x FROM LineStep x WHERE obj = x.next)"
-    ),})
+    )})
 public class LineStep extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;

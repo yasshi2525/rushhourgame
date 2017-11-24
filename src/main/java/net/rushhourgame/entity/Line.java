@@ -43,6 +43,11 @@ import javax.validation.constraints.NotNull;
             name = "Line.existsName",
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
                     + " FROM Line obj WHERE obj.owner = :owner AND obj.name = :name"
+    ),    
+    @NamedQuery(
+            name = "Line.isImcompleted",
+            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
+            + " FROM LineStep obj WHERE obj.parent = :line AND obj.next IS NULL"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
