@@ -36,7 +36,6 @@ import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepMoving;
 import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
-import net.rushhourgame.exception.RushHourException;
 
 /**
  * 路線ステップ
@@ -50,7 +49,13 @@ import net.rushhourgame.exception.RushHourException;
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
             + " FROM LineStep obj WHERE obj.parent = :line AND obj.next IS NULL"
     )
-})
+    ,
+    @NamedQuery(
+            name = "LineStep.findTop",
+            query = "SELECT obj FROM LineStep obj WHERE"
+            + " obj.parent = :line"
+            + " AND NOT EXISTS (SELECT x FROM LineStep x WHERE obj = x.next)"
+    ),})
 public class LineStep extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;
@@ -167,6 +172,20 @@ public class LineStep extends AbstractEntity implements Ownable {
     public enum ActionType {
         STOP, PASS
     }
+    
+    public RailNode getStartRailNode() {
+        if (departure != null) {
+            return departure.getStaying().getRailNode();
+        } else if (moving != null) {
+            return moving.getRunning().getFrom();
+        } else if (passing != null) {
+            return passing.getGoal().getRailNode();
+        } else if (stopping != null) {
+            return stopping.getRunning().getFrom();
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
+        }
+    }
 
     public RailNode getGoalRailNode() {
         if (departure != null) {
@@ -175,13 +194,13 @@ public class LineStep extends AbstractEntity implements Ownable {
             return moving.getRunning().getTo();
         } else if (passing != null) {
             return passing.getGoal().getRailNode();
-        } else if (stopping!= null) {
+        } else if (stopping != null) {
             return stopping.getGoal().getRailNode();
         } else {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
-    
+
     public RailEdge getOnRailEdge() {
         if (departure != null) {
             return null;
@@ -189,54 +208,54 @@ public class LineStep extends AbstractEntity implements Ownable {
             return moving.getRunning();
         } else if (passing != null) {
             return null;
-        } else if (stopping!= null) {
+        } else if (stopping != null) {
             return stopping.getRunning();
         } else {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
-    
-    public void registerDeparture(Platform platform) {
+
+    public void registerDeparture(@NotNull Platform platform) {
         verifyUnregistered();
-        
+
         LineStepDeparture child = new LineStepDeparture();
         child.setParent(this);
         child.setStaying(platform);
-        
+
         departure = child;
     }
-    
-    public void registerMoving(RailEdge e) {
+
+    public void registerMoving(@NotNull RailEdge e) {
         verifyUnregistered();
-        
+
         LineStepMoving child = new LineStepMoving();
         child.setParent(this);
         child.setRunning(e);
-        
+
         moving = child;
     }
-    
-    public void registerStopping(RailEdge e, Platform platform) {
+
+    public void registerStopping(@NotNull RailEdge e, @NotNull Platform platform) {
         verifyUnregistered();
-        
+
         LineStepStopping child = new LineStepStopping();
         child.setParent(this);
         child.setRunning(e);
         child.setGoal(platform);
-        
+
         stopping = child;
     }
-    
-    public void registerPassing(Platform platform) {
+
+    public void registerPassing(@NotNull Platform platform) {
         verifyUnregistered();
-        
+
         LineStepPassing child = new LineStepPassing();
         child.setParent(this);
         child.setGoal(platform);
-        
+
         passing = child;
     }
-    
+
     protected void verifyUnregistered() {
         if (departure != null) {
             throw new IllegalStateException("departure was already registered.");
@@ -244,8 +263,29 @@ public class LineStep extends AbstractEntity implements Ownable {
             throw new IllegalStateException("moving was already registered.");
         } else if (passing != null) {
             throw new IllegalStateException("passing was already registered.");
-        } else if (stopping!= null) {
+        } else if (stopping != null) {
             throw new IllegalStateException("stopping was already registered.");
+        }
+    }
+
+    public boolean canConnect(@NotNull LineStep target) {
+        if (next != null) {
+            throw new IllegalStateException("line step was already connected.");
+        }
+
+        if (stopping != null) {
+            // 停車の次は発車でなければならない
+            return target.departure != null
+                    && stopping.getGoal().equals(target.departure.getStaying());
+
+        } else if (departure != null || moving != null || passing != null) {
+            // 移動の次は発車以外でなければならない
+            return (target.moving != null
+                    || target.stopping != null
+                    || target.passing != null)
+                    && getGoalRailNode().equals(target.getStartRailNode());
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
         }
     }
 }

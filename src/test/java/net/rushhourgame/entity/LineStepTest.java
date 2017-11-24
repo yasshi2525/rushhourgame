@@ -30,17 +30,19 @@ import net.rushhourgame.entity.troute.LineStepStopping;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class LineStepTest extends AbstractEntityTest {
-    @Spy
     protected LineStep inst;
     @Mock
     protected LineStepDeparture departure;
@@ -56,13 +58,60 @@ public class LineStepTest extends AbstractEntityTest {
     protected RailEdge railEdge;
     @Mock
     protected RailNode railNode;
+    @Mock
+    protected RailNode railNode2;
     
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        // mockをinject
-        MockitoAnnotations.initMocks(this);
+        inst = new LineStep();
+    }
+    
+    @Test
+    public void testGetStartRailNodeDeparture() {
+        inst.departure = departure;
+        when(departure.getStaying()).thenReturn(platform);
+        when(platform.getRailNode()).thenReturn(railNode);
+        
+        assertEquals(railNode, inst.getStartRailNode());
+    }
+    
+    @Test
+    public void testGetStartRailNodeMoving() {
+        inst.moving = moving;
+        when(moving.getRunning()).thenReturn(railEdge);
+        when(railEdge.getFrom()).thenReturn(railNode);
+        
+        assertEquals(railNode, inst.getStartRailNode());
+    }
+    
+    @Test
+    public void testGetStartRailNodeStopping() {
+        inst.stopping = stopping;
+        when(stopping.getRunning()).thenReturn(railEdge);
+        when(railEdge.getFrom()).thenReturn(railNode);
+        
+        assertEquals(railNode, inst.getStartRailNode());
+    }
+    
+    @Test
+    public void testGetStartRailNodePassing() {
+        inst.passing = passing;
+        when(passing.getGoal()).thenReturn(platform);
+        when(platform.getRailNode()).thenReturn(railNode);
+        
+        assertEquals(railNode, inst.getStartRailNode());
+    }
+    
+    @Test
+    public void testGetStartRailNodeNoChildren() {
+        try {
+            inst.getStartRailNode();
+            fail();
+        } catch (IllegalStateException e) {
+            assertEquals("line step doesn't have any children.", e.getMessage());
+        }
     }
     
     @Test
@@ -192,6 +241,40 @@ public class LineStepTest extends AbstractEntityTest {
             fail();
         } catch (IllegalStateException e) {
             assertEquals("passing was already registered.", e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testCanConnectUnconnected() {
+        when(platform.getRailNode()).thenReturn(railNode);
+        when(railEdge.getFrom()).thenReturn(railNode2);
+        
+        inst.registerDeparture(platform);
+        
+        LineStep target = new LineStep();
+        target.registerMoving(railEdge);
+        
+        assertFalse(inst.canConnect(target));
+    }
+    
+    @Test
+    public void testCanConnectHavingNext() {
+        inst.next = new LineStep();
+        try {
+            inst.canConnect(new LineStep());
+            fail();
+        } catch (IllegalStateException e) {
+            assertEquals("line step was already connected.", e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testCanConnectNoChild() {
+        try {
+            inst.canConnect(new LineStep());
+            fail();
+        } catch (IllegalStateException e) {
+            assertEquals("line step doesn't have any children.", e.getMessage());
         }
     }
 }

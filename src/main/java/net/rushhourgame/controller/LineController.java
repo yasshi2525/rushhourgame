@@ -148,6 +148,22 @@ public class LineController extends AbstractController {
 
         return base;
     }
+    
+    public boolean canEnd(LineStep tail, Player owner) throws RushHourException {
+        if (!tail.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        
+        if (tail.getNext() != null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        
+        LineStep top = em.createNamedQuery("LineStep.findTop", LineStep.class)
+                .setParameter("line", tail.getParent())
+                .getSingleResult();
+        
+        return tail.canConnect(top);
+    }
 
     protected LineStep createDeparture(LineStepStopping base) {
         LineStep newStep = new LineStep();
