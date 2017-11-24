@@ -98,8 +98,8 @@ public class LineStepTest extends AbstractEntityTest {
     @Test
     public void testGetStartRailNodePassing() {
         inst.passing = passing;
-        when(passing.getGoal()).thenReturn(platform);
-        when(platform.getRailNode()).thenReturn(railNode);
+        when(passing.getRunning()).thenReturn(railEdge);
+        when(railEdge.getFrom()).thenReturn(railNode);
         
         assertEquals(railNode, inst.getStartRailNode());
     }

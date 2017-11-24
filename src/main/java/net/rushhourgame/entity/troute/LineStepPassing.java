@@ -48,6 +48,10 @@ public class LineStepPassing extends AbstractEntity {
     
     @NotNull
     @ManyToOne
+    protected RailEdge running;
+    
+    @NotNull
+    @ManyToOne
     protected Platform goal;
 
     public LineStep getParent() {
@@ -56,6 +60,14 @@ public class LineStepPassing extends AbstractEntity {
 
     public void setParent(LineStep parent) {
         this.parent = parent;
+    }
+
+    public RailEdge getRunning() {
+        return running;
+    }
+
+    public void setRunning(RailEdge running) {
+        this.running = running;
     }
 
     public Platform getGoal() {

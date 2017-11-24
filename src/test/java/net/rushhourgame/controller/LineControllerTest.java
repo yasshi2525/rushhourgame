@@ -335,14 +335,9 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.refresh(line);
 
         assertNotNull(extended);
-        assertEquals(3, line.getSteps().size());
+        assertEquals(2, line.getSteps().size());
 
-        assertNull(start.getNext().getDeparture());
-        assertNotNull(start.getNext().getMoving());
-        assertNull(start.getNext().getStopping());
-        assertNull(start.getNext().getPassing());
-
-        assertEquals(start.getNext().getNext(), extended);
+        assertEquals(start.getNext(), extended);
         assertNull(extended.getDeparture());
         assertNull(extended.getMoving());
         assertNull(extended.getStopping());

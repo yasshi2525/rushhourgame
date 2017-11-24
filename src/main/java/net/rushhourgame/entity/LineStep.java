@@ -179,7 +179,7 @@ public class LineStep extends AbstractEntity implements Ownable {
         } else if (moving != null) {
             return moving.getRunning().getFrom();
         } else if (passing != null) {
-            return passing.getGoal().getRailNode();
+            return passing.getRunning().getFrom();
         } else if (stopping != null) {
             return stopping.getRunning().getFrom();
         } else {
@@ -207,7 +207,7 @@ public class LineStep extends AbstractEntity implements Ownable {
         } else if (moving != null) {
             return moving.getRunning();
         } else if (passing != null) {
-            return null;
+            return passing.getRunning();
         } else if (stopping != null) {
             return stopping.getRunning();
         } else {
@@ -246,11 +246,12 @@ public class LineStep extends AbstractEntity implements Ownable {
         stopping = child;
     }
 
-    public void registerPassing(@NotNull Platform platform) {
+    public void registerPassing(@NotNull RailEdge e, @NotNull Platform platform) {
         verifyUnregistered();
 
         LineStepPassing child = new LineStepPassing();
         child.setParent(this);
+        child.setRunning(e);
         child.setGoal(platform);
 
         passing = child;

@@ -139,8 +139,7 @@ public class LineController extends AbstractController {
             if (!passing) {
                 base = createStopping(base, extend, to.getPlatform());
             } else {
-                base = createMoving(base, extend);
-                base = createPassing(base, to.getPlatform());
+                base = createPassing(base, extend, to.getPlatform());
             }
         } else {
             base = createMoving(base, extend);
@@ -195,10 +194,10 @@ public class LineController extends AbstractController {
         return newStep;
     }
 
-    protected LineStep createPassing(LineStep base, Platform goal) {
+    protected LineStep createPassing(LineStep base, RailEdge extend, Platform goal) {
         LineStep newStep = new LineStep();
         newStep.setParent(base.getParent());
-        newStep.registerPassing(goal);
+        newStep.registerPassing(extend, goal);
         em.persist(newStep);
 
         base.setNext(newStep);
