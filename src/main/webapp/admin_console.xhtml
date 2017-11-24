@@ -21,8 +21,36 @@
                         <h:inputText value="#{console.x}"/>
                         <h:outputLabel value="y"/>
                         <h:inputText value="#{console.y}"/>
+                        <h:outputText value="text"/>
+                        <h:inputText value="#{console.text}"/>
                     </h:panelGrid>
-                    <h:commandButton value="Create Absorber" actionListener="#{console.createCompany()}"/>
+                    <h:panelGrid columns="1">
+                        <h:commandButton 
+                            value="Create Company" 
+                            actionListener="#{console.createCompany()}"/>
+                        <h:commandButton 
+                            value="Create Residence" 
+                            actionListener="#{console.createResidence()}"/>
+                        <h:commandButton 
+                            value="Create Rail" 
+                            actionListener="#{console.createRail()}"/>
+                        <h:commandButton 
+                            disabled="#{!console.hasTailRail()}" 
+                            value="Extend Rail" 
+                            actionListener="#{console.extendRail()}"/>
+                        <h:commandButton 
+                            disabled="#{!console.canSplit()}" 
+                            value="Split Rail" 
+                            actionListener="#{console.splitRail()}"/>
+                        <h:commandButton 
+                            disabled="#{!console.hasTailRail()}" 
+                            value="Create Station" 
+                            actionListener="#{console.createStation()}"/>
+                        <h:commandButton 
+                            disabled="#{!console.hasTailStation()}" 
+                            value="Create Line" 
+                            actionListener="#{console.createLine()}"/>
+                    </h:panelGrid>
                 </h:form>
             </ui:define>
         </ui:decorate>

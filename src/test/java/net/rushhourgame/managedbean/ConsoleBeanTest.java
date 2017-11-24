@@ -67,12 +67,20 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         inst = new ConsoleBean();
         inst.pCon = PCON;
         inst.cCon = CCON;
+        inst.rCon = RCON;
+        inst.railCon = RAILCON;
+        inst.stCon = STCON;
+        inst.lCon = LCON;
+        inst.player = player;
+        inst.em = EM;
+        
         inst.session = session;
         doReturn(player.getToken()).when(session).getToken();
     }
 
     @Test
     public void testInit() {
+        inst.player = null;
         inst.init();
         assertEquals(player, inst.player);
     }
@@ -90,4 +98,61 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         assertTrue(TEST_Y == inst.getY());
     }
     
+    @Test
+    public void testCreateResidence() throws RushHourException {
+        inst.createResidence();
+    }
+    
+    @Test
+    public void testRail() throws RushHourException {
+        assertFalse(inst.hasTailRail());
+        inst.createRail();
+        EM.flush();
+        assertTrue(inst.hasTailRail());
+        assertFalse(inst.canSplit());
+        
+        inst.setX(20);
+        inst.setY(20);
+        inst.extendRail();
+        EM.flush();
+        EM.refresh(inst.tailRail);
+        assertTrue(inst.canSplit());
+        
+        inst.setX(30);
+        inst.setY(30);
+        inst.splitRail();
+    }
+    
+    @Test
+    public void testCreateStation() throws RushHourException {
+        assertFalse(inst.hasTailStation());
+        
+        inst.createRail();
+        inst.setText("_test");
+        inst.createStation();
+        
+        assertEquals("_test", inst.getText());
+        assertTrue(inst.hasTailStation());
+    }
+    
+    @Test
+    public void testCreateLine() throws RushHourException {
+        // 駅 - 駅
+        
+        inst.createRail();
+        inst.setText("_test1");
+        inst.createStation();
+        inst.setX(20);
+        inst.setY(20);
+        inst.extendRail();
+        inst.setText("_test2");
+        inst.createStation();
+        
+        inst.createLine();
+    }
+    
+    @Test
+    public void testCanSplit() {
+        assertFalse(inst.canSplit());
+    }
 }

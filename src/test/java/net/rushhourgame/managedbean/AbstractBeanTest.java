@@ -32,10 +32,13 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.LocalTableController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
+import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.StationController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -61,6 +64,9 @@ public class AbstractBeanTest {
     protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
+    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
+    protected final static StationController STCON = ControllerFactory.createStationController();
+    protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @Mock

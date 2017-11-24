@@ -24,15 +24,28 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.constraints.Min;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.controller.RailController;
+import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.StationController;
+import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailEdge;
+import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -44,6 +57,9 @@ import net.rushhourgame.exception.RushHourException;
 public class ConsoleBean implements Serializable{
     private static final long serialVersionUID = 1L;
     
+    @PersistenceContext
+    protected EntityManager em;    
+    
     @Inject
     protected RushHourSession session;
     
@@ -51,12 +67,29 @@ public class ConsoleBean implements Serializable{
     protected CompanyController cCon;
     
     @Inject
+    protected ResidenceController rCon;
+    
+    @Inject
     protected PlayerController pCon;
+    
+    @Inject
+    protected RailController railCon;
+    
+    @Inject
+    protected StationController stCon;
+    
+    @Inject
+    protected LineController lCon;
     
     protected Player player;
     
     protected double x;
     protected double y;
+    protected String text;
+    
+    protected RailNode tailRail;
+    protected Station tailStation;
+    protected Line tailLine;
     
     @PostConstruct
     public void init() {
@@ -67,7 +100,55 @@ public class ConsoleBean implements Serializable{
     public void createCompany() throws RushHourException{
         cCon.create(x, y);
     }
-
+    
+    @Transactional
+    public void createResidence() throws RushHourException {
+        rCon.create(x, y);
+    }
+    
+    @Transactional
+    public void createRail() throws RushHourException {
+        tailRail = railCon.create(player, x, y);
+    }
+    
+    @Transactional
+    public void extendRail() throws RushHourException {
+        tailRail = railCon.extend(player, tailRail, x, y);
+    }
+    
+    @Transactional
+    public void splitRail() throws RushHourException {
+        tailRail = em.merge(tailRail);
+        em.refresh(tailRail);
+        tailRail = tailRail.getInEdges().get(tailRail.getInEdges().size() - 1).getFrom();
+        tailRail = railCon.extend(player, tailRail, x, y);
+    }
+    
+    @Transactional
+    public void createStation() throws RushHourException {
+        tailStation = stCon.create(player, tailRail, text);
+    }
+    
+    @Transactional
+    public void createLine() throws RushHourException {
+        
+        tailLine = lCon.create(player, text);
+        em.flush();
+        
+        tailStation = em.merge(tailStation); // おまじない
+        LineStep tail = lCon.start(tailLine, player, tailStation);
+        
+        List<RailEdge> candinates;
+        
+        while (!(candinates = lCon.findNext(tail, player)).isEmpty()) {
+            tail = lCon.extend(tail, player, candinates.get(0));
+            em.flush();
+        }
+        if (lCon.canEnd(tail, player)) {
+            lCon.end(tail, player);
+        }
+     }
+    
     public double getX() {
         return x;
     }
@@ -83,6 +164,30 @@ public class ConsoleBean implements Serializable{
     public void setY(double y) {
         this.y = y;
     }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
     
+    public boolean hasTailRail() {
+        return tailRail != null;
+    }
     
+    public boolean hasTailStation() {
+        return tailStation != null;
+    }
+    
+    @Transactional
+    public boolean canSplit() {
+        if (tailRail == null) {
+            return false;
+        }
+        tailRail = em.merge(tailRail);
+        em.refresh(tailRail);
+        return !tailRail.getInEdges().isEmpty();
+    }
 }
