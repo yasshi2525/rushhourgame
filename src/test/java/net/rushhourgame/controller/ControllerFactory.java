@@ -97,7 +97,6 @@ public class ControllerFactory {
     public static StepForHumanController createStepForHumanController() {
         StepForHumanController inst = new StepForHumanController();
         inst.lSearcher = createLineRouteSearcher();
-        // lConとsConが相互参照してループしてしまうので、ここではinst.lConは作らない
         init(inst);
         return inst;
     } 

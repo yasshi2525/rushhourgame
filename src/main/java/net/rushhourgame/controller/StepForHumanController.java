@@ -54,8 +54,6 @@ public class StepForHumanController extends AbstractController {
     private static final long serialVersionUID = 1L;
     
     @Inject
-    protected LineController lCon;
-    @Inject
     protected LineRouteSearcher lSearcher;
 
     public List<StepForHuman> findAll() {
@@ -167,7 +165,9 @@ public class StepForHumanController extends AbstractController {
     }
     
     public void addCompletedLine(@NotNull Line line) throws RushHourException {
-        if (!lCon.isCompleted(line)) {
+        if(em.createNamedQuery("Line.isImcompleted", Number.class)
+                .setParameter("line", line)
+                .getSingleResult().longValue() == 1L) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         

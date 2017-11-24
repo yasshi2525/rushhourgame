@@ -32,6 +32,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
@@ -60,12 +62,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         super.setUp();
         inst = ControllerFactory.createStepForHumanController();
     }
-    
+
     @Test
     public void testAddCompanyToEmptyWorld() throws RushHourException {
         // このなかで addCompanyが呼ばれる
         CCON.create(TEST_X, TEST_Y);
-        
+
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -75,12 +77,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
     }
-    
+
     @Test
     public void testAddResidenceToEmptyWorld() throws RushHourException {
         // このなかで addResidenceが呼ばれる
         RCON.create(TEST_X, TEST_Y);
-        
+
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -90,12 +92,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
     }
-    
+
     @Test
     public void testAddStationToEmptyWorld() throws RushHourException {
         // このなかで、addStationが呼ばれる。
         createStation();
-        
+
         // TicketGate <-> Platform
         assertEquals(2, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -105,16 +107,17 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
     }
-    
+
     /**
      * 住宅1 に 会社1 を追加すると Directly が追加される
+     *
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
     public void testAddCompanyToOneResidenceWorld() throws RushHourException {
         RCON.create(10, 10);
         CCON.create(20, 10);
-        
+
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
@@ -122,20 +125,21 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
-        
+
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getCost() == 10.0);
     }
-    
+
     /**
      * 会社1 に 住宅1 を追加すると Directly が追加される
+     *
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
     public void testAddResidenceToOneCompanyWorld() throws RushHourException {
         CCON.create(20, 10);
         RCON.create(10, 10);
-        
+
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(0);
@@ -143,16 +147,16 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
-        
+
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getCost() == 10.0);
     }
-       
+
     @Test
     public void testAddCompanyToStationWorld() throws RushHourException {
         createStation();
         CCON.create(20, 10);
-        
+
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(1);
@@ -161,12 +165,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
     }
-    
+
     @Test
     public void testAddResidenceToStationWorld() throws RushHourException {
         createStation();
         RCON.create(20, 10);
-        
+
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
         assertIntoStationNumEquals(1);
@@ -175,10 +179,11 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
     }
-    
+
     /**
      * 住宅2 * 会社2 で計4の Directly が作成される
-     * @throws RushHourException 
+     *
+     * @throws RushHourException
      */
     @Test
     public void testTwoResidenceTwoCompany() throws RushHourException {
@@ -186,7 +191,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         RCON.create(TEST_X2, TEST_Y2);
         CCON.create(TEST_X, TEST_Y);
         CCON.create(TEST_X2, TEST_Y2);
-        
+
         assertEquals(4, inst.findAll().size());
         assertDirectlyNumEquals(4);
         assertIntoStationNumEquals(0);
@@ -195,17 +200,16 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
     }
-    
+
     @Test
     public void testAddStationToOneRsdCmpWorld() throws RushHourException {
         RCON.create(TEST_X, TEST_Y);
         CCON.create(TEST_X, TEST_Y);
         createStation();
-        
+
         // R -> Gate <-> Platform
         //      Gate  -> C
         // R     ->      C
-        
         assertEquals(5, inst.findAll().size());
         assertDirectlyNumEquals(1);
         assertIntoStationNumEquals(1);
@@ -214,54 +218,68 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
     }
-    
+
+    @Test
+    public void testAddCompletedLine() throws RushHourException {
+        Station st = createStation();
+        Player owner = st.getOwner();
+        
+        Line line = LCON.create(owner, "_test");
+        LCON.start(line, owner, st);
+        
+        try {
+            inst.addCompletedLine(line);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+
     protected List<StepForHumanDirectly> findDirectly() {
         return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
     }
-    
+
     protected List<StepForHumanIntoStation> findIntoStation() {
         return TCON.findAll("StepForHumanIntoStation", StepForHumanIntoStation.class);
     }
-    
+
     protected List<StepForHumanOutOfStation> findOutOfStation() {
         return TCON.findAll("StepForHumanOutOfStation", StepForHumanOutOfStation.class);
     }
-    
+
     protected List<StepForHumanResidenceToStation> findFromResidence() {
         return TCON.findAll("StepForHumanResidenceToStation", StepForHumanResidenceToStation.class);
     }
-    
+
     protected List<StepForHumanStationToCompany> findToCompany() {
         return TCON.findAll("StepForHumanStationToCompany", StepForHumanStationToCompany.class);
     }
-    
+
     protected List<StepForHumanThroughTrain> findThroughTrain() {
         return TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
     }
-    
+
     protected void assertDirectlyNumEquals(int expected) {
         assertEquals(expected, findDirectly().size());
     }
-    
+
     protected void assertIntoStationNumEquals(int expected) {
         assertEquals(expected, findIntoStation().size());
     }
-    
+
     protected void assertOutOfStationNumEquals(int expected) {
         assertEquals(expected, findOutOfStation().size());
     }
-    
+
     protected void assertFromResidenceNumEquals(int expected) {
         assertEquals(expected, findFromResidence().size());
     }
-    
+
     protected void assertToCompanyNumEquals(int expected) {
         assertEquals(expected, findToCompany().size());
     }
-    
+
     protected void assertThroughTrainNumEquals(int expected) {
         assertEquals(expected, findThroughTrain().size());
     }
-    
-    
 }
