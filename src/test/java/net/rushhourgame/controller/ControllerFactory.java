@@ -62,6 +62,7 @@ public class ControllerFactory {
     
     public static LineController createLineController() {
         LineController inst = new LineController();
+        inst.sCon = createStepForHumanController();
         init(inst);
         return inst;
     }
@@ -95,6 +96,8 @@ public class ControllerFactory {
     
     public static StepForHumanController createStepForHumanController() {
         StepForHumanController inst = new StepForHumanController();
+        inst.lSearcher = createLineRouteSearcher();
+        // lConとsConが相互参照してループしてしまうので、ここではinst.lConは作らない
         init(inst);
         return inst;
     } 
@@ -105,6 +108,12 @@ public class ControllerFactory {
         inst.rCon = createResidenceController();
         inst.stCon = createStationController();
         inst.sCon = createStepForHumanController();
+        init(inst);
+        return inst;
+    }
+    
+    public static LineRouteSearcher createLineRouteSearcher() {
+        LineRouteSearcher inst = new LineRouteSearcher();
         init(inst);
         return inst;
     }

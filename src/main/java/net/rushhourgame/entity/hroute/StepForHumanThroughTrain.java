@@ -31,16 +31,18 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.StepForHuman;
 
 /**
  * 人用移動ステップ電車移動
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id" }))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
 @NamedQueries({
     @NamedQuery(
             name = "StepForHumanThroughTrain.findAll",
@@ -48,16 +50,31 @@ import net.rushhourgame.entity.StepForHuman;
     )
 })
 public class StepForHumanThroughTrain extends AbstractEntity implements StepForHuman {
+
     private static final long serialVersionUID = 1;
-    
+
+    @NotNull
+    @ManyToOne
+    protected Line line;
+
     @NotNull
     @ManyToOne
     protected Platform _from;
-    
+
     @NotNull
     @ManyToOne
     protected Platform _to;
-    
+
+    protected double cost;
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
     @Override
     public RelayPointForHuman getFrom() {
         return _from;
@@ -67,7 +84,7 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
     public RelayPointForHuman getTo() {
         return _to;
     }
-    
+
     public void setFrom(Platform _from) {
         this._from = _from;
     }
@@ -76,8 +93,11 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
         this._to = _to;
     }
 
-    @Override
     public double getCost() {
-        throw new UnsupportedOperationException();
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }

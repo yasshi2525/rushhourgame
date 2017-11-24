@@ -283,4 +283,18 @@ public class LineStep extends AbstractEntity implements Ownable {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
+    
+    public double getDist() {
+        if (departure != null) {
+            return 0.0;
+        } else if (moving != null) {
+            return moving.getRunning().getDist();
+        } else if (passing != null) {
+            return passing.getRunning().getDist();
+        } else if (stopping != null) {
+            return stopping.getRunning().getDist();
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
+        }
+    }
 }

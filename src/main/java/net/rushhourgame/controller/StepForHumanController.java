@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
@@ -50,6 +52,11 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 public class StepForHumanController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
+    
+    @Inject
+    protected LineController lCon;
+    @Inject
+    protected LineRouteSearcher lSearcher;
 
     public List<StepForHuman> findAll() {
         // 人用移動ステップをすべて取得する。
@@ -158,7 +165,15 @@ public class StepForHumanController extends AbstractController {
         persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
         persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
     }
-
+    
+    public void addCompletedLine(@NotNull Line line) throws RushHourException {
+        if (!lCon.isCompleted(line)) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        
+        lSearcher.persist(line);
+    } 
+    
     protected StepForHumanDirectly createDirectly(Residence from, Company to) {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
@@ -193,7 +208,7 @@ public class StepForHumanController extends AbstractController {
         inst.setTo(to);
         return inst;
     }
-
+       
     protected void persistStepForHuman(StepForHuman child) {
         em.persist(child);
     }

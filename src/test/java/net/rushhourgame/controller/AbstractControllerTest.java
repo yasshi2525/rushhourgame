@@ -72,6 +72,7 @@ public class AbstractControllerTest {
     
     @BeforeClass
     public static void setUpClass() {
+        SCON.lCon = LCON; // SCON と LCON が相互参照しているため、ここで初期化
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validatorForExecutables = validatorFactory.getValidator().forExecutables();
     }

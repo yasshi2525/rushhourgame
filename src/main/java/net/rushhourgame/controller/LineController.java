@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.GAME_NO_PRIVILEDGE_OTHER_OWNED;
 import net.rushhourgame.entity.Line;
@@ -48,6 +49,9 @@ public class LineController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
 
+    @Inject
+    protected StepForHumanController sCon;
+    
     public Line create(@NotNull Player owner, @NotNull String name) throws RushHourException {
         if (exists("Line.existsName", owner, "name", name)) {
             throw new RushHourException(errMsgBuilder.createLineNameDuplication(name));
@@ -182,6 +186,13 @@ public class LineController extends AbstractController {
         } else {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
+        sCon.addCompletedLine(tail.getParent());
+    }
+    
+    public boolean isCompleted(@NotNull Line line) {
+        return em.createNamedQuery("Line.isImcompleted", Number.class)
+                .setParameter("line", line)
+                .getSingleResult().longValue() != 1L;
     }
 
     protected LineStep createDeparture(LineStepStopping base) {

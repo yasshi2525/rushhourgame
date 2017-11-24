@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,7 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.*;
@@ -56,6 +58,7 @@ public class LineControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createLineController();
+        inst.sCon = SCON;
     }
 
     @Test
@@ -615,16 +618,12 @@ public class LineControllerTest extends AbstractControllerTest {
         
         assertNotNull(tail.getStopping());
         assertTrue(inst.canEnd(tail, owner));
-        assertTrue(EM.createNamedQuery("Line.isImcompleted", Number.class)
-                .setParameter("line", line)
-                .getSingleResult().longValue() == 1L);
+        assertFalse(inst.isCompleted(line));
         
         inst.end(tail, owner);
         
         assertEquals(start, tail.getNext());
-        assertFalse(EM.createNamedQuery("Line.isImcompleted", Number.class)
-                .setParameter("line", line)
-                .getSingleResult().longValue() == 1L);
+        assertTrue(inst.isCompleted(line));
     }
     
     @Test
@@ -684,5 +683,37 @@ public class LineControllerTest extends AbstractControllerTest {
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
+    }
+    
+    @Test
+    public void testEndTwoStation() throws RushHourException {
+        // 駅 - 線路 - 駅
+        Station st1 = createStation();
+        Player owner = st1.getOwner();
+        RailNode n1 = st1.getPlatform().getRailNode();
+        RailNode n2 = RAILCON.extend(owner, n1, 10, 10);
+        Station st2 = STCON.create(owner, n2, "_test2");
+
+        EM.flush();
+        EM.refresh(n2);
+
+        RailEdge edgeGo = n2.getInEdges().get(0);
+        RailEdge edgeBack = n2.getOutEdges().get(0);
+
+        Line line = inst.create(owner, TEST_NAME);
+        LineStep start = inst.start(line, owner, st1);
+        LineStep extended = inst.extend(start, owner, edgeGo);
+        LineStep extended2 = inst.extend(extended, owner, edgeBack);
+
+        EM.flush();
+        EM.refresh(line);
+
+        inst.end(extended2, owner);
+        
+        List<StepForHumanThroughTrain> throughs = SCON.findThroughTrainAll();
+        assertEquals(2, throughs.size());
+        
+        // 徒歩よりコストが安い
+        assertTrue(st2.distTo(st1) > throughs.get(0).getCost());
     }
 }

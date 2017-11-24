@@ -47,6 +47,13 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
     @NamedQuery(
             name = "Platform.findAll",
             query = "SELECT x FROM Platform x"
+    ),
+    @NamedQuery(
+            name = "Platform.findInLine",
+            query = "SELECT obj FROM Platform obj WHERE EXISTS"
+                    + " (SELECT step FROM LineStep step"
+                    + " JOIN LineStepDeparture dpt ON step.departure = dpt"
+                    + " WHERE step.parent = :line AND dpt.staying = obj)"
     )
 })
 public class Platform extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
