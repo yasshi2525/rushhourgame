@@ -14,15 +14,12 @@
     <h:body>
         <ui:decorate template="templates/template.xhtml">
             <ui:define name="content">
-                <h:panelGroup rendered="#{!player.signIn}">
-                    <ui:include src="templates/content_viewonly.xhtml"/>
-                </h:panelGroup>
-                <h:panelGroup rendered="#{player.signIn}">
-                    <h:panelGrid columns="2">
+                <h:panelGrid columns="2">
+                    <h:panelGroup rendered="#{player.signIn}">
                         <ui:include src="templates/content_controller.xhtml"/>
-                        <ui:include src="templates/content_viewer.xhtml"/>
-                    </h:panelGrid>
-                </h:panelGroup>
+                    </h:panelGroup>
+                    <ui:include src="templates/content_viewer.xhtml"/>
+                </h:panelGrid>
             </ui:define>
         </ui:decorate>
     </h:body>

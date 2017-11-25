@@ -81,4 +81,10 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     public double getCost() {
         return _from.distTo(_to);
     }
+    
+    @Override
+    public boolean isAreaIn(double centerX, double centerY, double scale) {
+        return isAreaIn(_from, centerX, centerY, scale)
+                ||  isAreaIn(_to, centerX, centerY, scale);
+    }
 }

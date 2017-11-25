@@ -24,16 +24,29 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
+import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.StepForHumanController;
+import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailEdge;
+import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
 
@@ -50,11 +63,25 @@ public class GameViewBean implements Serializable{
     @Inject
     protected PlayerController pCon;
     @Inject
-    protected RailController rCon;
+    protected CompanyController cCon;
+    @Inject
+    protected ResidenceController rCon;
+    @Inject
+    protected RailController railCon;
+    @Inject
+    protected StationController stCon;
+    @Inject
+    protected LineController lCon;
+    @Inject
+    protected StepForHumanController sCon;
     @Inject
     protected RushHourSession rhSession;
     protected Player player;
     protected OperationType operation = NONE;
+    
+    protected double centerX;
+    protected double centerY;
+    protected double scale;
     
     protected int mouseX;
     protected int mouseY;
@@ -62,16 +89,46 @@ public class GameViewBean implements Serializable{
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
+        scale = 4;
     }
     
+    @Transactional
     public void onClick() throws RushHourException{
         switch(operation){
             case CREATE_RAIL:
-                rCon.create(player, mouseX, mouseY);
+                railCon.create(player, mouseX, mouseY);
                 break;
         }
     }
-
+    
+    public List<Company> getCompanies() {
+        return cCon.findIn(centerX, centerY, scale);
+    }
+    
+    public List<Residence> getResidences() {
+        return rCon.findIn(centerX, centerY, scale);
+    }
+    
+    public List<RailNode> getRailNodes() {
+        return railCon.findNodeIn(centerX, centerY, scale);
+    }
+    
+    public List<RailEdge> getRailEdges() {
+        return railCon.findEdgeIn(centerX, centerY, scale);
+    }
+    
+    public List<Station> getStations() {
+        return stCon.findIn(centerX, centerY, scale);
+    }
+    
+    public List<Line> getLines() {
+        return lCon.findIn(centerX, centerY, scale);
+    }
+    
+    public List<StepForHuman> getStepForHuman() {
+        return sCon.findIn(centerX, centerY, scale);
+    }
+    
     public int getMouseX() {
         return mouseX;
     }

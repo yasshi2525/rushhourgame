@@ -39,6 +39,7 @@ import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -67,6 +68,7 @@ public class AbstractBeanTest {
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static LineController LCON = ControllerFactory.createLineController();
+    protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @Mock

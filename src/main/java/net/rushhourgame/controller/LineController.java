@@ -51,7 +51,7 @@ public class LineController extends AbstractController {
 
     @Inject
     protected StepForHumanController sCon;
-    
+
     public Line create(@NotNull Player owner, @NotNull String name) throws RushHourException {
         if (exists("Line.existsName", owner, "name", name)) {
             throw new RushHourException(errMsgBuilder.createLineNameDuplication(name));
@@ -137,7 +137,7 @@ public class LineController extends AbstractController {
 
         RailNode to = extend.getTo();
         em.refresh(to);
-        
+
         if (to.getPlatform() != null) {
             // 駅につく
             if (!passing) {
@@ -151,36 +151,36 @@ public class LineController extends AbstractController {
 
         return base;
     }
-    
+
     public boolean canEnd(LineStep tail, Player owner) throws RushHourException {
         if (!tail.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        
+
         if (tail.getNext() != null) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        
+
         LineStep top = em.createNamedQuery("LineStep.findTop", LineStep.class)
                 .setParameter("line", tail.getParent())
                 .getSingleResult();
-        
+
         return tail.canConnect(top);
     }
-    
+
     public void end(LineStep tail, Player owner) throws RushHourException {
         if (!tail.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        
+
         if (tail.getNext() != null) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        
+
         LineStep top = em.createNamedQuery("LineStep.findTop", LineStep.class)
                 .setParameter("line", tail.getParent())
                 .getSingleResult();
-        
+
         if (tail.canConnect(top)) {
             tail.setNext(top);
         } else {
@@ -188,7 +188,7 @@ public class LineController extends AbstractController {
         }
         sCon.addCompletedLine(tail.getParent());
     }
-    
+
     public boolean isCompleted(@NotNull Line line) {
         return em.createNamedQuery("Line.isImcompleted", Number.class)
                 .setParameter("line", line)
@@ -233,5 +233,18 @@ public class LineController extends AbstractController {
 
         base.setNext(newStep);
         return newStep;
+    }
+
+    public List<Line> findAll() {
+        return em.createNamedQuery("Line.findAll", Line.class).getResultList();
+    }
+
+    public List<Line> findIn(double centerX, double centerY, double scale) {
+        return em.createNamedQuery("Line.findAll", Line.class).getResultList()
+                .stream().filter(l -> {
+                    em.refresh(l);
+                    return l.isAreaIn(centerX, centerY, scale);
+                })
+                .collect(Collectors.toList());
     }
 }

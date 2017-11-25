@@ -36,6 +36,7 @@ import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepMoving;
 import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
+import net.rushhourgame.entity.troute.LineStepType;
 
 /**
  * 路線ステップ
@@ -296,5 +297,24 @@ public class LineStep extends AbstractEntity implements Ownable {
         } else {
             throw new IllegalStateException("line step doesn't have any children.");
         }
+    }
+    
+    public LineStepType getType() {
+        if (departure != null) {
+            return LineStepType.DEPARTURE;
+        } else if (moving != null) {
+            return LineStepType.MOVING;
+        } else if (passing != null) {
+            return LineStepType.PASSING;
+        } else if (stopping != null) {
+            return LineStepType.STOPPING;
+        } else {
+            throw new IllegalStateException("line step doesn't have any children.");
+        }
+    }
+    
+    public boolean isAreaIn(double centerX, double centerY, double scale) {
+        return isAreaIn(getStartRailNode(), centerX, centerY, scale)
+                ||  isAreaIn(getGoalRailNode(), centerX, centerY, scale);
     }
 }

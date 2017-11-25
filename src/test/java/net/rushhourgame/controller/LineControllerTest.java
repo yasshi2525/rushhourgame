@@ -716,4 +716,58 @@ public class LineControllerTest extends AbstractControllerTest {
         // 徒歩よりコストが安い
         assertTrue(st2.distTo(st1) > throughs.get(0).getCost());
     }
+    
+    @Test
+    public void testIsAreaIn() throws RushHourException {
+        Station st1 = createStation();
+        Player owner = st1.getOwner();
+        
+        RailNode n1 = st1.getPlatform().getRailNode();
+        RailNode n2 = RAILCON.extend(owner, n1, 100, 100);
+        
+        EM.flush();
+        EM.refresh(n2);
+
+        RailEdge edgeGo = n2.getInEdges().get(0);
+        
+        Line line = inst.create(owner, TEST_NAME);
+        LineStep start = inst.start(line, owner, st1);
+        LineStep extend = inst.extend(start, owner, edgeGo);
+        
+        assertTrue(extend.isAreaIn(0, 0, 2));
+        assertTrue(extend.isAreaIn(100, 100, 2));
+        assertFalse(extend.isAreaIn(50, 50, 2));
+    }
+    
+    @Test
+    public void testFindIn() throws RushHourException {
+        Station st1 = createStation();
+        Player owner = st1.getOwner();
+        
+        RailNode n1 = st1.getPlatform().getRailNode();
+        RailNode n2 = RAILCON.extend(owner, n1, 100, 100);
+        
+        EM.flush();
+        EM.refresh(n2);
+
+        RailEdge edgeGo = n2.getInEdges().get(0);
+        
+        Line line = inst.create(owner, TEST_NAME);
+        LineStep start = inst.start(line, owner, st1);
+        LineStep extend = inst.extend(start, owner, edgeGo);
+        
+        EM.flush();
+        List<Line> scopedLine = inst.findIn(0, 0, 2);
+        assertEquals(1, scopedLine.size());
+        assertEquals(2, scopedLine.get(0).getSteps().size());
+        
+        scopedLine = inst.findIn(100, 100, 2);
+        assertEquals(1, scopedLine.size());
+        assertEquals(2, scopedLine.get(0).getSteps().size());
+        
+        assertTrue(inst.findIn(50, 50, 2).isEmpty());
+        
+        assertEquals(1, inst.findAll().size());
+        assertEquals(2, inst.findAll().get(0).getSteps().size());
+    }
 }

@@ -40,6 +40,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
     @NamedQuery(
+            name = "Line.findAll",
+            query = "SELECT x FROM Line x"
+    ),
+    @NamedQuery(
             name = "Line.existsName",
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
                     + " FROM Line obj WHERE obj.owner = :owner AND obj.name = :name"
@@ -99,5 +103,9 @@ public class Line extends AbstractEntity implements Ownable {
         return steps.stream().anyMatch(step -> {
             return edge.equals(step.getOnRailEdge());
         });
+    }
+    
+    public boolean isAreaIn(double centerX, double centerY, double scale) {
+        return steps.stream().anyMatch(s -> s.isAreaIn(centerX, centerY, scale));
     }
 }

@@ -21,19 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame.entity.troute;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface StepForHuman {
-    
-    public RelayPointForHuman getFrom();
-
-    public RelayPointForHuman getTo();
-    
-    public double getCost();
-    
-    public boolean isAreaIn(double centerX, double centerY, double scale);
+public enum LineStepType {
+    DEPARTURE, MOVING, STOPPING, PASSING
 }

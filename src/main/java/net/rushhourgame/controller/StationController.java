@@ -106,6 +106,11 @@ public class StationController extends PointEntityController {
 
         station.getTicketGate().setGateNum(num);
     }
+    
+    public List<Station> findIn(double centerX, double centerY, double scale){
+        return super.findIn(em.createNamedQuery("Station.findIn", Station.class), 
+                centerX, centerY, scale);
+    }
 
     public List<Platform> findPlatformAll() {
         return em.createNamedQuery("Platform.findAll", Platform.class).getResultList();

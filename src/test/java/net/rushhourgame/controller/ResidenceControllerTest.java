@@ -86,4 +86,11 @@ public class ResidenceControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
     }
+    
+    @Test
+    public void testFindIn() throws RushHourException {
+        inst.create(TEST_X, TEST_Y);
+        assertFalse(inst.findIn(TEST_X, TEST_Y, 2).isEmpty());
+        assertTrue(inst.findIn(-100, -100, 2).isEmpty());
+    }
 }

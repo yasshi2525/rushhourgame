@@ -267,4 +267,12 @@ public class StationControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
+    
+    @Test
+    public void testFindIn() throws RushHourException {
+        createStation();
+        
+        assertEquals(1, inst.findIn(0, 0, 1).size());
+        assertEquals(0, inst.findIn(10, 10, 1).size());
+    }
 }

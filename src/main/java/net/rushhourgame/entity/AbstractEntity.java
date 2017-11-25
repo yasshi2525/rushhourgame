@@ -38,19 +38,20 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
-public abstract class AbstractEntity implements Serializable{
+public abstract class AbstractEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected long id;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     protected Date created;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updated;
-    
+
     public long getId() {
         return id;
     }
@@ -74,20 +75,30 @@ public abstract class AbstractEntity implements Serializable{
     public void setUpdated(Date updated) {
         this.updated = new Date(updated.getTime());
     }
-    
+
     protected double calcDist(double x, double y, Pointable other) {
         return Math.sqrt((other.getX() - x) * (other.getX() - x)
                 + (other.getY() - y) * (other.getY() - y));
     }
-    
+
     protected boolean hasPrivilege(@NotNull Player owner, Player other) {
         return isOwn(owner, other);
     }
-    
+
     protected boolean isOwn(@NotNull Player owner, Player other) {
         if (other == null) {
             return false;
         }
         return owner.getId() == other.getId();
+    }
+
+    protected boolean isAreaIn(Pointable p, double centerX, double centerY, double scale) {
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return p.getX() > centerX - width / 2.0 
+                && p.getX() < centerX + width / 2.0
+                && p.getY() > centerY - height / 2.0
+                && p.getY() < centerY + height / 2.0;
     }
 }

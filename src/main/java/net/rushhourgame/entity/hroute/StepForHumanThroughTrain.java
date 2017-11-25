@@ -93,11 +93,18 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
         this._to = _to;
     }
 
+    @Override
     public double getCost() {
         return cost;
     }
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+    
+    @Override
+    public boolean isAreaIn(double centerX, double centerY, double scale) {
+        return isAreaIn(_from, centerX, centerY, scale)
+                ||  isAreaIn(_to, centerX, centerY, scale);
     }
 }

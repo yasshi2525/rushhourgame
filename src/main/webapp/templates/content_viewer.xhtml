@@ -5,12 +5,59 @@
         xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
         xmlns:p="http://primefaces.org/ui"
         prependId="false"
-            
+
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGroup id="gameview">
         <p:ajax event="click" delay="1" listener="#{game.onClick}"/>
         <h:inputHidden id="mouseX" value="#{game.mouseX}"/>
         <h:inputHidden id="mouseY" value="#{game.mouseY}"/>
+
+        <ui:repeat var="c" value="#{game.companies}">
+            <div class="company" id="#{c.id}"
+                 data-x="#{c.x}" data-y="#{c.y}"
+                 data-scale="#{c.scale}"/>
+        </ui:repeat>
+
+        <ui:repeat var="r" value="#{game.residences}">
+            <div class="residence" id="#{r.id}"
+                 data-x="#{r.x}" data-y="#{r.y}"
+                 data-interval="#{r.interval}" data-capacity="#{r.capacity}"/>
+        </ui:repeat>
+
+        <ui:repeat var="e" value="#{game.railEdges}">
+            <div class="railedge" id="#{e.id}"
+                 data-owner-name="#{e.owner.info.name}"  
+                 data-from-x="#{e.from.x}" data-from-y="#{e.from.y}"
+                 data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"/>
+        </ui:repeat>
+
+        <ui:repeat var="st" value="#{game.stations}">
+            <div class="station" id="#{st.id}"
+                 data-owner-name="#{st.owner.info.name}"  
+                 data-x="#{st.platform.railNode.x}" data-y="#{st.platform.railNode.y}"
+                 data-name="#{st.name}" data-gatenum="#{st.ticketGate.gateNum}" data-capacity="#{st.platform.capacity}"/>
+        </ui:repeat>
+
+        <ui:repeat var="l" value="#{game.lines}">
+            <div class="line" id="#{l.id}"
+                 data-owner-name="#{l.owner.info.name}"
+                 data-line-name="#{l.name}">
+                <ui:repeat var="lstep" value="#{l.steps}">
+                    <div class="linestep" id="#{lstep.id}"
+                         data-from-x="#{lstep.startRailNode.x}" data-from-y="#{lstep.startRailNode.y}"
+                         data-to-x="#{lstep.goalRailNode.x}" data-to-y="#{lstep.goalRailNode.y}"
+                         data-type="#{lstep.type}"/>
+                </ui:repeat>
+            </div>
+        </ui:repeat>
+
+        <ui:repeat var="s" value="#{game.stepForHuman}">
+            <div class="stepforhuman"
+                 data-from-x="#{s.from.x}" data-from-y="#{s.from.y}"
+                 data-to-x="#{s.to.x}" data-to-y="#{s.to.y}"
+                 data-cost="#{s.cost}"/>
+        </ui:repeat>
+
     </h:panelGroup>
 </h:form>
 

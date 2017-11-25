@@ -55,8 +55,17 @@ public class StepForHumanController extends AbstractController {
     
     @Inject
     protected LineRouteSearcher lSearcher;
-
+    
     public List<StepForHuman> findAll() {
+        return _findAll().collect(Collectors.toList());
+    }
+    
+    public List<StepForHuman> findIn(double centerX, double centerY, double scale) {
+        return _findAll().filter(s -> s.isAreaIn(centerX, centerY, scale))
+                .collect(Collectors.toList());
+    }
+
+    public Stream<StepForHuman> _findAll() {
         // 人用移動ステップをすべて取得する。
         // concat にしたのは List.addAllより早そうと思ったから
         return Stream.concat(
@@ -74,7 +83,7 @@ public class StepForHumanController extends AbstractController {
                                 )
                         )
                 )
-        ).collect(Collectors.toList());
+        );
     }
 
     public List<StepForHumanDirectly> findDirectlyAll() {

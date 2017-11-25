@@ -27,6 +27,7 @@ var pixi = require('pixi.js');
 exports.init = function (params) {
     initPixi(params);
     initEventHandler(params);
+    parseData();
 };
 
 function initPixi(params) {
@@ -57,6 +58,10 @@ function initEventHandler(params) {
     });
 }
 
-function onClickCanvas(event) {
-
+function parseData() {
+    $(".company").each(function(i, elm){
+        console.log("id = " + $(elm).attr("id"));
+        console.log("x = " + $(elm).data("x"));
+        console.log("y = " + $(elm).data("y"));
+    });
 }

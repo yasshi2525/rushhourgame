@@ -33,7 +33,10 @@ import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailEdge;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
@@ -61,6 +64,32 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createStepForHumanController();
+    }
+    
+    @Test
+    public void testFindIn() throws RushHourException {
+        // 家 駅(0,0)-駅(1,0) 会社
+        
+        RCON.create(-1, 0);
+        CCON.create(2, 0);
+        
+        Station st = createStation();
+        Player owner = st.getOwner();
+        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), 1, 1);
+        STCON.create(owner, r2, "_test2");
+        EM.flush();
+        EM.refresh(r2);
+        RailEdge go = r2.getInEdges().get(0);
+        RailEdge back = r2.getOutEdges().get(0);
+        
+        Line line = LCON.create(owner, "_test");
+        LineStep start = LCON.start(line, owner, st);
+        LineStep extend = LCON.extend(start, owner, go);
+        LineStep tail = LCON.extend(extend, owner, back);
+        LCON.end(tail, owner);
+        
+        assertEquals(11, inst.findIn(0, 0, 2).size());
+        assertEquals(0, inst.findIn(10, 10, 2).size());
     }
 
     @Test
@@ -218,9 +247,31 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
     }
-
+    
     @Test
     public void testAddCompletedLine() throws RushHourException {
+        Station st = createStation();
+        Player owner = st.getOwner();
+        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_X, TEST_Y);
+        STCON.create(owner, r2, "_test2");
+        EM.flush();
+        EM.refresh(r2);
+        RailEdge go = r2.getInEdges().get(0);
+        RailEdge back = r2.getOutEdges().get(0);
+        
+        Line line = LCON.create(owner, "_test");
+        LineStep start = LCON.start(line, owner, st);
+        LineStep extend = LCON.extend(start, owner, go);
+        LineStep tail = LCON.extend(extend, owner, back);
+        
+        // このなかで addCompletedLine がよばれる
+        LCON.end(tail, owner);
+        
+        assertEquals(2, inst.findThroughTrainAll().size());
+    }
+
+    @Test
+    public void testAddIncompletedLine() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
         

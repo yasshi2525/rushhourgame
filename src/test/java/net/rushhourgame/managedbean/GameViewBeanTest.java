@@ -58,7 +58,12 @@ public class GameViewBeanTest extends AbstractBeanTest{
         super.setUp();
         
         inst.pCon = PCON;
-        inst.rCon = RAILCON;
+        inst.cCon = CCON;
+        inst.rCon = RCON;
+        inst.railCon = RAILCON;
+        inst.stCon = STCON;
+        inst.lCon = LCON;
+        inst.sCon = SCON;
         try {
             player = createPlayer();
         } catch (RushHourException ex) {
@@ -98,5 +103,40 @@ public class GameViewBeanTest extends AbstractBeanTest{
     public void testIsOperating() {
         inst.setOperation(OperationType.CREATE_RAIL);
         assertTrue(inst.isOperating());
+    }
+    
+    @Test
+    public void testGetCompanies() {
+        inst.getCompanies();
+    }
+    
+    @Test
+    public void testGetRegidences() {
+        inst.getResidences();
+    }
+    
+    @Test
+    public void testGetRailNodes() {
+        inst.getRailNodes();
+    }
+    
+    @Test
+    public void testGetRailEdges() {
+        inst.getRailEdges();
+    }
+    
+    @Test
+    public void testGetStation() {
+        inst.getStations();
+    }
+    
+    @Test
+    public void testGetLines() {
+        inst.getLines();
+    }
+    
+    @Test
+    public void testGetStepForHuman() {
+        inst.getStepForHuman();
     }
 }
