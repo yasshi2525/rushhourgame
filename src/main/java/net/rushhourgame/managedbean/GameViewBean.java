@@ -121,6 +121,7 @@ public class GameViewBean implements Serializable{
         return stCon.findIn(centerX, centerY, scale);
     }
     
+    @Transactional
     public List<Line> getLines() {
         return lCon.findIn(centerX, centerY, scale);
     }
