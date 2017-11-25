@@ -89,7 +89,7 @@ public class GameViewBean implements Serializable{
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
-        scale = 4;
+        scale = 8;
     }
     
     @Transactional

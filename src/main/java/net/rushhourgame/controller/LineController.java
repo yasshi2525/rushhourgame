@@ -247,4 +247,23 @@ public class LineController extends AbstractController {
                 })
                 .collect(Collectors.toList());
     }
+    
+    public Line autocreate(Player player, Station start, String name) throws RushHourException {
+        Line line = create(player, name);
+        em.flush();
+        
+        LineStep tail = start(line, player, start);
+        
+        List<RailEdge> candinates;
+        
+        while (!(candinates = findNext(tail, player)).isEmpty()) {
+            tail = extend(tail, player, candinates.get(0));
+            em.flush();
+        }
+        
+        if (canEnd(tail, player)) {
+            end(tail, player);
+        }
+        return line;
+    }
 }

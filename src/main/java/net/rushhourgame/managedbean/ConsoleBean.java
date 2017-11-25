@@ -131,22 +131,9 @@ public class ConsoleBean implements Serializable{
     
     @Transactional
     public void createLine() throws RushHourException {
-        
-        tailLine = lCon.create(player, text);
-        em.flush();
-        
         tailStation = em.merge(tailStation); // おまじない
-        LineStep tail = lCon.start(tailLine, player, tailStation);
         
-        List<RailEdge> candinates;
-        
-        while (!(candinates = lCon.findNext(tail, player)).isEmpty()) {
-            tail = lCon.extend(tail, player, candinates.get(0));
-            em.flush();
-        }
-        if (lCon.canEnd(tail, player)) {
-            lCon.end(tail, player);
-        }
+        tailLine = lCon.autocreate(player, tailStation, text);
      }
     
     public double getX() {
