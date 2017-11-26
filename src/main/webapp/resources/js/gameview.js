@@ -265,8 +265,8 @@ function onDragStart(event)
         y: parseFloat(scope.$centerY.val())
     };
     this.startPosition = {
-        x: event.offsetX,
-        y: event.offsetY
+        x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
+        y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
     };
 }
 
@@ -282,12 +282,17 @@ function onDragEnd(event)
  * @param {type} event
  * @returns {undefined}
  */
-function onDragMove(event){
+function onDragMove(event) {
     if (this.dragging) {
+
+        var x, y;
+
         var newPosition = {
-            x: event.offsetX,
-            y: event.offsetY
+            x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
+            y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
         };
+
+        console.log(newPosition);
 
         var newCenterPos = {
             x: this.startGamePos.x
