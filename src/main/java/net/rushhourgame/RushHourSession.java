@@ -32,77 +32,127 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class RushHourSession implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RushHourSession.class.getName());
     protected static final String SESSION_NAME = "rushhour";
-    
+
     @Inject
     transient HttpSession injectedSession;
-    
-    public void setLocale(Locale locale){
+
+    public void setLocale(Locale locale) {
         findOrCreateBean().setLocale(locale);
     }
-    
-    public void setToken(String accessToken){
+
+    public void setToken(String accessToken) {
         findOrCreateBean().setToken(accessToken);
     }
-    
-    public Locale getLocale(){
+
+    public Locale getLocale() {
         return findOrCreateBean().getLocale();
     }
-    
-    public String getToken(){
+
+    public String getToken() {
         return findOrCreateBean().getToken();
     }
-    
-    protected boolean hasValidBean(){
+
+    public double getCenterX() {
+        return findOrCreateBean().getCenterX();
+    }
+
+    public void setCenterX(double centerX) {
+        findOrCreateBean().setCenterX(centerX);
+    }
+
+    public double getCenterY() {
+        return findOrCreateBean().getCenterY();
+    }
+
+    public void setCenterY(double centerY) {
+        findOrCreateBean().setCenterY(centerY);
+    }
+
+    public double getScale() {
+        return findOrCreateBean().getScale();
+    }
+
+    public void setScale(double scale) {
+        findOrCreateBean().setScale(scale);
+    }
+
+    protected boolean hasValidBean() {
         return injectedSession.getAttribute(SESSION_NAME) != null
                 && injectedSession.getAttribute(SESSION_NAME) instanceof RushHourSessionBean;
     }
-    
-    static public void setLocale(HttpSession session, Locale locale){
+
+    static public void setLocale(HttpSession session, Locale locale) {
         findOrCreateBean(session).setLocale(locale);
     }
-    
-    static public void setToken(HttpSession session, String accessToken){
+
+    static public void setToken(HttpSession session, String accessToken) {
         findOrCreateBean(session).setToken(accessToken);
     }
-    
-    static public Locale getLocale(HttpSession session){
+
+    static public Locale getLocale(HttpSession session) {
         return findOrCreateBean(session).getLocale();
     }
-    
-    static public String getToken(HttpSession session){
+
+    static public String getToken(HttpSession session) {
         return findOrCreateBean(session).getToken();
     }
     
-    static protected boolean isValidBean(HttpSession session){
-        return session != null 
+    static public double getCenterX(HttpSession session) {
+        return findOrCreateBean(session).getCenterX();
+    }
+
+    static public void setCenterX(HttpSession session, double centerX) {
+        findOrCreateBean(session).setCenterX(centerX);
+    }
+
+    static public double getCenterY(HttpSession session) {
+        return findOrCreateBean(session).getCenterY();
+    }
+
+    static public void setCenterY(HttpSession session, double centerY) {
+        findOrCreateBean(session).setCenterY(centerY);
+    }
+
+    static public double getScale(HttpSession session) {
+        return findOrCreateBean(session).getScale();
+    }
+
+    static public void setScale(HttpSession session, double scale) {
+        findOrCreateBean(session).setScale(scale);
+    }
+
+    static protected boolean isValidBean(HttpSession session) {
+        return session != null
                 && session.getAttribute(SESSION_NAME) != null
                 && session.getAttribute(SESSION_NAME) instanceof RushHourSessionBean;
     }
-    
+
     /**
      * セッションデータからBeanを取得する。なければ作成する
+     *
      * @return RushHourSessionBean
      */
-    protected RushHourSessionBean findOrCreateBean(){
-        if(hasValidBean()){
+    protected RushHourSessionBean findOrCreateBean() {
+        if (hasValidBean()) {
             //すでに存在するので作成しない
             return (RushHourSessionBean) injectedSession.getAttribute(SESSION_NAME);
         }
-        
+
         RushHourSessionBean ret;
-        
+
         if (injectedSession.getAttribute(SESSION_NAME) == null) {
             //新規作成
             LOG.log(Level.FINE, "{0}#create", new Object[]{getClass().getSimpleName()});
-            
+
             ret = new RushHourSessionBean();
             injectedSession.setAttribute(SESSION_NAME, ret);
             return ret;
@@ -110,34 +160,35 @@ public class RushHourSession implements Serializable {
             // RushHourSessionBean以外の値があるので上書き
             LOG.log(Level.INFO, "{0}#create overwrite session.{1} from {2} (Class : {3})",
                     new Object[]{
-                        getClass().getSimpleName(), 
+                        getClass().getSimpleName(),
                         SESSION_NAME,
-                        injectedSession.getAttribute(SESSION_NAME), 
+                        injectedSession.getAttribute(SESSION_NAME),
                         injectedSession.getAttribute(SESSION_NAME).getClass()});
-           
+
             ret = new RushHourSessionBean();
             injectedSession.setAttribute(SESSION_NAME, ret);
             return ret;
-        } 
+        }
     }
-    
+
     /**
      * セッションデータからBeanを取得する。なければ作成する
+     *
      * @param session session
      * @return RushHourSessionBean
      */
-    static protected RushHourSessionBean findOrCreateBean(HttpSession session){
-        if(isValidBean(session)){
+    static protected RushHourSessionBean findOrCreateBean(HttpSession session) {
+        if (isValidBean(session)) {
             //すでに存在するので作成しない
             return (RushHourSessionBean) session.getAttribute(SESSION_NAME);
         }
-        
+
         RushHourSessionBean ret;
-        
+
         if (session.getAttribute(SESSION_NAME) == null) {
             //新規作成
             LOG.log(Level.FINE, "{0}#create", new Object[]{RushHourSession.class.getSimpleName()});
-            
+
             ret = new RushHourSessionBean();
             session.setAttribute(SESSION_NAME, ret);
             return ret;
@@ -145,14 +196,14 @@ public class RushHourSession implements Serializable {
             // RushHourSessionBean以外の値があるので上書き
             LOG.log(Level.INFO, "{0}#create overwrite session.{1} from {2} (Class : {3})",
                     new Object[]{
-                        RushHourSession.class.getSimpleName(), 
+                        RushHourSession.class.getSimpleName(),
                         SESSION_NAME,
-                        session.getAttribute(SESSION_NAME), 
+                        session.getAttribute(SESSION_NAME),
                         session.getAttribute("rushhour").getClass()});
-           
+
             ret = new RushHourSessionBean();
             session.setAttribute(SESSION_NAME, ret);
             return ret;
-        } 
+        }
     }
 }

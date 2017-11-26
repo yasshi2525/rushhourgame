@@ -139,4 +139,15 @@ public class GameViewBeanTest extends AbstractBeanTest{
     public void testGetStepForHuman() {
         inst.getStepForHuman();
     }
+    
+    @Test
+    public void testCenterPos() {
+        inst.setCenterX(10);
+        assertTrue(10 == inst.getCenterX());
+        inst.setCenterY(20);
+        assertTrue(20 == inst.getCenterY());
+        inst.setScale(2);
+        assertTrue(2 == inst.getScale());
+        assertTrue(3 == inst.getLoadScale());
+    }
 }

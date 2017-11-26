@@ -66,7 +66,7 @@ exports.init = function (param) {
 
 function initPixi() {
 
-    var renderer = pixi.autoDetectRenderer();
+    var renderer = pixi.autoDetectRenderer(512, 512);
     scope.$canvas.get(0).appendChild(renderer.view); // get(0)がないとダメ
 
     scope.renderer = renderer;
@@ -97,7 +97,17 @@ function initEventHandler() {
             var mouseY = event.originalEvent.offsetY;
             scope.$mouseX.val(mouseX);
             scope.$mouseY.val(mouseY);
-        }
+        },
+        // マップスクロール用。
+        // PIXI側で実現しようとしたが、スプライトを用意する必要があるため、
+        // canvas要素側で実現することにした。
+        'mousedown': onDragStart,
+        'touchstart': onDragStart,
+        'mouseup': onDragEnd,
+        'mouseout': onDragEnd,
+        'touchend': onDragEnd,
+        'mousemove': onDragMove,
+        'touchmove': onDragMove
     });
 }
 
@@ -178,7 +188,7 @@ function updateSprite(sprite, $elm) {
     var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
-    
+
     sprite.position.set(pos.x, pos.y);
 }
 
@@ -228,11 +238,11 @@ function toViewPos(x, y) {
     return {
         x: (x - scope.$centerX.val())
                 * scope.renderer.width
-                * Math.pow(2, -$("#scale").text())
+                * Math.pow(2, -$('#scale').text())
                 + scope.renderer.width / 2,
         y: (y - scope.$centerY.val())
                 * scope.renderer.height
-                * Math.pow(2, -$("#scale").text())
+                * Math.pow(2, -$('#scale').text())
                 + scope.renderer.height / 2
     };
 }
@@ -243,6 +253,52 @@ function toViewPos(x, y) {
  * @returns {undefined}
  */
 handleSlide = function (event, ui) {
-    $("#scale").text(ui.value / 100);
+    $('#scale').text(ui.value / 100);
     fetchGraphics();
 };
+
+function onDragStart(event)
+{
+    this.dragging = true;
+    this.startGamePos = {
+        x: parseFloat(scope.$centerX.val()),
+        y: parseFloat(scope.$centerY.val())
+    };
+    this.startPosition = {
+        x: event.offsetX,
+        y: event.offsetY
+    };
+}
+
+function onDragEnd(event)
+{
+    this.dragging = false;
+    this.startGamePos = null;
+    this.startPosition = null;
+}
+
+/**
+ * ドラッグ時、新しくなるcenterX, centerYを求める
+ * @param {type} event
+ * @returns {undefined}
+ */
+function onDragMove(event){
+    if (this.dragging) {
+        var newPosition = {
+            x: event.offsetX,
+            y: event.offsetY
+        };
+
+        var newCenterPos = {
+            x: this.startGamePos.x
+                    - (newPosition.x - this.startPosition.x)
+                    * Math.pow(2, $('#scale').text()) / scope.renderer.width,
+            y: this.startGamePos.y
+                    - (newPosition.y - this.startPosition.y)
+                    * Math.pow(2, $('#scale').text()) / scope.renderer.height
+        };
+        scope.$centerX.val(newCenterPos.x);
+        scope.$centerY.val(newCenterPos.y);
+        fetchGraphics();
+    }
+}

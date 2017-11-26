@@ -40,12 +40,12 @@ public class CheckPhaseListener implements PhaseListener {
 
     @Override
     public void afterPhase(PhaseEvent event) {
-        LOG.log(Level.INFO, "after:{0}", event.getPhaseId());
+        LOG.log(Level.FINER, "after:{0}", event.getPhaseId());
     }
 
     @Override
     public void beforePhase(PhaseEvent event) {
-        LOG.log(Level.INFO, "before:{0}", event.getPhaseId());
+        LOG.log(Level.FINER, "before:{0}", event.getPhaseId());
     }
 
     @Override

@@ -33,25 +33,12 @@ import java.util.Locale;
 public class RushHourSessionBean implements Serializable{
     private static final long serialVersionUID = 1L;
     protected String token;
-    protected Locale locale; 
+    protected Locale locale;
+    protected double centerX;
+    protected double centerY;
+    protected double scale = 7;
 
     protected RushHourSessionBean() {
-    }
-
-    protected RushHourSessionBean(Locale locale) {
-        this.locale = locale;
-    }
-
-    protected RushHourSessionBean(String accessToken) {
-        this.token = accessToken;
-    }
-    
-    public boolean isJp(){
-        return Locale.JAPANESE.equals(locale);
-    }
-    
-    public boolean isEn(){
-        return Locale.ENGLISH.equals(locale);
     }
     
     public String getToken() {
@@ -68,5 +55,29 @@ public class RushHourSessionBean implements Serializable{
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public double getCenterX() {
+        return centerX;
+    }
+
+    public void setCenterX(double centerX) {
+        this.centerX = centerX;
+    }
+
+    public double getCenterY() {
+        return centerY;
+    }
+
+    public void setCenterY(double centerY) {
+        this.centerY = centerY;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 }

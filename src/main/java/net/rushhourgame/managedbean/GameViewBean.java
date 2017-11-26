@@ -92,7 +92,9 @@ public class GameViewBean implements Serializable{
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
-        scale = 8;
+        centerX = rhSession.getCenterX();
+        centerY = rhSession.getCenterY();
+        scale = rhSession.getScale();
     }
     
     @Transactional
@@ -105,32 +107,32 @@ public class GameViewBean implements Serializable{
     }
     
     public List<Company> getCompanies() {
-        return cCon.findIn(centerX, centerY, scale);
+        return cCon.findIn(centerX, centerY, getLoadScale());
     }
     
     public List<Residence> getResidences() {
-        return rCon.findIn(centerX, centerY, scale);
+        return rCon.findIn(centerX, centerY, getLoadScale());
     }
     
     public List<RailNode> getRailNodes() {
-        return railCon.findNodeIn(centerX, centerY, scale);
+        return railCon.findNodeIn(centerX, centerY, getLoadScale());
     }
     
     public List<RailEdge> getRailEdges() {
-        return railCon.findEdgeIn(centerX, centerY, scale);
+        return railCon.findEdgeIn(centerX, centerY, getLoadScale());
     }
     
     public List<Station> getStations() {
-        return stCon.findIn(centerX, centerY, scale);
+        return stCon.findIn(centerX, centerY, getLoadScale());
     }
     
     @Transactional
     public List<Line> getLines() {
-        return lCon.findIn(centerX, centerY, scale);
+        return lCon.findIn(centerX, centerY, getLoadScale());
     }
     
     public List<StepForHuman> getStepForHuman() {
-        return sCon.findIn(centerX, centerY, scale);
+        return sCon.findIn(centerX, centerY, getLoadScale());
     }
     
     public int getMouseX() {
@@ -167,6 +169,7 @@ public class GameViewBean implements Serializable{
 
     public void setCenterX(double centerX) {
         this.centerX = centerX;
+        rhSession.setCenterX(centerX);
     }
 
     public double getCenterY() {
@@ -175,6 +178,7 @@ public class GameViewBean implements Serializable{
 
     public void setCenterY(double centerY) {
         this.centerY = centerY;
+        rhSession.setCenterY(centerY);
     }
 
     public double getScale() {
@@ -183,9 +187,19 @@ public class GameViewBean implements Serializable{
 
     public void setScale(double scale) {
         this.scale = scale;
+        rhSession.setScale(scale);
     }
     
     public void onSlideEnd(SlideEndEvent event) {
-        scale = event.getValue() / 100.0; // 100倍の値を入力させている
+        setScale(event.getValue() / 100.0); // 100倍の値を入力させている
     } 
+    
+    /**
+     * 読み込む際は表示するより広い領域読み込む.
+     * スクロールしても表示が途切れないようにするため
+     * @return ロードするscale
+     */
+    protected double getLoadScale() {
+        return scale + 1;
+    }
 }

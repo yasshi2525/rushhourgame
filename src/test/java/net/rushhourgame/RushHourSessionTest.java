@@ -23,6 +23,7 @@
  */
 package net.rushhourgame;
 
+import java.util.Locale;
 import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -203,4 +204,39 @@ public class RushHourSessionTest {
         verify(session, times(5)).getAttribute(SESSION_NAME);
     }
 
+    @Test
+    public void testBean() {
+        RushHourSession obj = spy(RushHourSession.class);
+        doReturn(new RushHourSessionBean()).when(obj).findOrCreateBean();
+        
+        obj.setToken("hoge");
+        obj.setCenterX(10);
+        obj.setCenterY(10);
+        obj.setLocale(Locale.ITALY);
+        obj.setScale(2);
+        
+        assertEquals("hoge", obj.getToken());
+        assertTrue(10 == obj.getCenterX());
+        assertTrue(10 == obj.getCenterY());
+        assertTrue(2 == obj.getScale());
+        assertEquals(Locale.ITALY, obj.getLocale());
+    }
+    
+    @Test
+    public void testStaticMethod() {
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute(RushHourSession.SESSION_NAME)).thenReturn(new RushHourSessionBean());
+
+        RushHourSession.setToken(session, "hoge");
+        RushHourSession.setCenterX(session, 10);
+        RushHourSession.setCenterY(session, 10);
+        RushHourSession.setLocale(session, Locale.ITALY);
+        RushHourSession.setScale(session, 2);
+        
+        assertEquals("hoge", RushHourSession.getToken(session));
+        assertTrue(10 == RushHourSession.getCenterX(session));
+        assertTrue(10 == RushHourSession.getCenterY(session));
+        assertTrue(2 == RushHourSession.getScale(session));
+        assertEquals(Locale.ITALY, RushHourSession.getLocale(session));
+    }
 }
