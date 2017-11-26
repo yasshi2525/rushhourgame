@@ -118,7 +118,7 @@ public class DebugInitializer {
             
             em.flush();
             
-            lCon.autocreate(owner, st1, "debug");
+            lCon.autocreate(owner, st4, "debug");
             
             //executorService.submit(searcher);
         } catch (RushHourException e) {
