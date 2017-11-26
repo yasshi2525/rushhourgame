@@ -107,7 +107,7 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
 
     @Override
     public double getY() {
-        return platform.getX();
+        return platform.getY();
     }
 
     @Override

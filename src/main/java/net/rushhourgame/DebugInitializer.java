@@ -98,8 +98,8 @@ public class DebugInitializer {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void init() {
         try {
-            rCon.create(10, 10);
-            cCon.create(90, 90);
+            rCon.create(20, 5);
+            cCon.create(50, 15);
 
             oCon.createOAuthBean("debug", "debug");
             Player owner = pCon.createPlayer("debug", "debug", "debug", new SimpleUserData());
@@ -107,7 +107,7 @@ public class DebugInitializer {
             // r1 r2 r3
             //    r4
             
-            RailNode r1 = railCon.create(owner, 20, 20);
+            RailNode r1 = railCon.create(owner, 10, 20);
             RailNode r2 = railCon.extend(owner, r1, 30, 20);
             RailNode r3 = railCon.extend(owner, r2, 40, 20);
             RailNode r4 = railCon.extend(owner, r2, 30, 30);

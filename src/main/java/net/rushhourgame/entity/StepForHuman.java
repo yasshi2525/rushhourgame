@@ -28,6 +28,11 @@ package net.rushhourgame.entity;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public interface StepForHuman {
+    /**
+     * クライアントではStepFroHuman単位で管理するため、ユニークな値を返すようにする
+     * @return StepForHuman間でユニークな値
+     */
+    public String getUid();
     
     public RelayPointForHuman getFrom();
 

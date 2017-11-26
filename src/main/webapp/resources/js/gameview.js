@@ -41,11 +41,13 @@ var spriteResources = {
 var lineResources = {
     railedge: {
         color: 0xaaaaaa,
+        slide: 3,
         scale: 3
     },
     stepforhuman: {
-        color: 0x888888,
-        scale: 0
+        color: 0x00aabb,
+        slide: 0,
+        scale: 1
     }
 };
 
@@ -155,7 +157,6 @@ fetchGraphics = function () {
             }
         }
     }
-
     scope.renderer.render(scope.stage);
 };
 
@@ -197,9 +198,9 @@ function stageLine($elm, opts) {
             parseFloat($elm.data('to-x')),
             parseFloat($elm.data('to-y')));
 
-    var line = slideEdge(from, to, opts.scale);
+    var line = slideEdge(from, to, opts.slide);
 
-    obj.lineStyle(3, opts.color)
+    obj.lineStyle(opts.scale, opts.color)
             .moveTo(line.fromx, line.fromy)
             .lineTo(line.tox, line.toy);
 
@@ -235,3 +236,13 @@ function toViewPos(x, y) {
                 + scope.renderer.height / 2
     };
 }
+/**
+ * スライダーを動かした時、リアルタイムで拡大、縮小できるようにする
+ * @param {type} event
+ * @param {type} ui
+ * @returns {undefined}
+ */
+handleSlide = function (event, ui) {
+    $("#scale").text(ui.value / 100);
+    fetchGraphics();
+};

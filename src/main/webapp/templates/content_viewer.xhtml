@@ -53,7 +53,7 @@
         </ui:repeat>
 
         <ui:repeat var="s" value="#{game.stepForHuman}">
-            <div class="stepforhuman"
+            <div class="stepforhuman" id="#{s.uid}"
                  data-from-x="#{s.from.x}" data-from-y="#{s.from.y}"
                  data-to-x="#{s.to.x}" data-to-y="#{s.to.y}"
                  data-cost="#{s.cost}"/>
@@ -65,7 +65,7 @@
     <h:inputHidden id="centerY" value="#{game.centerY}"/>
     <h:outputText  id="scale" value="#{game.scale}"/>
     <h:inputHidden id="sliderscale" value="#{game.scale * 100}"/>
-    <p:slider for="sliderscale" minValue="100" maxValue="1600">
+    <p:slider for="sliderscale" minValue="100" maxValue="1600" onSlide="handleSlide(event, ui)">
         <p:ajax event="slideEnd" listener="#{game.onSlideEnd}" 
                 update="gamemodel scale"
                 oncomplete="fetchGraphics()"/>

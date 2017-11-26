@@ -87,4 +87,9 @@ public class StepForHumanStationToCompany extends AbstractEntity implements Step
         return isAreaIn(_from, centerX, centerY, scale)
                 ||  isAreaIn(_to, centerX, centerY, scale);
     }
+    
+    @Override
+    public String getUid() {
+        return "to" + getId();
+    }
 }

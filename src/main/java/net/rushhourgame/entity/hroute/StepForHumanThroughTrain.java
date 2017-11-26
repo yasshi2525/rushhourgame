@@ -107,4 +107,9 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
         return isAreaIn(_from, centerX, centerY, scale)
                 ||  isAreaIn(_to, centerX, centerY, scale);
     }
+    
+    @Override
+    public String getUid() {
+        return "train" + getId();
+    }
 }
