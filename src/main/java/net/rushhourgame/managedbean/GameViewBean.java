@@ -27,6 +27,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -49,6 +51,7 @@ import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
+import org.primefaces.event.SlideEndEvent;
 
 /**
  *
@@ -157,4 +160,32 @@ public class GameViewBean implements Serializable{
     public boolean isOperating(){
         return operation != NONE;
     }
+
+    public double getCenterX() {
+        return centerX;
+    }
+
+    public void setCenterX(double centerX) {
+        this.centerX = centerX;
+    }
+
+    public double getCenterY() {
+        return centerY;
+    }
+
+    public void setCenterY(double centerY) {
+        this.centerY = centerY;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+    
+    public void onSlideEnd(SlideEndEvent event) {
+        scale = event.getValue() / 100.0; // 100倍の値を入力させている
+    } 
 }

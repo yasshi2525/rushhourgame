@@ -32,6 +32,23 @@ var pixi = require('pixi.js');
  */
 var scope;
 
+var spriteResources = {
+    'company': {},
+    'residence': {},
+    'station': {}
+};
+
+var lineResources = {
+    railedge: {
+        color: 0xaaaaaa,
+        scale: 3
+    },
+    stepforhuman: {
+        color: 0x888888,
+        scale: 0
+    }
+};
+
 /**
  * jQueryオブジェクトを格納する場合、接頭辞$をつける。
  * @param {type} param
@@ -54,7 +71,7 @@ function initPixi() {
     scope.stage = new pixi.Container();
 
     // 複数形にすると、要素名と一致しなく不便だったので、単数形
-    scope.sprites = {
+    scope.graphics = {
         'company': {},
         'residence': {},
         'railedge': {},
@@ -68,7 +85,7 @@ function initPixi() {
             .add('residence', 'resources/image/s_residence.png')
             .add('station', 'resources/image/s_station.png')
             .add('train', 'resources/image/s_train.png')
-            .load(registerSprite);
+            .load(fetchGraphics);
 }
 
 function initEventHandler() {
@@ -82,81 +99,107 @@ function initEventHandler() {
     });
 }
 
-function registerSprite() {
-    // 画像つきリソースを作成する。
-    var resources = {
-        'company': {},
-        'residence': {},
-        'station': {}
-    };
-
-    for (var name in resources) {
-        // クラス名 : .リソース名
-        $('.' + name).each(function (i, elm) {
-            scope.sprites[name][$(elm).attr('id')]
-                    = stageResourceSprite(name, $(elm));
-        });
-    };
-
-    // 線タイプのリソースを作成すうｒ
-    resources = {
-        railedge: {
-            color: 0xaaaaaa,
-            scale: 3
-        },
-        stepforhuman: {
-            color: 0x888888,
-            scale: 0
+// fetchGraphics()にすると、ajaxでよびだされない
+fetchGraphics = function () {
+    // 既存のリソースにマークをつける
+    // 更新後、マークが残っていたら削除する。
+    for (var name in scope.graphics) {
+        for (var key in scope.graphics[name]) {
+            scope.graphics[name][key].old = true;
         }
-    };
+    }
 
-    for (var name in resources) {
+    // 画像つきリソースを作成する。
+    for (var name in spriteResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
-            scope.sprites[name][$(elm).attr('id')]
-                    = stageLine({
-                        fromx: parseFloat($(elm).data('from-x')),
-                        fromy: parseFloat($(elm).data('from-y')),
-                        tox: parseFloat($(elm).data('to-x')),
-                        toy: parseFloat($(elm).data('to-y'))
-                    }, resources[name].color, resources[name].scale);
+
+            if (scope.graphics[name][$(elm).attr('id')]) {
+                // 更新
+                scope.graphics[name][$(elm).attr('id')].old = false;
+                updateSprite(
+                        scope.graphics[name][$(elm).attr('id')],
+                        $(elm));
+            } else {
+                // 新規作成
+                scope.graphics[name][$(elm).attr('id')]
+                        = stageResourceSprite(name, $(elm));
+            }
         });
-    };
+    }
+
+    // 線タイプのリソースを作成する
+    for (var name in lineResources) {
+        // クラス名 : .リソース名
+        $('.' + name).each(function (i, elm) {
+            if (scope.graphics[name][$(elm).attr('id')]) {
+                // 更新する
+                // Graphicsの移動の仕方が分からなkったので、リライトする
+                scope.stage.removeChild(scope.graphics[name][$(elm).attr('id')]);
+                scope.graphics[name][$(elm).attr('id')]
+                        = stageLine($(elm), lineResources[name]);
+            } else {
+                // 新規作成
+                scope.graphics[name][$(elm).attr('id')]
+                        = stageLine($(elm), lineResources[name]);
+            }
+        });
+    }
+
+    // divタグ中に存在しないリソースを削除
+    for (var name in scope.graphics) {
+        for (var key in scope.graphics[name]) {
+            if (scope.graphics[name][key].old) {
+                scope.stage.removeChild(scope.graphics[name][key]);
+                delete scope.graphics[name][key];
+            }
+        }
+    }
 
     scope.renderer.render(scope.stage);
-}
+};
 
 function stageResourceSprite(type, $elm) {
-    var obj = createSprite(
-            type,
+    var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
+
+    var obj = new pixi.Sprite(pixi.loader.resources[type].texture);
+    obj.anchor.set(0.5, 0.5);
+    obj.alpha = 1;
+    obj.position.set(pos.x, pos.y);
+
     scope.stage.addChild(obj);
     return obj;
 }
 
-function createSprite(type, x, y) {
-    var sprite = new pixi.Sprite(pixi.loader.resources[type].texture);
-    sprite.anchor.set(0.5, 0.5);
-    sprite.alpha = 1;
-    sprite.position.set(x, y);
-    return sprite;
+function updateSprite(sprite, $elm) {
+    var pos = toViewPos(
+            parseFloat($elm.data('x')),
+            parseFloat($elm.data('y')));
+    
+    sprite.position.set(pos.x, pos.y);
 }
 
 /**
  * 路線のlineではなく、線のline
- * @param {type} line
- * @param {type} color
- * @param {type} scale
- * @returns {objine.obj|nm$_gameview.pixi.Graphics|nm$_gameview.stageLine.sprite}
+ * @param {type} $elm
+ * @param {type} opts
+ * @returns 
  */
-function stageLine(line, color, scale) {
+function stageLine($elm, opts) {
     var obj = new pixi.Graphics();
 
-    line = slideEdge(line, scale);
+    var from = toViewPos(
+            parseFloat($elm.data('from-x')),
+            parseFloat($elm.data('from-y')));
+    var to = toViewPos(
+            parseFloat($elm.data('to-x')),
+            parseFloat($elm.data('to-y')));
 
-    obj
-            .lineStyle(3, color)
+    var line = slideEdge(from, to, opts.scale);
+
+    obj.lineStyle(3, opts.color)
             .moveTo(line.fromx, line.fromy)
             .lineTo(line.tox, line.toy);
 
@@ -164,18 +207,31 @@ function stageLine(line, color, scale) {
     return obj;
 }
 
-/**
- * 
- * @param {type} line { fromx : x1, fromy : y1, tox : x2, toy : y2 }
- * @param {type} scale
- * @returns {nm$_gameview.slideEdge.gameviewAnonym$1}
- */
-function slideEdge(line, scale) {
-    var theta = Math.atan2(line.toy - line.fromy, line.tox - line.fromx) - Math.PI / 2;
+function slideEdge(from, to, scale) {
+    var theta = Math.atan2(to.y - from.y, to.x - from.x) - Math.PI / 2;
     return {
-        fromx: line.fromx + Math.cos(theta) * scale,
-        fromy: line.fromy + Math.sin(theta) * scale,
-        tox: line.tox + Math.cos(theta) * scale,
-        toy: line.toy + Math.sin(theta) * scale
+        fromx: from.x + Math.cos(theta) * scale,
+        fromy: from.y + Math.sin(theta) * scale,
+        tox: to.x + Math.cos(theta) * scale,
+        toy: to.y + Math.sin(theta) * scale
+    };
+}
+
+/**
+ * サーバ上のパスを画面上の座標に変換する
+ * @param {type} x
+ * @param {type} y
+ * @returns {nm$_gameview.toViewPos.gameviewAnonym$2}
+ */
+function toViewPos(x, y) {
+    return {
+        x: (x - scope.$centerX.val())
+                * scope.renderer.width
+                * Math.pow(2, -$("#scale").text())
+                + scope.renderer.width / 2,
+        y: (y - scope.$centerY.val())
+                * scope.renderer.height
+                * Math.pow(2, -$("#scale").text())
+                + scope.renderer.height / 2
     };
 }

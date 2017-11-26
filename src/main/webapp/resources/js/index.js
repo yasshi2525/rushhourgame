@@ -28,6 +28,9 @@ $(function(){
     // htmlの要素名と意味のマッピングはここで行う
     gameview.init({
         $canvas: $('#gameview'),
+        $centerX: $('#centerX'),
+        $centerY: $('#centerY'),
+        // $scale: $('#scale'), 途中で参照が変わるため、直接取得に変更
         $mouseX: $('#mouseX'),
         $mouseY: $('#mouseY')
     });
