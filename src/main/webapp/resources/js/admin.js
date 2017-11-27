@@ -30,7 +30,7 @@ $(function(){
         $canvas: $('#gameview'),
         $centerX: $('#centerX'),
         $centerY: $('#centerY'),
-        $mouseX: $('#mouseX'),
-        $mouseY: $('#mouseY')
+        $clickX: $('#clickX'),
+        $clickY: $('#clickY')
     });
 });

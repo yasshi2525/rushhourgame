@@ -37,6 +37,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -49,8 +50,8 @@ public class GameViewBeanTest extends AbstractBeanTest{
     
     protected Player player;
     
-    protected static final int MOUSE_X = 50;
-    protected static final int MOUSE_Y = 60;
+    protected static final int CLICK_X = 50;
+    protected static final int CLICK_Y = 60;
     
     @Before
     @Override
@@ -81,17 +82,15 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
 
     @Test
-    public void testOnClick() throws RushHourException {
+    public void testOpenClickMenu() throws RushHourException {
         inst.player = player;
-        inst.setMouseX(MOUSE_X);
-        inst.setMouseY(MOUSE_Y);
+        inst.setClickX(CLICK_X);
+        inst.setClickY(CLICK_Y);
         inst.setOperation(OperationType.CREATE_RAIL);
-        inst.onClick();
-        assertEquals(OperationType.CREATE_RAIL, inst.getOperation());
-        assertEquals(MOUSE_X, inst.getMouseX());
-        assertEquals(MOUSE_Y, inst.getMouseY());
-        assertEquals(1, RAILCON.findNodeIn(MOUSE_X, MOUSE_Y, 2).size());
-        assertEquals(0, RAILCON.findEdgeIn(MOUSE_X, MOUSE_Y, 2).size());
+        doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
+        assertTrue(CLICK_X == inst.getClickX());
+        assertTrue(CLICK_Y == inst.getClickY());
+        inst.openClickMenu();
     }
     
     @Test
@@ -149,5 +148,10 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.setScale(2);
         assertTrue(2 == inst.getScale());
         assertTrue(3 == inst.getLoadScale());
+    }
+    
+    @Test
+    public void testGetRequestContext() {
+        assertNull(inst.getRequestContext());
     }
 }

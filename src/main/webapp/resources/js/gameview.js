@@ -93,10 +93,14 @@ function initPixi() {
 function initEventHandler() {
     scope.$canvas.on({
         'click': function (event) {
+            // マウスの座標をゲーム上の座標に変換する
             var mouseX = event.originalEvent.offsetX;
             var mouseY = event.originalEvent.offsetY;
-            scope.$mouseX.val(mouseX);
-            scope.$mouseY.val(mouseY);
+            
+            var gamePos = toGamePos(mouseX, mouseY);
+            
+            scope.$clickX.val(gamePos.x);
+            scope.$clickY.val(gamePos.y);
         },
         // マップスクロール用。
         // PIXI側で実現しようとしたが、スプライトを用意する必要があるため、
@@ -285,14 +289,10 @@ function onDragEnd(event)
 function onDragMove(event) {
     if (this.dragging) {
 
-        var x, y;
-
         var newPosition = {
             x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
             y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
         };
-
-        console.log(newPosition);
 
         var newCenterPos = {
             x: this.startGamePos.x
@@ -306,4 +306,16 @@ function onDragMove(event) {
         scope.$centerY.val(newCenterPos.y);
         fetchGraphics();
     }
+}
+
+function toGamePos(x, y) {
+    // - 0.5 するのは画面の中央がcenterXに対応するため
+    return {
+        x : (x / scope.renderer.width - 0.5)
+                * Math.pow(2, $('#scale').text())
+                + parseFloat(scope.$centerX.val()),
+        y : (y / scope.renderer.height - 0.5)
+                * Math.pow(2, $('#scale').text())
+                + parseFloat(scope.$centerY.val())
+    };
 }

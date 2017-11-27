@@ -31,7 +31,7 @@ $(function(){
         $centerX: $('#centerX'),
         $centerY: $('#centerY'),
         // $scale: $('#scale'), 途中で参照が変わるため、直接取得に変更
-        $mouseX: $('#mouseX'),
-        $mouseY: $('#mouseY')
+        $clickX: $('#clickX'),
+        $clickY: $('#clickY')
     });
 });

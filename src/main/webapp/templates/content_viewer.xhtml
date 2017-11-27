@@ -8,12 +8,20 @@
 
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGroup id="gameview">
-        <p:ajax event="click" delay="1" listener="#{game.onClick}"/>
-        <h:inputHidden id="mouseX" value="#{game.mouseX}"/>
-        <h:inputHidden id="mouseY" value="#{game.mouseY}"/> 
-        
-        <p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
-        <h:inputHidden id="centerX" value="#{game.centerX}"/>
+        <!-- 画面クリック操作用 -->
+        <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
+        <p:ajax event="click" delay="1" oncomplete="fireClickMenu()"/>
+        <!-- immediateを入れないとDialogがでない -->
+        <p:remoteCommand name="fireClickMenu"
+                         immediate="true"
+                         actionListener="#{game.openClickMenu}" />
+
+        <h:inputHidden id="clickX" value="#{game.clickX}"/>
+        <h:inputHidden id="clickY" value="#{game.clickY}"/> 
+
+        <!-- 画面スクロール用 -->
+        <!--<p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
+        --><h:inputHidden id="centerX" value="#{game.centerX}"/>
         <h:inputHidden id="centerY" value="#{game.centerY}"/>
     </h:panelGroup>
     <h:panelGroup id="gamemodel">
@@ -65,6 +73,7 @@
 
     </h:panelGroup>
 
+    <!-- 拡大縮小用 -->
     <h:outputText  id="scale" value="#{game.scale}"/>
     <h:inputHidden id="sliderscale" value="#{game.scale * 100}"/>
     <p:slider for="sliderscale" minValue="100" maxValue="1600" onSlide="handleSlide(event, ui)">

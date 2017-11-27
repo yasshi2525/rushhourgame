@@ -24,7 +24,9 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -51,6 +53,7 @@ import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SlideEndEvent;
 
 /**
@@ -59,10 +62,11 @@ import org.primefaces.event.SlideEndEvent;
  */
 @Named(value = "game")
 @ViewScoped
-public class GameViewBean implements Serializable{
+public class GameViewBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
-    
+
     @Inject
     protected PlayerController pCon;
     @Inject
@@ -81,14 +85,16 @@ public class GameViewBean implements Serializable{
     protected RushHourSession rhSession;
     protected Player player;
     protected OperationType operation = NONE;
-    
+
     protected double centerX;
     protected double centerY;
     protected double scale;
-    
-    protected int mouseX;
-    protected int mouseY;
-    
+
+    protected double clickX;
+    protected double clickY;
+
+    boolean showsMenu;
+
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
@@ -96,59 +102,64 @@ public class GameViewBean implements Serializable{
         centerY = rhSession.getCenterY();
         scale = rhSession.getScale();
     }
-    
-    @Transactional
-    public void onClick() throws RushHourException{
-        switch(operation){
-            case CREATE_RAIL:
-                railCon.create(player, mouseX, mouseY);
-                break;
-        }
+
+    public void openClickMenu() throws RushHourException {
+        showsMenu = !showsMenu;
+        System.out.println("clickX = " + clickX + ", clickY = " + clickY + ", showsMenu = " + showsMenu);
+        
+        RequestContext context = getRequestContext();
+        Map<String,Object> options = new HashMap<>();
+        options.put("width", 250);
+        context.openDialog("clickmenu", options, null);
     }
     
+    protected RequestContext getRequestContext() {
+        return RequestContext.getCurrentInstance();
+    }
+
     public List<Company> getCompanies() {
         return cCon.findIn(centerX, centerY, getLoadScale());
     }
-    
+
     public List<Residence> getResidences() {
         return rCon.findIn(centerX, centerY, getLoadScale());
     }
-    
+
     public List<RailNode> getRailNodes() {
         return railCon.findNodeIn(centerX, centerY, getLoadScale());
     }
-    
+
     public List<RailEdge> getRailEdges() {
         return railCon.findEdgeIn(centerX, centerY, getLoadScale());
     }
-    
+
     public List<Station> getStations() {
         return stCon.findIn(centerX, centerY, getLoadScale());
     }
-    
+
     @Transactional
     public List<Line> getLines() {
         return lCon.findIn(centerX, centerY, getLoadScale());
     }
-    
+
     public List<StepForHuman> getStepForHuman() {
         return sCon.findIn(centerX, centerY, getLoadScale());
     }
-    
-    public int getMouseX() {
-        return mouseX;
+
+    public double getClickX() {
+        return clickX;
     }
 
-    public void setMouseX(int mouseX) {
-        this.mouseX = mouseX;
+    public void setClickX(double clickX) {
+        this.clickX = clickX;
     }
 
-    public int getMouseY() {
-        return mouseY;
+    public double getClickY() {
+        return clickY;
     }
 
-    public void setMouseY(int mouseY) {
-        this.mouseY = mouseY;
+    public void setClickY(double clickY) {
+        this.clickY = clickY;
     }
 
     public OperationType getOperation() {
@@ -158,8 +169,8 @@ public class GameViewBean implements Serializable{
     public void setOperation(OperationType operation) {
         this.operation = operation;
     }
-    
-    public boolean isOperating(){
+
+    public boolean isOperating() {
         return operation != NONE;
     }
 
@@ -189,17 +200,21 @@ public class GameViewBean implements Serializable{
         this.scale = scale;
         rhSession.setScale(scale);
     }
-    
+
     public void onSlideEnd(SlideEndEvent event) {
         setScale(event.getValue() / 100.0); // 100倍の値を入力させている
-    } 
-    
+    }
+
     /**
-     * 読み込む際は表示するより広い領域読み込む.
-     * スクロールしても表示が途切れないようにするため
+     * 読み込む際は表示するより広い領域読み込む. スクロールしても表示が途切れないようにするため
+     *
      * @return ロードするscale
      */
     protected double getLoadScale() {
         return scale + 1;
+    }
+
+    public boolean isShowsMenu() {
+        return showsMenu;
     }
 }
