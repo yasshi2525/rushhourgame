@@ -27,7 +27,7 @@ var gameview = require('./gameview.js');
 $(function(){
     // htmlの要素名と意味のマッピングはここで行う
     gameview.init({
-        $canvas: $('#gameview'),
+        $gameview: $('#gameview'),
         $centerX: $('#centerX'),
         $centerY: $('#centerY'),
         $clickX: $('#clickX'),

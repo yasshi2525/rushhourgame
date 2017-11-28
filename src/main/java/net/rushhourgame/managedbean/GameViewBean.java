@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -104,13 +105,19 @@ public class GameViewBean implements Serializable {
     }
 
     public void openClickMenu() throws RushHourException {
+        Map<String, String> params = getExternalContext().getRequestParameterMap();
+        clickX = Double.parseDouble(params.get("gamePos.x"));
+        clickY = Double.parseDouble(params.get("gamePos.y"));
         showsMenu = !showsMenu;
-        System.out.println("clickX = " + clickX + ", clickY = " + clickY + ", showsMenu = " + showsMenu);
         
         RequestContext context = getRequestContext();
         Map<String,Object> options = new HashMap<>();
         options.put("width", 250);
         context.openDialog("clickmenu", options, null);
+    }
+    
+    protected ExternalContext getExternalContext() {
+        return FacesContext.getCurrentInstance().getExternalContext();
     }
     
     protected RequestContext getRequestContext() {

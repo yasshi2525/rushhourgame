@@ -58,7 +58,6 @@ var lineResources = {
  */
 exports.init = function (param) {
     scope = param;
-    initEventHandler();
 
     // 画像ロード後、スプライトを表示
     initPixi();
@@ -67,7 +66,9 @@ exports.init = function (param) {
 function initPixi() {
 
     var renderer = pixi.autoDetectRenderer(512, 512);
-    scope.$canvas.get(0).appendChild(renderer.view); // get(0)がないとダメ
+    scope.$gameview.get(0).appendChild(renderer.view); // get(0)がないとダメ
+    scope.$canvas = $('#gameview canvas');
+    initEventHandler(); //イベントハンドラ登録
 
     scope.renderer = renderer;
     scope.stage = new pixi.Container();
@@ -81,7 +82,7 @@ function initPixi() {
         'stepforhuman': {}
     };
 
-    // 画像をロードしたあと、スプライトを表示
+    // 画像をロードしたあと、イベントハンドラスプライトを表示
     pixi.loader
             .add('company', 'resources/image/s_company.png')
             .add('residence', 'resources/image/s_residence.png')
@@ -91,17 +92,11 @@ function initPixi() {
 }
 
 function initEventHandler() {
+
     scope.$canvas.on({
-        'click': function (event) {
-            // マウスの座標をゲーム上の座標に変換する
-            var mouseX = event.originalEvent.offsetX;
-            var mouseY = event.originalEvent.offsetY;
-            
-            var gamePos = toGamePos(mouseX, mouseY);
-            
-            scope.$clickX.val(gamePos.x);
-            scope.$clickY.val(gamePos.y);
-        },
+        // 当初 clickイベント時にクリックメニューを表示するようにしていたが、
+        // ドラッグの終わりにもメニューが表示されてしまった。
+        // そこで onDragEnd時に移動があったか判定するようにした。
         // マップスクロール用。
         // PIXI側で実現しようとしたが、スプライトを用意する必要があるため、
         // canvas要素側で実現することにした。
@@ -261,8 +256,8 @@ handleSlide = function (event, ui) {
     fetchGraphics();
 };
 
-function onDragStart(event)
-{
+function onDragStart(event) {
+    this.moving = false;
     this.dragging = true;
     this.startGamePos = {
         x: parseFloat(scope.$centerX.val()),
@@ -274,8 +269,22 @@ function onDragStart(event)
     };
 }
 
-function onDragEnd(event)
-{
+function onDragEnd(event) {
+    if (!this.moving) {
+        // マウスの座標をゲーム上の座標に変換する
+        var mouseX = event.originalEvent.offsetX;
+        var mouseY = event.originalEvent.offsetY;
+
+        var gamePos = toGamePos(mouseX, mouseY);
+
+        scope.$clickX.val(gamePos.x);
+        scope.$clickY.val(gamePos.y);
+        fireClickMenu([
+                {name: 'gamePos.x', value: gamePos.x},
+                {name: 'gamePos.y', value: gamePos.y}]);
+    }
+
+    this.moving = false;
     this.dragging = false;
     this.startGamePos = null;
     this.startPosition = null;
@@ -287,6 +296,7 @@ function onDragEnd(event)
  * @returns {undefined}
  */
 function onDragMove(event) {
+    this.moving = true;
     if (this.dragging) {
 
         var newPosition = {
@@ -311,10 +321,10 @@ function onDragMove(event) {
 function toGamePos(x, y) {
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
-        x : (x / scope.renderer.width - 0.5)
+        x: (x / scope.renderer.width - 0.5)
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerX.val()),
-        y : (y / scope.renderer.height - 0.5)
+        y: (y / scope.renderer.height - 0.5)
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())
     };

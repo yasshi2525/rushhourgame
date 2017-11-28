@@ -10,7 +10,6 @@
     <h:panelGroup id="gameview">
         <!-- 画面クリック操作用 -->
         <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
-        <p:ajax event="click" delay="1" oncomplete="fireClickMenu()"/>
         <!-- immediateを入れないとDialogがでない -->
         <p:remoteCommand name="fireClickMenu"
                          immediate="true"

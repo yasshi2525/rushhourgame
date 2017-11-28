@@ -23,8 +23,11 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
@@ -86,11 +89,18 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.player = player;
         inst.setClickX(CLICK_X);
         inst.setClickY(CLICK_Y);
-        inst.setOperation(OperationType.CREATE_RAIL);
+        Map<String, String> map = new HashMap<>();
+        map.put("gamePos.x", Double.toString(99.9));
+        map.put("gamePos.y", Double.toString(199.9));
+        ExternalContext ex = mock(ExternalContext.class);
+        doReturn(ex).when(inst).getExternalContext();
+        doReturn(map).when(ex).getRequestParameterMap();
         doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
-        assertTrue(CLICK_X == inst.getClickX());
-        assertTrue(CLICK_Y == inst.getClickY());
+        
         inst.openClickMenu();
+        
+        assertTrue(99.9 == inst.getClickX());
+        assertTrue(199.9 == inst.getClickY());
     }
     
     @Test
