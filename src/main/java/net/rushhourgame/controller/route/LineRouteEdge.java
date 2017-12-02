@@ -50,8 +50,4 @@ public class LineRouteEdge {
     public LineRouteNode getFrom() {
         return from;
     }
-
-    public LineRouteNode getTo() {
-        return to;
-    }
 }

@@ -58,10 +58,6 @@ public class LineRouteNode implements Comparable<LineRouteNode> {
         this.cost = cost;
     }
 
-    public LineRouteNode getVia() {
-        return via;
-    }
-
     public void setVia(LineRouteNode via) {
         this.via = via;
     }

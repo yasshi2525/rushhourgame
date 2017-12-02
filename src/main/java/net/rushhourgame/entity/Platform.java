@@ -24,6 +24,7 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -138,12 +139,12 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     }
 
     @Override
-    public Stream<StepForHuman> getOutEdges() {
-        return Stream.concat(tFromList.stream(), stFromList.stream());
+    public List<StepForHuman> getOutEdges() {
+        return Stream.concat(tFromList.stream(), stFromList.stream()).collect(Collectors.toList());
     }
 
     @Override
-    public Stream<StepForHuman> getInEdges() {
-        return Stream.concat(tToList.stream(), stToList.stream());
+    public List<StepForHuman> getInEdges() {
+        return Stream.concat(tToList.stream(), stToList.stream()).collect(Collectors.toList());
     }
 }

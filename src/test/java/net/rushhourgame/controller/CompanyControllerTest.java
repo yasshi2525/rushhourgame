@@ -60,6 +60,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_CMP_SCALE)) == created.getScale());
+        assertTrue(0 == created.distTo(created));
 
         assertEquals(1, inst.findAll().size());
     }

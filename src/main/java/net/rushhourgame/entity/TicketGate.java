@@ -24,6 +24,7 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -120,12 +121,12 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     }
     
     @Override
-    public Stream<StepForHuman> getOutEdges() {
-        return Stream.concat(stFromList.stream(), cmpList.stream());
+    public List<StepForHuman> getOutEdges() {
+        return Stream.concat(stFromList.stream(), cmpList.stream()).collect(Collectors.toList());
     }
 
     @Override
-    public Stream<StepForHuman> getInEdges() {
-        return Stream.concat(stToList.stream(), rsdList.stream());
+    public List<StepForHuman> getInEdges() {
+        return Stream.concat(stToList.stream(), rsdList.stream()).collect(Collectors.toList());
     }
 }

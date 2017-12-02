@@ -85,6 +85,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
         assertEquals(player, created.getOwner());
+        assertFalse(created.isOwnedBy(null));
         assertTrue(created.isOwnedBy(player));
         assertTrue(created.isPrivilegedBy(player));
         assertEquals(TEST_NAME, created.getName());

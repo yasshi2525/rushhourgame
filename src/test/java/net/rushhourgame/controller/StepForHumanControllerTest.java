@@ -144,8 +144,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testAddCompanyToOneResidenceWorld() throws RushHourException {
-        RCON.create(10, 10);
-        CCON.create(20, 10);
+        Residence r = RCON.create(10, 10);
+        Company c = CCON.create(20, 10);
 
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
@@ -157,6 +157,15 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
 
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getCost() == 10.0);
+        
+        EM.flush();
+        EM.refresh(r);
+        EM.refresh(c);
+        
+        assertTrue(r.getInEdges().isEmpty());
+        assertEquals(1, r.getOutEdges().size());
+        assertEquals(1, c.getInEdges().size());
+        assertTrue(c.getOutEdges().isEmpty());
     }
 
     /**
@@ -234,7 +243,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testAddStationToOneRsdCmpWorld() throws RushHourException {
         RCON.create(TEST_X, TEST_Y);
         CCON.create(TEST_X, TEST_Y);
-        createStation();
+        Station st = createStation();
 
         // R -> Gate <-> Platform
         //      Gate  -> C
@@ -246,6 +255,15 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(1);
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
+        
+        EM.flush();
+        EM.refresh(st.getTicketGate());
+        EM.refresh(st.getPlatform());
+        
+        assertEquals(2, st.getTicketGate().getInEdges().size());
+        assertEquals(2, st.getTicketGate().getOutEdges().size());
+        assertEquals(1, st.getPlatform().getInEdges().size());
+        assertEquals(1, st.getPlatform().getOutEdges().size());
     }
     
     @Test

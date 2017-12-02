@@ -25,6 +25,7 @@ package net.rushhourgame.entity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -145,12 +146,12 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
     }
 
     @Override
-    public Stream<StepForHuman> getInEdges() {
-        return Collections.<StepForHuman>emptyList().stream();
+    public List<StepForHuman> getInEdges() {
+        return Collections.<StepForHuman>emptyList();
     }
 
     @Override
-    public Stream<StepForHuman> getOutEdges() {
-        return Stream.concat(stList.stream(), directlyList.stream());
+    public List<StepForHuman> getOutEdges() {
+        return Stream.concat(stList.stream(), directlyList.stream()).collect(Collectors.toList());
     }
 }

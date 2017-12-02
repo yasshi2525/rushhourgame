@@ -23,7 +23,7 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * 他のインスタンスとEdgeで結ばれるもの
@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  */
 public interface RelayPointForHuman extends Pointable {
 
-    public Stream<StepForHuman> getOutEdges();
+    public List<StepForHuman> getOutEdges();
 
-    public Stream<StepForHuman> getInEdges();
+    public List<StepForHuman> getInEdges();
 }
