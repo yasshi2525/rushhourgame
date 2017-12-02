@@ -31,13 +31,19 @@ import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import net.rushhourgame.RushHourProperties;
+import static net.rushhourgame.httpclient.TwitterClient.*;
+import org.junit.runner.RunWith;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class TwitterClientTest {
 
+    @Spy
     protected TwitterClient inst;
     protected static final String INVALID_URL = "http://127.0.0.1/";
 
@@ -47,9 +53,22 @@ public class TwitterClientTest {
 
     @Before
     public void setUp() {
-        inst = new TwitterOAuthRequestTokenClient();
         inst.prop = RushHourProperties.getInstance();
         inst.sigBuilder = new TwitterSignatureBuilder();
+    }
+    
+    @Test
+    public void testInit() {
+        inst.init();
+        assertNotNull(inst.authorizationHeaders.get(OAUTH_CONSUMER_KEY));
+        assertNotNull(inst.authorizationHeaders.get(OAUTH_NONCE));
+        assertNotNull(inst.authorizationHeaders.get(OAUTH_SIGNATURE_METHOD));
+        assertNotNull(inst.authorizationHeaders.get(OAUTH_TIMESTAMP));
+        assertNotNull(inst.authorizationHeaders.get(OAUTH_VERSION));
+        assertEquals(5, inst.authorizationHeaders.size());
+        
+        assertEquals(5, inst.requestHeaders.get(AUTHORIZATION).size());
+        assertNotNull(inst.sigBuilder.getConsumerSecret());
     }
     
     @Test
@@ -65,5 +84,15 @@ public class TwitterClientTest {
         assertFalse(createNonce.contains("/"));
         assertFalse(createNonce.contains("+"));
         assertFalse(createNonce.contains("="));
+    }
+    
+    @Test
+    public void testBean() {
+        inst.init();
+        
+        inst.setOAuthToken("foo");
+        assertEquals("foo", inst.oAuthToken);
+        inst.setOAuthTokenSecret("bar");
+        assertEquals("bar", inst.oAuthTokenSecret);
     }
 }

@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.RushHourProperties;
 
 /**
@@ -53,7 +54,7 @@ public class TwitterClient extends HttpClient {
     protected static final String OAUTH_TIMESTAMP = "oauth_timestamp";
     protected static final String OAUTH_VERSION = "oauth_version";
     protected static final String OAUTH_TOKEN = "oauth_token";
-    protected static final String AUTHIRIZATION = "Authorization";
+    protected static final String AUTHORIZATION = "Authorization";
 
     protected SortedMap<String, String> authorizationHeaders;
 
@@ -74,24 +75,18 @@ public class TwitterClient extends HttpClient {
         authorizationHeaders.put(OAUTH_SIGNATURE_METHOD, "HMAC-SHA1");
         authorizationHeaders.put(OAUTH_TIMESTAMP, String.valueOf(System.currentTimeMillis() / 1000));
         authorizationHeaders.put(OAUTH_VERSION, "1.0");
-        requestHeaders.put(AUTHIRIZATION, authorizationHeaders);
+        requestHeaders.put(AUTHORIZATION, authorizationHeaders);
 
         //Sigunature Key作成のための初期設定
         sigBuilder.setConsumerSecret(prop.get(RushHourProperties.TWITTER_CONSUMER_SECRET));
     }
 
-    public void setOAuthToken(String oAuthToken) {
-        if (oAuthToken == null) {
-            throw new IllegalArgumentException("oAuthToken == null");
-        }
+    public void setOAuthToken(@NotNull String oAuthToken) {
         this.oAuthToken = oAuthToken;
-        requestHeaders.get(AUTHIRIZATION).put(OAUTH_TOKEN, oAuthToken);
+        requestHeaders.get(AUTHORIZATION).put(OAUTH_TOKEN, oAuthToken);
     }
 
-    public void setOAuthTokenSecret(String oAuthTokenSecret) {
-        if (oAuthToken == null) {
-            throw new IllegalArgumentException("oAuthToken == null");
-        }
+    public void setOAuthTokenSecret(@NotNull String oAuthTokenSecret) {
         this.oAuthTokenSecret = oAuthTokenSecret;
         sigBuilder.setOAuthTokenSecret(oAuthTokenSecret);
     }
@@ -107,13 +102,13 @@ public class TwitterClient extends HttpClient {
         LOG.log(Level.FINE, "{0}#buildHeader start", HttpClient.class.getSimpleName());
 
         // Signatureの作成
-        requestHeaders.get(AUTHIRIZATION).put(OAUTH_SIGNATURE, buildSignature());
+        requestHeaders.get(AUTHORIZATION).put(OAUTH_SIGNATURE, buildSignature());
 
         StringBuilder sb = new StringBuilder();
         sb.append("OAuth ");
 
-        for (Map.Entry<String, String> entry : requestHeaders.get(AUTHIRIZATION).entrySet()) {
-            if (!entry.getKey().equals(requestHeaders.get(AUTHIRIZATION).firstKey())) {
+        for (Map.Entry<String, String> entry : requestHeaders.get(AUTHORIZATION).entrySet()) {
+            if (!entry.getKey().equals(requestHeaders.get(AUTHORIZATION).firstKey())) {
                 sb.append(", ");
             }
             sb.append(encodeURL(entry.getKey()));
@@ -125,7 +120,7 @@ public class TwitterClient extends HttpClient {
                 new Object[]{TwitterClient.class.getSimpleName(), sb.toString()});
 
         SortedMap<String, String> header = new TreeMap<>();
-        header.put(AUTHIRIZATION, sb.toString());
+        header.put(AUTHORIZATION, sb.toString());
         return header;
     }
 

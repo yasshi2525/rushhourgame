@@ -55,7 +55,7 @@ public class TwitterOAuthRequestTokenClient extends TwitterClient {
         httpMethod = HttpMethod.POST;
         resourceUrl = prop.get(TWITTER_API_REQ_TOKEN);
 
-        requestHeaders.get(AUTHIRIZATION)
+        requestHeaders.get(AUTHORIZATION)
                 .put(OAUTH_CALLBACK, prop.get(TWITTER_CALLBACK_URL));
         
         sigBuilder.setHttpMethod(httpMethod.toString());

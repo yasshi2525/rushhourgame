@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.exception.RushHourException;
 
@@ -62,12 +63,9 @@ public class TwitterOAuthAccessTokenClient extends TwitterClient {
         sigBuilder.setBaseUrl(resourceUrl);
     }
 
-    public void setOAuthVerifier(String oauthVerifier) {
-        if (oauthVerifier == null) {
-            throw new IllegalArgumentException("oauthTokenSecret = null");
-        }
+    public void setOAuthVerifier(@NotNull String oauthVerifier) {
         this.oauthVerifier = oauthTokenSecret;
-        requestHeaders.get(AUTHIRIZATION).put(OAUTH_VERIFIER, oauthVerifier);
+        requestHeaders.get(AUTHORIZATION).put(OAUTH_VERIFIER, oauthVerifier);
     }
     
     public String getAccessToken() throws RushHourException{
