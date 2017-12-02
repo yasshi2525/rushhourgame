@@ -125,7 +125,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddStationToEmptyWorld() throws RushHourException {
         // このなかで、addStationが呼ばれる。
-        createStation();
+        Station st = createStation();
 
         // TicketGate <-> Platform
         assertEquals(2, inst.findAll().size());
@@ -135,6 +135,19 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        
+        StepForHumanIntoStation inStep = findIntoStation().get(0);
+        assertEquals(st.getTicketGate(), inStep.getFrom());
+        assertEquals(st.getPlatform(), inStep.getTo());
+        assertTrue(0 == inStep.getCost());
+        assertTrue(inStep.getUid().startsWith("into"));
+        
+        
+        StepForHumanOutOfStation outStep = findOutOfStation().get(0);
+        assertEquals(st.getPlatform(), outStep.getFrom());
+        assertEquals(st.getTicketGate(), outStep.getTo());
+        assertTrue(0 == outStep.getCost());
+        assertTrue(outStep.getUid().startsWith("outof"));
     }
 
     /**
@@ -156,6 +169,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertThroughTrainNumEquals(0);
 
         StepForHumanDirectly directly = findDirectly().get(0);
+        assertTrue(directly.getUid().startsWith("directly"));
         assertTrue(directly.getCost() == 10.0);
         
         EM.flush();
@@ -192,8 +206,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testAddCompanyToStationWorld() throws RushHourException {
-        createStation();
-        CCON.create(20, 10);
+        Station st = createStation();
+        Company c = CCON.create(20, 10);
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -202,12 +216,18 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
+        
+        StepForHumanStationToCompany toStep = findToCompany().get(0);
+        assertEquals(st.getTicketGate(), toStep.getFrom());
+        assertEquals(c, toStep.getTo());
+        assertTrue(toStep.getCost() > 0);
+        assertTrue(toStep.getUid().startsWith("to"));
     }
 
     @Test
     public void testAddResidenceToStationWorld() throws RushHourException {
-        createStation();
-        RCON.create(20, 10);
+        Station st = createStation();
+        Residence r = RCON.create(20, 10);
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -216,6 +236,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(1);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        
+        StepForHumanResidenceToStation fromStep = findFromResidence().get(0);
+        assertEquals(r, fromStep.getFrom());
+        assertEquals(st.getTicketGate(), fromStep.getTo());
+        assertTrue(fromStep.getCost() > 0);
+        assertTrue(fromStep.getUid().startsWith("from"));
     }
 
     /**

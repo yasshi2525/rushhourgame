@@ -714,7 +714,12 @@ public class LineControllerTest extends AbstractControllerTest {
         assertEquals(2, throughs.size());
         
         // 徒歩よりコストが安い
-        assertTrue(st2.distTo(st1) > throughs.get(0).getCost());
+        StepForHumanThroughTrain through = throughs.get(0);
+        assertTrue(st2.distTo(st1) > through.getCost());
+        assertEquals(line, through.getLine());
+        assertEquals(st1.getPlatform(), through.getFrom());
+        assertEquals(st2.getPlatform(), through.getTo());
+        assertTrue(through.getUid().startsWith("train"));
     }
     
     @Test
