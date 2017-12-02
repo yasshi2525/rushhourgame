@@ -30,13 +30,19 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.*;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class EncryptConverterTest {
 
+    @Spy
     EncryptConverter inst;
 
     @BeforeClass
@@ -45,30 +51,34 @@ public class EncryptConverterTest {
         new SecureRandom().nextBytes(bytes);
         System.out.println(Base64.getEncoder().encodeToString(bytes));
     }
-    
-    @Before
-    public void setUp() {
-        inst = new EncryptConverter();
-    }
 
     @Test
     public void testEncrypt() throws Exception {
-        String result = inst.encrypt("this_is_sample_data");
+        String result = inst.convertToDatabaseColumn("this_is_sample_data");
         assertNotNull(result);
 
-        result = inst.encrypt("あいうえおかきくけこ");
+        result = inst.convertToDatabaseColumn("あいうえおかきくけこ");
         assertNotNull(result);
         
-        result = inst.encrypt(null);
+        result = inst.convertToDatabaseColumn(null);
         assertNull(result);
     }
     
     @Test
     public void testRestore() throws Exception{
         String test = "this_is_sample_data";
-        assertEquals(test, inst.decrypt(inst.encrypt(test)));
+        assertEquals(test, inst.convertToEntityAttribute(inst.convertToDatabaseColumn(test)));
         test = "あいうえおかきくけこ";
-        assertEquals(test, inst.decrypt(inst.encrypt(test)));
+        assertEquals(test, inst.convertToEntityAttribute(inst.convertToDatabaseColumn(test)));
         assertNull(inst.decrypt(inst.encrypt(null)));
+    }
+    
+    @Test
+    public void testConvertToDatabaseColumn() throws Exception {
+        doThrow(NoSuchAlgorithmException.class).when(inst).encrypt(anyString());
+        doThrow(NoSuchAlgorithmException.class).when(inst).decrypt(anyString());
+        
+        assertNull(inst.convertToDatabaseColumn("hoge"));
+        assertNull(inst.convertToEntityAttribute("hoge"));
     }
 }
