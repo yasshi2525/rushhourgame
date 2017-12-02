@@ -25,23 +25,29 @@ package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.controller.ControllerFactory.createDigestCalculator;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class PlayerControllerTest extends AbstractControllerTest {
-
+    @Spy
     protected PlayerController inst;
     protected final static UserData USERDATA1 = new SimpleUserData();
     protected final static UserData USERDATA2 = new SimpleUserData();
@@ -60,7 +66,11 @@ public class PlayerControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createPlayController();
+        inst.calculator = createDigestCalculator();
+        inst.em = EM;
+        inst.errMsgBuilder = ErrorMessageBuilder.getInstance();
+        inst.oCon = OCON;
+        inst.prop = PROP;
     }
 
     @Test
@@ -123,9 +133,10 @@ public class PlayerControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testUpsertPlayerException() throws NoSuchAlgorithmException {
+    public void testUpsertPlayerException() throws NoSuchAlgorithmException, RushHourException {
         DigestCalculator mock = mock(DigestCalculator.class);
         doThrow(NoSuchAlgorithmException.class).when(mock).calcDigest(anyString());
+        doReturn(null).when(inst).findByUserId(anyString(), any(SignInType.class));
         inst.calculator = mock;
         try {
             inst.upsertPlayer(
@@ -171,6 +182,21 @@ public class PlayerControllerTest extends AbstractControllerTest {
         assertNull(inst.findByUserId(null, SignInType.LOCAL));
         assertNull(inst.findByUserId(created.getUserId(), SignInType.TWITTER));
         assertNull(inst.findByUserId(UNEXIST_USER_ID, SignInType.LOCAL));
+    }
+    
+    @Test
+    public void testFindByUserIdException() throws RushHourException, NoSuchAlgorithmException {
+        inst.calculator = mock(DigestCalculator.class);
+        doThrow(NoSuchAlgorithmException.class).when(inst.calculator).calcDigest(anyString());
+
+        try {
+            inst.findByUserId(TEST_USER_ID, SignInType.LOCAL);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(SIGNIN_FAIL, e.getErrMsg().getTitleId());
+            assertEquals(UNKNOWN_DETAIL, e.getErrMsg().getDetailId());
+            assertEquals(SYSTEM_ERR_ACTION, e.getErrMsg().getActionId());
+        }
     }
 
     @Test

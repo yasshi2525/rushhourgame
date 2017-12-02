@@ -105,11 +105,7 @@ public class PlayerController extends AbstractController {
     public boolean existsUserId(String userId, @NotNull SignInType type) throws RushHourException {
         return findByUserId(userId, type) != null;
     }
-
-    public boolean existsToken(String token) {
-        return exists("Player.existsToken", "token", token);
-    }
-
+    
     public Player findByUserId(String userId, @NotNull SignInType signIn) throws RushHourException {
         if (userId == null) {
             return null;
