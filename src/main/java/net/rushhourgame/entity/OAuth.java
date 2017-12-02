@@ -76,10 +76,6 @@ public class OAuth extends AbstractEntity {
         this.requestToken = requestToken;
     }
 
-    public String getRequestTokenDigest() {
-        return requestTokenDigest;
-    }
-
     public void setRequestTokenDigest(String requestTokenDigest) {
         this.requestTokenDigest = requestTokenDigest;
     }

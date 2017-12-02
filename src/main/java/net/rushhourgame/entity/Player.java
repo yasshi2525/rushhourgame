@@ -116,10 +116,6 @@ public class Player extends AbstractEntity {
         this.userId = userId;
     }
 
-    public String getUserIdDigest() {
-        return userIdDigest;
-    }
-
     public void setUserIdDigest(String userIdDigest) {
         this.userIdDigest = userIdDigest;
     }
