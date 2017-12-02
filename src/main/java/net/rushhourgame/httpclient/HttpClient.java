@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -73,10 +74,6 @@ public abstract class HttpClient implements Serializable {
     protected boolean isExecuted;
     protected String responseHeader;
 
-    public int getResponseStatus() {
-        return response.getStatus();
-    }
-
     public void execute() throws RushHourException {
         LOG.log(Level.FINE, "{0}#request execute", HttpClient.class.getSimpleName());
         // 前提
@@ -86,11 +83,7 @@ public abstract class HttpClient implements Serializable {
         verifyResourceUrl();
 
         try {
-            SortedMap<String, String> headers = buildHeader();
-            Entity<Form> postParams = buildPOSTParams();
-
-            response = request(headers, getParameters, postParams);
-
+            response = request(buildHeader(), getParameters, buildPOSTParams());
         } catch (UnsupportedEncodingException ex) {
             // ヘッダ文字列作成時にエンコード失敗
             LOG.log(Level.SEVERE, HttpClient.class + "#request", ex);
@@ -138,10 +131,8 @@ public abstract class HttpClient implements Serializable {
      *
      * @param resourceUrl resourceUrl
      */
-    public void setResourceUrl(String resourceUrl) {
-        if (resourceUrl != null) {
-            this.resourceUrl = resourceUrl;
-        }
+    public void setResourceUrl(@NotNull String resourceUrl) {
+        this.resourceUrl = resourceUrl;
     }
 
     protected SortedMap<String, String> getGetParameters() {
@@ -156,24 +147,20 @@ public abstract class HttpClient implements Serializable {
         return responseHeaders;
     }
 
+    @NotNull
     protected abstract SortedMap<String, String> buildHeader() throws UnsupportedEncodingException;
 
-    protected Response request(SortedMap<String, String> headers,
-            Map<String, String> queryParams,
+    protected Response request(@NotNull SortedMap<String, String> headers,
+            @NotNull Map<String, String> queryParams,
             Entity<Form> post) throws UnsupportedEncodingException, RushHourException {
         LOG.log(Level.FINE, "{0}#request start", HttpClient.class.getSimpleName());
 
-        verifyResourceUrl();
-        WebTarget target = ClientBuilder.newClient().target(resourceUrl + buildGETQuery());
-
-        Invocation.Builder builder = target.request(mediaType);
+        Invocation.Builder builder = createTarget().request(mediaType);
 
         //header
-        if (headers != null) {
-            headers.forEach((key, value) -> {
-                builder.header(key, value);
-            });
-        }
+        headers.forEach((key, value) -> {
+            builder.header(key, value);
+        });
 
         if (httpMethod == null) {
             throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
@@ -182,10 +169,13 @@ public abstract class HttpClient implements Serializable {
             case GET:
                 return builder.get();
             case POST:
+                default:
                 return builder.post(post);
-            default:
-                throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, SIGNIN_FAIL_NO_HTTP_METHOD));
         }
+    }
+
+    protected WebTarget createTarget() throws UnsupportedEncodingException {
+        return ClientBuilder.newClient().target(resourceUrl + buildGETQuery());
     }
 
     /**
