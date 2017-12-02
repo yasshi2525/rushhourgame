@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
@@ -31,6 +32,7 @@ import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
@@ -60,8 +62,6 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     protected TwitterUserShowClient showClient;
     @Mock
     protected TwitterUserData userData;
-    @Mock
-    protected ExternalContext context;
 
     public TwitterOAuthAccessTokenBeanTest() {
     }
@@ -80,15 +80,16 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             doReturn("test_access").when(client).getAccessToken();
             doReturn("test_access_sec").when(client).getAccessTokenSecret();
             doReturn("test_user_id").when(client).getUserId();
-            doReturn(context).when(spy).getExternalContext();
-            doNothing().when(context).redirect(anyString());
+            doReturn(facesContext).when(spy).getFacesContext();
+            doReturn(externalContext).when(facesContext).getExternalContext();
+            doNothing().when(externalContext).redirect(anyString());
             doReturn("test_name").when(userData).getName();
             doReturn("#123456").when(userData).getColor();
             doReturn("#123456").when(userData).getTextColor();
             doReturn("test_url").when(userData).getIconUrl();
             doReturn(userData).when(showClient).getUserData();
-            OCON.createOAuthBean("test", "test_sec");
-            PCON.createPlayer("test", "testId", "test_access", new SimpleUserData());
+            doReturn(Locale.getDefault()).when(session).getLocale();
+            OCON.upsertRequestToken("test", "test_sec", SignInType.TWITTER);
         } catch (IOException | RushHourException ex) {
             Logger.getLogger(TwitterOAuthAccessTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -96,46 +97,37 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     }
 
     @Test
-    public void testInit() {
+    public void testInit() throws RushHourException, IOException {
         spy.requestToken = "test";
         spy.oAuthVerifier = "hoge";
-        try {
-            doReturn(new Player()).when(spy).fetchPlayer(anyString(), anyString(), anyString(), anyString());
-            doNothing().when(spy).registerSessionAttribute(any());
-            spy.init();
-        } catch (RushHourException | IOException ex) {
-            fail();
-        }
+        spy.init();
+        verify(externalContext, times(1)).redirect(anyString());
     }
 
     @Test
-    public void testInitRequestTokenNull() {
+    public void testInitRequestTokenNull() throws IOException {
         spy.oAuthVerifier = "hoge";
         try {
             spy.init();
             fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_NO_REQ_TOKEN, ex.getErrMsg().getDetailId());
-        } catch (IOException ex) {
-            fail();
         }
     }
 
     @Test
-    public void testInitOAuthVerifierNull() {
+    public void testInitOAuthVerifierNull() throws IOException {
         spy.requestToken = "test";
         try {
             spy.init();
             fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_NO_REQ_TOKEN, ex.getErrMsg().getDetailId());
-        } catch (IOException ex) {
-            fail();
         }
     }
 
     @Test
-    public void testInitUnexistRequestToken() {
+    public void testInitUnexistRequestToken() throws IOException {
         spy.requestToken = "unexist";
         spy.oAuthVerifier = "hoge";
         try {
@@ -143,34 +135,24 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_UNREGISTERED_REQ_TOKEN, ex.getErrMsg().getDetailId());
-        } catch (IOException ex) {
-            fail();
         }
     }
 
     @Test
-    public void testCreatePlayer() throws Exception {
-        OCON.createOAuthBean("new", "new_sec");
-        Player newPlayer = spy.fetchPlayer("new", "newId", "new_access", "new_access_sec");
+    public void testFetchPlayer() throws Exception {
+        Player newPlayer = spy.fetchPlayer();
 
         assertNotNull(newPlayer);
-        assertEquals("newId", newPlayer.getUserId());
+        assertEquals("test_user_id", newPlayer.getUserId());
+        assertEquals(SignInType.TWITTER, newPlayer.getSignIn());
+        assertEquals("#123456", newPlayer.getInfo().getColor());
     }
-
+    
     @Test
-    public void testGetPlayer() throws RushHourException {
-        Player fetchPlayer = spy.fetchPlayer("test", "testId", "new_access", "new_access_sec");
-        assertNotNull(fetchPlayer);
-        assertEquals("new_access", fetchPlayer.getToken());
-    }
-
-    @Test
-    public void testCreatePlayerNull() {
-        try {
-            spy.fetchPlayer(null, null, null, null);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID, ex.getErrMsg().getDetailId());
-        }
+    public void testBean() {
+        spy.setOAuthVerifier("foo");
+        assertEquals("foo", spy.getOAuthVerifier());
+        spy.setRequestToken("bar");
+        assertEquals("bar", spy.getRequestToken());
     }
 }

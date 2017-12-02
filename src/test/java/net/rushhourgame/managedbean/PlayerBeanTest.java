@@ -23,111 +23,79 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.IOException;
 import java.util.Locale;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.*;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class PlayerBeanTest extends AbstractBeanTest {
+    
+    @Spy
+    protected PlayerBean inst;
 
     protected static final String VALID_PLAIN_ACCESS_TOKEN = "valid";
     protected static final String INVALID_ACCESS_TOKEN = "invalid";
     protected static final String DISPLAY_NAME = "user1";
-    private static SimpleUserData emptyUser;
-    protected static final UserData USER_DATA = new SimpleUserData();
-    protected Player player;
-    protected String accessToken;
-    
-    @BeforeClass
-    public static void setUpClass() {
-        AbstractBeanTest.setUpClass();
-        emptyUser = new SimpleUserData();
-    }
+    private static SimpleUserData emptyUser = new SimpleUserData();
     
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        try {
-            OCON.createOAuthBean("foo", "foosec");
-            PlayerInfo info = new PlayerInfo();
-            info.setName(DISPLAY_NAME);
-            info.setColor("#000000");
-            info.setIconUrl("no_image.png");
-            info.setTextColor("#000000");
-            info.setLocale(Locale.getDefault());
-            player = PCON.createPlayer("foo", "user1", VALID_PLAIN_ACCESS_TOKEN, USER_DATA);
-            player.setInfo(info);
-            accessToken = player.getToken();
-        } catch (RushHourException ex) {
-            fail();
-        }
-    }
-    
-    @After
-    @Override
-    public void tearDown() {
-        EM.getTransaction().commit();
-        TCON.clean();
+        inst.rushHourSession = session;
+        inst.pCon = PCON;
+        inst.prop = PROP;
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
+        
     }
     
     @Test
-    public void testIsSignIn() {
-        PlayerBean inst = new LocalPlayerBean(PCON, true, accessToken);
+    public void testInitNoSignIn() {
+        inst.init();
+        assertFalse(inst.isSignIn());
+        assertEquals(emptyUser.getColor(), inst.getColor());
+        assertEquals(emptyUser.getIconUrl(), inst.getIconUrl());
+        assertEquals(emptyUser.getName(), inst.getName());;
+        assertEquals(emptyUser.getTextColor(), inst.getTextColor());
+    }
+    
+    @Test
+    public void testInitSignIn() throws RushHourException {
+        Player player = createPlayer();
+        doReturn(player.getToken()).when(session).getToken();
+        inst.init();
         assertTrue(inst.isSignIn());
-    }
-
-    @Test
-    public void testIsSignInNoSessionData() {
-        PlayerBean inst = new LocalPlayerBean(PCON, false);
-        assertFalse(inst.isSignIn());
+        assertEquals(player.getInfo().getColor(), inst.getColor());
+        assertEquals(player.getInfo().getIconUrl(), inst.getIconUrl());
+        assertEquals(player.getInfo().getName(), inst.getName());;
+        assertEquals(player.getInfo().getTextColor(), inst.getTextColor());
     }
     
     @Test
-    public void testIsSignInAccessTokenNull() {
-        PlayerBean inst = new LocalPlayerBean(PCON, true);
-        assertFalse(inst.isSignIn());
+    public void testLogOut() throws RushHourException, IOException {
+        inst.logOut();
+        verify(externalContext, times(1)).redirect(anyString());
     }
     
-    @Test
-    public void testIsSignInInvalidAccessToken() {
-        PlayerBean inst = new LocalPlayerBean(PCON, true, INVALID_ACCESS_TOKEN);
-        assertFalse(inst.isSignIn());
-    }
-    
-   @Test
-    public void testGetName() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(PCON, true, accessToken);
-        assertEquals(DISPLAY_NAME, inst.getName());
-    }
-
-    @Test
-    public void testGetNameNoSessionData() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(PCON, false);
-        assertEquals(emptyUser.getName(), inst.getName());
-    }
-    
-    @Test
-    public void testGetNameAccessTokenNull() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(PCON, true);
-        assertEquals(emptyUser.getName(), inst.getName());
-    }
-    
-    @Test
-    public void testGetNameInvalidAccessToken() throws RushHourException {
-        PlayerBean inst = new LocalPlayerBean(PCON, true, INVALID_ACCESS_TOKEN);
-        assertEquals(emptyUser.getName(), inst.getName());
+    public void testGetFacesContext() {
+        assertNull(new PlayerBean().getFacesContext());
     }
 }

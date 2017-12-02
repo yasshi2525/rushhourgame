@@ -92,9 +92,9 @@ public class GameViewBeanTest extends AbstractBeanTest{
         Map<String, String> map = new HashMap<>();
         map.put("gamePos.x", Double.toString(99.9));
         map.put("gamePos.y", Double.toString(199.9));
-        ExternalContext ex = mock(ExternalContext.class);
-        doReturn(ex).when(inst).getExternalContext();
-        doReturn(map).when(ex).getRequestParameterMap();
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
+        doReturn(map).when(externalContext).getRequestParameterMap();
         doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
         
         inst.openClickMenu();
@@ -162,6 +162,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
     
     @Test
     public void testGetRequestContext() {
-        assertNull(inst.getRequestContext());
+        assertNull(new GameViewBean().getRequestContext());
     }
 }

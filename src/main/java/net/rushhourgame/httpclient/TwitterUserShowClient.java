@@ -70,8 +70,7 @@ public class TwitterUserShowClient extends TwitterClient {
     }
 
     public void setPlayer(Player player) {
-        
-        setPlayer(player.getUserId(), player.getOauth().getAccessToken(), player.getOauth().getAccessTokenSecret());
+        setPlayer(player.getUserId(), player.getAccessToken(), player.getAccessToken());
     }
 
     public TwitterUserData getUserData() {

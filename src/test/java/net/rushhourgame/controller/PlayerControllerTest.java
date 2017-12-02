@@ -23,15 +23,18 @@
  */
 package net.rushhourgame.controller;
 
-import net.rushhourgame.entity.OAuth;
+import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import net.rushhourgame.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -46,8 +49,10 @@ public class PlayerControllerTest extends AbstractControllerTest {
 
     protected static final String TEST_USER_ID = "test_user_id_001";
     protected static final String TEST_USER_PLAIN_ACCESS_TOKEN = "access_token_001";
+    protected static final String TEST_USER_PLAIN_ACCESS_TOKEN_SECRET = "access_token_secret_001";
     protected static final String TEST_USER2_ID = "test_user_id_002";
     protected static final String TEST_USER2_PLAIN_ACCESS_TOKEN = "access_token_002";
+    protected static final String TEST_USER2_PLAIN_ACCESS_TOKEN_SECRET = "access_token_secret_002";
     protected static final String UNEXIST_USER_ID = "unexist_user_id_999";
     protected static final String UNEXIST_ACCESS_TOKEN = "unexist_access_token_999";
 
@@ -59,198 +64,149 @@ public class PlayerControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testCreatePlayer() throws RushHourException {
-        OAuth oAuth = OCON.createOAuthBean("foo", "foosec");
-        System.out.println("requestToken(digest )=" + oAuth.getId());
-        System.out.println("requestToken(encrypt)=" + oAuth.getRequestToken());
-        Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
+    public void testUpsertPlayerNew() throws RushHourException {
+        Player created = inst.upsertPlayer(
+                TEST_USER_PLAIN_ACCESS_TOKEN,
+                TEST_USER_PLAIN_ACCESS_TOKEN_SECRET,
+                TEST_USER_ID,
+                SignInType.LOCAL,
+                USERDATA1,
+                Locale.CANADA);
 
+        assertEquals(TEST_USER_PLAIN_ACCESS_TOKEN, created.getAccessToken());
+        assertEquals(TEST_USER_PLAIN_ACCESS_TOKEN_SECRET, created.getAccessTokenSecret());
+        assertEquals(SignInType.LOCAL, created.getSignIn());
+        assertEquals(TEST_USER_ID, created.getUserId());
         assertNotNull(created.getToken());
         assertNotEquals(TEST_USER_PLAIN_ACCESS_TOKEN, created.getToken());
         assertNotNull(created.getInfo());
-        assertNotNull(created.getId());
-        assertNotNull(created.getOauth());
+        assertEquals(USERDATA1.getColor(), created.getInfo().getColor());
+        assertEquals(USERDATA1.getIconUrl(), created.getInfo().getIconUrl());
+        assertEquals(Locale.CANADA, created.getInfo().getLocale());
+        assertEquals(USERDATA1.getName(), created.getInfo().getName());
+        assertEquals(USERDATA1.getTextColor(), created.getInfo().getTextColor());
         assertEquals(1, TCON.findAll("Player", Player.class).size());
     }
 
     @Test
-    public void testCreateNoOAuthPlayer() {
-        try {
-            inst.createPlayer(null, TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN, ex.getErrMsg().getDetailId());
-        }
+    public void testUpsertPlayerUpdate() throws RushHourException {
+        Player created = inst.upsertPlayer(
+                TEST_USER_PLAIN_ACCESS_TOKEN,
+                TEST_USER_PLAIN_ACCESS_TOKEN_SECRET,
+                TEST_USER_ID,
+                SignInType.LOCAL,
+                USERDATA1,
+                Locale.CANADA);
+
+        Player updated = inst.upsertPlayer(
+                TEST_USER2_PLAIN_ACCESS_TOKEN,
+                TEST_USER2_PLAIN_ACCESS_TOKEN_SECRET,
+                TEST_USER_ID,
+                SignInType.LOCAL,
+                USERDATA2,
+                Locale.CHINA);
+
+        assertEquals(created.getId(), updated.getId());
+        assertEquals(created.getUserId(), updated.getUserId());
+        assertEquals(created.getSignIn(), updated.getSignIn());
+        assertEquals(TEST_USER2_PLAIN_ACCESS_TOKEN, updated.getAccessToken());
+        assertEquals(TEST_USER2_PLAIN_ACCESS_TOKEN_SECRET, updated.getAccessTokenSecret());
+        assertEquals(SignInType.LOCAL, updated.getSignIn());
+        assertEquals(TEST_USER_ID, updated.getUserId());
+        assertNotNull(updated.getInfo());
+        assertEquals(USERDATA2.getColor(), updated.getInfo().getColor());
+        assertEquals(USERDATA2.getIconUrl(), updated.getInfo().getIconUrl());
+        assertEquals(Locale.CHINA, updated.getInfo().getLocale());
+        assertEquals(USERDATA2.getName(), updated.getInfo().getName());
+        assertEquals(USERDATA2.getTextColor(), updated.getInfo().getTextColor());
+        assertEquals(1, TCON.findAll("Player", Player.class).size());
     }
 
     @Test
-    public void testCreateSameRequestToken() {
+    public void testUpsertPlayerException() throws NoSuchAlgorithmException {
+        DigestCalculator mock = mock(DigestCalculator.class);
+        doThrow(NoSuchAlgorithmException.class).when(mock).calcDigest(anyString());
+        inst.calculator = mock;
         try {
-            OCON.createOAuthBean("foo", "foosec");
-            inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-            inst.createPlayer("foo", TEST_USER2_ID, TEST_USER2_PLAIN_ACCESS_TOKEN, USERDATA2);
-        } catch (RushHourException ex) {
+            inst.upsertPlayer(
+                    TEST_USER_PLAIN_ACCESS_TOKEN,
+                    TEST_USER_PLAIN_ACCESS_TOKEN_SECRET,
+                    TEST_USER_ID,
+                    SignInType.LOCAL,
+                    USERDATA1,
+                    Locale.CANADA);
             fail();
-        }
-
-    }
-
-    @Test
-    public void testCreateSameUserID() {
-        try {
-            OCON.createOAuthBean("foo", "foosec");
-            inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-
-            OCON.createOAuthBean("bar", "barsec");
-            inst.createPlayer("bar", TEST_USER_ID, TEST_USER2_PLAIN_ACCESS_TOKEN, USERDATA2);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID, ex.getErrMsg().getDetailId());
-            assertTrue(ex.getMessage().startsWith("User Id is already registered : "));
-        }
-    }
-
-    @Test
-    public void testCreateSameAccessToken() {
-        Player createPlayer = null;
-        try {
-            OCON.createOAuthBean("foo", "foosec");
-            createPlayer = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-            OCON.createOAuthBean("bar", "barsec");
-            inst.createPlayer("bar", TEST_USER2_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA2);
-            fail();
-        } catch (RushHourException ex) {
-            if (createPlayer != null) {
-                assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN,
-                        "User accessToken is already registered : " + createPlayer.getToken(), ex.getMessage());
-            } else {
-                fail();
-            }
-        }
-    }
-
-    @Test
-    public void testReLogin() {
-        try {
-            OAuth oldOAuth = OCON.createOAuthBean("foo", "foosec");
-            Player p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-            assertEquals(oldOAuth, p1.getOauth());
-            OAuth newOAuth = OCON.createOAuthBean("bar", "barsec");
-            inst.updateToken(p1, "bar", "new access token");
-            assertNotEquals(oldOAuth, p1.getOauth());
-            assertEquals(newOAuth, p1.getOauth());
-        } catch (RushHourException ex) {
-            fail();
-        }
-    }
-
-    /**
-     * 違うユーザが違うユーザのtokenにしようしたとき
-     */
-    @Test
-    public void testUpdateSameTokenByDifferentPlayer() {
-        Player p1 = null;
-        try {
-            OCON.createOAuthBean("foo", "foosec");
-            p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-            OCON.createOAuthBean("bar", "barsec");
-            Player p2 = inst.createPlayer("bar", TEST_USER2_ID, TEST_USER2_PLAIN_ACCESS_TOKEN, USERDATA2);
-            inst.updateToken(p2, "bar", TEST_USER_PLAIN_ACCESS_TOKEN);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN, ex.getErrMsg().getDetailId());
-            if (p1 != null) {
-                assertEquals("token is already existed : " + p1.getToken(), ex.getMessage());
-            } else {
-                fail();
-            }
-        }
-    }
-
-    @Test
-    public void testUpdateSameTokenBySampePlayer() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-        OCON.createOAuthBean("bar", "barsec");
-        inst.updateToken(p1, "bar", TEST_USER_PLAIN_ACCESS_TOKEN);
-    }
-
-    @Test
-    public void testUpdateNullAccessToken() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player p1 = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-        OCON.createOAuthBean("bar", "barsec");
-        try {
-            inst.updateToken(p1, "bar", null);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, ex.getErrMsg().getDetailId());
+        } catch (RushHourException e) {
+            assertEquals(SIGNIN_FAIL, e.getErrMsg().getTitleId());
+            assertEquals(UNKNOWN_DETAIL, e.getErrMsg().getDetailId());
+            assertEquals(SYSTEM_ERR_ACTION, e.getErrMsg().getActionId());
         }
     }
 
     @Test
     public void testExistsUserId() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-        assertTrue(inst.existsUserId(created.getUserId()));
-        assertFalse(inst.existsUserId(UNEXIST_USER_ID));
+        Player created = createPlayer();
+        assertTrue(inst.existsUserId(created.getUserId(), SignInType.LOCAL));
+        assertFalse(inst.existsUserId(created.getUserId(), SignInType.TWITTER));
+        assertFalse(inst.existsUserId(null, SignInType.LOCAL));
+        assertFalse(inst.existsUserId(UNEXIST_USER_ID, SignInType.LOCAL));
     }
 
     @Test
-    public void testIsValidAccessToken() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
+    public void testIsValidToken() throws RushHourException {
+        Player created = createPlayer();
+        assertFalse(inst.isValidToken(null));
         assertTrue(inst.isValidToken(created.getToken()));
         assertFalse(inst.isValidToken(UNEXIST_ACCESS_TOKEN));
     }
 
     @Test
     public void testFindByUserId() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
+        Player created = createPlayer();
+        Player found = inst.findByUserId(created.getUserId(), SignInType.LOCAL);
 
-        assertEquals(created.getUserIdDigest(), inst.findByUserId(created.getUserId()).getUserIdDigest());
-        assertNull(inst.findByUserId(UNEXIST_USER_ID));
+        assertNotNull(found);
+        assertEquals(created.getId(), found.getId());
+
+        assertNull(inst.findByUserId(null, SignInType.LOCAL));
+        assertNull(inst.findByUserId(created.getUserId(), SignInType.TWITTER));
+        assertNull(inst.findByUserId(UNEXIST_USER_ID, SignInType.LOCAL));
     }
 
     @Test
-    public void testFindByAccessToken() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player created = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
+    public void testFindByToken() throws RushHourException {
+        Player created = createPlayer();
+        Player found = inst.findByToken(created.getToken());
+        assertNotNull(found);
+        assertEquals(created.getId(), found.getId());
 
-        assertEquals(created.getUserIdDigest(), inst.findByToken(created.getToken()).getUserIdDigest());
-        assertNull(inst.findByToken(UNEXIST_ACCESS_TOKEN));
+        assertNull(inst.findByToken(null));
+        assertNull(inst.findByToken("hoge"));
     }
 
     @Test
-    public void testClearAccessToken() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        String accessToken = inst
-                .createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1)
-                .getToken();
-        assertTrue(inst.isValidToken(accessToken));
-        inst.clearToken(accessToken);
-        assertFalse(inst.isValidToken(accessToken));
-
-        inst.clearToken(UNEXIST_ACCESS_TOKEN);
+    public void testClearToken() throws RushHourException {
+        String vaildedToken = createPlayer().getToken();
+        assertTrue(inst.isValidToken(vaildedToken));
+        inst.clearToken(vaildedToken);
+        assertFalse(inst.isValidToken(vaildedToken));
+    }
+    
+    @Test
+    public void testClearTokenUnexisted() throws RushHourException {
+        String vaildToken = createPlayer().getToken();
+        assertTrue(inst.isValidToken(vaildToken));
+        inst.clearToken("hoge");
+        assertTrue(inst.isValidToken(vaildToken));
     }
 
-    @Test
-    public void testClearAccessTokenMultiPlayer() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player user1 = inst.createPlayer("foo", "user1", "user1_at", USERDATA1);
-        OCON.createOAuthBean("bar", "barsec");
-        Player user2 = inst.createPlayer("bar", "user2", "user2_at", USERDATA2);
-
-        inst.clearToken(user1.getToken());
-        inst.clearToken(user2.getToken());
-    }
 
     @Test
-    public void testDelete() throws RushHourException {
-        OCON.createOAuthBean("foo", "foosec");
-        Player player = inst.createPlayer("foo", TEST_USER_ID, TEST_USER_PLAIN_ACCESS_TOKEN, USERDATA1);
-        EM.remove(player);
-        assertEquals(0, TCON.findAll("Player", Player.class).size());
+    public void testClearTokenMultiPlayer() throws RushHourException {
+        String remained = createPlayer().getToken();
+        String removed = createOther().getToken();
+
+        inst.clearToken(removed);
+        assertTrue(inst.isValidToken(remained));
     }
 }

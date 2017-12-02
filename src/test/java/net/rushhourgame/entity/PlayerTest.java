@@ -44,7 +44,10 @@ public class PlayerTest extends AbstractEntityTest{
         info.setName(JP_NAME);
         info.setTextColor("#000000");
         player.setUserId("hoge");
-        player.setUserIdDigest("hogeDigest");
+        player.setUserIdDigest("hoge");
+        player.setAccessToken("hoge");
+        player.setAccessTokenSecret("hoge");
+        player.setToken("token");
         player.setInfo(info);
         player.setSignIn(SignInType.LOCAL);
         EM.persist(player);

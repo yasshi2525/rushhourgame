@@ -105,7 +105,7 @@ public class GameViewBean implements Serializable {
     }
 
     public void openClickMenu() throws RushHourException {
-        Map<String, String> params = getExternalContext().getRequestParameterMap();
+        Map<String, String> params = getFacesContext().getExternalContext().getRequestParameterMap();
         clickX = Double.parseDouble(params.get("gamePos.x"));
         clickY = Double.parseDouble(params.get("gamePos.y"));
         showsMenu = !showsMenu;
@@ -116,8 +116,8 @@ public class GameViewBean implements Serializable {
         context.openDialog("clickmenu", options, null);
     }
     
-    protected ExternalContext getExternalContext() {
-        return FacesContext.getCurrentInstance().getExternalContext();
+    protected FacesContext getFacesContext() {
+        return FacesContext.getCurrentInstance();
     }
     
     protected RequestContext getRequestContext() {

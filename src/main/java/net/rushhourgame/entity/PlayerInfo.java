@@ -39,11 +39,8 @@ import net.rushhourgame.json.UserData;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class PlayerInfo implements Serializable {
+public class PlayerInfo extends AbstractEntity implements Serializable, UserData {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
     
     @NotNull
     protected String name;
@@ -70,6 +67,7 @@ public class PlayerInfo implements Serializable {
         textColor = data.getTextColor();
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -78,6 +76,7 @@ public class PlayerInfo implements Serializable {
         this.name = name;
     }
 
+    @Override
     public String getIconUrl() {
         return iconUrl;
     }
@@ -86,6 +85,7 @@ public class PlayerInfo implements Serializable {
         this.iconUrl = iconUrl;
     }
 
+    @Override
     public String getColor() {
         return color;
     }
@@ -94,6 +94,7 @@ public class PlayerInfo implements Serializable {
         this.color = color;
     }
 
+    @Override
     public String getTextColor() {
         return textColor;
     }

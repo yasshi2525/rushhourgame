@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
+import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 import org.junit.Before;
@@ -44,51 +46,59 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest{
+public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest {
+
     @Spy
     protected TwitterOAuthRequestTokenBean spy;
-    
+
     @Mock
     TwitterOAuthRequestTokenClient client;
-    
-    @Mock
-    ExternalContext context;
-    
+
     @Before
     @Override
     public void setUp() {
         super.setUp();
         try {
-            doNothing().when(context).redirect(anyString());
+            doNothing().when(externalContext).redirect(anyString());
         } catch (IOException ex) {
             Logger.getLogger(TwitterOAuthRequestTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        spy.errMsgBuilder = ErrorMessageBuilder.getInstance();
         spy.client = client;
         spy.oAuthController = OCON;
         spy.prop = PROP;
-        doReturn(context).when(spy).getExternalContext();
+        doReturn(facesContext).when(spy).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
     }
 
     @Test
     public void testRequestRequestToken() throws Exception {
-       when(client.isOAuthCallBackConfirmedOK()).thenReturn(Boolean.TRUE);
-       when(client.getRequestToken()).thenReturn("test");
-       when(client.getRequestTokenSecret()).thenReturn("test_sec");
-       
+        when(client.isOAuthCallBackConfirmedOK()).thenReturn(Boolean.TRUE);
+        when(client.getRequestToken()).thenReturn("test");
+        when(client.getRequestTokenSecret()).thenReturn("test_sec");
+
         spy.requestRequestToken();
-        
-        assertNotNull(OCON.findByRequestToken("test"));
-        assertEquals("test", OCON.findByRequestToken("test").getRequestToken());
+
+        assertNotNull(OCON.findByRequestToken("test", SignInType.TWITTER));
+        assertEquals("test", OCON.findByRequestToken("test", SignInType.TWITTER).getRequestToken());
+        verify(externalContext, times(1)).redirect(anyString());
     }
 
-    public void testRequestRequestTokenUnconfirmed() throws RushHourException{
+    @Test
+    public void testRequestRequestTokenUnconfirmed() throws RushHourException, IOException {
         when(client.isOAuthCallBackConfirmedOK()).thenReturn(Boolean.FALSE);
         try {
             spy.requestRequestToken();
+            fail();
         } catch (RushHourException ex) {
             assertEquals(SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED, ex.getErrMsg().getDetailId());
-        } catch (IOException ex) {
-            fail();
         }
+    }
+
+    @Test
+    public void testActionListener() {
+        assertFalse(spy.isPressed());
+        spy.actionListener();
+        assertTrue(spy.isPressed());
     }
 }

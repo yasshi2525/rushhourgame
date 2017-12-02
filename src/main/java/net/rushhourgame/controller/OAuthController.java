@@ -23,15 +23,29 @@
  */
 package net.rushhourgame.controller;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import net.rushhourgame.entity.OAuth;
+import javax.persistence.NoResultException;
+import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.EncryptConverter;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.PlayerInfo;
+import net.rushhourgame.entity.OAuth;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
+import net.rushhourgame.json.UserData;
 
 /**
  *
@@ -39,89 +53,80 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class OAuthController extends AbstractController {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(OAuthController.class.getName());
-    
+
     private final OAuth dummyInst = new OAuth();
-    
+
     @Inject
     protected DigestCalculator calculator;
 
-    public OAuth createOAuthBean(String requestToken, String requestTokenSecret) throws RushHourException {
-        if(requestToken == null){
-            throw new RushHourException(errMsgBuilder.createReSignInError(
-                    SIGNIN_FAIL, SIGNIN_FAIL_GET_REQ_TOKEN_INVALID_REQ_TOKEN, "null"));
+    public OAuth upsertRequestToken(
+            @NotNull String requestToken,
+            @NotNull String requestTokenSecret,
+            @NotNull SignInType signInType) throws RushHourException {
+
+        OAuth obj = findByRequestToken(requestToken, signInType);
+        boolean isNew = obj == null;
+
+        if (isNew) {
+            obj = new OAuth();
         }
+
+        obj.setRequestToken(requestToken);
         try {
-            // IDはrequestTokenのダイジェスト
-            // requestTokenを主キーにするため。
-            String requestTokenDigest = calculator.calcDigest(requestToken);
-            
-            if(isRegisteredRequestToken(requestToken)){
-                throw new RushHourException(errMsgBuilder.createReSignInError(
-                        SIGNIN_FAIL,
-                        SIGNIN_FAIL_GET_REQ_TOKEN_DUPLICATE,
-                        "Your request_token is already registerd."),
-                        "already exists : " + requestToken + " ( digest = " + requestTokenDigest + " )");
-            }
-            
-            OAuth oAuth = new OAuth();
-            oAuth.setRequestTokenDigest(requestTokenDigest);
-            oAuth.setRequestToken(requestToken);
-            oAuth.setRequestTokenSecret(requestTokenSecret);
-            em.persist(oAuth);
-            return oAuth;
+            obj.setRequestTokenDigest(calculator.calcDigest(requestToken));
         } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, "OAuthController#createOAuthBean", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            LOG.log(Level.SEVERE, "OAuthController#upsertRequestToken", ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, UNKNOWN_DETAIL));
         }
+        obj.setRequestTokenSecret(requestTokenSecret);
+        obj.setSignIn(signInType);
+
+        if (isNew) {
+            em.persist(obj);
+        } else {
+            obj = em.merge(obj);
+        }
+        return obj;
     }
 
     /**
      * DBに登録されている requestTokenか
+     *
      * @param requestToken requestToken
+     * @param signIn signIn
      * @return boolean
-     * @throws net.rushhourgame.exception.RushHourException RushHourException 
+     * @throws net.rushhourgame.exception.RushHourException RushHourException
      */
-    public boolean isRegisteredRequestToken(String requestToken) throws RushHourException{
-        if(requestToken == null){
-            return false;
-        }
-        try {
-            String requestTokenDigest = calculator.calcDigest(requestToken);
-            return exists("OAuth.isValidRequestTokenDigest", "requestTokenDigest", requestTokenDigest);
-        } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, "OAuthController#isRegisteredRequestToken", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
-        }
+    public boolean isRegisteredRequestToken(@NotNull String requestToken, @NotNull SignInType signIn) throws RushHourException {
+        return findByRequestToken(requestToken, signIn) != null;
     }
-    
-    /**
-     * requestTokenは暗号化されているため、ダイジェスト値の方で探す
-     * @param requestToken requestToken
-     * @return OAuth
-     * @throws RushHourException RushHourException
-     */
-    public OAuth findByRequestToken(String requestToken) throws RushHourException{
-        if(requestToken == null){
-            return null;
-        }
+
+    public OAuth findByRequestToken(@NotNull String requestToken, @NotNull SignInType signIn) throws RushHourException {
         try {
             String requestTokenDigest = calculator.calcDigest(requestToken);
-            return findBy("OAuth.findByRequestTokenDigest", "requestTokenDigest", requestTokenDigest, dummyInst);
+            return em.createNamedQuery("OAuth.findByRequestTokenDigest", OAuth.class)
+                    .setParameter("requestTokenDigest", requestTokenDigest)
+                    .setParameter("signIn", signIn)
+                    .getSingleResult();
         } catch (NoSuchAlgorithmException ex) {
             LOG.log(Level.SEVERE, "OAuthController#findByRequestToken", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, UNKNOWN_DETAIL));
+        } catch (NoResultException e) {
+            return null;
         }
     }
-    
-    public void purgeOld(int purgeDay){
+
+    public void purgeOld(int purgeDay) {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.DATE, -purgeDay);
-        int val = em.createNamedQuery("OAuth.findByThreshold")
+        System.out.println(instance.getTime());
+        int val = em.createNamedQuery("OAuth.purgeOld")
                 .setParameter("threshold", instance.getTime())
                 .executeUpdate();
-            LOG.log(Level.INFO, "{0}#purgeOld {1} entries",
-                    new Object[]{this.getClass().getSimpleName(), val});
+        LOG.log(Level.INFO, "{0}#purgeOld {1} entries",
+                new Object[]{this.getClass().getSimpleName(), val});
     }
 }

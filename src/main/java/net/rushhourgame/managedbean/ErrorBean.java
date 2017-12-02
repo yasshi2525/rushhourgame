@@ -55,7 +55,7 @@ public class ErrorBean implements Serializable {
 
     @PostConstruct
     public void init(){
-        Object obj = getExternalContext().getRequestMap().get("error");
+        Object obj = getFacesContext().getExternalContext().getRequestMap().get("error");
         if(obj instanceof ErrorMessage){
             contents = (ErrorMessage) obj;
         }else{
@@ -63,8 +63,8 @@ public class ErrorBean implements Serializable {
         }
     }
     
-    protected ExternalContext getExternalContext() {
-        return FacesContext.getCurrentInstance().getExternalContext();
+    protected FacesContext getFacesContext() {
+        return FacesContext.getCurrentInstance();
     }
     
     public String getTitle(){

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,105 +23,80 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.logging.Logger;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 /**
- * 
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Table(indexes = {@Index(columnList = "requestToken"), @Index(columnList = "accessToken")})
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requestToken", "signIn"}))
 @NamedQueries({
     @NamedQuery(
-            name = "OAuth.isValidRequestTokenDigest",
-            query = "SELECT CASE WHEN count(x.requestTokenDigest) > 0 THEN true ELSE false END"
-            + " FROM OAuth x WHERE x.requestTokenDigest = :requestTokenDigest"), 
-    @NamedQuery(
             name = "OAuth.findByRequestTokenDigest",
-            query = "SELECT x FROM OAuth x WHERE x.requestTokenDigest = :requestTokenDigest"),
-    @NamedQuery(
-            name = "OAuth.isValidRequestToken",
-            query = "SELECT CASE WHEN count(x.requestTokenDigest) > 0 THEN true ELSE false END"
-            + " FROM OAuth x WHERE x.requestToken = :requestToken"), 
-    @NamedQuery(
-            name = "OAuth.findByRequestToken",
-            query = "SELECT x FROM OAuth x WHERE x.requestToken = :requestToken"),
-    @NamedQuery(
-            name = "OAuth.findByThreshold",
-            query = "DELETE FROM OAuth o WHERE o.updated < :threshold AND o.player = NULL"
+            query = "SELECT x FROM OAuth x WHERE x.requestTokenDigest = :requestTokenDigest AND x.signIn = :signIn")
+    ,
+        @NamedQuery(
+            name = "OAuth.purgeOld",
+            query = "DELETE FROM OAuth o WHERE o.updated < :threshold"
     )
-})
-@Entity
+}
+)
 public class OAuth extends AbstractEntity {
 
-    private static final Logger LOG = Logger.getLogger(OAuth.class.getName());
-
     private static final long serialVersionUID = 1L;
-
+    
+    @NotNull
     protected String requestTokenDigest;
+
+    @NotNull
     @Convert(converter = EncryptConverter.class)
     protected String requestToken;
+
+    @NotNull
     @Convert(converter = EncryptConverter.class)
     protected String requestTokenSecret;
-    @Convert(converter = EncryptConverter.class)
-    protected String oAuthVerifier;
-    @Convert(converter = EncryptConverter.class)
-    protected String accessToken;
-    protected String accessTokenSecret;
-    @OneToOne(mappedBy = "oauth")
-    protected Player player;
-    
-    public String getRequestTokenDigest() {
-        return requestTokenDigest;
-    }
-    
-    public void setRequestTokenDigest(String requestTokenDigest) {
-        this.requestTokenDigest = requestTokenDigest;
-    }
+
+    @NotNull
+    protected SignInType signIn;
 
     public String getRequestToken() {
         return requestToken;
     }
-    
+
     public void setRequestToken(String requestToken) {
         this.requestToken = requestToken;
+    }
+
+    public String getRequestTokenDigest() {
+        return requestTokenDigest;
+    }
+
+    public void setRequestTokenDigest(String requestTokenDigest) {
+        this.requestTokenDigest = requestTokenDigest;
     }
 
     public String getRequestTokenSecret() {
         return requestTokenSecret;
     }
-    
+
     public void setRequestTokenSecret(String requestTokenSecret) {
         this.requestTokenSecret = requestTokenSecret;
     }
 
-    public String getOAuthVerifier() {
-        return oAuthVerifier;
+    public SignInType getSignIn() {
+        return signIn;
     }
 
-    public void setOAuthVerifier(String oAuthVerifier) {
-        this.oAuthVerifier = oAuthVerifier;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public String getAccessTokenSecret() {
-        return accessTokenSecret;
-    }
-
-    public void setAccessTokenSecret(String accessTokenSecret) {
-        this.accessTokenSecret = accessTokenSecret;
+    public void setSignIn(SignInType signIn) {
+        this.signIn = signIn;
     }
 }

@@ -23,6 +23,7 @@
  */
 package net.rushhourgame;
 
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -60,6 +61,7 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -101,8 +103,8 @@ public class DebugInitializer {
             rCon.create(20, 5);
             cCon.create(50, 15);
 
-            oCon.createOAuthBean("debug", "debug");
-            Player owner = pCon.createPlayer("debug", "debug", "debug", new SimpleUserData());
+            Player owner = pCon.upsertPlayer(
+                    "debug", "debug", "debug", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
             
             // r1 r2 r3
             //    r4

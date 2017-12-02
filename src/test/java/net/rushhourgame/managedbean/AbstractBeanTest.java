@@ -24,6 +24,8 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
@@ -41,6 +43,7 @@ import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
@@ -72,6 +75,12 @@ public class AbstractBeanTest {
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @Mock
+    protected FacesContext facesContext;
+    
+    @Mock
+    protected ExternalContext externalContext;
+    
+    @Mock
     protected RushHourSession session;
     
     @Mock
@@ -94,7 +103,6 @@ public class AbstractBeanTest {
     }
     
     protected static Player createPlayer() throws RushHourException{
-        OCON.createOAuthBean("_player", "_player_sec");
-        return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
+        return PCON.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
 }

@@ -34,6 +34,7 @@ import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.controller.OAuthController;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.httpclient.TwitterOAuthRequestTokenClient;
 
 /**
@@ -69,11 +70,12 @@ public class TwitterOAuthRequestTokenBean extends AbstractTwitterOAuthBean {
         if (client.isOAuthCallBackConfirmedOK()) {
             
             // 認証情報の保存
-            oAuthController.createOAuthBean(
+            oAuthController.upsertRequestToken(
                     client.getRequestToken(),
-                    client.getRequestTokenSecret());
+                    client.getRequestTokenSecret(),
+                    SignInType.TWITTER);
             //アクセストークン取得のためにTwitterにリダイレクト
-            getExternalContext().redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
+            getFacesContext().getExternalContext().redirect(prop.get(TWITTER_API_AUTHENTICATE) + "?oauth_token=" + client.getRequestToken());
       
         } else {
             // コールバックURLの設定値不正

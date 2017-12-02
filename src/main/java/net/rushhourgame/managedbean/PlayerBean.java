@@ -61,12 +61,9 @@ public class PlayerBean implements Serializable {
     protected PlayerController pCon;
     @Inject
     protected RushHourSession rushHourSession;
-    @Inject
-    protected TwitterUserShowClient client;
     protected SimpleUserData emptyUser;
 
     protected Player player;
-    protected boolean isSignIn;
     /**
      * ログインしていない場合は未ログイン時用の値が格納
      */
@@ -75,61 +72,41 @@ public class PlayerBean implements Serializable {
     @PostConstruct
     public void init() {
         emptyUser = new SimpleUserData();
-        isSignIn = pCon.isValidToken(rushHourSession.getToken());
-        if (isSignIn) {
-            player = pCon.findByToken(rushHourSession.getToken());
-            if (player.getSignIn() == SignInType.TWITTER) {
-                client.setPlayer(player);
-                try {
-                    client.execute();
-                    userData = client.getUserData();
-                } catch (RushHourException ex) {
-                    LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init fail to client#execute", ex);
-                }
-            }
-        }
+
+        player = pCon.findByToken(rushHourSession.getToken());
+        userData = (player != null) ? player.getInfo() : emptyUser;
     }
 
     @Transactional
     public void logOut() throws IOException {
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        if (isSignIn) {
-            LOG.log(Level.FINE, "{0}#logout clear {1}",
-                    new Object[]{this.getClass().getSimpleName(), rushHourSession.getToken()});
-            context.invalidateSession();
-        }
+        ExternalContext context = getFacesContext().getExternalContext();
+        LOG.log(Level.FINE, "{0}#logout clear {1}",
+                new Object[]{this.getClass().getSimpleName(), rushHourSession.getToken()});
+        context.invalidateSession();
         context.redirect("index.xhtml");
     }
 
+    protected FacesContext getFacesContext() {
+        return FacesContext.getCurrentInstance();
+    }
+
     public boolean isSignIn() {
-        return isSignIn;
+        return player != null;
     }
 
     public String getName() {
-        if (userData == null) {
-            return emptyUser.getName();
-        }
         return userData.getName();
     }
 
     public String getIconUrl() {
-        if (userData == null) {
-            return emptyUser.getIconUrl();
-        }
         return userData.getIconUrl();
     }
 
     public String getColor() {
-        if (userData == null) {
-            return emptyUser.getColor();
-        }
         return userData.getColor();
     }
 
     public String getTextColor() {
-        if (userData == null) {
-            return emptyUser.getTextColor();
-        }
         return userData.getTextColor();
     }
 }

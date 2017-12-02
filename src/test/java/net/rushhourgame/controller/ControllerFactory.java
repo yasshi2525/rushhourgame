@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.entity.EncryptConverter;
 
 /**
  *
@@ -91,6 +92,11 @@ public class ControllerFactory {
     public static DigestCalculator createDigestCalculator() {
         DigestCalculator inst = new DigestCalculator();
         inst.prop = RushHourProperties.getInstance();
+        return inst;
+    }
+    
+    public static EncryptConverter createEncryptConverter() {
+        EncryptConverter inst = new EncryptConverter();
         return inst;
     }
     

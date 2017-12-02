@@ -32,45 +32,52 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 /**
  * プレイヤ
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Table(indexes = {@Index(columnList = "USERIDDIGEST"), @Index(columnList = "TOKEN")})
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"signIn", "userId"}),
+    @UniqueConstraint(columnNames = {"token"}),
+})
 @Entity
 @NamedQueries({
     @NamedQuery(
-            name = "Player.existsUserIdDigest",
-            query = "SELECT CASE WHEN count(x.userIdDigest) > 0 THEN true ELSE false END"
-            + " FROM Player x WHERE x.userIdDigest = :userIdDigest")
-    ,@NamedQuery(
-            name = "Player.existsToken",
-            query = "SELECT CASE WHEN count(x.userIdDigest) > 0 THEN true ELSE false END"
-            + " FROM Player x WHERE x.token = :token")
-    ,@NamedQuery(
             name = "Player.findByUserIdDigest",
-            query = "SELECT x FROM Player x WHERE x.userIdDigest = :userIdDigest")
+            query = "SELECT x FROM Player x JOIN FETCH x.info WHERE x.userIdDigest = :userIdDigest AND x.signIn = :signIn")
     ,@NamedQuery(
             name = "Player.findByToken",
-            query = "SELECT x FROM Player x WHERE x.token = :token"
+            query = "SELECT x FROM Player x JOIN FETCH x.info WHERE x.token = :token"
     )
 })
 public class Player extends AbstractEntity {
+
     private static final long serialVersionUID = 1L;
-    protected String userIdDigest;
+
+    @NotNull
+    protected SignInType signIn;
+
     @NotNull
     @Convert(converter = EncryptConverter.class)
     protected String userId;
-    @Column(unique = true)
-    protected String token;
-    @OneToOne(orphanRemoval = true)
-    protected OAuth oauth;
-    @NotNull
-    protected SignInType signIn;
     
-        
+    @NotNull
+    protected String userIdDigest;
+
+    protected String token;
+
+    @NotNull
+    @Convert(converter = EncryptConverter.class)
+    protected String accessToken;
+    
+    @NotNull
+    @Convert(converter = EncryptConverter.class)
+    protected String accessTokenSecret;
+
     @NotNull
     @OneToOne(cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     protected PlayerInfo info;
@@ -82,25 +89,18 @@ public class Player extends AbstractEntity {
     public void setInfo(PlayerInfo info) {
         this.info = info;
     }
-    
-    public String getUserIdDigest() {
-        return userIdDigest;
-    }
 
-    public void setUserIdDigest(String userIdDigest) {
-        this.userIdDigest = userIdDigest;
-    }
-    
     public void setToken(String token) {
         this.token = token;
     }
-    
+
     public String getToken() {
         return token;
     }
 
     /**
      * 外部サービス接続時のユーザID
+     *
      * @return String
      */
     public String getUserId() {
@@ -109,28 +109,42 @@ public class Player extends AbstractEntity {
 
     /**
      * 外部サービス接続時のユーザID
+     *
      * @param userId userId
      */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public OAuth getOauth() {
-        return oauth;
+    public String getUserIdDigest() {
+        return userIdDigest;
     }
 
-    public void setOauth(OAuth oauth) {
-        this.oauth = oauth;
+    public void setUserIdDigest(String userIdDigest) {
+        this.userIdDigest = userIdDigest;
     }
-    
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     public SignInType getSignIn() {
         return signIn;
     }
 
     public void setSignIn(SignInType signIn) {
-        if(signIn == null){
-            signIn = SignInType.LOCAL;
-        }
         this.signIn = signIn;
+    }
+
+    public String getAccessTokenSecret() {
+        return accessTokenSecret;
+    }
+
+    public void setAccessTokenSecret(String accessTokenSecret) {
+        this.accessTokenSecret = accessTokenSecret;
     }
 }

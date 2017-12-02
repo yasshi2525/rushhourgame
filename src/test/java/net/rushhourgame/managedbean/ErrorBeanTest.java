@@ -49,9 +49,6 @@ public class ErrorBeanTest extends AbstractBeanTest {
     protected ErrorBean inst;
     
     @Mock
-    protected ExternalContext context;
-    
-    @Mock
     protected Map<String, Object> requestMap;
 
     @Before
@@ -60,8 +57,9 @@ public class ErrorBeanTest extends AbstractBeanTest {
         super.setUp();
         inst.msgProps = msg;
         inst.rushHourSession = session;
-        doReturn(context).when(inst).getExternalContext();
-        doReturn(requestMap).when(context).getRequestMap();
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
+        doReturn(requestMap).when(externalContext).getRequestMap();
     }
 
     @Test
@@ -79,10 +77,8 @@ public class ErrorBeanTest extends AbstractBeanTest {
         assertNotNull(inst.contents);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testGetErrorMessage() {
-        // JSF上でないので NPE が発生
-        new ErrorBean().getExternalContext();
+    public void testGetFacesContext() {
+        assertNull(new ErrorBean().getFacesContext());
     }
 
     @Test

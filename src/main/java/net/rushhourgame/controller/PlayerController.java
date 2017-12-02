@@ -23,18 +23,25 @@
  */
 package net.rushhourgame.controller;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Player;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.entity.OAuth;
+import net.rushhourgame.entity.EncryptConverter;
 import net.rushhourgame.entity.PlayerInfo;
+import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.UserData;
@@ -45,210 +52,103 @@ import net.rushhourgame.json.UserData;
  */
 @Dependent
 public class PlayerController extends AbstractController {
+
     private static final long serialVersionUID = 1L;
     private final Player dummyInst = new Player();
     private static final Logger LOG = Logger.getLogger(PlayerController.class.getName());
     @Inject
     protected OAuthController oCon;
-    
+
     @Inject
     protected DigestCalculator calculator;
-    
-    public Player createPlayer(
-            String requestToken, 
-            String plainUserId, 
-            String plainAccessToken,
-            UserData userData) throws RushHourException {
-        return createPlayer(
-                requestToken, 
-                plainUserId, 
-                plainAccessToken, 
-                userData,
-                Locale.getDefault());
-    }
-    
-    public Player createPlayer(
-            String requestToken, 
-            String plainUserId, 
-            String plainAccessToken,
-            UserData userData,
-            Locale locale) throws RushHourException {
-        return createPlayer(
-                requestToken, 
-                plainUserId, 
-                plainAccessToken, 
-                userData,
-                locale,
-                SignInType.LOCAL);
-    }
-    
-    public Player createPlayer(
-            String requestToken, 
-            String plainUserId, 
-            String plainAccessToken, 
-            UserData userData,
-            Locale locale,
-            SignInType signIn) throws RushHourException {
-        if(plainUserId == null){
-            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
-                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID, "null"));
+
+    public Player upsertPlayer(
+            @NotNull String accessToken,
+            @NotNull String accessTokenSecret,
+            @NotNull String userId,
+            @NotNull SignInType signIn,
+            @NotNull UserData userData,
+            @NotNull Locale locale) throws RushHourException {
+
+        Player p = findByUserId(userId, signIn);
+        boolean isNew = p == null;
+
+        if (isNew) {
+            p = new Player();
+            p.setInfo(new PlayerInfo());
         }
-        if(plainAccessToken == null){
-            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
-                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null"));
-        }
-        
-        // idはTwitterのIDのダイジェストを使う
-        // tokenはTwitterのaccessTokenのダイジェストを使う
-        String userIdDigest;
-        String tokenDigest;
-        try {
-            userIdDigest = calculator.calcDigest(plainUserId);
-            tokenDigest = calculator.calcDigest(plainAccessToken);
-        } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, "PlayerController#createPlayer", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
-        }
-        
-        if (existsUserId(plainUserId)) {
-            // ユーザID重複
-            throw new RushHourException(errMsgBuilder.createReSignInError(
-                    SIGNIN_FAIL,
-                    SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID),
-                    "User Id is already registered : digest(" + userIdDigest + ")");
-        }
-        if (existsToken(tokenDigest)) {
-            //アクセストークン重複
-            throw new RushHourException(errMsgBuilder.createReSignInError(
-                    SIGNIN_FAIL,
-                    SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN),
-                    "User accessToken is already registered : " + tokenDigest);
-        }
-        PlayerInfo info = new PlayerInfo();
-        info.include(userData);
-        if (locale != null) {
-            info.setLocale(locale);
-        }else{
-            info.setLocale(Locale.getDefault());
-        }
-        
-        Player p = new Player();
-        p.setUserIdDigest(userIdDigest);
-        p.setUserId(plainUserId);
-        p.setToken(tokenDigest);
+
+        p.setUserId(userId);
+        p.setAccessToken(accessToken);
+        p.setAccessTokenSecret(accessTokenSecret);
         p.setSignIn(signIn);
-        p.setInfo(info);
-        
-        OAuth oAuth = oCon.findByRequestToken(requestToken);
-        if(oAuth == null){
-            throw new RushHourException(errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
-                    SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN));            
+        p.getInfo().include(userData);
+        p.getInfo().setLocale(locale);
+
+        try {
+            p.setUserIdDigest(calculator.calcDigest(userId));
+            // tokenはTwitterのaccessTokenのダイジェストを使う
+            p.setToken(calculator.calcDigest(accessToken));
+        } catch (NoSuchAlgorithmException ex) {
+            LOG.log(Level.SEVERE, "PlayerController#upsertPlayer", ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, UNKNOWN_DETAIL));
         }
-        
-        p.setOauth(oCon.findByRequestToken(requestToken));
-        try{
+
+        if (isNew) {
             em.persist(p);
-        }catch(ConstraintViolationException e){
-            e.getConstraintViolations().forEach((val)->{
-                LOG.log(Level.SEVERE, val.toString());
-            });
+        } else {
+            p = em.merge(p);
         }
         return p;
     }
 
-    public boolean existsUserId(String userId) throws RushHourException {
-        if(userId == null){
-            return false;
-        }
-        try {
-            String userIdDigest = calculator.calcDigest(userId);
-            return exists("Player.existsUserIdDigest", "userIdDigest", userIdDigest);
-        } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#existsUserId", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
-        }
+    public boolean existsUserId(String userId, @NotNull SignInType type) throws RushHourException {
+        return findByUserId(userId, type) != null;
     }
 
     public boolean existsToken(String token) {
         return exists("Player.existsToken", "token", token);
     }
 
-    public Player findByUserId(String userId) throws RushHourException {
-        if(userId == null){
+    public Player findByUserId(String userId, @NotNull SignInType signIn) throws RushHourException {
+        if (userId == null) {
             return null;
         }
         try {
             String userIdDigest = calculator.calcDigest(userId);
-            return findBy("Player.findByUserIdDigest", "userIdDigest", userIdDigest, dummyInst);
+            return em.createNamedQuery("Player.findByUserIdDigest", Player.class)
+                    .setParameter("userIdDigest", userIdDigest)
+                    .setParameter("signIn", signIn)
+                    .getSingleResult();
         } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, this.getClass().getSimpleName() +  "#findByUserId", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
+            LOG.log(Level.SEVERE, "PlayerController#findByUserId", ex);
+            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, UNKNOWN_DETAIL));
+        } catch (NoResultException e) {
+            return null;
         }
     }
 
     public Player findByToken(String token) {
-        if(token == null){
+        if (token == null) {
             return null;
         }
         return findBy("Player.findByToken", "token", token, dummyInst);
     }
 
     public boolean isValidToken(String token) {
-        if(token == null){
+        if (token == null) {
             return false;
         }
-        return exists("Player.existsToken", "token", token);
-    }
-
-    /**
-     * OAuthのひもづきも新しくする.
-     * @param p Player
-     * @param requestToken requestToken
-     * @param newPlainAccessToken newPlainAccessToken
-     * @throws RushHourException RushHourException
-     */
-    public void updateToken(Player p, String requestToken, String newPlainAccessToken) throws RushHourException {
-        if(newPlainAccessToken == null){
-            throw new RushHourException(
-                    errMsgBuilder.createReSignInError(SIGNIN_FAIL, 
-                            SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN, "null")
-            );
-        }
-        //値が同じ場合は更新しない
-        String oldToken = p.getToken();
-        
-        p.setOauth(oCon.findByRequestToken(requestToken));
-        
-        String newToken;
-        try {
-            newToken = calculator.calcDigest(newPlainAccessToken);
-            if(newToken.equals(oldToken)){
-            LOG.log(Level.INFO, "PlayerController#updateToken old token = new token");
-                return;
-            }
-        } catch (NoSuchAlgorithmException ex) {
-            LOG.log(Level.SEVERE, "PlayerController#updateToken", ex);
-            throw new RushHourException(errMsgBuilder.createSystemError(SIGNIN_FAIL, ex.getMessage()), ex);
-        }
-        
-        if (existsToken(newToken)) {
-            throw new RushHourException(
-                    errMsgBuilder.createRetryError(ACCOUNT_FAIL, ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN),
-                    "token is already existed : " + newToken
-            );
-        }
-        p.setToken(newPlainAccessToken);
+        return findByToken(token) != null;
     }
 
     public void clearToken(String token) {
-        try {
-            Player player = findByToken(token);
-            if (player != null) {
-                player.setToken(null);
-                player.setOauth(null);
-                LOG.log(Level.FINE, "PlayerController#clearToken clear token : {0}", token);
-            }
-        } catch (NoResultException e) {
+        Player player = findByToken(token);
+        if (player != null) {
+            player.setToken(null);
+            em.merge(player);
+            LOG.log(Level.FINE, "PlayerController#clearToken clear token : {0}", token);
+        } else {
             LOG.log(Level.INFO, "PlayerController#clearToken"
                     + " access token have already been remoevd. {0}", token);
         }

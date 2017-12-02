@@ -24,12 +24,17 @@
 package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
-import net.rushhourgame.entity.OAuth;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.EncryptConverter;
+import net.rushhourgame.entity.OAuth;
+import net.rushhourgame.entity.SignInType;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -51,58 +56,82 @@ public class OAuthControllerTest extends AbstractControllerTest{
     }
 
     @Test
-    public void testCreateOAuthBean() throws RushHourException, NoSuchAlgorithmException {
-        OAuth created = inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
+    public void testUpsertRequestToken() throws RushHourException {
+        OAuth created = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
         assertNotNull(created.getId());
-        assertEquals(null, created.getAccessToken());
-        assertEquals(null, created.getAccessTokenSecret());
         assertEquals(TEST_REQ_TOKEN, created.getRequestToken());
         assertEquals(TEST_REQ_TOKEN_SECRET, created.getRequestTokenSecret());
-        assertEquals(null, created.getOAuthVerifier());
         assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
     }
 
     /**
-     * すでに存在している場合createできない
-     * @throws java.security.NoSuchAlgorithmException
+     * すでに存在している場合updateされる
+     * @throws RushHourException 例外
      */
     @Test
-    public void testCreateOAuthBeanAlreadyExist() throws NoSuchAlgorithmException {
-        try {
-            inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
-            inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
-            fail();
-        } catch (RushHourException ex) {
-            assertEquals(SIGNIN_FAIL_GET_REQ_TOKEN_DUPLICATE, ex.getErrMsg().getDetailId());
-            assertTrue(ex.getMessage().startsWith("already exists : " + TEST_REQ_TOKEN));
-        }
+    public void testUpsertRequestTokenAlreadyExist() throws RushHourException, InterruptedException {
+        inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+        OAuth updated = inst.upsertRequestToken(TEST_REQ_TOKEN, "updated", SignInType.LOCAL);
+        assertEquals(TEST_REQ_TOKEN, updated.getRequestToken());
+        assertEquals("updated", updated.getRequestTokenSecret());
+        assertEquals(SignInType.LOCAL, updated.getSignIn());
+        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+    }
+    
+    @Test
+    public void testUpsertRequestTokenOtherSignIn() throws RushHourException {
+        OAuth target = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+        OAuth other = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.TWITTER);
+        EM.flush();
+        assertNotEquals(target.getId(), other.getId());
+        assertNotEquals(target.getSignIn(), other.getSignIn());
+        assertEquals(2, TCON.findAll("OAuth", OAuth.class).size());
     }
 
     @Test
     public void testIsRegisteredRequestToken() throws RushHourException, NoSuchAlgorithmException {
-        inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
-
-        assertTrue(inst.isRegisteredRequestToken(TEST_REQ_TOKEN));
-        assertFalse(inst.isRegisteredRequestToken(NOT_EXIST_REQ_TOKEN));
+        inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+        assertTrue(inst.isRegisteredRequestToken(TEST_REQ_TOKEN, SignInType.LOCAL));
+        assertFalse(inst.isRegisteredRequestToken(TEST_REQ_TOKEN, SignInType.TWITTER));
+        assertFalse(inst.isRegisteredRequestToken(NOT_EXIST_REQ_TOKEN, SignInType.LOCAL));
     }
 
     @Test
     public void testFindByRequestToken() throws RushHourException, NoSuchAlgorithmException {
-        inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
+        inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
         
-        assertEquals(TEST_REQ_TOKEN, inst.findByRequestToken(TEST_REQ_TOKEN).getRequestToken());
-        assertNull(inst.findByRequestToken(NOT_EXIST_REQ_TOKEN));
+        assertEquals(TEST_REQ_TOKEN, inst.findByRequestToken(TEST_REQ_TOKEN, SignInType.LOCAL).getRequestToken());
+        assertNull(inst.findByRequestToken(TEST_REQ_TOKEN, SignInType.TWITTER));
+        assertNull(inst.findByRequestToken(NOT_EXIST_REQ_TOKEN, SignInType.LOCAL));
     }
     
     @Test
-    public void testDeleteOAuth() throws RushHourException, NoSuchAlgorithmException{
-        OAuth created = inst.createOAuthBean(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET);
-        EM.remove(created);
+    public void testFindByRequestTokenException() throws Exception{
+        inst.calculator = mock(DigestCalculator.class);
+        doThrow(NoSuchAlgorithmException.class).when(inst.calculator).calcDigest(anyString());
+        try {
+            inst.findByRequestToken(TEST_REQ_TOKEN, SignInType.LOCAL);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(SIGNIN_FAIL, e.getErrMsg().getTitleId());
+            assertEquals(UNKNOWN_DETAIL, e.getErrMsg().getDetailId());
+            assertEquals(SYSTEM_ERR_ACTION, e.getErrMsg().getActionId());
+        }
+    }
+     
+    @Test
+    public void testPurgeOld() throws RushHourException{
+        OAuth target = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        inst.purgeOld(0);
         assertEquals(0, TCON.findAll("OAuth", OAuth.class).size());
     }
     
     @Test
-    public void testPurgeOld(){
-        inst.purgeOld(0);
+    public void testPurgeOldRemain() throws RushHourException{
+        inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        inst.purgeOld(1);
+        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
     }
 }

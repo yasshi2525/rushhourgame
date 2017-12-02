@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.Locale;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 
@@ -57,18 +59,11 @@ public class AdminBean implements Serializable {
 
     @Transactional
     public void init() throws RushHourException {
-        if (!pCon.isValidToken(session.getToken())) {
-            Player p;
+        Player p = pCon.findByToken(session.getToken());
+        
+        if (p == null) {
             //ログインしていないときはAdminでログイン
-            if (pCon.existsUserId(ADMIN_USER)) {
-                p = pCon.findByUserId(ADMIN_USER);
-            } else {
-                userData = new SimpleUserData();
-                oCon.createOAuthBean(ADMIN_USER, ADMIN_USER);
-                userData.setName(ADMIN_USER);
-                
-                p = pCon.createPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, userData, session.getLocale());
-            }
+            p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, userData, session.getLocale());
             session.setToken(p.getToken());
         }
     }

@@ -38,6 +38,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.enterprise.context.Dependent;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import net.rushhourgame.RushHourProperties;
@@ -48,6 +49,7 @@ import static net.rushhourgame.RushHourProperties.*;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Converter
+@Dependent
 public class EncryptConverter implements AttributeConverter<String, String> {
 
     private static final Logger LOG = Logger.getLogger(EncryptConverter.class.getName());

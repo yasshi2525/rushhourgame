@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Locale;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
@@ -35,6 +36,7 @@ import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -93,13 +95,11 @@ public class AbstractControllerTest {
     }
     
     protected static Player createPlayer() throws RushHourException{
-        OCON.createOAuthBean("_player", "_player_sec");
-        return PCON.createPlayer("_player", "_player", "_player", new SimpleUserData());
+        return PCON.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
     
     protected static Player createOther() throws RushHourException{
-        OCON.createOAuthBean("_other", "_other_sec");
-        return PCON.createPlayer("_other", "_other", "_other", new SimpleUserData());
+        return PCON.upsertPlayer("_other", "_other", "_other", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
     
     protected static Station createStation() throws RushHourException {

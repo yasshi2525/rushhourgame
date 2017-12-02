@@ -51,7 +51,7 @@ public abstract class AbstractTwitterOAuthBean implements Serializable{
     protected static final String MYPAGE = "index.xhtml";
 
     
-    protected ExternalContext getExternalContext(){
-        return FacesContext.getCurrentInstance().getExternalContext();
+    protected FacesContext getFacesContext(){
+        return FacesContext.getCurrentInstance();
     }
 }
