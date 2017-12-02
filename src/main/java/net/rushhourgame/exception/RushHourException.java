@@ -30,6 +30,8 @@ import net.rushhourgame.ErrorMessage;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class RushHourException extends Exception {
+
+    private static final long serialVersionUID = 1L;
     protected ErrorMessage errMsg;
 
     public RushHourException(ErrorMessage errMsg) {
@@ -38,16 +40,6 @@ public class RushHourException extends Exception {
 
     public RushHourException(ErrorMessage errMsg, String message) {
         super(message);
-        this.errMsg = errMsg;
-    }
-
-    public RushHourException(ErrorMessage errMsg, String message, Throwable cause) {
-        super(message, cause);
-        this.errMsg = errMsg;
-    }
-
-    public RushHourException(ErrorMessage errMsg, Throwable cause) {
-        super(cause);
         this.errMsg = errMsg;
     }
 

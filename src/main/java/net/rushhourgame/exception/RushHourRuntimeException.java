@@ -29,16 +29,8 @@ package net.rushhourgame.exception;
  */
 public class RushHourRuntimeException extends RuntimeException {
 
-    /**
-     * Creates a new instance of <code>RushHourRuntimeException</code> without
-     * detail message.
-     */
-    public RushHourRuntimeException() {
-    }
-    
-    public RushHourRuntimeException(Throwable cause) {
-        super(cause);
-    }
+    private static final long serialVersionUID = 1L;
+
 
     /**
      * Constructs an instance of <code>RushHourRuntimeException</code> with the
