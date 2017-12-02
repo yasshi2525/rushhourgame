@@ -30,21 +30,26 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.*;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class RushHourResourceBundleTest {
-
-    RushHourResourceBundle inst;
+    @Spy
+    protected RushHourResourceBundle inst;
     @Rule
     public ExpectedException exception = ExpectedException.none();
     protected final static Locale LOCALE = Locale.getDefault();
 
     @Before
     public void setUp() {
-        inst = new RushHourResourceBundle();
+        inst.prop = RushHourProperties.getInstance();
     }
 
     @Test
@@ -55,20 +60,33 @@ public class RushHourResourceBundleTest {
     }
 
     @Test
+    public void testFetchNull() {
+        inst.fetch(null);
+        assertNotNull(inst.cacheList.get(LOCALE));
+    }
+
+    @Test
+    public void testClear() {
+        inst.fetch(null);
+        inst.clear();
+        assertTrue(inst.cacheList.isEmpty());
+    }
+
+    @Test
     public void testGet() {
         assertNotNull(inst.get("rushhour.test.message", LOCALE));
         exception.expect(MissingResourceException.class);
         //存在しない値は読み込めない
         assertNull(inst.get("rushhour.test.message.unexistsparameter", LOCALE));
-        
+
         assertNotNull(inst.get("rushhour.test.message", null));
         exception.expect(MissingResourceException.class);
         //存在しない値は読み込めない
         assertNull(inst.get("rushhour.test.message.unexistsparameter", null));
     }
-    
+
     @Test
-    public void testEscape(){
+    public void testEscape() {
         assertEquals("''This is sample.''", inst.get("rushhour.test.quote1", LOCALE));
     }
 
@@ -78,4 +96,25 @@ public class RushHourResourceBundleTest {
         assertEquals("This is sample message.", inst.get("rushhour.test.message", Locale.ENGLISH));
     }
 
+    @Test
+    public void testGetInstance() {
+        assertNotNull(RushHourResourceBundle.getInstance());
+        assertNotNull(RushHourResourceBundle.getInstance());
+    }
+
+    @Test
+    public void testInitLangListNull() {
+        inst.prop = mock(RushHourProperties.class);
+        doReturn(null).when(inst.prop).get(RushHourProperties.LANG);
+        inst.init();
+        verify(inst, times(1)).fetch(Locale.getDefault());
+    }
+    
+    @Test
+    public void testInitLangListEmpty() {
+        inst.prop = mock(RushHourProperties.class);
+        doReturn("").when(inst.prop).get(RushHourProperties.LANG);
+        inst.init();
+        verify(inst, times(1)).fetch(Locale.getDefault());
+    }
 }
