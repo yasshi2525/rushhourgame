@@ -31,28 +31,35 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.controller.ControllerFactory.createDigestCalculator;
 import net.rushhourgame.entity.EncryptConverter;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.SignInType;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class OAuthControllerTest extends AbstractControllerTest{
 
     protected static final String TEST_REQ_TOKEN = "testAAA";
     protected static final String TEST_REQ_TOKEN_SECRET = "test_secretBBB";
     protected static final String NOT_EXIST_REQ_TOKEN = "unexistrequesttoken";
     
+    @Spy
     protected OAuthController inst;
 
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createOAuthController();
+        ControllerFactory.init(inst);
+        inst.calculator = createDigestCalculator();
     }
 
     @Test
@@ -76,6 +83,21 @@ public class OAuthControllerTest extends AbstractControllerTest{
         assertEquals("updated", updated.getRequestTokenSecret());
         assertEquals(SignInType.LOCAL, updated.getSignIn());
         assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+    }
+    
+    @Test
+    public void testUpsertRequestTokenException() throws NoSuchAlgorithmException, RushHourException {
+        inst.calculator = mock(DigestCalculator.class);
+        doThrow(NoSuchAlgorithmException.class).when(inst.calculator).calcDigest(anyString());
+        doReturn(null).when(inst).findByRequestToken(anyString(), any(SignInType.class));
+        try {
+            inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(SIGNIN_FAIL, e.getErrMsg().getTitleId());
+            assertEquals(UNKNOWN_DETAIL, e.getErrMsg().getDetailId());
+            assertEquals(SYSTEM_ERR_ACTION, e.getErrMsg().getActionId());
+        }
     }
     
     @Test
