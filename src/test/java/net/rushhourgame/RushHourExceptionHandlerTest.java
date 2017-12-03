@@ -104,13 +104,14 @@ public class RushHourExceptionHandlerTest {
         doReturn(navHandler).when(app).getNavigationHandler();
     }
     
+    @Test
     public void testFactory() {
         ExceptionHandlerFactory parent = mock(ExceptionHandlerFactory.class);
         RushHourExceptionHandlerFactory factory = new RushHourExceptionHandlerFactory(parent);
         
-        doReturn(parent).when(parent).getExceptionHandler();
+        doReturn(wrapped).when(parent).getExceptionHandler();
         
-        assertEquals(parent, factory.getExceptionHandler());
+        assertNotNull(factory.getExceptionHandler());
     }
 
     @Test
