@@ -63,6 +63,18 @@ public class TwitterUserDataParserTest {
         TwitterUserData obj = instance.parse(SAMPLE_JSON);
         assertNotNull(obj);
         assertNotNull(obj.name);
+        assertNotNull(obj.getColor());
+        assertNotNull(obj.getIconUrl());
+        assertNotNull(obj.getName());
+        assertNotNull(obj.getProfile_background_color());
+        assertNotNull(obj.getProfile_image_url());
+        assertNotNull(obj.getProfile_image_url_https());
+        assertNotNull(obj.getProfile_link_color());
+        assertNotNull(obj.getProfile_text_color());
+        assertNotNull(obj.getScreen_name());
+        assertNotNull(obj.getTextColor());
+        assertTrue(instance.isParsed());
+        assertEquals(obj, instance.getCache());
     }
     
 }

@@ -86,12 +86,6 @@ public class TwitterUserDataParser implements Serializable {
                                 case "profile_text_color":
                                     obj.profile_text_color = "#" + parser.getString();
                                     break;
-                                case "default_profile":
-                                    obj.default_profile = parser.getString();
-                                    break;
-                                case "default_profile_image":
-                                    obj.default_profile_image = parser.getString();
-                                    break;
                                 default:
                                     
                                     break;

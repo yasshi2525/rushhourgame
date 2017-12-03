@@ -47,8 +47,6 @@ public class TwitterUserData implements UserData, Serializable {
     protected String profile_link_color;
     @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
     protected String profile_text_color;
-    protected String default_profile;
-    protected String default_profile_image;
 
     @Override
     public String getIconUrl() {
@@ -92,13 +90,5 @@ public class TwitterUserData implements UserData, Serializable {
 
     public String getProfile_text_color() {
         return profile_text_color;
-    }
-
-    public String getDefault_profile() {
-        return default_profile;
-    }
-
-    public String getDefault_profile_image() {
-        return default_profile_image;
     }
 }
