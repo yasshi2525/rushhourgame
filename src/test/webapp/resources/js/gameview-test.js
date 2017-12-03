@@ -24,20 +24,25 @@
 
 describe('test toGamePos', function () {
     beforeEach(function () {
-        scope = {
-            renderer: {
-                width: 0,
-                height: 0
-            }
-        };
+        $('body').append("<div id='scale'/>");
+        $('body').append("<div id='centerX'/>");
+        $('body').append("<div id='centerY'/>");
+        $('#scale').text(8);
+        $('#centerX').val('0');
+        $('#centerY').val('0');
+        
+        $(document).data('scope', {
+            renderer : {
+                width : 500,
+                height : 500
+            },
+            $centerX : $('#centerX'),
+            $centerY : $('#centerY')
+        });
     });
 
-    it('(0,0)->(0,0)', function () {
-
-        expect(toGamePos(0, 0)).toBe({
-            x: 0,
-            y: 0
-        });
-
+    it('(250,250)->(0,0)', function () {
+        expect(toGamePos(250, 250))
+                .toEqual({x: 0,y: 0});
     });
 });

@@ -31,7 +31,7 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
 gulp.task('watch', function () {
-    gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal', 'karma']);
+    gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal']);
 });
 
 gulp.task('buildNormal', function () {

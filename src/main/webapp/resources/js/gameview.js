@@ -24,14 +24,6 @@
 
 var pixi = require('pixi.js');
 
-/**
- * 当初, グローバル変数を作らず、引数に渡すことで実現しようとした。
- * しかし、コールバック関数内で値を参照することができなかったため、
- * グローバル変数を定義することで解決することにした。
- * @type type
- */
-var scope;
-
 var spriteResources = {
     'company': {},
     'residence': {},
@@ -57,13 +49,14 @@ var lineResources = {
  * @returns {undefined}
  */
 exports.init = function (param) {
-    scope = param;
+    $(document).data('scope', param);
 
     // 画像ロード後、スプライトを表示
     initPixi();
 };
 
 function initPixi() {
+    var scope = $(document).data('scope');
 
     var renderer = pixi.autoDetectRenderer(512, 512);
     scope.$gameview.get(0).appendChild(renderer.view); // get(0)がないとダメ
@@ -92,7 +85,7 @@ function initPixi() {
 }
 
 function initEventHandler() {
-
+    var scope = $(document).data('scope');
     scope.$canvas.on({
         // 当初 clickイベント時にクリックメニューを表示するようにしていたが、
         // ドラッグの終わりにもメニューが表示されてしまった。
@@ -112,6 +105,8 @@ function initEventHandler() {
 
 // fetchGraphics()にすると、ajaxでよびだされない
 fetchGraphics = function () {
+    var scope = $(document).data('scope');
+    
     // 既存のリソースにマークをつける
     // 更新後、マークが残っていたら削除する。
     for (var name in scope.graphics) {
@@ -170,6 +165,7 @@ fetchGraphics = function () {
 };
 
 function stageResourceSprite(type, $elm) {
+    var scope = $(document).data('scope');
     var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
@@ -198,6 +194,7 @@ function updateSprite(sprite, $elm) {
  * @returns 
  */
 function stageLine($elm, opts) {
+    var scope = $(document).data('scope');
     var obj = new pixi.Graphics();
 
     var from = toViewPos(
@@ -234,6 +231,7 @@ function slideEdge(from, to, scale) {
  * @returns {nm$_gameview.toViewPos.gameviewAnonym$2}
  */
 function toViewPos(x, y) {
+    var scope = $(document).data('scope');
     return {
         x: (x - scope.$centerX.val())
                 * scope.renderer.width
@@ -257,6 +255,7 @@ handleSlide = function (event, ui) {
 };
 
 function onDragStart(event) {
+    var scope = $(document).data('scope');
     this.moving = false;
     this.dragging = true;
     this.startGamePos = {
@@ -270,6 +269,7 @@ function onDragStart(event) {
 }
 
 function onDragEnd(event) {
+    var scope = $(document).data('scope');
     if (!this.moving) {
         // マウスの座標をゲーム上の座標に変換する
         var mouseX = event.originalEvent.offsetX;
@@ -296,6 +296,7 @@ function onDragEnd(event) {
  * @returns {undefined}
  */
 function onDragMove(event) {
+    var scope = $(document).data('scope');
     this.moving = true;
     if (this.dragging) {
 
@@ -319,6 +320,8 @@ function onDragMove(event) {
 }
 
 toGamePos = function (x, y) {
+    var scope = $(document).data('scope');
+    console.log(scope.renderer);
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
         x: (x / scope.renderer.width - 0.5)
@@ -328,4 +331,4 @@ toGamePos = function (x, y) {
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())
     };
-}
+};
