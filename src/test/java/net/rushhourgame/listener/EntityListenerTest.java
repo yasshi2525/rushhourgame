@@ -116,4 +116,12 @@ public class EntityListenerTest {
         assertEquals(beforeCreated, afterCreated);
         assertNotEquals(beforeUpdated, afterUpdated);
     }
+    
+    @Test
+    public void testPreUpdateCreateNull() {
+        expectException.expect(RushHourRuntimeException.class);
+        expectException.expectMessage("\"created\" is null even if state is preUpdate");
+        
+        inst.preUpdate(entity);
+    }
 }

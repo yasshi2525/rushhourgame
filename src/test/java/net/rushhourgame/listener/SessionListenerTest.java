@@ -75,6 +75,11 @@ public class SessionListenerTest {
     @After
     public void tearDown() {
     }
+    
+    @Test
+    public void testSessionCreated() {
+        instance.sessionCreated(se);
+    }
 
     @Test
     public void testSessionDestroyedNull() {
