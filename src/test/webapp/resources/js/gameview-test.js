@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-describe('test toGamePos', function () {
+describe('test gameview', function () {
     beforeEach(function () {
         $('body').append("<div id='scale'/>");
         $('body').append("<div id='centerX'/>");
@@ -30,19 +30,27 @@ describe('test toGamePos', function () {
         $('#scale').text(8);
         $('#centerX').val('0');
         $('#centerY').val('0');
-        
+
         $(document).data('scope', {
-            renderer : {
-                width : 500,
-                height : 500
+            renderer: {
+                width: 500,
+                height: 500
             },
-            $centerX : $('#centerX'),
-            $centerY : $('#centerY')
+            $centerX: $('#centerX'),
+            $centerY: $('#centerY')
         });
     });
 
-    it('(250,250)->(0,0)', function () {
-        expect(toGamePos(250, 250))
-                .toEqual({x: 0,y: 0});
+    describe('test onDragMove', function () {
+        it('stay', function () {
+            this.drargging = true;
+            
+        });
+    });
+    describe('test toGamePos', function () {
+        it('(center)->(0,0)', function () {
+            expect(toGamePos(250, 250))
+                    .toEqual({x: 0, y: 0});
+        });
     });
 });

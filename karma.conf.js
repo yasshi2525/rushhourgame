@@ -37,7 +37,11 @@ module.exports = function (config) {
         },
 
         coverageReporter: {
-            dir: 'target/jscoverage'
+            dir: 'target/jscoverage',
+            reporters: [
+                { type: 'html', subdir: 'html' },
+                { type: 'cobertura', subdir: 'cobertura', file: 'coverage.xml' }
+            ]
         },
 
         // test results reporter to use

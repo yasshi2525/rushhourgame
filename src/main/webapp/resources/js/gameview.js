@@ -106,7 +106,7 @@ function initEventHandler() {
 // fetchGraphics()にすると、ajaxでよびだされない
 fetchGraphics = function () {
     var scope = $(document).data('scope');
-    
+
     // 既存のリソースにマークをつける
     // 更新後、マークが残っていたら削除する。
     for (var name in scope.graphics) {
@@ -280,8 +280,8 @@ function onDragEnd(event) {
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
         fireClickMenu([
-                {name: 'gamePos.x', value: gamePos.x},
-                {name: 'gamePos.y', value: gamePos.y}]);
+            {name: 'gamePos.x', value: gamePos.x},
+            {name: 'gamePos.y', value: gamePos.y}]);
     }
 
     this.moving = false;
@@ -299,29 +299,36 @@ function onDragMove(event) {
     var scope = $(document).data('scope');
     this.moving = true;
     if (this.dragging) {
+        var newCenterPos = toGamePosByDiff(
+                this.startGamePos, this.startPosition, toViewPos(event));
 
-        var newPosition = {
-            x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
-            y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
-        };
-
-        var newCenterPos = {
-            x: this.startGamePos.x
-                    - (newPosition.x - this.startPosition.x)
-                    * Math.pow(2, $('#scale').text()) / scope.renderer.width,
-            y: this.startGamePos.y
-                    - (newPosition.y - this.startPosition.y)
-                    * Math.pow(2, $('#scale').text()) / scope.renderer.height
-        };
         scope.$centerX.val(newCenterPos.x);
         scope.$centerY.val(newCenterPos.y);
         fetchGraphics();
     }
 }
 
+toViewPos = function (event) {
+    return {
+        x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
+        y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
+    };
+};
+
+toGamePosByDiff = function (startGamePos, startViewPos, newViewPos) {
+    var scope = $(document).data('scope');
+    return {
+        x: startGamePos.x
+                - (newViewPos.x - startViewPos.x)
+                * Math.pow(2, $('#scale').text()) / scope.renderer.width,
+        y: startGamePos.y
+                - (newViewPos.y - startViewPos.y)
+                * Math.pow(2, $('#scale').text()) / scope.renderer.height
+    };
+};
+
 toGamePos = function (x, y) {
     var scope = $(document).data('scope');
-    console.log(scope.renderer);
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
         x: (x / scope.renderer.width - 0.5)
