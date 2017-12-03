@@ -56,7 +56,7 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
             ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
 
             Throwable t = context.getException();
-            FacesContext fc = FacesContext.getCurrentInstance();
+            FacesContext fc = getFacesInstance();
 
             try {
                 RushHourException ex = extractRushHourException(t);
@@ -99,4 +99,7 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
         return wrapped;
     }
 
+    protected FacesContext getFacesInstance() {
+        return FacesContext.getCurrentInstance();
+    }
 }
