@@ -95,6 +95,11 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             fail();
         }
     }
+    
+    @Test
+    public void testGetFacesContext() {
+        assertNull(new TwitterOAuthAccessTokenBean().getFacesContext());
+    }
 
     @Test
     public void testInit() throws RushHourException, IOException {

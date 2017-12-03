@@ -41,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SlideEndEvent;
 
 /**
  *
@@ -99,8 +100,14 @@ public class GameViewBeanTest extends AbstractBeanTest{
         
         inst.openClickMenu();
         
+        assertTrue(inst.isShowsMenu());
         assertTrue(99.9 == inst.getClickX());
         assertTrue(199.9 == inst.getClickY());
+    }
+    
+    @Test
+    public void testGetFacesContext() {
+        assertNull(new GameViewBean().getFacesContext());
     }
     
     @Test
@@ -111,6 +118,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
     @Test
     public void testIsOperating() {
         inst.setOperation(OperationType.CREATE_RAIL);
+        assertEquals(OperationType.CREATE_RAIL, inst.getOperation());
         assertTrue(inst.isOperating());
     }
     
@@ -163,5 +171,15 @@ public class GameViewBeanTest extends AbstractBeanTest{
     @Test
     public void testGetRequestContext() {
         assertNull(new GameViewBean().getRequestContext());
+    }
+    
+    @Test
+    public void testOnSlideEnd() {
+        SlideEndEvent event = mock(SlideEndEvent.class);
+        doReturn(100).when(event).getValue();
+        
+        inst.onSlideEnd(event);
+        
+        assertTrue(1 == inst.getScale());
     }
 }

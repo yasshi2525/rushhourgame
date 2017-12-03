@@ -24,17 +24,13 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
-import java.util.Map;
-import javax.faces.context.ExternalContext;
-import net.rushhourgame.ErrorMessage;
-import net.rushhourgame.RushHourSession;
-import org.junit.Before;
+import net.rushhourgame.entity.Player;
+import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -43,75 +39,54 @@ import org.mockito.junit.MockitoJUnitRunner;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class ErrorBeanTest extends AbstractBeanTest {
-
-    @Spy
-    protected ErrorBean inst;
+public class LanguageBeanTest extends AbstractBeanTest {
     
-    @Mock
-    protected Map<String, Object> requestMap;
-
+    @Spy
+    protected LanguageBean inst;
+    
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        inst.msgProps = msg;
         inst.rushHourSession = session;
-        doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(externalContext).when(facesContext).getExternalContext();
-        doReturn(requestMap).when(externalContext).getRequestMap();
+        inst.pCon = PCON;
     }
 
     @Test
     public void testInit() {
-        ErrorMessage msg = new ErrorMessage();
-        doReturn(msg).when(requestMap).get("error");
         inst.init();
-        assertEquals(msg, inst.contents);
+        assertNull(inst.player);
+    }
+    
+    @Test
+    public void testChange() throws RushHourException {
+        inst.player = createPlayer();
+        
+        inst.change("jp");
+        assertEquals(Locale.JAPANESE, inst.player.getInfo().getLocale());
+        inst.change("en");
+        assertEquals(Locale.ENGLISH, inst.player.getInfo().getLocale());
+    }
+    
+    
+    @Test
+    public void testChangePlayerNullJp() {
+        inst.change("jp");
+        verify(session, times(0)).setLocale(Locale.ENGLISH);
+        verify(session, times(1)).setLocale(Locale.JAPANESE);
+    }
+    
+    @Test
+    public void testChangePlayerNullEn() {
+        inst.change("en");
+        verify(session, times(1)).setLocale(Locale.ENGLISH);
+        verify(session, times(0)).setLocale(Locale.JAPANESE);
     }
 
     @Test
-    public void testInitNull() {
-        doReturn(null).when(requestMap).get("error");
-        inst.init();
-        assertNotNull(inst.contents);
+    public void testChangeNull() {
+        inst.change(null);
+        verify(session, times(0)).setLocale(any(Locale.class));
     }
-
-    @Test
-    public void testGetFacesContext() {
-        assertNull(new ErrorBean().getFacesContext());
-    }
-
-    @Test
-    public void testGetTitle() {
-        inst.contents = new ErrorMessage();
-        assertEquals(ErrorMessage.NO_CONTENTS, inst.getTitle());
-    }
-
-    @Test
-    public void testGetDetail() {
-        inst.contents = new ErrorMessage();
-        assertEquals(ErrorMessage.NO_CONTENTS, inst.getDetail());
-    }
-
-    @Test
-    public void testGetAction() {
-        inst.contents = new ErrorMessage();
-        assertEquals(ErrorMessage.NO_CONTENTS, inst.getAction());
-    }
-
-    @Test
-    public void testGetTitleNull() {
-        assertEquals("No Contents", inst.getTitle());
-    }
-
-    @Test
-    public void testGetDetailNull() {
-        assertEquals("No Contents", inst.getDetail());
-    }
-
-    @Test
-    public void testGetActionNull() {
-        assertEquals("No Contents", inst.getAction());
-    }
+    
 }

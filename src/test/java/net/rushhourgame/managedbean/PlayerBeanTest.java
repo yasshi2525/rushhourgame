@@ -95,6 +95,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
         verify(externalContext, times(1)).redirect(anyString());
     }
     
+    @Test
     public void testGetFacesContext() {
         assertNull(new PlayerBean().getFacesContext());
     }

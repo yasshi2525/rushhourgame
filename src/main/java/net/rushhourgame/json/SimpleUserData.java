@@ -74,4 +74,20 @@ public class SimpleUserData implements UserData, Serializable {
     public String getTextColor() {
         return textColor;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
+    }
 }

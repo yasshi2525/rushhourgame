@@ -50,10 +50,7 @@ public class AdminBean implements Serializable {
     @Inject
     protected PlayerController pCon;
     @Inject
-    protected OAuthController oCon;
-    @Inject
     protected RushHourSession session;
-    protected SimpleUserData userData;
 
     protected static final String ADMIN_USER = "admin";
 
@@ -63,7 +60,12 @@ public class AdminBean implements Serializable {
         
         if (p == null) {
             //ログインしていないときはAdminでログイン
-            p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, userData, session.getLocale());
+            SimpleUserData data = new SimpleUserData();
+            data.setColor("#AAAAAA");
+            data.setIconUrl("admin_image.png");
+            data.setName(ADMIN_USER);
+            data.setTextColor("#000000");
+            p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, data, session.getLocale());
             session.setToken(p.getToken());
         }
     }
