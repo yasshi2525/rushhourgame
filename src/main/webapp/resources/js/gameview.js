@@ -318,7 +318,7 @@ function onDragMove(event) {
     }
 }
 
-function toGamePos(x, y) {
+toGamePos = function (x, y) {
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
         x: (x / scope.renderer.width - 0.5)

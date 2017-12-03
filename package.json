@@ -6,20 +6,26 @@
   "license": "MIT",
   "repository": "https://yasshi2525@github.com/yasshi2525/rushhourgame.git",
   "dependencies": {
-    "browserify": "14.3.0",
+    "browserify": "14.5.0",
     "gulp": "3.9.1",
     "gulp-rename": "1.2.2",
     "gulp-streamify": "1.0.2",
-    "gulp-uglify": "2.1.2",
+    "gulp-uglify": "3.0.0",
     "jquery": "3.2.1",
-    "pixi.js": "4.5.1",
+    "pixi.js": "^4.6.2",
     "vinyl-source-stream": "1.1.0"
   },
   "devDependencies": {
-    "karma-jquery": "^0.2.2",
+    "karma-phantomjs-launcher": "",
+    "browserify-istanbul": "^3.0.1",
     "jasmine-core": "^2.8.0",
     "karma": "^1.7.1",
+    "karma-browserify": "^5.1.2",
     "karma-chrome-launcher": "^2.2.0",
-    "karma-jasmine": "^1.1.1"
+    "karma-coverage": "^1.1.1",
+    "karma-jasmine": "^1.1.1",
+    "karma-jquery": "^0.2.2",
+    "karma-mocha-reporter": "^2.2.5",
+    "watchify": "^3.9.0"
   }
 }

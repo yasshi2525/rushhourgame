@@ -23,14 +23,15 @@
  */
 
 var gulp = require('gulp');
+var karma = require('karma');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var streamify = require('gulp-streamify');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
-gulp.task('watch', function() {
-    gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal']);
+gulp.task('watch', function () {
+    gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal', 'karma']);
 });
 
 gulp.task('buildNormal', function () {
@@ -41,7 +42,17 @@ gulp.task('default', function () {
     build(true);
 });
 
-function build(minimize){
+gulp.task('karma', function (done) {
+    var karmaServer = new karma.Server({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, function (exitCode) {
+        done();
+        process.exit(exitCode);
+    }).start();
+});
+
+function build(minimize) {
     _build('index.js', ['./src/main/webapp/resources/js/index.js'], minimize);
     _build('admin.js', ['./src/main/webapp/resources/js/admin.js'], minimize);
 }
