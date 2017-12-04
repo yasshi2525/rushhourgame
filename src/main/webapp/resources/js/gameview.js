@@ -35,11 +35,6 @@ var lineResources = {
         color: 0xaaaaaa,
         slide: 3,
         scale: 3
-    },
-    stepforhuman: {
-        color: 0x00aabb,
-        slide: 0,
-        scale: 1
     }
 };
 
@@ -270,7 +265,9 @@ function onDragStart(event) {
 
 function onDragEnd(event) {
     var scope = $(document).data('scope');
+    
     if (!this.moving) {
+        // クリックと判定した
         // マウスの座標をゲーム上の座標に変換する
         var mouseX = event.originalEvent.offsetX;
         var mouseY = event.originalEvent.offsetY;
@@ -282,6 +279,8 @@ function onDragEnd(event) {
         fireClickMenu([
             {name: 'gamePos.x', value: gamePos.x},
             {name: 'gamePos.y', value: gamePos.y}]);
+    } else {
+        // ドラッグと反映した
     }
 
     this.moving = false;
@@ -300,7 +299,7 @@ function onDragMove(event) {
     this.moving = true;
     if (this.dragging) {
         var newCenterPos = toGamePosByDiff(
-                this.startGamePos, this.startPosition, toViewPos(event));
+                this.startGamePos, this.startPosition, toViewPosFromMouse(event));
 
         scope.$centerX.val(newCenterPos.x);
         scope.$centerY.val(newCenterPos.y);
@@ -308,7 +307,7 @@ function onDragMove(event) {
     }
 }
 
-toViewPos = function (event) {
+toViewPosFromMouse = function (event) {
     return {
         x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
         y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY

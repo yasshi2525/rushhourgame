@@ -19,8 +19,8 @@
         <h:inputHidden id="clickY" value="#{game.clickY}"/> 
 
         <!-- 画面スクロール用 -->
-        <!--<p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
-        --><h:inputHidden id="centerX" value="#{game.centerX}"/>
+        <p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
+        <h:inputHidden id="centerX" value="#{game.centerX}"/>
         <h:inputHidden id="centerY" value="#{game.centerY}"/>
     </h:panelGroup>
     <h:panelGroup id="gamemodel">
