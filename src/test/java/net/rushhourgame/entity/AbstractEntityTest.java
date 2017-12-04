@@ -52,7 +52,6 @@ public abstract class AbstractEntityTest {
     
     @After
     public void tearDown() {
-        EM.getTransaction().commit();
-        TCON.clean();
+        EM.getTransaction().rollback();
     }
 }

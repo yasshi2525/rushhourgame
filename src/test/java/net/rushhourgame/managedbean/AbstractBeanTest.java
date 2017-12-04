@@ -88,7 +88,6 @@ public class AbstractBeanTest {
     
     @BeforeClass
     public static void setUpClass() {
-        TCON.clean();
     }
     
     @Before
@@ -98,8 +97,7 @@ public class AbstractBeanTest {
     
     @After
     public void tearDown() {
-        EM.getTransaction().commit();
-        TCON.clean();
+        EM.getTransaction().rollback();
     }
     
     protected static Player createPlayer() throws RushHourException{

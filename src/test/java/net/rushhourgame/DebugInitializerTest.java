@@ -107,8 +107,7 @@ public class DebugInitializerTest {
 
     @After
     public void tearDown() {
-        EM.getTransaction().commit();
-        TCON.clean();
+        EM.getTransaction().rollback();
         
         executor.shutdown();
     }
