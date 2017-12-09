@@ -32,6 +32,12 @@ $(function(){
         $centerY: $('#centerY'),
         // $scale: $('#scale'), 途中で参照が変わるため、直接取得に変更
         $clickX: $('#clickX'),
-        $clickY: $('#clickY')
+        $clickY: $('#clickY'),
+        resources : {
+            company : 'resources/image/s_company.png',
+            residence : 'resources/image/s_residence.png',
+            station : 'resources/image/s_station.png',
+            train : 'resources/image/s_train.png'
+        }
     });
 });

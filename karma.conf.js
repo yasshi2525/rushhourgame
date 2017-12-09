@@ -13,8 +13,13 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+             {
+                 pattern: 'src/main/webapp/resources/image/*.png', 
+                 watched: false, included: false, served: true, nocache: false
+             },
             'https://code.jquery.com/jquery-3.2.1.min.js',
-            'src/main/webapp/resources/js/*.js',
+            'src/main/webapp/resources/js/gameview.js',
+            // index と gameviewをよぶと毎回初期化されてエラー
             'src/test/webapp/resources/js/*.js'
         ],
 

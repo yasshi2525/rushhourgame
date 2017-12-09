@@ -50,7 +50,7 @@ exports.init = function (param) {
     initPixi();
 };
 
-function initPixi() {
+initPixi = function () {
     var scope = $(document).data('scope');
 
     var renderer = pixi.autoDetectRenderer(512, 512);
@@ -71,15 +71,17 @@ function initPixi() {
     };
 
     // 画像をロードしたあと、イベントハンドラスプライトを表示
-    pixi.loader
-            .add('company', 'resources/image/s_company.png')
-            .add('residence', 'resources/image/s_residence.png')
-            .add('station', 'resources/image/s_station.png')
-            .add('train', 'resources/image/s_train.png')
-            .load(fetchGraphics);
-}
+    loadImage(scope.resources);
+};
 
-function initEventHandler() {
+loadImage = function (resources) {
+    for(var key in resources) {
+        pixi.loader.add(key, resources[key]);
+    };
+    pixi.loader.load(fetchGraphics);
+};
+
+initEventHandler = function () {
     var scope = $(document).data('scope');
     scope.$canvas.on({
         // 当初 clickイベント時にクリックメニューを表示するようにしていたが、
@@ -96,7 +98,7 @@ function initEventHandler() {
         'mousemove': onDragMove,
         'touchmove': onDragMove
     });
-}
+};
 
 // fetchGraphics()にすると、ajaxでよびだされない
 fetchGraphics = function () {
@@ -114,7 +116,6 @@ fetchGraphics = function () {
     for (var name in spriteResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
-
             if (scope.graphics[name][$(elm).attr('id')]) {
                 // 更新
                 scope.graphics[name][$(elm).attr('id')].old = false;
@@ -159,7 +160,7 @@ fetchGraphics = function () {
     scope.renderer.render(scope.stage);
 };
 
-function stageResourceSprite(type, $elm) {
+stageResourceSprite = function (type, $elm) {
     var scope = $(document).data('scope');
     var pos = toViewPos(
             parseFloat($elm.data('x')),
@@ -172,15 +173,15 @@ function stageResourceSprite(type, $elm) {
 
     scope.stage.addChild(obj);
     return obj;
-}
+};
 
-function updateSprite(sprite, $elm) {
+updateSprite = function (sprite, $elm) {
     var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
 
     sprite.position.set(pos.x, pos.y);
-}
+};
 
 /**
  * 路線のlineではなく、線のline
@@ -188,7 +189,7 @@ function updateSprite(sprite, $elm) {
  * @param {type} opts
  * @returns 
  */
-function stageLine($elm, opts) {
+stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
     var obj = new pixi.Graphics();
 
@@ -207,9 +208,9 @@ function stageLine($elm, opts) {
 
     scope.stage.addChild(obj);
     return obj;
-}
+};
 
-function slideEdge(from, to, scale) {
+slideEdge = function (from, to, scale) {
     var theta = Math.atan2(to.y - from.y, to.x - from.x) - Math.PI / 2;
     return {
         fromx: from.x + Math.cos(theta) * scale,
@@ -217,7 +218,7 @@ function slideEdge(from, to, scale) {
         tox: to.x + Math.cos(theta) * scale,
         toy: to.y + Math.sin(theta) * scale
     };
-}
+};
 
 /**
  * サーバ上のパスを画面上の座標に変換する
@@ -225,7 +226,7 @@ function slideEdge(from, to, scale) {
  * @param {type} y
  * @returns {nm$_gameview.toViewPos.gameviewAnonym$2}
  */
-function toViewPos(x, y) {
+toViewPos = function (x, y) {
     var scope = $(document).data('scope');
     return {
         x: (x - scope.$centerX.val())
@@ -237,7 +238,7 @@ function toViewPos(x, y) {
                 * Math.pow(2, -$('#scale').text())
                 + scope.renderer.height / 2
     };
-}
+};
 /**
  * スライダーを動かした時、リアルタイムで拡大、縮小できるようにする
  * @param {type} event
@@ -249,7 +250,7 @@ handleSlide = function (event, ui) {
     fetchGraphics();
 };
 
-function onDragStart(event) {
+onDragStart = function (event) {
     var scope = $(document).data('scope');
     this.moving = false;
     this.dragging = true;
@@ -257,22 +258,16 @@ function onDragStart(event) {
         x: parseFloat(scope.$centerX.val()),
         y: parseFloat(scope.$centerY.val())
     };
-    this.startPosition = {
-        x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
-        y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
-    };
-}
+    this.startPosition = toViewPosFromMouse(event);
+};
 
-function onDragEnd(event) {
+onDragEnd = function (event) {
     var scope = $(document).data('scope');
-    
+
     if (!this.moving) {
         // クリックと判定した
         // マウスの座標をゲーム上の座標に変換する
-        var mouseX = event.originalEvent.offsetX;
-        var mouseY = event.originalEvent.offsetY;
-
-        var gamePos = toGamePos(mouseX, mouseY);
+        var gamePos = toGamePos(toViewPosFromMouse(event));
 
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
@@ -280,32 +275,33 @@ function onDragEnd(event) {
             {name: 'gamePos.x', value: gamePos.x},
             {name: 'gamePos.y', value: gamePos.y}]);
     } else {
-        // ドラッグと反映した
+        // ドラッグと判定した
+        // mouseup時のリロードは xhtml側で行う
     }
 
     this.moving = false;
     this.dragging = false;
     this.startGamePos = null;
     this.startPosition = null;
-}
+};
 
 /**
  * ドラッグ時、新しくなるcenterX, centerYを求める
  * @param {type} event
- * @returns {undefined}
+ * @returns {nm$_gameview.onDragMove}
  */
-function onDragMove(event) {
+onDragMove = function (event) {
     var scope = $(document).data('scope');
     this.moving = true;
     if (this.dragging) {
-        var newCenterPos = toGamePosByDiff(
+        var newCenterPos = toNewCenterGamePos(
                 this.startGamePos, this.startPosition, toViewPosFromMouse(event));
 
         scope.$centerX.val(newCenterPos.x);
         scope.$centerY.val(newCenterPos.y);
         fetchGraphics();
     }
-}
+};
 
 toViewPosFromMouse = function (event) {
     return {
@@ -314,7 +310,7 @@ toViewPosFromMouse = function (event) {
     };
 };
 
-toGamePosByDiff = function (startGamePos, startViewPos, newViewPos) {
+toNewCenterGamePos = function (startGamePos, startViewPos, newViewPos) {
     var scope = $(document).data('scope');
     return {
         x: startGamePos.x
@@ -326,14 +322,14 @@ toGamePosByDiff = function (startGamePos, startViewPos, newViewPos) {
     };
 };
 
-toGamePos = function (x, y) {
+toGamePos = function (pos) {
     var scope = $(document).data('scope');
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
-        x: (x / scope.renderer.width - 0.5)
+        x: (pos.x / scope.renderer.width - 0.5)
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerX.val()),
-        y: (y / scope.renderer.height - 0.5)
+        y: (pos.y / scope.renderer.height - 0.5)
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())
     };

@@ -31,6 +31,12 @@ $(function(){
         $centerX: $('#centerX'),
         $centerY: $('#centerY'),
         $clickX: $('#clickX'),
-        $clickY: $('#clickY')
+        $clickY: $('#clickY'),
+        resources : {
+            company : 'resources/image/s_company.png',
+            residence : 'resources/image/s_residence.png',
+            station : 'resources/image/s_station.png',
+            train : 'resources/image/s_train.png'
+        }
     });
 });
