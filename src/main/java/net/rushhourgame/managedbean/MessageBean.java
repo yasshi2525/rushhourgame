@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.Locale;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,90 +38,101 @@ import net.rushhourgame.RushHourSession;
  */
 @Named(value = "msg")
 @ViewScoped
-public class MessageBean implements Serializable{
+public class MessageBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     protected RushHourSession rushHourSession;
-    
+
     @Inject
     protected RushHourResourceBundle res;
 
-    public String getRushHour(){
+    public String getRushHour() {
         return res.get(LABEL_RUSHHOUR, rushHourSession.getLocale());
     }
-    
-    public String getRushHourVer(){
+
+    public String getRushHourVer() {
         return res.get(LABEL_RUSHHOUR_VER, rushHourSession.getLocale());
     }
-    
-    public String getError(){
+
+    public String getError() {
         return res.get(LABEL_ERROR, rushHourSession.getLocale());
     }
-    
-    public String getDetail(){
+
+    public String getDetail() {
         return res.get(LABEL_DETAIL, rushHourSession.getLocale());
     }
-    
-    public String getAction(){
+
+    public String getAction() {
         return res.get(LABEL_ACTION, rushHourSession.getLocale());
     }
-    
-    public String getTopTitle(){
+
+    public String getTopTitle() {
         return res.get(LABEL_TOP_TITLE, rushHourSession.getLocale());
     }
-    
-    public String getTwitterSignIn(){
+
+    public String getTwitterSignIn() {
         return res.get(LABEL_TWITTER_SIGNIN, rushHourSession.getLocale());
     }
-    
-    public String getFetchAccessToken(){
+
+    public String getFetchAccessToken() {
         return res.get(LABEL_FETCH_ACCESS_TOKEN, rushHourSession.getLocale());
     }
-    
-    public String getWelcome(){
+
+    public String getWelcome() {
         return res.get(LABEL_WELCOME, rushHourSession.getLocale());
     }
-    
-    public String getLang(){
+
+    public String getLang() {
         return res.get(LABEL_LANG, rushHourSession.getLocale());
     }
-    
-    public String getLangEn(){
+
+    public String getLangEn() {
         return res.get(LABEL_LANG_EN, rushHourSession.getLocale());
     }
-    
-    public String getLangJp(){
+
+    public String getLangJp() {
         return res.get(LABEL_LANG_JP, rushHourSession.getLocale());
     }
-    
-    public String getLogOut(){
+
+    public String getLogOut() {
         return res.get(LABEL_LOGOUT, rushHourSession.getLocale());
     }
-    
-    public String getRail(){
+
+    public String getRail() {
         return res.get(LABEL_RAIL, rushHourSession.getLocale());
     }
-    public String getStation(){
+
+    public String getStation() {
         return res.get(LABEL_STATION, rushHourSession.getLocale());
     }
-    public String getRoute(){
+
+    public String getRoute() {
         return res.get(LABEL_LINE, rushHourSession.getLocale());
     }
-    public String getTrain(){
+
+    public String getTrain() {
         return res.get(LABEL_TRAIN, rushHourSession.getLocale());
     }
-    public String getCreate(){
+
+    public String getCreate() {
         return res.get(LABEL_CREATE, rushHourSession.getLocale());
     }
-    public String getEdit(){
+
+    public String getEdit() {
         return res.get(LABEL_EDIT, rushHourSession.getLocale());
     }
-    public String getRemove(){
+
+    public String getRemove() {
         return res.get(LABEL_REMOVE, rushHourSession.getLocale());
     }
-    
-    public String getGoBack(){
+
+    public String getGoBack() {
         return res.get(LABEL_GO_BACK, rushHourSession.getLocale());
+    }
+    
+    public String getCreateRail() {
+        return res.get(LABEL_RAIL_CREATE, rushHourSession.getLocale());
     }
 }

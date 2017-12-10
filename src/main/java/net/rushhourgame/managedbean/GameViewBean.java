@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,21 +106,27 @@ public class GameViewBean implements Serializable {
     }
 
     public void openClickMenu() throws RushHourException {
-        Map<String, String> params = getFacesContext().getExternalContext().getRequestParameterMap();
-        clickX = Double.parseDouble(params.get("gamePos.x"));
-        clickY = Double.parseDouble(params.get("gamePos.y"));
+        Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
+        clickX = Double.parseDouble(reqParam.get("gamePos.x"));
+        clickY = Double.parseDouble(reqParam.get("gamePos.y"));
         showsMenu = !showsMenu;
-        
+
+        Map<String, List<String>> params = new HashMap<>();
+        params.put("clickX", Collections.singletonList(Double.toString(clickX)));
+        params.put("clickY", Collections.singletonList(Double.toString(clickY)));
+        params.put("scale", Collections.singletonList(Double.toString(scale)));
+
         RequestContext context = getRequestContext();
-        Map<String,Object> options = new HashMap<>();
+        Map<String, Object> options = new HashMap<>();
         options.put("width", 250);
-        context.openDialog("clickmenu", options, null);
+
+        context.openDialog("clickmenu", options, params);
     }
-    
+
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
-    
+
     protected RequestContext getRequestContext() {
         return RequestContext.getCurrentInstance();
     }
