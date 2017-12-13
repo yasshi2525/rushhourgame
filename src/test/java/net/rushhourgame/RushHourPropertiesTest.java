@@ -24,6 +24,7 @@
 package net.rushhourgame;
 
 import java.io.BufferedWriter;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -327,13 +328,18 @@ public class RushHourPropertiesTest {
      * WatchServiceに登録するときIOException.
      *
      * @throws InterruptedException
+     * @throws java.io.IOException
      */
     @Test
-    public void testConfigWatchingServiceIOException() throws InterruptedException {
+    public void testConfigWatchingServiceIOException() throws InterruptedException, IOException {
         LOG.log(Level.INFO, "{0}#testConfigWatchingServiceIOException", new Object[]{this.getClass().getSimpleName()});
 
         Path configPath = mock(Path.class);
-        doThrow(IOException.class).when(configPath).toAbsolutePath();
+        Path absPath= mock(Path.class);
+        Path parentPath = mock(Path.class);
+        doReturn(absPath).when(configPath).toAbsolutePath();
+        doReturn(parentPath).when(absPath).getParent();
+        doThrow(IOException.class).when(parentPath).register(any(), any());
 
         WatchService watchService = mock(WatchService.class);
 
