@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
+import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 
 /**
@@ -205,7 +206,7 @@ public class TwitterSignatureBuilder implements Serializable{
     protected String calculateSignature(String key, String value) throws UnsupportedEncodingException  {
         LOG.log(Level.FINE, "{0}#calculateSignature start", this.getClass().getSimpleName());
 
-        byte[] signatureBin = HmacUtils.hmacSha1(key, value);
+        byte[] signatureBin = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, key).hmac(value);
         String ret = Base64.getEncoder().encodeToString(signatureBin);
 
         LOG.log(Level.FINER, "{0}#calculateSignature end {1}", 
