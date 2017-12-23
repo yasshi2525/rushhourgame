@@ -31,8 +31,14 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.exception.RushHourException;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -45,29 +51,47 @@ public class ClickMenuBean  implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Inject
+    protected RushHourSession session;
+    protected Player player;
+    
+    @Inject
+    protected PlayerController pCon;
+    @Inject
     protected RailController rCon;
+    
+    protected double clickX;
+    
+    protected double clickY;
+    
+    protected double scale;
+    
+    @PostConstruct
+    public void init() {
+        player = pCon.findByToken(session.getToken());
+        clickX = Double.parseDouble(getRequestMap().get("clickX"));
+        clickY = Double.parseDouble(getRequestMap().get("clickY"));
+        scale = Double.parseDouble(getRequestMap().get("scale"));
+    }
 
     public boolean canCreateRail() {
-        return rCon.findNodeIn(getClickX(), getClickY(), getScale() - 3).isEmpty();
+        return rCon.findNodeIn(clickX, clickY, scale - 3).isEmpty();
+    }
+    
+    @Transactional
+    public void createRail() throws RushHourException {
+        rCon.create(player, clickX, clickY);
+        getRequestContext().closeDialog(null);
     }
     
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
     
+    protected RequestContext getRequestContext() {
+        return RequestContext.getCurrentInstance();
+    }
+    
     protected Map<String,String> getRequestMap() {
         return getFacesContext().getExternalContext().getRequestParameterMap();
-    }
-    
-    protected double getClickX() {
-        return Double.parseDouble(getRequestMap().get("clickX"));
-    }
-    
-    protected double getClickY() {
-        return Double.parseDouble(getRequestMap().get("clickY"));
-    }
-    
-    protected double getScale() {
-        return Double.parseDouble(getRequestMap().get("scale"));
     }
 }

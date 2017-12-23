@@ -9,7 +9,8 @@
     <h:body>
         <h:form>
             <p:menu>
-                <p:menuitem rendered="#{menu.canCreateRail()}" value="#{msg.createRail}"/>
+                <p:menuitem rendered="#{menu.canCreateRail()}" value="#{msg.createRail}"
+                            actionListener="#{menu.createRail()}"/>
             </p:menu>
         </h:form>
     </h:body>

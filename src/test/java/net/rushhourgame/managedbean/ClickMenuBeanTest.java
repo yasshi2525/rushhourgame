@@ -25,6 +25,9 @@ package net.rushhourgame.managedbean;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
@@ -41,135 +44,159 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class ClickMenuBeanTest extends AbstractBeanTest {
+
     @Spy
     protected ClickMenuBean inst;
-    
+
+    protected Map<String, String> map;
+
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        
+
+        inst.session = session;
         inst.rCon = RAILCON;
+        inst.pCon = PCON;
         
+        try {
+            Player player = createPlayer();
+            doReturn(player.getToken()).when(session).getToken();
+        } catch (RushHourException ex) {
+            Logger.getLogger(ClickMenuBeanTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
-        
-        Map<String, String> map = new HashMap<>();
-        map.put("clickX", "11.0");
-        map.put("clickY", "12.0");
-        map.put("scale", "13.0");
-        
+        doReturn(requestContext).when(inst).getRequestContext();
+
+        map = new HashMap<>();
+
         doReturn(map).when(externalContext).getRequestParameterMap();
     }
 
     @Test
     public void testCanCreateRail() {
+        map.put("clickX", "11.0");
+        map.put("clickY", "12.0");
+        map.put("scale", "13.0");
+        inst.init();
         assertTrue(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailFarRight() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
         
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(1.1).when(inst).getClickX();
-        doReturn(0.0).when(inst).getClickY();
+        map.put("scale", "3.0");
+        map.put("clickX", "1.1");
+        map.put("clickY", "0.0");
+        inst.init();
         
         assertTrue(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailFarLeft() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(-1.1).when(inst).getClickX();
-        doReturn(0.0).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "-1.1");
+        map.put("clickY", "0.0");
+        inst.init();
+
         assertTrue(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailFarTop() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(0.0).when(inst).getClickX();
-        doReturn(-1.1).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "-1.1");
+        inst.init();
+
         assertTrue(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailFarBottom() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(0.0).when(inst).getClickX();
-        doReturn(1.1).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "1.1");
+        inst.init();
+
         assertTrue(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailNearRight() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
         System.out.println(TCON.findAll("RailNode", RailNode.class));
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(0.4).when(inst).getClickX();
-        doReturn(0.0).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "0.4");
+        map.put("clickY", "0.0");
+        inst.init();
+
         assertFalse(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailNearLeft() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(-0.4).when(inst).getClickX();
-        doReturn(0.0).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "-0.4");
+        map.put("clickY", "0.0");
+        inst.init();
+
         assertFalse(inst.canCreateRail());
     }
-    
+
     @Test
     public void testCanCreateRailNearTop() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
-        
+
         // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(0.0).when(inst).getClickX();
-        doReturn(-0.4).when(inst).getClickY();
-        
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "-0.4");
+        inst.init();
+
+        assertFalse(inst.canCreateRail());
+    }
+
+    @Test
+    public void testCanCreateRailNearBottom() throws RushHourException {
+        RAILCON.create(createPlayer(), 0, 0);
+
+        // scale 3 (幅8)のとき、±1を近いと判定
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "0.4");
+        inst.init();
+
         assertFalse(inst.canCreateRail());
     }
     
     @Test
-    public void testCanCreateRailNearBottom() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
-        
-        // scale 3 (幅8)のとき、±1を近いと判定
-        doReturn(3.0).when(inst).getScale();
-        
-        doReturn(0.0).when(inst).getClickX();
-        doReturn(0.4).when(inst).getClickY();
-        
-        assertFalse(inst.canCreateRail());
+    public void testCreateRail() throws RushHourException {
+        map.put("scale", "13.0");
+        map.put("clickX", "11.0");
+        map.put("clickY", "12.0");
+        inst.init();
+        inst.createRail();
     }
 
     @Test
@@ -181,20 +208,9 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testGetRequestMap() {
         assertNotNull(inst.getRequestMap());
     }
-
-    @Test
-    public void testGetClickX() {
-        assertTrue(11.0 == inst.getClickX());
-    }
-
-    @Test
-    public void testGetClickY() {
-        assertTrue(12.0 == inst.getClickY());
-    }
-
-    @Test
-    public void testGetScale() {
-        assertTrue(13.0 == inst.getScale());
-    }
     
+    @Test
+    public void testRequestContext() {
+        assertNull(new ClickMenuBean().getRequestContext());
+    }
 }

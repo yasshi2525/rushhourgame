@@ -119,6 +119,7 @@ public class GameViewBean implements Serializable {
         RequestContext context = getRequestContext();
         Map<String, Object> options = new HashMap<>();
         options.put("width", 250);
+        options.put("modal", true);
 
         context.openDialog("clickmenu", options, params);
     }
