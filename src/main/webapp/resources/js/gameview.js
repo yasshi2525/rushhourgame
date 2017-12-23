@@ -305,8 +305,8 @@ onDragMove = function (event) {
 
 toViewPosFromMouse = function (event) {
     return {
-        x: (event.pageX) ? event.pageX : event.originalEvent.touches[0].pageX,
-        y: (event.pageY) ? event.pageY : event.originalEvent.touches[0].pageY
+        x: (event.offsetX) ? event.offsetX : event.originalEvent.touches[0].offsetX,
+        y: (event.offsetY) ? event.offsetY : event.originalEvent.touches[0].offsetY
     };
 };
 

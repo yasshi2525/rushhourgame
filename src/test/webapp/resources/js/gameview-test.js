@@ -339,13 +339,13 @@ describe('test gameview', function () {
     describe('test toViewPosFromMouse', function () {
         it('touch enabled', function () {
             expect(toViewPosFromMouse({
-                originalEvent: {touches: [{pageX: 10, pageY: 20}]}
+                originalEvent: {touches: [{offsetX: 10, offsetY: 20}]}
             })).toEqual({x: 10, y: 20});
         });
 
         it('mouse enabled', function () {
             expect(toViewPosFromMouse(
-                    {pageX: 10, pageY: 20}
+                    {offsetX: 10, offsetY: 20}
             )).toEqual({x: 10, y: 20});
         });
     });
