@@ -282,26 +282,25 @@ describe('test gameview', function () {
 
     describe('test onDragEnd', function () {
         beforeEach(function () {
-            spyOn(window, 'toViewPosFromMouse').and.callFake(doNothing);
+            spyOn(window, 'toViewPosFromMouse').and.returnValue({x: 11, y: 12});
             spyOn(window, 'toGamePos').and.returnValue({x: 11, y: 12});
             spyOn(window, 'fireClickMenu').and.callFake(doNothing);
         });
 
         it('reload when clicked', function () {
+            window.startPosition = {x: 11, y: 12};
             onDragEnd();
             expect(scope.$clickX.val()).toEqual('11');
             expect(scope.$clickY.val()).toEqual('12');
             expect(window.fireClickMenu.calls.any()).toEqual(true);
-            expect(window.moving).toEqual(false);
             expect(window.dragging).toEqual(false);
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
         });
         it('do nothing just when drag ended', function () {
-            window.moving = true;
+            window.startPosition = {x: 0, y: 0};
             onDragEnd();
             expect(window.fireClickMenu.calls.any()).toEqual(false);
-            expect(window.moving).toEqual(false);
             expect(window.dragging).toEqual(false);
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
@@ -319,7 +318,6 @@ describe('test gameview', function () {
             window.dragging = false;
             onDragMove();
             expect(window.fetchGraphics.calls.any()).toEqual(false);
-            expect(window.moving).toEqual(true);
         });
 
         it('change center when dragged', function () {
@@ -332,7 +330,6 @@ describe('test gameview', function () {
             expect(window.fetchGraphics.calls.any()).toEqual(true);
             expect(scope.$centerX.val()).toBe('11');
             expect(scope.$centerY.val()).toBe('12');
-            expect(window.moving).toEqual(true);
         });
     });
 

@@ -263,11 +263,15 @@ onDragStart = function (event) {
 
 onDragEnd = function (event) {
     var scope = $(document).data('scope');
+    
+    var mousePos = toViewPosFromMouse(event);
 
-    if (!this.moving) {
+    if (this.startPosition.x === mousePos.x && this.startPosition.y === mousePos.y) {
         // クリックと判定した
+        // 当初 mouse move のイベントの有無でクリックかどうか判定していたが、
+        // クリック時にmouse moveイベントが発火(chromeのみ?)のため座標比較する方式に変更
         // マウスの座標をゲーム上の座標に変換する
-        var gamePos = toGamePos(toViewPosFromMouse(event));
+        var gamePos = toGamePos(mousePos);
 
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
@@ -278,8 +282,6 @@ onDragEnd = function (event) {
         // ドラッグと判定した
         // mouseup時のリロードは xhtml側で行う
     }
-
-    this.moving = false;
     this.dragging = false;
     this.startGamePos = null;
     this.startPosition = null;
@@ -292,7 +294,6 @@ onDragEnd = function (event) {
  */
 onDragMove = function (event) {
     var scope = $(document).data('scope');
-    this.moving = true;
     if (this.dragging) {
         var newCenterPos = toNewCenterGamePos(
                 this.startGamePos, this.startPosition, toViewPosFromMouse(event));
