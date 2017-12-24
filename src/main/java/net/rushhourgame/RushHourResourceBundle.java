@@ -85,6 +85,9 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_TRAIN_DEPLOY = "rushhour.label.train.deploy";
     public static final String LABEL_TRAIN_UNDEPLOY = "rushhour.label.train.undeploy";
 
+    public static final String TUTORIAL = "rushhour.tutorial";
+    public static final String TUTORIAL_RAIL_CREATE = "rushhour.tutorial.rail.create";
+    
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";
     public static final String SIGNIN_FAIL_NO_RESOURCE = "rushhour.message.signin.fail.noResource";

@@ -62,6 +62,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
     public void setUp() {
         super.setUp();
         
+        inst.msg = msg;
         inst.pCon = PCON;
         inst.cCon = CCON;
         inst.rCon = RCON;
@@ -81,6 +82,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
 
     @Test
     public void testInit() {
+        doReturn(facesContext).when(inst).getFacesContext();
         inst.init();
         assertEquals(player, inst.player);
     }

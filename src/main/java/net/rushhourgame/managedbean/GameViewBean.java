@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -37,6 +38,8 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import net.rushhourgame.RushHourResourceBundle;
+import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.LineController;
@@ -85,6 +88,8 @@ public class GameViewBean implements Serializable {
     protected StepForHumanController sCon;
     @Inject
     protected RushHourSession rhSession;
+    @Inject
+    protected RushHourResourceBundle msg;
     protected Player player;
     protected OperationType operation = NONE;
 
@@ -103,6 +108,12 @@ public class GameViewBean implements Serializable {
         centerX = rhSession.getCenterX();
         centerY = rhSession.getCenterY();
         scale = rhSession.getScale();
+        FacesContext context = getFacesContext();
+        
+        context.addMessage("tutorial", 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                        msg.get(TUTORIAL, rhSession.getLocale()), 
+                        msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
     }
 
     public void openClickMenu() throws RushHourException {
