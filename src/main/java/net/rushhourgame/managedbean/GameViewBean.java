@@ -100,27 +100,18 @@ public class GameViewBean implements Serializable {
     protected double clickX;
     protected double clickY;
 
-    boolean showsMenu;
-
     @PostConstruct
     public void init() {
         player = pCon.findByToken(rhSession.getToken());
         centerX = rhSession.getCenterX();
         centerY = rhSession.getCenterY();
         scale = rhSession.getScale();
-        FacesContext context = getFacesContext();
-        
-        context.addMessage("tutorial", 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, 
-                        msg.get(TUTORIAL, rhSession.getLocale()), 
-                        msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
     }
 
     public void openClickMenu() throws RushHourException {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
         clickX = Double.parseDouble(reqParam.get("gamePos.x"));
         clickY = Double.parseDouble(reqParam.get("gamePos.y"));
-        showsMenu = !showsMenu;
 
         Map<String, List<String>> params = new HashMap<>();
         params.put("clickX", Collections.singletonList(Double.toString(clickX)));
@@ -240,7 +231,13 @@ public class GameViewBean implements Serializable {
         return scale + 1;
     }
 
-    public boolean isShowsMenu() {
-        return showsMenu;
+    public void initTutorial() {
+        FacesContext context = getFacesContext();
+
+        context.addMessage("tutorial",
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        msg.get(TUTORIAL, rhSession.getLocale()),
+                        msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
+        
     }
 }

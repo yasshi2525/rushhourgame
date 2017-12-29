@@ -82,7 +82,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
 
     @Test
     public void testInit() {
-        doReturn(facesContext).when(inst).getFacesContext();
         inst.init();
         assertEquals(player, inst.player);
     }
@@ -102,7 +101,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
         
         inst.openClickMenu();
         
-        assertTrue(inst.isShowsMenu());
         assertTrue(99.9 == inst.getClickX());
         assertTrue(199.9 == inst.getClickY());
     }
@@ -183,5 +181,12 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.onSlideEnd(event);
         
         assertTrue(1 == inst.getScale());
+    }
+    
+    @Test
+    public void testInitTutorial() {
+        doReturn(facesContext).when(inst).getFacesContext();
+        
+        inst.initTutorial();
     }
 }
