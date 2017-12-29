@@ -100,10 +100,12 @@ describe('test gameview', function () {
         window.dragging = false;
         window.startGamePos = null;
         window.startPosition = null;
-        window.fireClickMenu = doNothing;
+        window.registerClickPos = doNothing;
         mockSprite.position.reset();
     });
-
+    
+    // initはexportの中にあるためテストできない。
+    
     describe('test initEventHandler', function () {
         it('invoke', function () {
             initEventHandler();
@@ -284,7 +286,7 @@ describe('test gameview', function () {
         beforeEach(function () {
             spyOn(window, 'toViewPosFromMouse').and.returnValue({x: 11, y: 12});
             spyOn(window, 'toGamePos').and.returnValue({x: 11, y: 12});
-            spyOn(window, 'fireClickMenu').and.callFake(doNothing);
+            spyOn(window, 'registerClickPos').and.callFake(doNothing);
         });
 
         it('reload when clicked', function () {
@@ -292,7 +294,7 @@ describe('test gameview', function () {
             onDragEnd();
             expect(scope.$clickX.val()).toEqual('11');
             expect(scope.$clickY.val()).toEqual('12');
-            expect(window.fireClickMenu.calls.any()).toEqual(true);
+            expect(window.registerClickPos.calls.any()).toEqual(true);
             expect(window.dragging).toEqual(false);
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
@@ -300,7 +302,7 @@ describe('test gameview', function () {
         it('do nothing just when drag ended', function () {
             window.startPosition = {x: 0, y: 0};
             onDragEnd();
-            expect(window.fireClickMenu.calls.any()).toEqual(false);
+            expect(window.registerClickPos.calls.any()).toEqual(false);
             expect(window.dragging).toEqual(false);
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
@@ -383,6 +385,12 @@ describe('test gameview', function () {
         it('view right-bottom is (128, 128)', function () {
             expect(toGamePos(rightbottomViewPos))
                     .toEqual({x: 128, y: 128});
+        });
+    });
+    
+    describe('test fireClickMenu', function () {
+        it('test invoke', function() {
+            fireClickMenu();
         });
     });
 

@@ -337,6 +337,5 @@ toGamePos = function (pos) {
 };
 
 fireClickMenu = function() {
-    console.log("fireClickMenu!");
     $('#openclickmenu').click();
 };
