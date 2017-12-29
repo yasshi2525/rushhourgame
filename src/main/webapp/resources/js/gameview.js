@@ -266,7 +266,7 @@ onDragEnd = function (event) {
     
     var mousePos = toViewPosFromMouse(event);
 
-    if (this.startPosition.x === mousePos.x && this.startPosition.y === mousePos.y) {
+    if (this.startPosition && this.startPosition.x === mousePos.x && this.startPosition.y === mousePos.y) {
         // クリックと判定した
         // 当初 mouse move のイベントの有無でクリックかどうか判定していたが、
         // クリック時にmouse moveイベントが発火(chromeのみ?)のため座標比較する方式に変更

@@ -8,15 +8,19 @@
 
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGroup id="gameview">
-        #{game.initTutorial()}
-        <p:messages id="tutorial" showDetail="true"/>
-        
-        <!-- 画面クリック操作用 -->
-        <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
-        <!-- immediateを入れないとDialogがでない -->
-        <p:remoteCommand name="fireClickMenu"
-                         immediate="true"
-                         actionListener="#{game.openClickMenu}" />
+        <h:panelGroup rendered="#{player.signIn}">
+            #{game.initTutorial()}
+            <p:messages id="tutorial" showDetail="true"/>
+            <!-- 画面クリック操作用 -->
+            <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
+            <!-- immediateを入れないとDialogがでない -->
+            <p:remoteCommand name="fireClickMenu"
+                             immediate="true"
+                             actionListener="#{game.openClickMenu}" />
+        </h:panelGroup>
+        <h:panelGroup rendered="#{!player.signIn}">
+            <p:remoteCommand name="fireClickMenu" />
+        </h:panelGroup>
 
         <h:inputHidden id="clickX" value="#{game.clickX}"/>
         <h:inputHidden id="clickY" value="#{game.clickY}"/> 
