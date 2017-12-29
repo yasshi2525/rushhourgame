@@ -170,6 +170,8 @@ stageResourceSprite = function (type, $elm) {
     obj.anchor.set(0.5, 0.5);
     obj.alpha = 1;
     obj.position.set(pos.x, pos.y);
+    obj.scale.x = 0.5;
+    obj.scale.y = 0.5
 
     scope.stage.addChild(obj);
     return obj;
