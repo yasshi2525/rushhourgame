@@ -74,7 +74,7 @@ public class ClickMenuBean  implements Serializable {
     }
 
     public boolean canCreateRail() {
-        return rCon.findNodeIn(clickX, clickY, scale - 3).isEmpty();
+        return rCon.findNodeIn(player, clickX, clickY, scale - 3).isEmpty();
     }
     
     @Transactional

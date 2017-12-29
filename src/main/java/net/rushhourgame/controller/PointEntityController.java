@@ -62,4 +62,17 @@ public class PointEntityController extends AbstractController{
                 .setParameter("y2", centerY + height / 2.0)
                 .getResultList();
     }
+    
+    protected <T> List<T> findIn(TypedQuery<T> query, Player owner, double centerX, double centerY, double scale){
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return query
+                .setParameter("owner", owner)
+                .setParameter("x1", centerX - width / 2.0)
+                .setParameter("x2", centerX + width / 2.0)
+                .setParameter("y1", centerY - height / 2.0)
+                .setParameter("y2", centerY + height / 2.0)
+                .getResultList();
+    }
 }

@@ -45,6 +45,10 @@ import javax.validation.constraints.NotNull;
             query = "SELECT obj FROM RailNode obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     ),
     @NamedQuery(
+            name = "RailNode.findMyIn",
+            query = "SELECT obj FROM RailNode obj WHERE obj.owner = :owner AND obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+    ),
+    @NamedQuery(
             name = "RailNode.exists",
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
                     + " FROM RailNode obj WHERE obj.owner = :owner AND obj.x = :x AND obj.y = :y"
