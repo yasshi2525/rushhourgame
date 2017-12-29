@@ -104,7 +104,7 @@ public class DebugInitializer {
             cCon.create(50, 15);
 
             Player owner = pCon.upsertPlayer(
-                    "debug", "debug", "debug", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+                    "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
             
             // r1 r2 r3
             //    r4

@@ -187,6 +187,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
     public void testInitTutorial() {
         doReturn(facesContext).when(inst).getFacesContext();
         
-        inst.initTutorial();
+        inst.initGuide();
     }
 }

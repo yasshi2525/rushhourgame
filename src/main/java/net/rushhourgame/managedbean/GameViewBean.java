@@ -231,13 +231,14 @@ public class GameViewBean implements Serializable {
         return scale + 1;
     }
 
-    public void initTutorial() {
+    public void initGuide() {
         FacesContext context = getFacesContext();
 
-        context.addMessage("tutorial",
-                new FacesMessage(FacesMessage.SEVERITY_INFO,
-                        msg.get(TUTORIAL, rhSession.getLocale()),
-                        msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
-        
+        if (!railCon.hasRailNode(player)) {
+            context.addMessage("guide",
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            msg.get(TUTORIAL, rhSession.getLocale()),
+                            msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
+        }
     }
 }

@@ -9,8 +9,8 @@
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGroup id="gameview">
         <h:panelGroup rendered="#{player.signIn}">
-            #{game.initTutorial()}
-            <p:messages id="tutorial" showDetail="true"/>
+            #{game.initGuide()}
+            <p:messages id="guide" showDetail="true"/>
             <!-- 画面クリック操作用 -->
             <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
             <!-- immediateを入れないとDialogがでない -->

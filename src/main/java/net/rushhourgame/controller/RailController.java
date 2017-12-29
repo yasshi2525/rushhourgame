@@ -99,4 +99,8 @@ public class RailController extends PointEntityController{
                 .setParameter("y2", centerY + height / 2.0)
                 .getResultList();
     }
+    
+    public boolean hasRailNode(Player owner) {
+        return exists("RailNode.has", owner);
+    }
 }

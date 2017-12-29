@@ -66,6 +66,12 @@ public abstract class AbstractController implements Serializable{
                 .getSingleResult()).longValue() == 1L;
     }
     
+    protected boolean exists(String query, Player owner) {
+        return (em.createNamedQuery(query, Number.class)
+                .setParameter("owner", owner)
+                .getSingleResult()).longValue() == 1L;
+    }
+    
     protected boolean exists(String query, Player owner, String key, String value) {
         return (em.createNamedQuery(query, Number.class)
                 .setParameter("owner", owner)
