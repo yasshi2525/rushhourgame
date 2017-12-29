@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
+import javax.faces.event.ActionEvent;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
 
 /**
@@ -56,6 +59,9 @@ public class GameViewBeanTest extends AbstractBeanTest{
     
     protected static final int CLICK_X = 50;
     protected static final int CLICK_Y = 60;
+    
+    @Mock
+    protected SelectEvent event;
     
     @Before
     @Override
@@ -76,7 +82,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
             Logger.getLogger(GameViewBeanTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         }
-        inst.rhSession = session;
+        inst.session = session;
         doReturn(player.getToken()).when(session).getToken();
     }
 
@@ -85,24 +91,30 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.init();
         assertEquals(player, inst.player);
     }
-
+    
     @Test
-    public void testOpenClickMenu() throws RushHourException {
-        inst.player = player;
-        inst.setClickX(CLICK_X);
-        inst.setClickY(CLICK_Y);
+    public void testRegisterClickPos() {
         Map<String, String> map = new HashMap<>();
         map.put("gamePos.x", Double.toString(99.9));
         map.put("gamePos.y", Double.toString(199.9));
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
         doReturn(map).when(externalContext).getRequestParameterMap();
+        
+        inst.registerClickPos();
+        assertTrue(99.9 == inst.getClickX());
+        assertTrue(199.9 == inst.getClickY());
+    }
+
+    @Test
+    public void testOpenClickMenu() throws RushHourException {
+        inst.player = player;
+        inst.setClickX(CLICK_X);
+        inst.setClickY(CLICK_Y);
         doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
         
         inst.openClickMenu();
         
-        assertTrue(99.9 == inst.getClickX());
-        assertTrue(199.9 == inst.getClickY());
     }
     
     @Test
@@ -188,5 +200,20 @@ public class GameViewBeanTest extends AbstractBeanTest{
         doReturn(facesContext).when(inst).getFacesContext();
         
         inst.initGuide();
+    }
+    
+    @Test
+    public void testHandleReturnRailExtend() {
+        doReturn(mock(RailNode.class)).when(event).getObject();
+        doReturn(facesContext).when(inst).getFacesContext();
+        inst.handleReturn(event);
+        verify(event, times(2)).getObject();
+    }
+    
+    @Test
+    public void testHandleReturnNull() {
+        doReturn(null).when(event).getObject();
+        inst.handleReturn(event);
+        verify(event, times(1)).getObject();
     }
 }

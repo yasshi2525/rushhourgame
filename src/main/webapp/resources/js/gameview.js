@@ -275,7 +275,7 @@ onDragEnd = function (event) {
 
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
-        fireClickMenu([
+        registerClickPos([
             {name: 'gamePos.x', value: gamePos.x},
             {name: 'gamePos.y', value: gamePos.y}]);
     } else {
@@ -334,4 +334,9 @@ toGamePos = function (pos) {
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())
     };
+};
+
+fireClickMenu = function() {
+    console.log("fireClickMenu!");
+    $('#openclickmenu').click();
 };

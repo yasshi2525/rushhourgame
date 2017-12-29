@@ -27,11 +27,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import net.rushhourgame.RushHourResourceBundle;
+import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
@@ -58,6 +61,8 @@ public class ClickMenuBean  implements Serializable {
     protected PlayerController pCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected RushHourResourceBundle msg;
     
     protected double clickX;
     
@@ -79,8 +84,7 @@ public class ClickMenuBean  implements Serializable {
     
     @Transactional
     public void createRail() throws RushHourException {
-        rCon.create(player, clickX, clickY);
-        getRequestContext().closeDialog(null);
+        getRequestContext().closeDialog(rCon.create(player, clickX, clickY));
     }
     
     protected FacesContext getFacesContext() {

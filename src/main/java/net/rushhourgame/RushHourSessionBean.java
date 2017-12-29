@@ -25,6 +25,7 @@ package net.rushhourgame;
 
 import java.io.Serializable;
 import java.util.Locale;
+import net.rushhourgame.entity.RailNode;
 
 /**
  *
@@ -37,6 +38,7 @@ public class RushHourSessionBean implements Serializable{
     protected double centerX;
     protected double centerY;
     protected double scale = 7;
+    protected RailNode tailNode;
 
     protected RushHourSessionBean() {
     }
@@ -79,5 +81,13 @@ public class RushHourSessionBean implements Serializable{
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public RailNode getTailNode() {
+        return tailNode;
+    }
+
+    public void setTailNode(RailNode tailNode) {
+        this.tailNode = tailNode;
     }
 }

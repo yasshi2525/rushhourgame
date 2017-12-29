@@ -7,16 +7,24 @@
         prependId="false"
 
         xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:debug hotkey="x"/>
     <h:panelGroup id="gameview">
         <h:panelGroup rendered="#{player.signIn}">
             #{game.initGuide()}
-            <p:messages id="guide" showDetail="true"/>
+            <p:messages id="guide" autoUpdate="true" showDetail="true"/>
             <!-- 画面クリック操作用 -->
             <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
             <!-- immediateを入れないとDialogがでない -->
-            <p:remoteCommand name="fireClickMenu"
+            <p:remoteCommand name="registerClickPos"
                              immediate="true"
-                             actionListener="#{game.openClickMenu}" />
+                             actionListener="#{game.registerClickPos}"
+                             oncomplete="fireClickMenu()">
+            </p:remoteCommand>
+            <!-- remoteCommandの以下にajaxタグがおけないため、隠しコマンドを用意する -->
+            <p:commandButton id="openclickmenu" value="hoge" process="@this" 
+                             actionListener="#{game.openClickMenu}" style="display:none">
+                <p:ajax event="dialogReturn" listener="#{game.handleReturn}"/>
+            </p:commandButton>
         </h:panelGroup>
         <h:panelGroup rendered="#{!player.signIn}">
             <p:remoteCommand name="fireClickMenu" />

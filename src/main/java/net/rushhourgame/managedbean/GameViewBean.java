@@ -34,6 +34,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -59,6 +60,7 @@ import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.managedbean.OperationType.*;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
 
 /**
@@ -87,7 +89,7 @@ public class GameViewBean implements Serializable {
     @Inject
     protected StepForHumanController sCon;
     @Inject
-    protected RushHourSession rhSession;
+    protected RushHourSession session;
     @Inject
     protected RushHourResourceBundle msg;
     protected Player player;
@@ -100,19 +102,23 @@ public class GameViewBean implements Serializable {
     protected double clickX;
     protected double clickY;
 
+    protected RailNode tailNode;
+
     @PostConstruct
     public void init() {
-        player = pCon.findByToken(rhSession.getToken());
-        centerX = rhSession.getCenterX();
-        centerY = rhSession.getCenterY();
-        scale = rhSession.getScale();
+        player = pCon.findByToken(session.getToken());
+        centerX = session.getCenterX();
+        centerY = session.getCenterY();
+        scale = session.getScale();
     }
-
-    public void openClickMenu() throws RushHourException {
+    
+    public void registerClickPos() {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
         clickX = Double.parseDouble(reqParam.get("gamePos.x"));
         clickY = Double.parseDouble(reqParam.get("gamePos.y"));
+    }
 
+    public void openClickMenu() {
         Map<String, List<String>> params = new HashMap<>();
         params.put("clickX", Collections.singletonList(Double.toString(clickX)));
         params.put("clickY", Collections.singletonList(Double.toString(clickY)));
@@ -197,7 +203,7 @@ public class GameViewBean implements Serializable {
 
     public void setCenterX(double centerX) {
         this.centerX = centerX;
-        rhSession.setCenterX(centerX);
+        session.setCenterX(centerX);
     }
 
     public double getCenterY() {
@@ -206,7 +212,7 @@ public class GameViewBean implements Serializable {
 
     public void setCenterY(double centerY) {
         this.centerY = centerY;
-        rhSession.setCenterY(centerY);
+        session.setCenterY(centerY);
     }
 
     public double getScale() {
@@ -215,7 +221,7 @@ public class GameViewBean implements Serializable {
 
     public void setScale(double scale) {
         this.scale = scale;
-        rhSession.setScale(scale);
+        session.setScale(scale);
     }
 
     public void onSlideEnd(SlideEndEvent event) {
@@ -237,8 +243,18 @@ public class GameViewBean implements Serializable {
         if (!railCon.hasRailNode(player)) {
             context.addMessage("guide",
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            msg.get(TUTORIAL, rhSession.getLocale()),
-                            msg.get(TUTORIAL_RAIL_CREATE, rhSession.getLocale())));
+                            msg.get(TUTORIAL, session.getLocale()),
+                            msg.get(TUTORIAL_RAIL_CREATE, session.getLocale())));
+        }
+    }
+
+    public void handleReturn(SelectEvent event) {
+        if (event.getObject() instanceof RailNode) {
+            tailNode = (RailNode) event.getObject();
+            getFacesContext().addMessage("guide",
+                    new FacesMessage(FacesMessage.SEVERITY_INFO,
+                            msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
+                            ""));
         }
     }
 }

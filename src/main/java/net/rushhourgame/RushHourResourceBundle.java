@@ -87,6 +87,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
 
     public static final String TUTORIAL = "rushhour.tutorial";
     public static final String TUTORIAL_RAIL_CREATE = "rushhour.tutorial.rail.create";
+    public static final String GUIDE_RAIL_EXTEND = "rushhour.guide.rail.extend";
     
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";

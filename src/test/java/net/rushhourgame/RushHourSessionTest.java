@@ -33,6 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static net.rushhourgame.RushHourSession.SESSION_NAME;
+import net.rushhourgame.entity.RailNode;
 
 /**
  *
@@ -214,12 +215,14 @@ public class RushHourSessionTest {
         obj.setCenterY(10);
         obj.setLocale(Locale.ITALY);
         obj.setScale(2);
+        obj.setTailNode(mock(RailNode.class));
         
         assertEquals("hoge", obj.getToken());
         assertTrue(10 == obj.getCenterX());
         assertTrue(10 == obj.getCenterY());
         assertTrue(2 == obj.getScale());
         assertEquals(Locale.ITALY, obj.getLocale());
+        assertNotNull(obj.getTailNode());
     }
     
     @Test
@@ -227,16 +230,7 @@ public class RushHourSessionTest {
         HttpSession session = mock(HttpSession.class);
         when(session.getAttribute(RushHourSession.SESSION_NAME)).thenReturn(new RushHourSessionBean());
 
-        RushHourSession.setToken(session, "hoge");
-        RushHourSession.setCenterX(session, 10);
-        RushHourSession.setCenterY(session, 10);
         RushHourSession.setLocale(session, Locale.ITALY);
-        RushHourSession.setScale(session, 2);
-        
-        assertEquals("hoge", RushHourSession.getToken(session));
-        assertTrue(10 == RushHourSession.getCenterX(session));
-        assertTrue(10 == RushHourSession.getCenterY(session));
-        assertTrue(2 == RushHourSession.getScale(session));
         assertEquals(Locale.ITALY, RushHourSession.getLocale(session));
     }
 }

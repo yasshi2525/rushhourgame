@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+import net.rushhourgame.entity.RailNode;
 
 /**
  *
@@ -84,6 +85,14 @@ public class RushHourSession implements Serializable {
     public void setScale(double scale) {
         findOrCreateBean().setScale(scale);
     }
+    
+    public RailNode getTailNode() {
+        return findOrCreateBean().getTailNode();
+    }
+    
+    public void setTailNode(RailNode tailNode) {
+        findOrCreateBean().setTailNode(tailNode);
+    }
 
     protected boolean hasValidBean() {
         return injectedSession.getAttribute(SESSION_NAME) != null
@@ -94,40 +103,8 @@ public class RushHourSession implements Serializable {
         findOrCreateBean(session).setLocale(locale);
     }
 
-    static public void setToken(HttpSession session, String accessToken) {
-        findOrCreateBean(session).setToken(accessToken);
-    }
-
     static public Locale getLocale(HttpSession session) {
         return findOrCreateBean(session).getLocale();
-    }
-
-    static public String getToken(HttpSession session) {
-        return findOrCreateBean(session).getToken();
-    }
-    
-    static public double getCenterX(HttpSession session) {
-        return findOrCreateBean(session).getCenterX();
-    }
-
-    static public void setCenterX(HttpSession session, double centerX) {
-        findOrCreateBean(session).setCenterX(centerX);
-    }
-
-    static public double getCenterY(HttpSession session) {
-        return findOrCreateBean(session).getCenterY();
-    }
-
-    static public void setCenterY(HttpSession session, double centerY) {
-        findOrCreateBean(session).setCenterY(centerY);
-    }
-
-    static public double getScale(HttpSession session) {
-        return findOrCreateBean(session).getScale();
-    }
-
-    static public void setScale(HttpSession session, double scale) {
-        findOrCreateBean(session).setScale(scale);
     }
 
     static protected boolean isValidBean(HttpSession session) {
