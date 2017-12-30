@@ -154,6 +154,11 @@ actdiag_fontpath = [
   '/usr/share/fonts/vlgothic/VL-Gothic-Regular.ttf',
 ]
 
+seqdiag_fontpath = [
+  'C:\WINDOWS\Fonts\MEIRYO.TTC',
+  '/usr/share/fonts/vlgothic/VL-Gothic-Regular.ttf',
+]
+
 graphviz_output_format = "svg"
 
 # -- Options for HTMLHelp output ------------------------------------------

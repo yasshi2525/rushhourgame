@@ -22,3 +22,45 @@
 
 クライアント
 ============
+
+線路敷設の流れ
+--------------
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+
+        ユーザ => gameview [label = "onDragEnd()", leftnote = "画面をクリック"] {
+            gameview ->> JSF [label = "registerClickPos()", note = "ここでダイアログを開いても\nclose時イベント処理できない"];
+        };
+        JSF => GameViewBean [label = "registerClickPos()", note = "クリック座標を保存"];
+        JSF ->> gameview [label = "fireClickMenu()"];
+        gameview ->> GameViewBean [label = "openClickMenu()", note = "close時イベント処理するため、\ncommandButtonから発火"];
+        GameViewBean -> clickmenu [label = "openDiaglog()", leftnote = "ダイアログ表示"];
+    }
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+        ユーザ => clickmenu [label = "線路敷設選択"] {
+            clickmenu ->> ClickMenuBean [label = "createRail()"];
+        }
+        ClickMenuBean ->> gameview [label = "closeDialog()", note = "JSはclickmenu上で動かないので\ngameviewに戻す"];
+        gameview ->> GameViewBean [label = "handleReturn()"];
+        GameViewBean ->> gameview [label = "startExtendingMode(x, y)", leftnote = "線路ポイントを描画"];
+    }
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+        ユーザ => gameview [label = "onDragEnd()", leftnote = "画面をクリック"] {
+            gameview ->> JSF [label = "registerClickPos()"];
+        };
+        JSF => GameViewBean [label = "registerClickPos()", leftnote = "共通処理",  note = "クリック座標を保存"];
+        JSF ->> gameview [label = "fireClickMenu()"];
+        gameview ->> GameViewBean [label = "extendRail()"];
+        GameViewBean ->> gameview [label = "nextExtendingMode(x, y)", leftnote = "描画"];
+    }
