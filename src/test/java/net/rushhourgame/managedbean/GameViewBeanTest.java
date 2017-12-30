@@ -222,4 +222,14 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.handleReturn(event);
         verify(event, times(1)).getObject();
     }
+    
+    @Test
+    public void testExtendRail() throws RushHourException {
+        inst.player = player;
+        inst.tailNode = RAILCON.create(player, 10, 10);
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
+        
+        inst.extendRail();
+    }
 }

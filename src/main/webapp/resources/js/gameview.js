@@ -40,17 +40,17 @@ var lineResources = {
 };
 
 var tempResources = {
-    tailNode : {
+    tailNode: {
         color: 0xa0a0a0,
         radius: 10,
         alpha: 0.5
     },
-    cursor : {
+    cursor: {
         color: 0x7fff7f,
         radius: 10,
         alpha: 0.5
     },
-    extendEdge : {
+    extendEdge: {
         color: 0x7fff7f,
         width: 4,
         alpha: 0.5
@@ -84,7 +84,7 @@ initPixi = function () {
     scope.graphics = {
         'company': {},
         'residence': {},
-        'railnode' : {},
+        'railnode': {},
         'railedge': {},
         'station': {},
         'stepforhuman': {}
@@ -95,9 +95,10 @@ initPixi = function () {
 };
 
 loadImage = function (resources) {
-    for(var key in resources) {
+    for (var key in resources) {
         pixi.loader.add(key, resources[key]);
-    };
+    }
+    ;
     pixi.loader.load(fetchGraphics);
 };
 
@@ -285,7 +286,7 @@ onDragStart = function (event) {
 
 onDragEnd = function (event) {
     var scope = $(document).data('scope');
-    
+
     var mousePos = toViewPosFromMouse(event);
 
     if (this.startPosition && this.startPosition.x === mousePos.x && this.startPosition.y === mousePos.y) {
@@ -317,11 +318,11 @@ onDragEnd = function (event) {
 onDragMove = function (event) {
     var scope = $(document).data('scope');
     scope.mousePos = toViewPosFromMouse(event);
-    
+
     if (scope.cursor) {
         rewriteCursor();
     }
-    
+
     if (this.dragging) {
         var newCenterPos = toNewCenterGamePos(
                 this.startGamePos, this.startPosition, scope.mousePos);
@@ -364,35 +365,39 @@ toGamePos = function (pos) {
     };
 };
 
-fireClickMenu = function() {
+fireClickMenu = function () {
     var scope = $(document).data('scope');
-    $('#openclickmenu').click();
+    if (scope.tailNode && scope.extendEdge && scope.cursor) {
+        extendRail();
+    } else {
+        $('#openclickmenu').click();
+    }
 };
 
-startExtendingMode = function(x, y) {
+startExtendingMode = function (x, y) {
     var scope = $(document).data('scope');
     scope.tailNode = stageTempCircle(toViewPos(x, y), tempResources.tailNode);
     rewriteCursor();
 };
 
-rewriteCursor = function() {
+rewriteCursor = function () {
     var scope = $(document).data('scope');
-    
+
     if (scope.cursor) {
         scope.stage.removeChild(scope.cursor);
     }
-    
+
     if (scope.extendEdge) {
         scope.stage.removeChild(scope.extendEdge);
     }
-    
+
     scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
     scope.extendEdge = stageTempLine(scope.tailNode, scope.cursor, tempResources.extendEdge);
-    
+
     scope.renderer.render(scope.stage);
 };
 
-stageTempCircle = function(pos, opts) {
+stageTempCircle = function (pos, opts) {
     var scope = $(document).data('scope');
     var obj = new PIXI.Graphics();
     obj.x = pos.x;
@@ -403,16 +408,32 @@ stageTempCircle = function(pos, opts) {
     obj.endFill();
     scope.stage.addChild(obj);
     return obj;
-}
+};
 
-stageTempLine = function(head, tail, opts) {
+stageTempLine = function (head, tail, opts) {
     var scope = $(document).data('scope');
     var obj = new pixi.Graphics();
-    
+
     obj.alpha = opts.alpha;
     obj.lineStyle(opts.width, opts.color)
             .moveTo(head.x, head.y)
             .lineTo(tail.x, tail.y);
     scope.stage.addChild(obj);
     return obj;
-}
+};
+
+nextExtendingMode = function(x, y) {
+    var scope = $(document).data('scope');
+    
+    scope.stage.removeChild(scope.tailNode);
+    scope.tailNode = null;
+    
+    scope.stage.removeChild(scope.cursor);
+    scope.cursor = null;
+
+    scope.stage.removeChild(scope.extendEdge);
+    scope.extendEdge = null;
+    
+    fetchGraphics();
+    startExtendingMode(x, y);
+};

@@ -109,7 +109,7 @@ public class DebugInitializer {
             // r1 r2 r3
             //    r4
             
-            RailNode r1 = railCon.create(owner, 10, 20);
+            /*RailNode r1 = railCon.create(owner, 10, 20);
             RailNode r2 = railCon.extend(owner, r1, 30, 20);
             RailNode r3 = railCon.extend(owner, r2, 40, 20);
             RailNode r4 = railCon.extend(owner, r2, 30, 30);
@@ -120,7 +120,7 @@ public class DebugInitializer {
             
             em.flush();
             
-            lCon.autocreate(owner, st4, "debug");
+            lCon.autocreate(owner, st4, "debug");*/
             
             //executorService.submit(searcher);
         } catch (RushHourException e) {

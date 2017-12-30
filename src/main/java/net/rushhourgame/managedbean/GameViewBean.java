@@ -79,7 +79,7 @@ public class GameViewBean implements Serializable {
 
     @PersistenceContext
     protected EntityManager em;
-    
+
     @Inject
     protected PlayerController pCon;
     @Inject
@@ -109,6 +109,9 @@ public class GameViewBean implements Serializable {
     protected double clickY;
 
     protected RailNode tailNode;
+    
+    protected static final String GUIDE_ID = "guide";
+    protected static final String ANNOUNCEMENT_ID = "announcement";
 
     @PostConstruct
     public void init() {
@@ -117,7 +120,7 @@ public class GameViewBean implements Serializable {
         centerY = session.getCenterY();
         scale = session.getScale();
     }
-    
+
     public void registerClickPos() {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
         clickX = Double.parseDouble(reqParam.get("gamePos.x"));
@@ -156,11 +159,7 @@ public class GameViewBean implements Serializable {
 
     @Transactional
     public List<RailNode> getMyLonelyRailNodes() {
-        return railCon.findNodeIn(player, centerX, centerY, getLoadScale())
-                .stream().filter(n -> {
-                    em.refresh(n);
-                    return n.getInEdges().isEmpty() && n.getOutEdges().isEmpty();
-                }).collect(Collectors.toList());
+        return railCon.findLonelyIn(player, centerX, centerY, getLoadScale());
     }
 
     public List<RailEdge> getRailEdges() {
@@ -249,25 +248,51 @@ public class GameViewBean implements Serializable {
     }
 
     public void initGuide() {
-        FacesContext context = getFacesContext();
-
         if (!railCon.hasRailNode(player)) {
-            context.addMessage("guide",
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            msg.get(TUTORIAL, session.getLocale()),
-                            msg.get(TUTORIAL_RAIL_CREATE, session.getLocale())));
+            showCreatingRailTutorial();
         }
     }
 
     public void handleReturn(SelectEvent event) {
         if (event.getObject() instanceof RailNode) {
             tailNode = (RailNode) event.getObject();
-            getFacesContext().addMessage("guide",
-                    new FacesMessage(FacesMessage.SEVERITY_INFO,
-                            msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
-                            ""));
-            getRequestContext().execute("startExtendingMode(" 
+            showCreatedRailAnnouncement();
+            showExtendingRailGuide();
+            getRequestContext().execute("startExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
         }
+    }
+
+    @Transactional
+    public void extendRail() throws RushHourException {
+        tailNode = railCon.extend(player, tailNode, clickX, clickY);
+        showExtendedRailAnnouncement();
+        showExtendingRailGuide();
+        getRequestContext().execute("nextExtendingMode("
+                + tailNode.getX() + ", " + tailNode.getY() + ")");
+    }
+
+    protected void showCreatingRailTutorial() {
+        getFacesContext().addMessage(GUIDE_ID,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        msg.get(TUTORIAL, session.getLocale()),
+                        msg.get(TUTORIAL_RAIL_CREATE, session.getLocale())));
+    }
+
+    protected void showExtendingRailGuide() {
+        getFacesContext().addMessage(GUIDE_ID,
+                new FacesMessage(FacesMessage.SEVERITY_INFO,
+                        msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
+                        ""));
+    }
+    
+    protected void showCreatedRailAnnouncement() {
+        getFacesContext().addMessage(ANNOUNCEMENT_ID,
+                new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_CREATE, session.getLocale())));
+    }
+    
+    protected void showExtendedRailAnnouncement() {
+        getFacesContext().addMessage(ANNOUNCEMENT_ID,
+                new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_EXTEND, session.getLocale())));
     }
 }

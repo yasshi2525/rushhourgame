@@ -88,6 +88,10 @@ public class RailController extends PointEntityController{
         return findIn(em.createNamedQuery("RailNode.findMyIn", RailNode.class), owner, centerX, centerY, scale);
     }
     
+    public List<RailNode> findLonelyIn(Player owner, double centerX, double centerY, double scale) {
+        return findIn(em.createNamedQuery("RailNode.findMyLonelyIn", RailNode.class), owner, centerX, centerY, scale);
+    }
+    
     public List<RailEdge> findEdgeIn(double centerX, double centerY, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);

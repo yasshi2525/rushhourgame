@@ -101,6 +101,7 @@ describe('test gameview', function () {
         window.startGamePos = null;
         window.startPosition = null;
         window.registerClickPos = doNothing;
+        window.extendRail = doNothing;
         mockSprite.position.reset();
     });
     
@@ -397,8 +398,21 @@ describe('test gameview', function () {
     });
     
     describe('test fireClickMenu', function () {
-        it('test invoke', function() {
+        beforeEach(function() {
+            spyOn(window, 'extendRail').and.callFake(doNothing);
+        });
+        
+        it('test fire click menu', function() {
             fireClickMenu();
+            expect(window.extendRail.calls.any()).toEqual(false);
+        });
+        
+        it('test fire click menu', function() {
+            scope.tailNode = {};
+            scope.cursor = {};
+            scope.extendEdge = {};
+            fireClickMenu();
+            expect(window.extendRail.calls.any()).toEqual(true);
         });
     });
     
@@ -414,6 +428,25 @@ describe('test gameview', function () {
             startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
         });
     }); 
+    
+    describe('test nextExtendingMode', function () {
+        beforeEach(function() {
+            spyOn(window, 'startExtendingMode').and.callFake(doNothing);
+            spyOn(window, 'fetchGraphics').and.callFake(doNothing);
+        });
+        
+        it('test invoke', function () {
+            scope.tailNode = {};
+            scope.cursor = {};
+            scope.extendEdge = {};
+            
+            nextExtendingMode (0, 0);
+            
+            expect(scope.tailNode).toBeNull();
+            expect(scope.cursor).toBeNull();
+            expect(scope.extendEdge).toBeNull();
+        });
+    });
 
     afterEach(function () {
         $('#scale').remove();
