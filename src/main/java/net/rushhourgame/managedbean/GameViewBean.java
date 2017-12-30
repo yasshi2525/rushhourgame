@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -38,6 +39,8 @@ import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -74,6 +77,9 @@ public class GameViewBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(GameViewBean.class.getName());
 
+    @PersistenceContext
+    protected EntityManager em;
+    
     @Inject
     protected PlayerController pCon;
     @Inject
@@ -148,8 +154,13 @@ public class GameViewBean implements Serializable {
         return rCon.findIn(centerX, centerY, getLoadScale());
     }
 
-    public List<RailNode> getRailNodes() {
-        return railCon.findNodeIn(centerX, centerY, getLoadScale());
+    @Transactional
+    public List<RailNode> getMyLonelyRailNodes() {
+        return railCon.findNodeIn(player, centerX, centerY, getLoadScale())
+                .stream().filter(n -> {
+                    em.refresh(n);
+                    return n.getInEdges().isEmpty() && n.getOutEdges().isEmpty();
+                }).collect(Collectors.toList());
     }
 
     public List<RailEdge> getRailEdges() {
@@ -255,6 +266,8 @@ public class GameViewBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_INFO,
                             msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
                             ""));
+            getRequestContext().execute("startExtendingMode(" 
+                    + tailNode.getX() + ", " + tailNode.getY() + ")");
         }
     }
 }

@@ -314,12 +314,20 @@ describe('test gameview', function () {
             spyOn(window, 'fetchGraphics').and.callFake(doNothing);
             spyOn(window, 'toNewCenterGamePos').and.returnValue({x: 11, y: 12});
             spyOn(window, 'toViewPosFromMouse').and.callFake(doNothing);
+            spyOn(window, 'rewriteCursor').and.callFake(doNothing);
         });
 
         it('do nothing just when moving', function () {
             window.dragging = false;
             onDragMove();
             expect(window.fetchGraphics.calls.any()).toEqual(false);
+        });
+        
+        it('rewrite when cursor exists', function () {
+            window.dragging = false;
+            scope.cursor = {};
+            onDragMove();
+            expect(window.rewriteCursor.calls.any()).toEqual(true);
         });
 
         it('change center when dragged', function () {
@@ -393,6 +401,19 @@ describe('test gameview', function () {
             fireClickMenu();
         });
     });
+    
+    describe('test startExtendingMode', function() {
+        it('test invoke', function () {
+            scope.mousePos = centerViewPos;
+            startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
+        });
+        
+        it('test rewrite', function () {
+            scope.mousePos = centerViewPos;
+            startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
+            startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
+        });
+    }); 
 
     afterEach(function () {
         $('#scale').remove();

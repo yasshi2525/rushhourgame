@@ -76,6 +76,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.stCon = STCON;
         inst.lCon = LCON;
         inst.sCon = SCON;
+        inst.em = EM;
         try {
             player = createPlayer();
         } catch (RushHourException ex) {
@@ -145,8 +146,12 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
     
     @Test
-    public void testGetRailNodes() {
-        inst.getRailNodes();
+    public void testGetMyLonelyRailNodes() throws RushHourException {
+        inst.player = player;
+        RAILCON.create(player, CLICK_X, CLICK_Y);
+        when(inst.getLoadScale()).thenReturn(16.0);
+        EM.flush();
+        inst.getMyLonelyRailNodes();
     }
     
     @Test
@@ -206,6 +211,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
     public void testHandleReturnRailExtend() {
         doReturn(mock(RailNode.class)).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
         inst.handleReturn(event);
         verify(event, times(2)).getObject();
     }

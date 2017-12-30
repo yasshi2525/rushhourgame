@@ -25,9 +25,10 @@
 var pixi = require('pixi.js');
 
 var spriteResources = {
-    'company': {},
     'residence': {},
-    'station': {}
+    'company': {},
+    'station': {},
+    'railnode': {}
 };
 
 var lineResources = {
@@ -37,6 +38,24 @@ var lineResources = {
         scale: 3
     }
 };
+
+var tempResources = {
+    tailNode : {
+        color: 0xa0a0a0,
+        radius: 10,
+        alpha: 0.5
+    },
+    cursor : {
+        color: 0x7fff7f,
+        radius: 10,
+        alpha: 0.5
+    },
+    extendEdge : {
+        color: 0x7fff7f,
+        width: 4,
+        alpha: 0.5
+    }
+}
 
 /**
  * jQueryオブジェクトを格納する場合、接頭辞$をつける。
@@ -65,6 +84,7 @@ initPixi = function () {
     scope.graphics = {
         'company': {},
         'residence': {},
+        'railnode' : {},
         'railedge': {},
         'station': {},
         'stepforhuman': {}
@@ -296,9 +316,15 @@ onDragEnd = function (event) {
  */
 onDragMove = function (event) {
     var scope = $(document).data('scope');
+    scope.mousePos = toViewPosFromMouse(event);
+    
+    if (scope.cursor) {
+        rewriteCursor();
+    }
+    
     if (this.dragging) {
         var newCenterPos = toNewCenterGamePos(
-                this.startGamePos, this.startPosition, toViewPosFromMouse(event));
+                this.startGamePos, this.startPosition, scope.mousePos);
 
         scope.$centerX.val(newCenterPos.x);
         scope.$centerY.val(newCenterPos.y);
@@ -339,5 +365,54 @@ toGamePos = function (pos) {
 };
 
 fireClickMenu = function() {
+    var scope = $(document).data('scope');
     $('#openclickmenu').click();
 };
+
+startExtendingMode = function(x, y) {
+    var scope = $(document).data('scope');
+    scope.tailNode = stageTempCircle(toViewPos(x, y), tempResources.tailNode);
+    rewriteCursor();
+};
+
+rewriteCursor = function() {
+    var scope = $(document).data('scope');
+    
+    if (scope.cursor) {
+        scope.stage.removeChild(scope.cursor);
+    }
+    
+    if (scope.extendEdge) {
+        scope.stage.removeChild(scope.extendEdge);
+    }
+    
+    scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
+    scope.extendEdge = stageTempLine(scope.tailNode, scope.cursor, tempResources.extendEdge);
+    
+    scope.renderer.render(scope.stage);
+};
+
+stageTempCircle = function(pos, opts) {
+    var scope = $(document).data('scope');
+    var obj = new PIXI.Graphics();
+    obj.x = pos.x;
+    obj.y = pos.y;
+    obj.alpha = opts.alpha;
+    obj.beginFill(opts.color);
+    obj.drawCircle(0, 0, opts.radius);
+    obj.endFill();
+    scope.stage.addChild(obj);
+    return obj;
+}
+
+stageTempLine = function(head, tail, opts) {
+    var scope = $(document).data('scope');
+    var obj = new pixi.Graphics();
+    
+    obj.alpha = opts.alpha;
+    obj.lineStyle(opts.width, opts.color)
+            .moveTo(head.x, head.y)
+            .lineTo(tail.x, tail.y);
+    scope.stage.addChild(obj);
+    return obj;
+}
