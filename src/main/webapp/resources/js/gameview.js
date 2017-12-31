@@ -319,18 +319,23 @@ onDragMove = function (event) {
     var scope = $(document).data('scope');
     scope.mousePos = toViewPosFromMouse(event);
 
-    if (scope.cursor) {
-        rewriteCursor();
-    }
-
     if (this.dragging) {
         var newCenterPos = toNewCenterGamePos(
                 this.startGamePos, this.startPosition, scope.mousePos);
 
         scope.$centerX.val(newCenterPos.x);
         scope.$centerY.val(newCenterPos.y);
+
         fetchGraphics();
+
+        if (scope.tailNode) {
+            var pos = toViewPos(scope.tailNode.gamex, scope.tailNode.gamey);
+            scope.tailNode.x = pos.x;
+            scope.tailNode.y = pos.y;
+        }
     }
+
+    rewriteTempResource();
 };
 
 toViewPosFromMouse = function (event) {
@@ -377,22 +382,34 @@ fireClickMenu = function () {
 startExtendingMode = function (x, y) {
     var scope = $(document).data('scope');
     scope.tailNode = stageTempCircle(toViewPos(x, y), tempResources.tailNode);
-    rewriteCursor();
+    scope.tailNode.gamex = x;
+    scope.tailNode.gamey = y;
+    scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
+    scope.extendEdge = stageTempLine(scope.tailNode, scope.cursor, tempResources.extendEdge);
+    scope.renderer.render(scope.stage);
 };
 
-rewriteCursor = function () {
+rewriteTempResource = function () {
     var scope = $(document).data('scope');
+
+    if (scope.tailNode) {
+        scope.stage.removeChild(scope.tailNode);
+        var gamex = scope.tailNode.gamex;
+        var gamey = scope.tailNode.gamey;
+        scope.tailNode = stageTempCircle(scope.tailNode, tempResources.tailNode);
+        scope.tailNode.gamex = gamex;
+        scope.tailNode.gamey = gamey;
+    }
 
     if (scope.cursor) {
         scope.stage.removeChild(scope.cursor);
+        scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
     }
 
     if (scope.extendEdge) {
         scope.stage.removeChild(scope.extendEdge);
+        scope.extendEdge = stageTempLine(scope.tailNode, scope.cursor, tempResources.extendEdge);
     }
-
-    scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
-    scope.extendEdge = stageTempLine(scope.tailNode, scope.cursor, tempResources.extendEdge);
 
     scope.renderer.render(scope.stage);
 };

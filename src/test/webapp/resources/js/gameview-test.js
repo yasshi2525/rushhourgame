@@ -315,20 +315,13 @@ describe('test gameview', function () {
             spyOn(window, 'fetchGraphics').and.callFake(doNothing);
             spyOn(window, 'toNewCenterGamePos').and.returnValue({x: 11, y: 12});
             spyOn(window, 'toViewPosFromMouse').and.callFake(doNothing);
-            spyOn(window, 'rewriteCursor').and.callFake(doNothing);
+            spyOn(window, 'rewriteTempResource').and.callFake(doNothing);
         });
 
         it('do nothing just when moving', function () {
             window.dragging = false;
             onDragMove();
             expect(window.fetchGraphics.calls.any()).toEqual(false);
-        });
-        
-        it('rewrite when cursor exists', function () {
-            window.dragging = false;
-            scope.cursor = {};
-            onDragMove();
-            expect(window.rewriteCursor.calls.any()).toEqual(true);
         });
 
         it('change center when dragged', function () {
@@ -341,6 +334,18 @@ describe('test gameview', function () {
             expect(window.fetchGraphics.calls.any()).toEqual(true);
             expect(scope.$centerX.val()).toBe('11');
             expect(scope.$centerY.val()).toBe('12');
+        });
+        
+        it('change tailNode pos when dragged', function () {
+            window.dragging = true;
+            window.startGamePos = origin;
+            window.startPosition = centerViewPos;
+            scope.tailNode = {x: 100, y: 100, gamex: 100, gamey: 100};
+            
+            onDragMove({});
+            
+            expect(scope.tailNode.x).not.toEqual(100);
+            expect(scope.tailNode.y).not.toEqual(100);
         });
     });
 
@@ -451,6 +456,28 @@ describe('test gameview', function () {
     describe('test finishesOperation', function () {
         it('test invoke' , function () {
             finishOperation();         
+        });
+    });
+    
+    describe('test rewriteTempResource', function () {
+        beforeEach(function () {
+            spyOn(window, 'stageTempCircle').and.returnValue({});
+            spyOn(window, 'stageTempLine').and.callFake(doNothing);
+        });
+        
+        it('test do nothing when no object', function () {
+            rewriteTempResource();
+            expect(window.stageTempCircle.calls.any()).toEqual(false);
+            expect(window.stageTempLine.calls.any()).toEqual(false);
+        });
+        
+        it('test rewrite', function () {
+            scope.tailNode = {gamex : 100, gamey : 100};
+            scope.cursor = {};
+            scope.extendEdge = {};
+            rewriteTempResource();
+            expect(window.stageTempCircle.calls.count()).toEqual(2);
+            expect(window.stageTempLine.calls.count()).toEqual(1);
         });
     });
 
