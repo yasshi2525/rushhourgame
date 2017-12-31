@@ -183,4 +183,24 @@ public class RushHourSession implements Serializable {
             return ret;
         }
     }
+    
+    public static RushHourSession getSimpleSession() {
+        return new SimpleRushHourSession();
+    }
+    
+    protected static class SimpleRushHourSession extends RushHourSession {
+        
+        private static final long serialVersionUID = 1L;
+        protected RushHourSessionBean bean = new RushHourSessionBean();
+
+        @Override
+        public Locale getLocale() {
+            return Locale.getDefault();
+        }
+
+        @Override
+        protected RushHourSessionBean findOrCreateBean() {
+            return bean;
+        }
+    }
 }

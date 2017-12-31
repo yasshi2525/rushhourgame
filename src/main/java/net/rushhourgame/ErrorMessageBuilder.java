@@ -45,6 +45,10 @@ public class ErrorMessageBuilder implements Serializable {
     
     @Inject
     protected RushHourProperties prop;
+    @Inject
+    protected RushHourResourceBundle msg;
+    @Inject
+    protected RushHourSession session;
     
     /**
      * 原因が不明のエラー(カテゴリ不明)
@@ -167,25 +171,25 @@ public class ErrorMessageBuilder implements Serializable {
     
     public ErrorMessage createResidenceDuplication(double x, double y) {
         ErrorMessage errMsg = createDuplication();
-        errMsg.getTitleParams().add(prop.get(LABEL_RESIDENCE));
-        errMsg.getDetailParams().add(prop.get(LABEL_RESIDENCE));
-        errMsg.getDetailParams().add(prop.get(Arrays.toString(new Double[] {x, y})));
+        errMsg.getTitleParams().add(msg.get(LABEL_RESIDENCE, session.getLocale()));
+        errMsg.getDetailParams().add(msg.get(LABEL_RESIDENCE, session.getLocale()));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
         return errMsg;
     }
     
     public ErrorMessage createCompanyDuplication(double x, double y) {
         ErrorMessage errMsg = createDuplication();
-        errMsg.getTitleParams().add(prop.get(LABEL_COMPANY));
-        errMsg.getDetailParams().add(prop.get(LABEL_COMPANY));
-        errMsg.getDetailParams().add(prop.get(Arrays.toString(new Double[] {x, y})));
+        errMsg.getTitleParams().add(msg.get(LABEL_COMPANY, session.getLocale()));
+        errMsg.getDetailParams().add(msg.get(LABEL_COMPANY, session.getLocale()));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
         return errMsg;
     }
     
     public ErrorMessage createRailNodeDuplication(double x, double y) {
         ErrorMessage errMsg = createDuplication();
-        errMsg.getTitleParams().add(prop.get(LABEL_RAIL));
-        errMsg.getDetailParams().add(prop.get(LABEL_RAIL));
-        errMsg.getDetailParams().add(prop.get(Arrays.toString(new Double[] {x, y})));
+        errMsg.getTitleParams().add(msg.get(LABEL_RAIL, session.getLocale()));
+        errMsg.getDetailParams().add(msg.get(LABEL_RAIL, session.getLocale()));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
         return errMsg;
     }
     
@@ -219,6 +223,8 @@ public class ErrorMessageBuilder implements Serializable {
         if (instance == null) {
             instance = new ErrorMessageBuilder();
             instance.prop = RushHourProperties.getInstance();
+            instance.msg = RushHourResourceBundle.getInstance();
+            instance.session = RushHourSession.getSimpleSession();
         }
         return instance;
     }
