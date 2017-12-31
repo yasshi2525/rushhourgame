@@ -47,7 +47,7 @@ public class MessageBeanTest extends AbstractBeanTest{
     public void setUp() {
         super.setUp();
         inst = new MessageBean();
-        inst.rushHourSession = session;
+        inst.session = session;
         inst.res = msg;
         doReturn(Locale.JAPANESE).when(session).getLocale();
         doReturn("_test").when(msg).get(anyString(), any(Locale.class));
@@ -77,5 +77,6 @@ public class MessageBeanTest extends AbstractBeanTest{
         assertNotNull(inst.getRemove());
         assertNotNull(inst.getGoBack());
         assertNotNull(inst.getCreateRail());
+        assertNotNull(inst.getExtendRail());
     }
 }

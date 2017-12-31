@@ -43,96 +43,100 @@ public class MessageBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    protected RushHourSession rushHourSession;
+    protected RushHourSession session;
 
     @Inject
     protected RushHourResourceBundle res;
 
     public String getRushHour() {
-        return res.get(LABEL_RUSHHOUR, rushHourSession.getLocale());
+        return res.get(LABEL_RUSHHOUR, session.getLocale());
     }
 
     public String getRushHourVer() {
-        return res.get(LABEL_RUSHHOUR_VER, rushHourSession.getLocale());
+        return res.get(LABEL_RUSHHOUR_VER, session.getLocale());
     }
 
     public String getError() {
-        return res.get(LABEL_ERROR, rushHourSession.getLocale());
+        return res.get(LABEL_ERROR, session.getLocale());
     }
 
     public String getDetail() {
-        return res.get(LABEL_DETAIL, rushHourSession.getLocale());
+        return res.get(LABEL_DETAIL, session.getLocale());
     }
 
     public String getAction() {
-        return res.get(LABEL_ACTION, rushHourSession.getLocale());
+        return res.get(LABEL_ACTION, session.getLocale());
     }
 
     public String getTopTitle() {
-        return res.get(LABEL_TOP_TITLE, rushHourSession.getLocale());
+        return res.get(LABEL_TOP_TITLE, session.getLocale());
     }
 
     public String getTwitterSignIn() {
-        return res.get(LABEL_TWITTER_SIGNIN, rushHourSession.getLocale());
+        return res.get(LABEL_TWITTER_SIGNIN, session.getLocale());
     }
 
     public String getFetchAccessToken() {
-        return res.get(LABEL_FETCH_ACCESS_TOKEN, rushHourSession.getLocale());
+        return res.get(LABEL_FETCH_ACCESS_TOKEN, session.getLocale());
     }
 
     public String getWelcome() {
-        return res.get(LABEL_WELCOME, rushHourSession.getLocale());
+        return res.get(LABEL_WELCOME, session.getLocale());
     }
 
     public String getLang() {
-        return res.get(LABEL_LANG, rushHourSession.getLocale());
+        return res.get(LABEL_LANG, session.getLocale());
     }
 
     public String getLangEn() {
-        return res.get(LABEL_LANG_EN, rushHourSession.getLocale());
+        return res.get(LABEL_LANG_EN, session.getLocale());
     }
 
     public String getLangJp() {
-        return res.get(LABEL_LANG_JP, rushHourSession.getLocale());
+        return res.get(LABEL_LANG_JP, session.getLocale());
     }
 
     public String getLogOut() {
-        return res.get(LABEL_LOGOUT, rushHourSession.getLocale());
+        return res.get(LABEL_LOGOUT, session.getLocale());
     }
 
     public String getRail() {
-        return res.get(LABEL_RAIL, rushHourSession.getLocale());
+        return res.get(LABEL_RAIL, session.getLocale());
     }
 
     public String getStation() {
-        return res.get(LABEL_STATION, rushHourSession.getLocale());
+        return res.get(LABEL_STATION, session.getLocale());
     }
 
     public String getRoute() {
-        return res.get(LABEL_LINE, rushHourSession.getLocale());
+        return res.get(LABEL_LINE, session.getLocale());
     }
 
     public String getTrain() {
-        return res.get(LABEL_TRAIN, rushHourSession.getLocale());
+        return res.get(LABEL_TRAIN, session.getLocale());
     }
 
     public String getCreate() {
-        return res.get(LABEL_CREATE, rushHourSession.getLocale());
+        return res.get(LABEL_CREATE, session.getLocale());
     }
 
     public String getEdit() {
-        return res.get(LABEL_EDIT, rushHourSession.getLocale());
+        return res.get(LABEL_EDIT, session.getLocale());
     }
 
     public String getRemove() {
-        return res.get(LABEL_REMOVE, rushHourSession.getLocale());
+        return res.get(LABEL_REMOVE, session.getLocale());
     }
 
     public String getGoBack() {
-        return res.get(LABEL_GO_BACK, rushHourSession.getLocale());
+        return res.get(LABEL_GO_BACK, session.getLocale());
     }
     
     public String getCreateRail() {
-        return res.get(LABEL_RAIL_CREATE, rushHourSession.getLocale());
+        return res.get(LABEL_RAIL_CREATE, session.getLocale());
+    }
+    
+    public String getExtendRail () {
+        return res.get(LABEL_RAIL_EXTEND, session.getLocale());
     }
 }

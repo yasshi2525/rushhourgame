@@ -103,7 +103,7 @@ public class GameViewBean implements Serializable {
     protected double clickY;
 
     protected RailNode tailNode;
-    
+
     protected boolean underOperation;
 
     protected static final String GUIDE_ID = "guide";
@@ -238,14 +238,25 @@ public class GameViewBean implements Serializable {
     }
 
     public void handleReturn(SelectEvent event) {
-        if (event.getObject() instanceof RailNode) {
-            tailNode = (RailNode) event.getObject();
-            showCreatedRailAnnouncement();
-            showExtendingRailGuide();
-            getRequestContext().execute("startExtendingMode("
-                    + tailNode.getX() + ", " + tailNode.getY() + ")");
-            //完了ボタンを表示
-            underOperation = true;
+        OperationBean op = (OperationBean) event.getObject();
+
+        switch (op.getType()) {
+            case RAIL_CREATE:
+                tailNode = op.getTailNode();
+                showCreatedRailAnnouncement();
+                showExtendingRailGuide();
+                getRequestContext().execute("startExtendingMode("
+                        + tailNode.getX() + ", " + tailNode.getY() + ")");
+                underOperation = true;
+                break;
+                
+            case RAIL_EXTEND:
+                tailNode = op.getTailNode();
+                showExtendingRailGuide();
+                getRequestContext().execute("startExtendingMode("
+                        + tailNode.getX() + ", " + tailNode.getY() + ")");
+                underOperation = true;
+                break;
         }
     }
 
@@ -287,7 +298,7 @@ public class GameViewBean implements Serializable {
         //完了ボタンを非表示
         underOperation = false;
     }
-    
+
     public boolean isUnderOperation() {
         return underOperation;
     }

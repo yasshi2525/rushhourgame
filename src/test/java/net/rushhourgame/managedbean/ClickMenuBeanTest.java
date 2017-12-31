@@ -198,6 +198,33 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.init();
         inst.createRail();
     }
+    
+    @Test
+    public void testCanExtendRailFalse() {
+        assertFalse(inst.canExtendRail());
+    }
+    
+    @Test
+    public void testCanExtendRail() throws RushHourException {
+        RAILCON.create(createPlayer(), 0, 0);
+
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "0.4");
+        inst.init();
+        assertTrue(inst.canExtendRail());
+    }
+    
+    @Test
+    public void testExtendRail() throws RushHourException {
+        RAILCON.create(createPlayer(), 0, 0);
+
+        map.put("scale", "3.0");
+        map.put("clickX", "0.0");
+        map.put("clickY", "0.4");
+        inst.init();
+        inst.extendRail();
+    }
 
     @Test
     public void testGetFacesContext() {

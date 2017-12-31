@@ -196,21 +196,21 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
     
     @Test
-    public void testHandleReturnRailExtend() {
-        doReturn(mock(RailNode.class)).when(event).getObject();
+    public void testHandleReturnRailCreate() {
+        doReturn(new OperationBean(OperationBean.Type.RAIL_CREATE, mock(RailNode.class))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
         inst.handleReturn(event);
-        verify(event, times(2)).getObject();
         assertTrue(inst.isUnderOperation());
     }
     
     @Test
-    public void testHandleReturnNull() {
-        doReturn(null).when(event).getObject();
+    public void testHandleReturnRailExtend() {
+        doReturn(new OperationBean(OperationBean.Type.RAIL_EXTEND, mock(RailNode.class))).when(event).getObject();
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
         inst.handleReturn(event);
-        verify(event, times(1)).getObject();
-        assertFalse(inst.isUnderOperation());
+        assertTrue(inst.isUnderOperation());
     }
     
     @Test
