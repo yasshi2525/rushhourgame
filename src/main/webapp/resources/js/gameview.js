@@ -422,18 +422,31 @@ stageTempLine = function (head, tail, opts) {
     return obj;
 };
 
-nextExtendingMode = function(x, y) {
+nextExtendingMode = function (x, y) {
     var scope = $(document).data('scope');
-    
-    scope.stage.removeChild(scope.tailNode);
-    scope.tailNode = null;
-    
-    scope.stage.removeChild(scope.cursor);
-    scope.cursor = null;
+    deleteTempGraphics();
 
-    scope.stage.removeChild(scope.extendEdge);
-    scope.extendEdge = null;
-    
     fetchGraphics();
     startExtendingMode(x, y);
+};
+
+finishOperation = function () {
+    deleteTempGraphics();
+};
+
+deleteTempGraphics = function () {
+    var scope = $(document).data('scope');
+
+    if (scope.tailNode) {
+        scope.stage.removeChild(scope.tailNode);
+        scope.tailNode = null;
+    }
+    if (scope.cursor) {
+        scope.stage.removeChild(scope.cursor);
+        scope.cursor = null;
+    }
+    if (scope.extendEdge) {
+        scope.stage.removeChild(scope.extendEdge);
+        scope.extendEdge = null;
+    }
 };

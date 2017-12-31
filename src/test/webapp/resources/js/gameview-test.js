@@ -447,6 +447,12 @@ describe('test gameview', function () {
             expect(scope.extendEdge).toBeNull();
         });
     });
+    
+    describe('test finishesOperation', function () {
+        it('test invoke' , function () {
+            finishOperation();         
+        });
+    });
 
     afterEach(function () {
         $('#scale').remove();

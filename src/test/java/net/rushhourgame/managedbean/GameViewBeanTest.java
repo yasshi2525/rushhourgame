@@ -124,18 +124,6 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
     
     @Test
-    public void testIsOperatingDefault() {
-        assertFalse(inst.isOperating());
-    }
-    
-    @Test
-    public void testIsOperating() {
-        inst.setOperation(OperationType.CREATE_RAIL);
-        assertEquals(OperationType.CREATE_RAIL, inst.getOperation());
-        assertTrue(inst.isOperating());
-    }
-    
-    @Test
     public void testGetCompanies() {
         inst.getCompanies();
     }
@@ -214,6 +202,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         doReturn(requestContext).when(inst).getRequestContext();
         inst.handleReturn(event);
         verify(event, times(2)).getObject();
+        assertTrue(inst.isUnderOperation());
     }
     
     @Test
@@ -221,6 +210,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         doReturn(null).when(event).getObject();
         inst.handleReturn(event);
         verify(event, times(1)).getObject();
+        assertFalse(inst.isUnderOperation());
     }
     
     @Test
@@ -231,5 +221,12 @@ public class GameViewBeanTest extends AbstractBeanTest{
         doReturn(requestContext).when(inst).getRequestContext();
         
         inst.extendRail();
+    }
+    
+    @Test
+    public void testFinishedOperation() {
+        inst.setUnderOperation(true);
+        inst.finishesOperation();
+        assertFalse(inst.isUnderOperation());
     }
 }

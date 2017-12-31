@@ -27,15 +27,11 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -61,7 +57,6 @@ import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
-import static net.rushhourgame.managedbean.OperationType.*;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
@@ -99,7 +94,6 @@ public class GameViewBean implements Serializable {
     @Inject
     protected RushHourResourceBundle msg;
     protected Player player;
-    protected OperationType operation = NONE;
 
     protected double centerX;
     protected double centerY;
@@ -110,6 +104,8 @@ public class GameViewBean implements Serializable {
 
     protected RailNode tailNode;
     
+    protected boolean underOperation;
+
     protected static final String GUIDE_ID = "guide";
     protected static final String ANNOUNCEMENT_ID = "announcement";
 
@@ -195,18 +191,6 @@ public class GameViewBean implements Serializable {
         this.clickY = clickY;
     }
 
-    public OperationType getOperation() {
-        return operation;
-    }
-
-    public void setOperation(OperationType operation) {
-        this.operation = operation;
-    }
-
-    public boolean isOperating() {
-        return operation != NONE;
-    }
-
     public double getCenterX() {
         return centerX;
     }
@@ -260,6 +244,8 @@ public class GameViewBean implements Serializable {
             showExtendingRailGuide();
             getRequestContext().execute("startExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
+            //完了ボタンを表示
+            underOperation = true;
         }
     }
 
@@ -285,14 +271,28 @@ public class GameViewBean implements Serializable {
                         msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
                         ""));
     }
-    
+
     protected void showCreatedRailAnnouncement() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_CREATE, session.getLocale())));
     }
-    
+
     protected void showExtendedRailAnnouncement() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_EXTEND, session.getLocale())));
+    }
+
+    public void finishesOperation() {
+        tailNode = null;
+        //完了ボタンを非表示
+        underOperation = false;
+    }
+    
+    public boolean isUnderOperation() {
+        return underOperation;
+    }
+
+    public void setUnderOperation(boolean underOperation) {
+        this.underOperation = underOperation;
     }
 }

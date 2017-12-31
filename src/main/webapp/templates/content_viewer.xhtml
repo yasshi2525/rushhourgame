@@ -8,22 +8,29 @@
 
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGroup id="gameview">
-        <h:panelGroup rendered="#{player.signIn}">
+        <h:panelGroup id="controllpanel" rendered="#{player.signIn}">
             <p:growl for="announcement" autoUpdate="true" life="3000"/>
             #{game.initGuide()}
             <p:messages for="guide" autoUpdate="true" showDetail="true"/>
+            
+            <p:commandButton id="test" value="#{msg.goBack}"
+                             rendered="#{game.underOperation}"
+                             onclick="finishOperation()"
+                             process="@this"
+                             update="controllpanel"
+                             actionListener="#{game.finishesOperation}"/>
+            
             <!-- 画面クリック操作用 -->
             <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
             <!-- immediateを入れないとDialogがでない -->
             <p:remoteCommand name="registerClickPos"
                              immediate="true"
                              actionListener="#{game.registerClickPos}"
-                             oncomplete="fireClickMenu()">
-            </p:remoteCommand>
+                             oncomplete="fireClickMenu()"/>
             <!-- remoteCommandの以下にajaxタグがおけないため、隠しコマンドを用意する -->
-            <p:commandButton id="openclickmenu" value="hoge" process="@this" 
+            <p:commandButton id="openclickmenu" process="@this" 
                              actionListener="#{game.openClickMenu}" style="display:none">
-                <p:ajax event="dialogReturn" listener="#{game.handleReturn}"/>
+                <p:ajax event="dialogReturn" update="controllpanel" listener="#{game.handleReturn}"/>
             </p:commandButton>
             <!-- immediateがないと画面が更新されてしまってエラーになる -->
             <p:remoteCommand name="extendRail" immediate="true" update="gamemodel" actionListener="#{game.extendRail}"/>
