@@ -7,7 +7,7 @@
         prependId="false"
 
         xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <h:panelGroup id="gameview">
+    <h:panelGrid id="gameview" columns="1">
         <h:panelGroup id="controllpanel" rendered="#{player.signIn}">
             <p:growl for="announcement" autoUpdate="true" life="3000"/>
             #{game.initGuide()}
@@ -16,10 +16,10 @@
             <p:commandButton id="test" value="#{msg.goBack}"
                              rendered="#{game.underOperation}"
                              onclick="finishOperation()"
-                             process="@this"
-                             update="controllpanel"
-                             actionListener="#{game.finishesOperation}"/>
-            
+                             process="@this" update="controllpanel"
+                             actionListener="#{game.finishesOperation}"
+                             style="width: 100%"/>
+                
             <!-- 画面クリック操作用 -->
             <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->
             <!-- immediateを入れないとDialogがでない -->
@@ -46,7 +46,7 @@
         <p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
         <h:inputHidden id="centerX" value="#{game.centerX}"/>
         <h:inputHidden id="centerY" value="#{game.centerY}"/>
-    </h:panelGroup>
+    </h:panelGrid>
     <h:panelGroup id="gamemodel">
         <ui:repeat var="c" value="#{game.companies}">
             <div class="company" id="#{c.id}"
