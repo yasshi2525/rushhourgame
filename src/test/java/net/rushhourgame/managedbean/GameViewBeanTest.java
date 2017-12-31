@@ -196,6 +196,14 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
     
     @Test
+    public void testInitTutorialLonely() throws RushHourException {
+        RAILCON.create(player, CLICK_X, CLICK_Y);
+        doReturn(facesContext).when(inst).getFacesContext();
+        
+        inst.initGuide();
+    }
+    
+    @Test
     public void testHandleReturnRailCreate() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_CREATE, mock(RailNode.class))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
