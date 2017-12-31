@@ -104,9 +104,9 @@ describe('test gameview', function () {
         window.extendRail = doNothing;
         mockSprite.position.reset();
     });
-    
+
     // initはexportの中にあるためテストできない。
-    
+
     describe('test initEventHandler', function () {
         it('invoke', function () {
             initEventHandler();
@@ -335,15 +335,15 @@ describe('test gameview', function () {
             expect(scope.$centerX.val()).toBe('11');
             expect(scope.$centerY.val()).toBe('12');
         });
-        
+
         it('change tailNode pos when dragged', function () {
             window.dragging = true;
             window.startGamePos = origin;
             window.startPosition = centerViewPos;
             scope.tailNode = {x: 100, y: 100, gamex: 100, gamey: 100};
-            
+
             onDragMove({});
-            
+
             expect(scope.tailNode.x).not.toEqual(100);
             expect(scope.tailNode.y).not.toEqual(100);
         });
@@ -401,18 +401,18 @@ describe('test gameview', function () {
                     .toEqual({x: 128, y: 128});
         });
     });
-    
+
     describe('test fireClickMenu', function () {
-        beforeEach(function() {
+        beforeEach(function () {
             spyOn(window, 'extendRail').and.callFake(doNothing);
         });
-        
-        it('test fire click menu', function() {
+
+        it('test fire click menu', function () {
             fireClickMenu();
             expect(window.extendRail.calls.any()).toEqual(false);
         });
-        
-        it('test fire click menu', function() {
+
+        it('test fire click menu', function () {
             scope.tailNode = {};
             scope.cursor = {};
             scope.extendEdge = {};
@@ -420,64 +420,82 @@ describe('test gameview', function () {
             expect(window.extendRail.calls.any()).toEqual(true);
         });
     });
-    
-    describe('test startExtendingMode', function() {
+
+    describe('test startExtendingMode', function () {
         it('test invoke', function () {
             scope.mousePos = centerViewPos;
             startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
         });
-        
+
         it('test rewrite', function () {
             scope.mousePos = centerViewPos;
             startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
             startExtendingMode(lefttopViewPos.x, lefttopViewPos.y);
         });
-    }); 
-    
+    });
+
     describe('test nextExtendingMode', function () {
-        beforeEach(function() {
+        beforeEach(function () {
             spyOn(window, 'startExtendingMode').and.callFake(doNothing);
             spyOn(window, 'fetchGraphics').and.callFake(doNothing);
         });
-        
+
         it('test invoke', function () {
             scope.tailNode = {};
             scope.cursor = {};
             scope.extendEdge = {};
-            
-            nextExtendingMode (0, 0);
-            
+
+            nextExtendingMode(0, 0);
+
             expect(scope.tailNode).toBeNull();
             expect(scope.cursor).toBeNull();
             expect(scope.extendEdge).toBeNull();
         });
     });
-    
+
     describe('test finishesOperation', function () {
-        it('test invoke' , function () {
-            finishOperation();         
+        it('test invoke', function () {
+            finishOperation();
         });
     });
-    
+
     describe('test rewriteTempResource', function () {
         beforeEach(function () {
             spyOn(window, 'stageTempCircle').and.returnValue({});
             spyOn(window, 'stageTempLine').and.callFake(doNothing);
         });
-        
+
         it('test do nothing when no object', function () {
             rewriteTempResource();
             expect(window.stageTempCircle.calls.any()).toEqual(false);
             expect(window.stageTempLine.calls.any()).toEqual(false);
         });
-        
+
         it('test rewrite', function () {
-            scope.tailNode = {gamex : 100, gamey : 100};
+            scope.tailNode = {gamex: 100, gamey: 100};
             scope.cursor = {};
             scope.extendEdge = {};
             rewriteTempResource();
             expect(window.stageTempCircle.calls.count()).toEqual(2);
             expect(window.stageTempLine.calls.count()).toEqual(1);
+        });
+    });
+
+    describe('test findNeighbor', function () {
+        it('test find neighbor', function () {
+            $('body').append("<div class='railnode' id = 'no1' data-x='0.0' data-y='0.0'/>");
+
+            expect(findNeighbor('railnode', {x: 240, y: 240})).not.toBeNull();
+            expect(findNeighbor('railnode', centerViewPos)).not.toBeNull();
+            expect(findNeighbor('unexists', centerViewPos)).toBeNull();
+            expect(findNeighbor('railnode', origin)).toBeNull();
+        });
+
+        it('test find nearest', function () {
+            $('body').append("<div class='railnode' id = 'no1' data-x='1.0' data-y='1.0'/>");
+            $('body').append("<div class='railnode' id = 'no2' data-x='0.0' data-y='0.0'/>");
+
+            expect(findNeighbor('railnode', centerViewPos).attr('id')).toEqual('no2');
         });
     });
 

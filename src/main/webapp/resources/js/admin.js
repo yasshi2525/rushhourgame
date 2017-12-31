@@ -35,7 +35,7 @@ $(function(){
         resources : {
             company : 'resources/image/s_company.png',
             residence : 'resources/image/s_residence.png',
-            railnode : 'resources/image/s_lonelyrail.png',
+            lonelyrailnode : 'resources/image/s_lonelyrail.png',
             station : 'resources/image/s_station.png',
             train : 'resources/image/s_train.png'
         }

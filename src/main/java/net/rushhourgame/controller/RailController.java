@@ -65,19 +65,19 @@ public class RailController extends PointEntityController{
         to.setY(y);
         em.persist(to);
         
-        RailEdge e1 = new RailEdge();
-        e1.setOwner(owner);
-        e1.setFrom(from);
-        e1.setTo(to);
-        em.persist(e1);
-        
-        RailEdge e2 = new RailEdge();
-        e2.setOwner(owner);
-        e2.setFrom(to);
-        e2.setTo(from);
-        em.persist(e2);
+        createEdge(owner, from, to);
         
         return to;
+    }
+    
+    public void connect(@NotNull Player owner, @NotNull RailNode from, @NotNull RailNode to) throws RushHourException {
+        if (!from.isOwnedBy(owner) || !to.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        if (from.equals(to)) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        createEdge(owner, from, to);
     }
         
     public List<RailNode> findNodeIn(double centerX, double centerY, double scale){
@@ -106,5 +106,26 @@ public class RailController extends PointEntityController{
     
     public boolean hasRailNode(Player owner) {
         return exists("RailNode.has", owner);
+    }
+    
+    protected void createEdge(Player owner, RailNode from, RailNode to) {
+        RailEdge e1 = new RailEdge();
+        e1.setOwner(owner);
+        e1.setFrom(from);
+        e1.setTo(to);
+        em.persist(e1);
+        
+        RailEdge e2 = new RailEdge();
+        e2.setOwner(owner);
+        e2.setFrom(to);
+        e2.setTo(from);
+        em.persist(e2);
+    }
+    
+    public boolean existsEdge(@NotNull RailNode from, @NotNull RailNode to) {
+        return !em.createNamedQuery("RailEdge.find", RailEdge.class)
+                .setParameter("from", from)
+                .setParameter("to", to)
+                .getResultList().isEmpty();
     }
 }

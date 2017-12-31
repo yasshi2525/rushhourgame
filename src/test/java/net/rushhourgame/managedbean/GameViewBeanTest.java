@@ -33,6 +33,7 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.exception.RushHourException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -51,23 +52,24 @@ import org.primefaces.event.SlideEndEvent;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class GameViewBeanTest extends AbstractBeanTest{
+public class GameViewBeanTest extends AbstractBeanTest {
+
     @Spy
     protected GameViewBean inst;
-    
+
     protected Player player;
-    
+
     protected static final int CLICK_X = 50;
     protected static final int CLICK_Y = 60;
-    
+
     @Mock
     protected SelectEvent event;
-    
+
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        
+
         inst.msg = msg;
         inst.pCon = PCON;
         inst.cCon = CCON;
@@ -92,7 +94,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.init();
         assertEquals(player, inst.player);
     }
-    
+
     @Test
     public void testRegisterClickPos() {
         Map<String, String> map = new HashMap<>();
@@ -101,7 +103,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
         doReturn(map).when(externalContext).getRequestParameterMap();
-        
+
         inst.registerClickPos();
         assertTrue(99.9 == inst.getClickX());
         assertTrue(199.9 == inst.getClickY());
@@ -113,26 +115,26 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.setClickX(CLICK_X);
         inst.setClickY(CLICK_Y);
         doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
-        
+
         inst.openClickMenu();
-        
+
     }
-    
+
     @Test
     public void testGetFacesContext() {
         assertNull(new GameViewBean().getFacesContext());
     }
-    
+
     @Test
     public void testGetCompanies() {
         inst.getCompanies();
     }
-    
+
     @Test
     public void testGetRegidences() {
         inst.getResidences();
     }
-    
+
     @Test
     public void testGetMyLonelyRailNodes() throws RushHourException {
         inst.player = player;
@@ -141,27 +143,27 @@ public class GameViewBeanTest extends AbstractBeanTest{
         EM.flush();
         inst.getMyLonelyRailNodes();
     }
-    
+
     @Test
     public void testGetRailEdges() {
         inst.getRailEdges();
     }
-    
+
     @Test
     public void testGetStation() {
         inst.getStations();
     }
-    
+
     @Test
     public void testGetLines() {
         inst.getLines();
     }
-    
+
     @Test
     public void testGetStepForHuman() {
         inst.getStepForHuman();
     }
-    
+
     @Test
     public void testCenterPos() {
         inst.setCenterX(10);
@@ -172,37 +174,43 @@ public class GameViewBeanTest extends AbstractBeanTest{
         assertTrue(2 == inst.getScale());
         assertTrue(3 == inst.getLoadScale());
     }
-    
+
     @Test
     public void testGetRequestContext() {
         assertNull(new GameViewBean().getRequestContext());
     }
-    
+
     @Test
     public void testOnSlideEnd() {
         SlideEndEvent event = mock(SlideEndEvent.class);
         doReturn(100).when(event).getValue();
-        
+
         inst.onSlideEnd(event);
-        
+
         assertTrue(1 == inst.getScale());
     }
-    
+
     @Test
     public void testInitTutorial() {
         doReturn(facesContext).when(inst).getFacesContext();
-        
+
         inst.initGuide();
     }
-    
+
     @Test
     public void testInitTutorialLonely() throws RushHourException {
+        inst.player = player;
+        inst.centerX = 50;
+        inst.centerY = 60;
         RAILCON.create(player, CLICK_X, CLICK_Y);
+        EM.flush();
         doReturn(facesContext).when(inst).getFacesContext();
-        
+
         inst.initGuide();
+        
+        verify(inst, times(1)).showLonelyRailTutorial();
     }
-    
+
     @Test
     public void testHandleReturnRailCreate() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_CREATE, mock(RailNode.class))).when(event).getObject();
@@ -211,7 +219,7 @@ public class GameViewBeanTest extends AbstractBeanTest{
         inst.handleReturn(event);
         assertTrue(inst.isUnderOperation());
     }
-    
+
     @Test
     public void testHandleReturnRailExtend() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_EXTEND, mock(RailNode.class))).when(event).getObject();
@@ -222,15 +230,89 @@ public class GameViewBeanTest extends AbstractBeanTest{
     }
     
     @Test
+    public void testExtendRailLoop() throws RushHourException {
+        inst.player = player;
+        RailNode r1 = RAILCON.create(player, 1, 1);
+        RailNode r2 = RAILCON.extend(player, r1, 10, 10);
+        EM.flush();
+        inst.tailNode = r2;
+        
+        inst.clickX = 0.99999999;
+        inst.clickY = 0.99999999;
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        
+        inst.extendRail();
+        
+        verify(inst, times(1)).showLoopRailWarning();
+        verify(inst, times(1)).showExtendingRailGuide();
+    }
+
+    @Test
+    public void testExtendRailConnected() throws RushHourException {
+        inst.player = player;
+        RailNode r1 = RAILCON.create(player, 1, 1);
+        RailNode r2 = RAILCON.create(player, 10.0, 10.0);
+        inst.tailNode = r1;
+        inst.clickX = 9.99999999;
+        inst.clickY = 9.99999999;
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
+        
+        inst.extendRail();
+        
+        verify(inst, times(1)).showConnectedRailAnnouncement();
+        verify(inst, times(1)).getRequestContext();
+        verify(inst, times(1)).showExtendingRailGuide();
+        
+        assertTrue(RAILCON.existsEdge(r1, r2));
+        assertEquals(r2, inst.tailNode);
+    }
+    
+    @Test
+    public void testExtendRailZeroDistance() throws RushHourException {
+        inst.player = player;
+        inst.tailNode = RAILCON.create(player, 10, 10);
+        inst.clickX = 10.01;
+        inst.clickY = 10.01;
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        
+        inst.extendRail();
+        
+        verify(inst, times(1)).showNeighborCreatingWarning();
+        verify(inst, times(1)).showExtendingRailGuide();
+    }
+    
+    @Test
+    public void testExtendRailExtending() throws RushHourException {
+        inst.player = player;
+        RailNode r1 = RAILCON.create(player, 10, 10);
+        inst.tailNode = r1;
+        inst.clickX = 20;
+        inst.clickY = 20;
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
+        
+        inst.extendRail();
+        
+        verify(inst, times(1)).showExtendedRailAnnouncement();
+        verify(inst, times(1)).getRequestContext();
+        verify(inst, times(1)).showExtendingRailGuide();
+    }
+
+    @Test
     public void testExtendRail() throws RushHourException {
         inst.player = player;
         inst.tailNode = RAILCON.create(player, 10, 10);
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
-        
+
         inst.extendRail();
     }
-    
+
     @Test
     public void testFinishedOperation() {
         inst.setUnderOperation(true);

@@ -66,9 +66,14 @@
                  data-interval="#{r.interval}" data-capacity="#{r.capacity}"/>
         </ui:repeat>
 
-        <ui:repeat var="n" value="#{game.myLonelyRailNodes}">
+        <ui:repeat var="n" value="#{game.myRailNodes}">
             <div class="railnode" id ="#{n.id}"
                  data-x="#{n.x}" data-y="#{n.y}"/>
+        </ui:repeat>
+        
+        <ui:repeat var="ln" value="#{game.myLonelyRailNodes}">
+            <div class="lonelyrailnode" id ="#{ln.id}"
+                 data-x="#{ln.x}" data-y="#{ln.y}"/>
         </ui:repeat>
 
         <ui:repeat var="e" value="#{game.railEdges}">

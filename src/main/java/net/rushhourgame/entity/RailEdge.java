@@ -38,6 +38,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
     @NamedQuery(
+            name = "RailEdge.find",
+            query = "SELECT obj FROM RailEdge obj WHERE obj._from = :from AND obj._to = :to"
+    ),
+    @NamedQuery(
             name = "RailEdge.findIn",
             query = "SELECT obj FROM RailEdge obj"
                     + " WHERE (obj._from.x > :x1 AND obj._from.x < :x2 AND obj._from.y > :y1 AND obj._from.y < :y2)"

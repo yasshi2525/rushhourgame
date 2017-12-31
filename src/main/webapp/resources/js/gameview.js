@@ -24,11 +24,15 @@
 
 var pixi = require('pixi.js');
 
+var consts = {
+    round: 20
+}
+
 var spriteResources = {
     'residence': {},
     'company': {},
     'station': {},
-    'railnode': {}
+    'lonelyrailnode': {}
 };
 
 var lineResources = {
@@ -84,7 +88,7 @@ initPixi = function () {
     scope.graphics = {
         'company': {},
         'residence': {},
-        'railnode': {},
+        'lonelyrailnode': {},
         'railedge': {},
         'station': {},
         'stepforhuman': {}
@@ -294,7 +298,7 @@ onDragEnd = function (event) {
         // 当初 mouse move のイベントの有無でクリックかどうか判定していたが、
         // クリック時にmouse moveイベントが発火(chromeのみ?)のため座標比較する方式に変更
         // マウスの座標をゲーム上の座標に変換する
-        var gamePos = toGamePos(mousePos);
+        var gamePos = toGamePos(scope.cursor ? scope.cursor : mousePos);
 
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
@@ -340,8 +344,8 @@ onDragMove = function (event) {
 
 toViewPosFromMouse = function (event) {
     return {
-        x: (event.offsetX) ? event.offsetX : event.originalEvent.touches[0].offsetX,
-        y: (event.offsetY) ? event.offsetY : event.originalEvent.touches[0].offsetY
+        x: (event.offsetX) ? event.offsetX : event.originalEvent.touches ? event.originalEvent.touches[0].offsetX : 0,
+        y: (event.offsetY) ? event.offsetY : event.originalEvent.touches ? event.originalEvent.touches[0].offsetY : 0
     };
 };
 
@@ -391,6 +395,7 @@ startExtendingMode = function (x, y) {
 
 rewriteTempResource = function () {
     var scope = $(document).data('scope');
+    var neighbor;
 
     if (scope.tailNode) {
         scope.stage.removeChild(scope.tailNode);
@@ -399,11 +404,18 @@ rewriteTempResource = function () {
         scope.tailNode = stageTempCircle(scope.tailNode, tempResources.tailNode);
         scope.tailNode.gamex = gamex;
         scope.tailNode.gamey = gamey;
+        var $n = findNeighbor('railnode', scope.mousePos);
+        if ($n) {
+            var npos = toViewPos(parseFloat($n.data('x')), parseFloat($n.data('y')));
+            if (npos.x != scope.tailNode.x && npos.y != scope.tailNode.y) {
+                neighbor = npos;
+            }
+        }
     }
 
     if (scope.cursor) {
         scope.stage.removeChild(scope.cursor);
-        scope.cursor = stageTempCircle(scope.mousePos, tempResources.cursor);
+        scope.cursor = stageTempCircle(neighbor ? neighbor : scope.mousePos, tempResources.cursor);
     }
 
     if (scope.extendEdge) {
@@ -466,4 +478,22 @@ deleteTempGraphics = function () {
         scope.stage.removeChild(scope.extendEdge);
         scope.extendEdge = null;
     }
+};
+
+findNeighbor = function (name, pos) {
+    var neighbor = null;
+    var minDist = Number.MAX_VALUE;
+    $('.' + name).each(function (i, elm) {
+        var otherPos = toViewPos(
+                parseFloat($(elm).data('x')),
+                parseFloat($(elm).data('y')));
+        
+        var dist = (otherPos.x - pos.x) * (otherPos.x - pos.x) + (otherPos.y - pos.y) * (otherPos.y - pos.y);
+                
+        if (dist < minDist && dist < consts.round * consts.round) {
+            neighbor = $(elm);
+        }
+    });
+
+    return neighbor;
 };

@@ -92,6 +92,9 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     
     public static final String ANNOUNCEMENT_RAIL_CREATE = "rushhour.announcement.rail.create";
     public static final String ANNOUNCEMENT_RAIL_EXTEND = "rushhour.announcement.rail.extend";
+    public static final String ANNOUNCEMENT_RAIL_CONNECT = "rushhour.announcement.rail.connect";
+    public static final String ANNOUNCEMENT_RAIL_CREATENEIGHBOR = "rushhour.announcement.rail.createneighbor";
+    public static final String ANNOUNCEMENT_RAIL_LOOP = "rushhour.announcement.rail.loop";
     
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";

@@ -175,4 +175,56 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
+    
+    @Test
+    public void testConnect() throws RushHourException {
+        Player player = createPlayer();
+        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
+        RailNode r2 = inst.extend(player, r1, TEST_X2, TEST_Y2);
+        
+        inst.connect(player, r1, r2);
+    }
+    
+    @Test
+    public void testConncetOtherOwnerFrom() throws RushHourException {
+        Player player = createPlayer();
+        Player other = createOther();
+        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
+        RailNode r2 = inst.extend(player, r1, TEST_X2, TEST_Y2);
+        
+        try {
+            inst.connect(other, r1, r2);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+    
+    @Test
+    public void testConncetOtherOwnerTo() throws RushHourException {
+        Player player = createPlayer();
+        Player other = createOther();
+        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
+        RailNode r2 = inst.create(other, TEST_X, TEST_Y);
+        
+        try {
+            inst.connect(player, r1, r2);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+    
+    @Test
+    public void testConnectLoop() throws RushHourException {
+        Player player = createPlayer();
+        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
+        
+        try {
+            inst.connect(player, r1, r1);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
 }
