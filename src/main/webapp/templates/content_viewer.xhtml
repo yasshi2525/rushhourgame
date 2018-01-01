@@ -70,7 +70,7 @@
             <div class="railnode" id ="#{n.id}"
                  data-x="#{n.x}" data-y="#{n.y}"/>
         </ui:repeat>
-        
+
         <ui:repeat var="ln" value="#{game.myLonelyRailNodes}">
             <div class="lonelyrailnode" id ="#{ln.id}"
                  data-x="#{ln.x}" data-y="#{ln.y}"/>
@@ -113,12 +113,15 @@
     </h:panelGroup>
 
     <!-- 拡大縮小用 -->
-    <h:outputText  id="scale" value="#{game.scale}"/>
-    <h:inputHidden id="sliderscale" value="#{game.scale * 100}"/>
-    <p:slider for="sliderscale" minValue="100" maxValue="1600" onSlide="handleSlide(event, ui)">
-        <p:ajax event="slideEnd" listener="#{game.onSlideEnd}" 
-                update="gamemodel scale"
-                oncomplete="fetchGraphics()"/>
-    </p:slider>
+    <h:panelGrid columns="1" class="zoombar">
+        <h:outputText  id="scale" value="#{game.scale}"/>
+        <h:inputHidden id="sliderscale" value="#{game.scale * 100}"/>
+        <p:slider for="sliderscale" minValue="100" maxValue="1600" 
+                  onSlide="handleSlide(event, ui)">
+            <p:ajax event="slideEnd" listener="#{game.onSlideEnd}" 
+                    update="gamemodel scale"
+                    oncomplete="fetchGraphics()"/>
+        </p:slider>
+    </h:panelGrid>
 </h:form>
 

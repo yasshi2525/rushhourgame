@@ -75,14 +75,19 @@ exports.init = function (param) {
 
 initPixi = function () {
     var scope = $(document).data('scope');
-
-    var renderer = pixi.autoDetectRenderer(512, 512);
-    scope.$gameview.get(0).appendChild(renderer.view); // get(0)がないとダメ
-    scope.$canvas = $('#gameview canvas');
+    
+    var app = new pixi.Application(window.innerWidth, window.innerHeight);
+    scope.$gameview.get(0).appendChild(app.view); // get(0)がないとダメ
+    scope.$canvas = $('#gameview canvas')
+            .css('position', 'absolute')
+            .css('left', '0px')
+            .css('top', '0px')
+            .css('z-index', '-1');
+    
     initEventHandler(); //イベントハンドラ登録
 
-    scope.renderer = renderer;
-    scope.stage = new pixi.Container();
+    scope.renderer = app.renderer;
+    scope.stage = app.stage;
 
     // 複数形にすると、要素名と一致しなく不便だったので、単数形
     scope.graphics = {
@@ -102,7 +107,6 @@ loadImage = function (resources) {
     for (var key in resources) {
         pixi.loader.add(key, resources[key]);
     }
-    ;
     pixi.loader.load(fetchGraphics);
 };
 
@@ -122,6 +126,10 @@ initEventHandler = function () {
         'touchend': onDragEnd,
         'mousemove': onDragMove,
         'touchmove': onDragMove
+    });
+    // Fullscreen in pixi is resizing the renderer to be window.innerWidth by window.innerHeight
+    window.addEventListener("resize", function () {
+        scope.renderer.resize(window.innerWidth, window.innerHeight);
     });
 };
 
@@ -487,9 +495,9 @@ findNeighbor = function (name, pos) {
         var otherPos = toViewPos(
                 parseFloat($(elm).data('x')),
                 parseFloat($(elm).data('y')));
-        
+
         var dist = (otherPos.x - pos.x) * (otherPos.x - pos.x) + (otherPos.y - pos.y) * (otherPos.y - pos.y);
-                
+
         if (dist < minDist && dist < consts.round * consts.round) {
             neighbor = $(elm);
         }
