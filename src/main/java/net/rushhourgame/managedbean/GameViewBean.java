@@ -276,9 +276,10 @@ public class GameViewBean implements Serializable {
         // 接続するときはクライアント側で近似座標を求めている
         List<RailNode> veryneighbors = railCon.findNodeIn(player, clickX, clickY, -10);
 
-        // 近い場所に接続できうるので、ゼロ距離延伸判定より先に判定する
-        if (!veryneighbors.isEmpty()) {
-            
+        // ダブルクリックすると、neighbor = tailnode になるので、先にゼロ距離判定
+        if (isClickedSurroundTailNode()) {
+            showNeighborCreatingWarning();
+        } else if (!veryneighbors.isEmpty()) {
             if (railCon.existsEdge(tailNode, veryneighbors.get(0))) {
                 // 接続済みの点を結ぼうとした。
                 showLoopRailWarning();
@@ -289,9 +290,6 @@ public class GameViewBean implements Serializable {
                 getRequestContext().execute("nextExtendingMode("
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
             }
-            
-        } else if (isClickedSurroundTailNode()) {
-            showNeighborCreatingWarning();
         } else {
             // 延伸
             tailNode = railCon.extend(player, tailNode, clickX, clickY);
@@ -299,7 +297,7 @@ public class GameViewBean implements Serializable {
             getRequestContext().execute("nextExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
         }
-        
+
         showExtendingRailGuide();
     }
 
@@ -365,6 +363,6 @@ public class GameViewBean implements Serializable {
 
     protected boolean isClickedSurroundTailNode() {
         return Math.sqrt((tailNode.getX() - clickX) * (tailNode.getX() - clickX)
-                + (tailNode.getY() - clickY) * (tailNode.getY() - clickY)) < Math.pow(2, scale - 3);
+                + (tailNode.getY() - clickY) * (tailNode.getY() - clickY)) < Math.pow(2, scale - 4);
     }
 }

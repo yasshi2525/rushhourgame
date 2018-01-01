@@ -89,8 +89,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailFarRight() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
         
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "1.1");
         map.put("clickY", "0.0");
         inst.init();
@@ -102,8 +102,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailFarLeft() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "-1.1");
         map.put("clickY", "0.0");
         inst.init();
@@ -115,8 +115,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailFarTop() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "0.0");
         map.put("clickY", "-1.1");
         inst.init();
@@ -128,8 +128,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailFarBottom() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "0.0");
         map.put("clickY", "1.1");
         inst.init();
@@ -142,8 +142,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         RAILCON.create(createPlayer(), 0, 0);
         System.out.println(TCON.findAll("RailNode", RailNode.class));
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "0.4");
         map.put("clickY", "0.0");
         inst.init();
@@ -155,8 +155,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailNearLeft() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "-0.4");
         map.put("clickY", "0.0");
         inst.init();
@@ -168,8 +168,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailNearTop() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "0.0");
         map.put("clickY", "-0.4");
         inst.init();
@@ -181,8 +181,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testCanCreateRailNearBottom() throws RushHourException {
         RAILCON.create(createPlayer(), 0, 0);
 
-        // scale 3 (幅8)のとき、±1を近いと判定
-        map.put("scale", "3.0");
+        // scale 4 (幅16)のとき、±1を近いと判定
+        map.put("scale", "4.0");
         map.put("clickX", "0.0");
         map.put("clickY", "0.4");
         inst.init();

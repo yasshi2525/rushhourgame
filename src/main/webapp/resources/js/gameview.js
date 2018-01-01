@@ -79,7 +79,7 @@ initPixi = function () {
     var app = new pixi.Application(window.innerWidth, window.innerHeight);
     scope.$gameview.get(0).appendChild(app.view); // get(0)がないとダメ
     scope.$canvas = $('#gameview canvas')
-            .css('position', 'absolute')
+            .css('position', 'fixed')
             .css('left', '0px')
             .css('top', '0px')
             .css('z-index', '-1');
@@ -301,7 +301,8 @@ onDragEnd = function (event) {
 
     var mousePos = toViewPosFromMouse(event);
 
-    if (this.startPosition && this.startPosition.x === mousePos.x && this.startPosition.y === mousePos.y) {
+    if (this.startPosition && this.startPosition.x === mousePos.x 
+            && this.startPosition.y === mousePos.y) {
         // クリックと判定した
         // 当初 mouse move のイベントの有無でクリックかどうか判定していたが、
         // クリック時にmouse moveイベントが発火(chromeのみ?)のため座標比較する方式に変更
