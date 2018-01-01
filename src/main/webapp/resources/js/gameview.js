@@ -283,6 +283,7 @@ toViewPos = function (x, y) {
 handleSlide = function (event, ui) {
     $('#scale').text(ui.value / 100);
     fetchGraphics();
+    rewriteTempResource();
 };
 
 onDragStart = function (event) {
@@ -412,6 +413,10 @@ rewriteTempResource = function () {
 
     if (scope.tailNode) {
         scope.stage.removeChild(scope.tailNode);
+        var vpos = toViewPos(scope.tailNode.gamex, scope.tailNode.gamey);
+        scope.tailNode.x = vpos.x;
+        scope.tailNode.y = vpos.y;
+        // ゲーム座標を引き継ぐため一時保管
         var gamex = scope.tailNode.gamex;
         var gamey = scope.tailNode.gamey;
         scope.tailNode = stageTempCircle(scope.tailNode, tempResources.tailNode);
@@ -420,7 +425,7 @@ rewriteTempResource = function () {
         var $n = findNeighbor('railnode', scope.mousePos);
         if ($n) {
             var npos = toViewPos(parseFloat($n.data('x')), parseFloat($n.data('y')));
-            if (npos.x != scope.tailNode.x && npos.y != scope.tailNode.y) {
+            if (npos.x !== scope.tailNode.x && npos.y !== scope.tailNode.y) {
                 neighbor = npos;
             }
         }

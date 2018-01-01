@@ -519,23 +519,55 @@ describe('test gameview', function () {
 
     describe('test rewriteTempResource', function () {
         beforeEach(function () {
-            spyOn(window, 'stageTempCircle').and.returnValue({});
             spyOn(window, 'stageTempLine').and.callFake(doNothing);
         });
 
         it('test do nothing when no object', function () {
+            spyOn(window, 'stageTempCircle').and.returnValue({});
             rewriteTempResource();
             expect(window.stageTempCircle.calls.any()).toEqual(false);
             expect(window.stageTempLine.calls.any()).toEqual(false);
         });
 
         it('test rewrite', function () {
+            spyOn(window, 'stageTempCircle').and.returnValue({});
             scope.tailNode = {gamex: 100, gamey: 100};
             scope.cursor = {};
             scope.extendEdge = {};
             rewriteTempResource();
             expect(window.stageTempCircle.calls.count()).toEqual(2);
             expect(window.stageTempLine.calls.count()).toEqual(1);
+        });
+        
+        it('test rewrite when found neighbor', function () {
+            spyOn(window, 'stageTempCircle').and.callThrough();
+            scope.tailNode = {x: 0, y:0, gamex: -128, gamey: -128};
+            scope.cursor = {};
+            scope.extendEdge = {};
+            scope.mousePos = {x: 245, y: 245};
+            $('body').append("<div class='railnode' id = 'no1' data-x='0.0' data-y='0.0'/>");
+            
+            rewriteTempResource();
+            
+            expect(scope.cursor.x).toEqual(250);
+            expect(scope.cursor.y).toEqual(250);
+        });
+        
+        it('test rewrite when mouse surrounding tailNode', function () {
+            spyOn(window, 'stageTempCircle').and.callThrough();
+            scope.tailNode = {x: 0, y:0, gamex: -128, gamey: -128};
+            scope.cursor = {};
+            scope.extendEdge = {};
+            scope.mousePos = {x: -125, y: -125};
+            $('body').append("<div class='railnode' id = 'no1' data-x='-128.0' data-y='-128.0'/>");
+            
+            rewriteTempResource();
+            
+            expect(scope.cursor.x).toEqual(-125);
+            expect(scope.cursor.y).toEqual(-125);
+        });
+        afterEach(function () {
+            $('#no1').remove();
         });
     });
 
@@ -554,6 +586,11 @@ describe('test gameview', function () {
             $('body').append("<div class='railnode' id = 'no2' data-x='0.0' data-y='0.0'/>");
 
             expect(findNeighbor('railnode', centerViewPos).attr('id')).toEqual('no2');
+        });
+        
+        afterEach(function () {
+            $('#no1').remove();
+            $('#no2').remove();
         });
     });
 
