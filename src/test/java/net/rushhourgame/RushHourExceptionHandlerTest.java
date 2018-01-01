@@ -119,7 +119,7 @@ public class RushHourExceptionHandlerTest {
         doReturn(rhEx).when(inst).extractRushHourException(any(Throwable.class));
         doReturn(wrapped).when(inst).getWrapped();
         inst.handle();
-        verify(map, times(1)).put(eq("error"), eq(null));
+        verify(map, times(1)).put(eq("errorMsg"), eq(null));
     }
     
     @Test
@@ -127,7 +127,7 @@ public class RushHourExceptionHandlerTest {
         doReturn(null).when(inst).extractRushHourException(any(Throwable.class));
         doReturn(wrapped).when(inst).getWrapped();
         inst.handle();
-        verify(map, times(1)).put(eq("error"), any(ErrorMessage.class));
+        verify(map, times(1)).put(eq("errorMsg"), any(ErrorMessage.class));
     }
 
     @Test

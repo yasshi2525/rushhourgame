@@ -23,6 +23,8 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.Map;
 import javax.faces.context.ExternalContext;
@@ -56,7 +58,7 @@ public class ErrorBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         inst.msgProps = msg;
-        inst.rushHourSession = session;
+        inst.session = session;
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
         doReturn(requestMap).when(externalContext).getRequestMap();
@@ -65,16 +67,21 @@ public class ErrorBeanTest extends AbstractBeanTest {
     @Test
     public void testInit() {
         ErrorMessage msg = new ErrorMessage();
-        doReturn(msg).when(requestMap).get("error");
+        doReturn(msg).when(requestMap).get("errorMsg");
+        Throwable t = new Throwable();
+        doReturn(t).when(requestMap).get("throwable");
         inst.init();
         assertEquals(msg, inst.contents);
+        assertEquals(t, inst.throwable);
     }
 
     @Test
     public void testInitNull() {
-        doReturn(null).when(requestMap).get("error");
+        doReturn(null).when(requestMap).get("errorMsg");
+        doReturn(null).when(requestMap).get("throwable");
         inst.init();
         assertNotNull(inst.contents);
+        assertNotNull(inst.throwable);
     }
 
     @Test
@@ -99,19 +106,10 @@ public class ErrorBeanTest extends AbstractBeanTest {
         inst.contents = new ErrorMessage();
         assertEquals(ErrorMessage.NO_CONTENTS, inst.getAction());
     }
-
+    
     @Test
-    public void testGetTitleNull() {
-        assertEquals("No Contents", inst.getTitle());
-    }
-
-    @Test
-    public void testGetDetailNull() {
-        assertEquals("No Contents", inst.getDetail());
-    }
-
-    @Test
-    public void testGetActionNull() {
-        assertEquals("No Contents", inst.getAction());
+    public void testGetStackTrace() {
+        inst.throwable = new Throwable();
+        assertNotNull(inst.getStackTrace());
     }
 }

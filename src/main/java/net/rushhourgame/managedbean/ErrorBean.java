@@ -23,7 +23,11 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.context.ExternalContext;
@@ -34,6 +38,7 @@ import javax.inject.Named;
 import net.rushhourgame.ErrorMessage;
 import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  *
@@ -42,49 +47,53 @@ import net.rushhourgame.RushHourSession;
 @Named("err")
 @ViewScoped
 public class ErrorBean implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ErrorBean.class.getName());
-    
+
     @Inject
     protected RushHourResourceBundle msgProps;
-    
+
     @Inject
-    protected RushHourSession rushHourSession;
+    protected RushHourSession session;
 
     protected ErrorMessage contents;
+    protected Throwable throwable;
 
     @PostConstruct
-    public void init(){
-        Object obj = getFacesContext().getExternalContext().getRequestMap().get("error");
-        if(obj instanceof ErrorMessage){
-            contents = (ErrorMessage) obj;
-        }else{
-            contents = new ErrorMessage();
-        }
+    public void init() {
+        Object eobj = getFacesContext().getExternalContext().getRequestMap().get("errorMsg");
+        Object tobj = getFacesContext().getExternalContext().getRequestMap().get("throwable");
+        
+        contents = (eobj instanceof ErrorMessage) ?  (ErrorMessage) eobj : new ErrorMessage();
+        throwable = (tobj instanceof Throwable) ?  (Throwable) tobj : new Throwable("no contents");
     }
-    
+
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
-    
-    public String getTitle(){
-        if(contents == null){
-            return "No Contents";
-        }
-        return contents.buildTitle(msgProps, rushHourSession.getLocale());
+
+    public String getTitle() {
+        return contents.buildTitle(msgProps, session.getLocale());
     }
-    
-    public String getDetail(){
-        if(contents == null){
-            return "No Contents";
-        }
-        return contents.buildDetail(msgProps, rushHourSession.getLocale());
+
+    public String getDetail() {
+        return contents.buildDetail(msgProps, session.getLocale());
     }
-    
-    public String getAction(){
-        if(contents == null){
-            return "No Contents";
+
+    public String getAction() {
+        return contents.buildAction(msgProps, session.getLocale());
+    }
+
+    public String getStackTrace() {
+        try (
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);) {
+            throwable.printStackTrace(pw);
+            return sw.toString();
+        } catch (IOException ex) {
+            Logger.getLogger(ErrorBean.class.getName()).log(Level.SEVERE, null, ex);
+            return ex.getMessage();
         }
-        return contents.buildAction(msgProps, rushHourSession.getLocale());
     }
 }

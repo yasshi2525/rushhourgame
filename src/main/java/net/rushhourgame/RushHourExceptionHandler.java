@@ -66,7 +66,8 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
                 } else {
                     errMsg = ErrorMessageBuilder.getInstance().createUnkownError();
                 }
-                fc.getExternalContext().getRequestMap().put("error", errMsg);
+                fc.getExternalContext().getRequestMap().put("errorMsg", errMsg);
+                fc.getExternalContext().getRequestMap().put("throwable", t);
                 NavigationHandler navHandler = fc.getApplication().getNavigationHandler();
                 navHandler.handleNavigation(fc, null, "error.xhtml");
                 fc.renderResponse();
