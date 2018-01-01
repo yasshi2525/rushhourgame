@@ -75,7 +75,7 @@ exports.init = function (param) {
 
 initPixi = function () {
     var scope = $(document).data('scope');
-    
+
     var app = new pixi.Application(window.innerWidth, window.innerHeight);
     scope.$gameview.get(0).appendChild(app.view); // get(0)がないとダメ
     scope.$canvas = $('#gameview canvas')
@@ -83,7 +83,7 @@ initPixi = function () {
             .css('left', '0px')
             .css('top', '0px')
             .css('z-index', '-1');
-    
+
     initEventHandler(); //イベントハンドラ登録
 
     scope.renderer = app.renderer;
@@ -351,10 +351,12 @@ onDragMove = function (event) {
 };
 
 toViewPosFromMouse = function (event) {
-    return {
-        x: (event.offsetX) ? event.offsetX : event.originalEvent.touches ? event.originalEvent.touches[0].offsetX : 0,
-        y: (event.offsetY) ? event.offsetY : event.originalEvent.touches ? event.originalEvent.touches[0].offsetY : 0
-    };
+    if (event.offsetX && event.offsetY) {
+        return {x: event.offsetX, y: event.offsetY};
+    } else if (event.originalEvent.touches && event.originalEvent.touches[0]) {
+        return {x: event.originalEvent.touches[0].pageX, y: event.originalEvent.touches[0].pageY};
+    }
+    return {x: 0, y: 0};
 };
 
 toNewCenterGamePos = function (startGamePos, startViewPos, newViewPos) {
@@ -373,11 +375,11 @@ toGamePos = function (pos) {
     var scope = $(document).data('scope');
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
-        x: (pos.x / Math.max(scope.renderer.width, scope.renderer.height) 
+        x: (pos.x / Math.max(scope.renderer.width, scope.renderer.height)
                 - 0.5 * scope.renderer.width / Math.max(scope.renderer.width, scope.renderer.height))
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerX.val()),
-        y: (pos.y / Math.max(scope.renderer.width, scope.renderer.height) 
+        y: (pos.y / Math.max(scope.renderer.width, scope.renderer.height)
                 - 0.5 * scope.renderer.height / Math.max(scope.renderer.width, scope.renderer.height))
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())

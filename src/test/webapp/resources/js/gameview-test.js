@@ -370,7 +370,7 @@ describe('test gameview', function () {
     describe('test toViewPosFromMouse', function () {
         it('touch enabled', function () {
             expect(toViewPosFromMouse({
-                originalEvent: {touches: [{offsetX: 10, offsetY: 20}]}
+                originalEvent: {touches: [{pageX: 10, pageY: 20}]}
             })).toEqual({x: 10, y: 20});
         });
 
