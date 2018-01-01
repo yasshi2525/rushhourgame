@@ -100,9 +100,28 @@ public class DebugInitializer {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void init() {
         try {
-            rCon.create(20, 5);
-            cCon.create(50, 15);
+            rCon.create(0, 0);
+            
+            cCon.create(0, 1);
+            cCon.create(1, 0);
+            rCon.create(1, 1);
+            
+            rCon.create(0, 2);
+            rCon.create(2, 0);
+            cCon.create(2, 2);
 
+            cCon.create(0, 4);
+            cCon.create(4, 0);
+            rCon.create(4, 4);
+            
+            rCon.create(0, 8);
+            rCon.create(8, 0);
+            cCon.create(8, 8);
+            
+            cCon.create(0, 16);
+            cCon.create(16, 0);
+            rCon.create(16, 16);
+            
             Player owner = pCon.upsertPlayer(
                     "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
             

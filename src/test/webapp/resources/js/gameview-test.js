@@ -247,6 +247,7 @@ describe('test gameview', function () {
     });
 
     describe('test toViewPos', function () {
+
         it('game (0, 0) is view center', function () {
             expect(toViewPos(0, 0)).toEqual(centerViewPos);
         });
@@ -257,6 +258,23 @@ describe('test gameview', function () {
 
         it('game (128, 128) is view right-bottom', function () {
             expect(toViewPos(128, 128)).toEqual(rightbottomViewPos);
+        });
+
+        it('game (128, 64)) is view right-bottom (when (500, 250) window)', function () {
+            scope.renderer.width = 500;
+            scope.renderer.height = 250;
+            expect(toViewPos(128, 64)).toEqual({x: 500, y: 250});
+        });
+
+        it('game (64, 128)) is view right-bottom (when (250, 500) window)', function () {
+            scope.renderer.width = 250;
+            scope.renderer.heigh = 500;
+            expect(toViewPos(64, 128)).toEqual({x: 250, y: 500});
+        });
+
+        afterEach(function () {
+            scope.renderer.width = 500;
+            scope.renderer.heigh = 500;
         });
     });
 
@@ -385,6 +403,29 @@ describe('test gameview', function () {
                     rightbottomViewPos
                     )).toEqual(origin);
         });
+        it('move (0, 0) -> (128, 64) when dragged center to left-top, window (500, 250)', function () {
+            scope.renderer.width = 500;
+            scope.renderer.height = 250;
+            expect(toNewCenterGamePos(
+                    origin,
+                    {x: 250, y: 125},
+                    lefttopViewPos
+                    )).toEqual({x: 128, y: 64});
+        });
+        it('move (0, 0) -> (64, 128) when dragged center to left-top, window (250, 500)', function () {
+            scope.renderer.width = 250;
+            scope.renderer.height = 500;
+            expect(toNewCenterGamePos(
+                    origin,
+                    {x: 125, y: 250},
+                    lefttopViewPos
+                    )).toEqual({x: 64, y: 128});
+        });
+
+        afterEach(function () {
+            scope.renderer.width = 500;
+            scope.renderer.height = 500;
+        });
     });
 
     describe('test toGamePos', function () {
@@ -399,6 +440,23 @@ describe('test gameview', function () {
         it('view right-bottom is (128, 128)', function () {
             expect(toGamePos(rightbottomViewPos))
                     .toEqual({x: 128, y: 128});
+        });
+        it('view right-bottom is (128, 64) when window (500, 250)', function () {
+            scope.renderer.width = 500;
+            scope.renderer.height = 250;
+            expect(toGamePos({x: 500, y: 250}))
+                    .toEqual({x: 128, y: 64});
+        });
+        it('view right-bottom is (64, 128) when window (250, 500)', function () {
+            scope.renderer.width = 250;
+            scope.renderer.height = 500;
+            expect(toGamePos({x: 250, y: 500}))
+                    .toEqual({x: 64, y: 128});
+        });
+
+        afterEach(function () {
+            scope.renderer.width = 500;
+            scope.renderer.height = 500;
         });
     });
 

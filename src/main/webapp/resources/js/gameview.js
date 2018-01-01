@@ -26,7 +26,7 @@ var pixi = require('pixi.js');
 
 var consts = {
     round: 20
-}
+};
 
 var spriteResources = {
     'residence': {},
@@ -59,7 +59,7 @@ var tempResources = {
         width: 4,
         alpha: 0.5
     }
-}
+};
 
 /**
  * jQueryオブジェクトを格納する場合、接頭辞$をつける。
@@ -204,7 +204,7 @@ stageResourceSprite = function (type, $elm) {
     obj.alpha = 1;
     obj.position.set(pos.x, pos.y);
     obj.scale.x = 0.5;
-    obj.scale.y = 0.5
+    obj.scale.y = 0.5;
 
     scope.stage.addChild(obj);
     return obj;
@@ -265,11 +265,11 @@ toViewPos = function (x, y) {
     var scope = $(document).data('scope');
     return {
         x: (x - scope.$centerX.val())
-                * scope.renderer.width
+                * Math.max(scope.renderer.width, scope.renderer.height)
                 * Math.pow(2, -$('#scale').text())
                 + scope.renderer.width / 2,
         y: (y - scope.$centerY.val())
-                * scope.renderer.height
+                * Math.max(scope.renderer.width, scope.renderer.height)
                 * Math.pow(2, -$('#scale').text())
                 + scope.renderer.height / 2
     };
@@ -362,10 +362,10 @@ toNewCenterGamePos = function (startGamePos, startViewPos, newViewPos) {
     return {
         x: startGamePos.x
                 - (newViewPos.x - startViewPos.x)
-                * Math.pow(2, $('#scale').text()) / scope.renderer.width,
+                * Math.pow(2, $('#scale').text()) / Math.max(scope.renderer.width, scope.renderer.height),
         y: startGamePos.y
                 - (newViewPos.y - startViewPos.y)
-                * Math.pow(2, $('#scale').text()) / scope.renderer.height
+                * Math.pow(2, $('#scale').text()) / Math.max(scope.renderer.width, scope.renderer.height)
     };
 };
 
@@ -373,10 +373,12 @@ toGamePos = function (pos) {
     var scope = $(document).data('scope');
     // - 0.5 するのは画面の中央がcenterXに対応するため
     return {
-        x: (pos.x / scope.renderer.width - 0.5)
+        x: (pos.x / Math.max(scope.renderer.width, scope.renderer.height) 
+                - 0.5 * scope.renderer.width / Math.max(scope.renderer.width, scope.renderer.height))
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerX.val()),
-        y: (pos.y / scope.renderer.height - 0.5)
+        y: (pos.y / Math.max(scope.renderer.width, scope.renderer.height) 
+                - 0.5 * scope.renderer.height / Math.max(scope.renderer.width, scope.renderer.height))
                 * Math.pow(2, $('#scale').text())
                 + parseFloat(scope.$centerY.val())
     };
