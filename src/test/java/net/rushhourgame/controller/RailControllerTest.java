@@ -31,11 +31,14 @@ import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Station;
 import org.junit.Before;
 
 /**
@@ -91,12 +94,12 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testCreateOtherDuplication() throws RushHourException {
         Player player = createPlayer();
         inst.create(player, TEST_POS);
-        
+
         Player other = createOther();
         inst.create(other, TEST_POS);
     }
@@ -149,7 +152,7 @@ public class RailControllerTest extends AbstractControllerTest {
         assertEquals(created1, created1.getOutEdges().get(0).getFrom());
         assertEquals(created2, created1.getOutEdges().get(0).getTo());
     }
-    
+
     @Test
     public void testExtendDuplicate() throws RushHourException {
         Player player = createPlayer();
@@ -179,23 +182,23 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testConnect() throws RushHourException {
         Player player = createPlayer();
         RailNode r1 = inst.create(player, TEST_POS);
         RailNode r2 = inst.extend(player, r1, TEST_POS2);
-        
+
         inst.connect(player, r1, r2);
     }
-    
+
     @Test
     public void testConncetOtherOwnerFrom() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
         RailNode r1 = inst.create(player, TEST_POS);
         RailNode r2 = inst.extend(player, r1, TEST_POS2);
-        
+
         try {
             inst.connect(other, r1, r2);
             fail();
@@ -203,14 +206,14 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testConncetOtherOwnerTo() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
         RailNode r1 = inst.create(player, TEST_POS);
         RailNode r2 = inst.create(other, TEST_POS);
-        
+
         try {
             inst.connect(player, r1, r2);
             fail();
@@ -218,17 +221,166 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testConnectLoop() throws RushHourException {
         Player player = createPlayer();
         RailNode r1 = inst.create(player, TEST_POS);
-        
+
         try {
             inst.connect(player, r1, r1);
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
+    }
+
+    @Test
+    public void testRemoveOther() throws RushHourException {
+        Player player = createPlayer();
+        Player other = createOther();
+        RailNode created = inst.create(player, TEST_POS);
+        inst.extend(player, created, TEST_POS2);
+        EM.flush();
+        EM.refresh(created);
+        try {
+            inst.remove(other, created.getOutEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+
+    @Test
+    public void testRemoveUsedByStopping() throws RushHourException {
+        // st1 -- st2
+        Station station = createStation();
+        Player player = station.getOwner();
+        RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
+        STCON.create(player, goal, "hoge");
+        EM.flush();
+        EM.refresh(goal);
+
+        Line line = LCON.create(player, "hoge");
+        LineStep s1 = LCON.start(line, player, station);
+        LCON.extend(s1, player, goal.getInEdges().get(0));
+
+        try {
+            inst.remove(player, goal.getInEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+        
+        try {
+            inst.remove(player, goal.getOutEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+
+    @Test
+    public void testRemoveUsedByPassing() throws RushHourException {
+        // st1 -- st2
+        Station station = createStation();
+        Player player = station.getOwner();
+        RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
+        STCON.create(player, goal, "hoge");
+        EM.flush();
+        EM.refresh(goal);
+
+        Line line = LCON.create(player, "hoge");
+        LineStep s1 = LCON.start(line, player, station);
+        LCON.extend(s1, player, goal.getInEdges().get(0), true);
+
+        try {
+            inst.remove(player, goal.getInEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+        
+        try {
+            inst.remove(player, goal.getOutEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testRemoveUsedByMoving() throws RushHourException {
+        // st1 --
+        Station station = createStation();
+        Player player = station.getOwner();
+        RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
+ 
+        EM.flush();
+        EM.refresh(goal);
+
+        Line line = LCON.create(player, "hoge");
+        LineStep s1 = LCON.start(line, player, station);
+        LCON.extend(s1, player, goal.getInEdges().get(0), true);
+
+        try {
+            inst.remove(player, goal.getInEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+        
+        try {
+            inst.remove(player, goal.getOutEdges().get(0));
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testRemove() throws RushHourException {
+        Player player = createPlayer();
+        RailNode start = inst.create(player, TEST_POS);
+        inst.extend(player, start, TEST_POS2);
+        
+        EM.flush();
+        EM.refresh(start);
+        
+        inst.remove(player, start.getInEdges().get(0));
+        
+        assertTrue(TCON.findAll("RailNode", RailNode.class).isEmpty());
+        assertTrue(TCON.findAll("RailEdge", RailEdge.class).isEmpty());
+    }
+    
+    @Test
+    public void testRemoveReverse() throws RushHourException {
+        Player player = createPlayer();
+        RailNode start = inst.create(player, TEST_POS);
+        inst.extend(player, start, TEST_POS2);
+        
+        EM.flush();
+        EM.refresh(start);
+        
+        inst.remove(player, start.getOutEdges().get(0));
+        
+        assertTrue(TCON.findAll("RailNode", RailNode.class).isEmpty());
+        assertTrue(TCON.findAll("RailEdge", RailEdge.class).isEmpty());
+    }
+    
+    @Test
+    public void testRemoveWhenStation() throws RushHourException {
+        // st1 --
+        Station station = createStation();
+        Player player = station.getOwner();
+        RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
+        
+        EM.flush();
+        EM.refresh(goal);
+        
+        inst.remove(player, goal.getInEdges().get(0));
+        
+        assertEquals(1, TCON.findAll("RailNode", RailNode.class).size());
+        assertTrue(TCON.findAll("RailEdge", RailEdge.class).isEmpty());
     }
 }

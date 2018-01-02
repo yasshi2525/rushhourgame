@@ -87,6 +87,27 @@ public class RailController extends PointEntityController {
         }
         createEdge(owner, from, to);
     }
+    
+    public void remove(@NotNull Player owner, @NotNull RailEdge target) throws RushHourException {
+        if (!target.isOwnedBy(owner)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+        RailEdge reverse = findReverseEdge(target);
+        
+        if (isInSteps(target) || isInSteps(reverse)) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        
+        RailNode n1 = target.getFrom();
+        RailNode n2 = target.getTo();
+        
+        em.remove(target);
+        em.remove(reverse);
+        
+        em.flush();
+        removeIsolatedRailNode(n1);
+        removeIsolatedRailNode(n2);
+    }
 
     public List<RailNode> findNodeIn(@NotNull Pointable center, double scale) {
         return findIn(em.createNamedQuery("RailNode.findIn", RailNode.class), center, scale);
@@ -124,6 +145,7 @@ public class RailController extends PointEntityController {
                 .setParameter("y2", center.getY() + height / 2.0)
                 .getResultList();
     }
+    
 
     public boolean hasRailNode(Player owner) {
         return exists("RailNode.has", owner);
@@ -167,5 +189,24 @@ public class RailController extends PointEntityController {
             } 
             return 0;
         }).get();
+    }
+    
+    protected RailEdge findReverseEdge(@NotNull RailEdge e) {
+        return em.createNamedQuery("RailEdge.find", RailEdge.class)
+                .setParameter("from", e.getTo())
+                .setParameter("to", e.getFrom())
+                .getSingleResult();
+    }
+    
+    protected boolean isInSteps(RailEdge e) {
+        em.refresh(e);
+        return !e.getMovingSteps().isEmpty() || !e.getPassingSteps().isEmpty() || !e.getStoppingSteps().isEmpty();
+    }
+    
+    protected void removeIsolatedRailNode(RailNode node) {
+        em.refresh(node);
+        if (node.getInEdges().isEmpty() && node.getOutEdges().isEmpty() && node.getPlatform() == null) {
+            em.remove(node);
+        }
     }
 }

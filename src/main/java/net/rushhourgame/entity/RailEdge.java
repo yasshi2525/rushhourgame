@@ -23,13 +23,18 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.troute.LineStepMoving;
+import net.rushhourgame.entity.troute.LineStepPassing;
+import net.rushhourgame.entity.troute.LineStepStopping;
 
 /**
  * 線路エッジ
@@ -70,6 +75,15 @@ public class RailEdge extends AbstractEntity implements Ownable, Pointable {
     @NotNull
     @ManyToOne
     protected RailNode _to;
+    
+    @OneToMany(mappedBy = "running")
+    protected List<LineStepMoving> movingSteps;
+    
+    @OneToMany(mappedBy = "running")
+    protected List<LineStepPassing> passingSteps;
+    
+    @OneToMany(mappedBy = "running")
+    protected List<LineStepStopping> stoppingSteps;
 
     public RailNode getFrom() {
         return _from;
@@ -124,6 +138,16 @@ public class RailEdge extends AbstractEntity implements Ownable, Pointable {
     public double distTo(Pointable p) {
         return calcDist(getX(), getY(), p);
     }
-    
-    
+
+    public List<LineStepMoving> getMovingSteps() {
+        return movingSteps;
+    }
+
+    public List<LineStepPassing> getPassingSteps() {
+        return passingSteps;
+    }
+
+    public List<LineStepStopping> getStoppingSteps() {
+        return stoppingSteps;
+    }
 }

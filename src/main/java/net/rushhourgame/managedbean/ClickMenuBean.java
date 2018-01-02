@@ -69,7 +69,7 @@ public class ClickMenuBean implements Serializable {
     protected Pointable click;
 
     protected double scale;
-
+    
     @PostConstruct
     public void init() {
         player = pCon.findByToken(session.getToken());
