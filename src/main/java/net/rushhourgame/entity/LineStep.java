@@ -313,8 +313,8 @@ public class LineStep extends AbstractEntity implements Ownable {
         }
     }
     
-    public boolean isAreaIn(double centerX, double centerY, double scale) {
-        return isAreaIn(getStartRailNode(), centerX, centerY, scale)
-                ||  isAreaIn(getGoalRailNode(), centerX, centerY, scale);
+    public boolean isAreaIn(Pointable center, double scale) {
+        return isAreaIn(getStartRailNode(), center, scale)
+                ||  isAreaIn(getGoalRailNode(), center, scale);
     }
 }

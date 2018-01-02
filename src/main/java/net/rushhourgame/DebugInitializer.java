@@ -62,6 +62,7 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -100,27 +101,27 @@ public class DebugInitializer {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void init() {
         try {
-            rCon.create(0, 0);
+            rCon.create(new SimplePoint(0, 0));
             
-            cCon.create(0, 1);
-            cCon.create(1, 0);
-            rCon.create(1, 1);
+            cCon.create(new SimplePoint(0, 1));
+            cCon.create(new SimplePoint(1, 0));
+            rCon.create(new SimplePoint(1, 1));
             
-            rCon.create(0, 2);
-            rCon.create(2, 0);
-            cCon.create(2, 2);
+            rCon.create(new SimplePoint(0, 2));
+            rCon.create(new SimplePoint(2, 0));
+            cCon.create(new SimplePoint(2, 2));
 
-            cCon.create(0, 4);
-            cCon.create(4, 0);
-            rCon.create(4, 4);
+            cCon.create(new SimplePoint(0, 4));
+            cCon.create(new SimplePoint(4, 0));
+            rCon.create(new SimplePoint(4, 4));
             
-            rCon.create(0, 8);
-            rCon.create(8, 0);
-            cCon.create(8, 8);
+            rCon.create(new SimplePoint(0, 8));
+            rCon.create(new SimplePoint(8, 0));
+            cCon.create(new SimplePoint(8, 8));
             
-            cCon.create(0, 16);
-            cCon.create(16, 0);
-            rCon.create(16, 16);
+            cCon.create(new SimplePoint(0, 16));
+            cCon.create(new SimplePoint(16, 0));
+            rCon.create(new SimplePoint(16, 16));
             
             Player owner = pCon.upsertPlayer(
                     "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());

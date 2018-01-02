@@ -31,7 +31,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
 
 /**
@@ -43,6 +45,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     protected ResidenceController inst;
     private static final double TEST_X = 5.1;
     private static final double TEST_Y = 10.1;
+    private static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_INTERVAL = 3;
 
@@ -55,7 +58,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreate() throws RushHourException {
-        Residence created = inst.create(TEST_X, TEST_Y);
+        Residence created = inst.create(TEST_POS);
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -67,7 +70,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreate4arg() throws RushHourException {
-        Residence created = inst.create(TEST_X, TEST_Y, TEST_CAPACITY, TEST_INTERVAL);
+        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -79,9 +82,9 @@ public class ResidenceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreateDuplication() throws RushHourException {
-        inst.create(TEST_X, TEST_Y);
+        inst.create(TEST_POS);
         try {
-            inst.create(TEST_X, TEST_Y);
+            inst.create(TEST_POS);
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
@@ -89,8 +92,8 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testFindIn() throws RushHourException {
-        inst.create(TEST_X, TEST_Y);
-        assertFalse(inst.findIn(TEST_X, TEST_Y, 2).isEmpty());
-        assertTrue(inst.findIn(-100, -100, 2).isEmpty());
+        inst.create(TEST_POS);
+        assertFalse(inst.findIn(TEST_POS, 2).isEmpty());
+        assertTrue(inst.findIn(new SimplePoint(-100, -100), 2).isEmpty());
     }
 }

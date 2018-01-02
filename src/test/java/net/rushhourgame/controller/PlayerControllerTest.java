@@ -90,6 +90,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         assertNotNull(created.getToken());
         assertNotEquals(TEST_USER_PLAIN_ACCESS_TOKEN, created.getToken());
         assertNotNull(created.getInfo());
+        assertNotNull(created.getInfo().getPlayer());
         assertEquals(USERDATA1.getColor(), created.getInfo().getColor());
         assertEquals(USERDATA1.getIconUrl(), created.getInfo().getIconUrl());
         assertEquals(Locale.CANADA, created.getInfo().getLocale());

@@ -28,8 +28,10 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -43,26 +45,26 @@ public class CompanyController extends PointEntityController {
     @Inject
     protected StepForHumanController sCon;
     
-    public Company create(double x, double y) throws RushHourException{
-        return create(x, y, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
+    public Company create(@NotNull Pointable p) throws RushHourException{
+        return create(p, Double.parseDouble(prop.get(GAME_DEF_CMP_SCALE)));
     }
 
-    public Company create(double x, double y, @DecimalMin(value = "0.0", inclusive = false) double scale) throws RushHourException{
-        if (exists("Company.exists", x, y)) {
-            throw new RushHourException(errMsgBuilder.createCompanyDuplication(x, y));
+    public Company create(@NotNull Pointable p, @DecimalMin(value = "0.0", inclusive = false) double scale) throws RushHourException{
+        if (exists("Company.exists", p)) {
+            throw new RushHourException(errMsgBuilder.createCompanyDuplication(p));
         }
         Company inst = new Company();
         inst.setScale(scale);
-        inst.setX(x);
-        inst.setY(y);
+        inst.setX(p.getX());
+        inst.setY(p.getY());
         em.persist(inst);
         sCon.addCompany(inst);
         return inst;
     }
     
-    public List<Company> findIn(double centerX, double centerY, double scale){
+    public List<Company> findIn(@NotNull Pointable center, double scale){
         return super.findIn(em.createNamedQuery("Company.findIn", Company.class), 
-                centerX, centerY, scale);
+                center, scale);
     }
     
     public List<Company> findAll() {

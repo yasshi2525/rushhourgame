@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TicketGate;
@@ -60,8 +61,8 @@ public class StepForHumanController extends AbstractController {
         return _findAll().collect(Collectors.toList());
     }
     
-    public List<StepForHuman> findIn(double centerX, double centerY, double scale) {
-        return _findAll().filter(s -> s.isAreaIn(centerX, centerY, scale))
+    public List<StepForHuman> findIn(@NotNull Pointable center, double scale) {
+        return _findAll().filter(s -> s.isAreaIn(center, scale))
                 .collect(Collectors.toList());
     }
 

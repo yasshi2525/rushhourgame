@@ -105,7 +105,7 @@ public class Line extends AbstractEntity implements Ownable {
         });
     }
     
-    public boolean isAreaIn(double centerX, double centerY, double scale) {
-        return steps.stream().anyMatch(s -> s.isAreaIn(centerX, centerY, scale));
+    public boolean isAreaIn(Pointable center, double scale) {
+        return steps.stream().anyMatch(s -> s.isAreaIn(center, scale));
     }
 }

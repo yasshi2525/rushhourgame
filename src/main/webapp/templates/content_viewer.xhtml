@@ -53,6 +53,12 @@
         <h:inputHidden id="centerY" value="#{game.centerY}"/>
     </h:panelGrid>
     <h:panelGroup id="gamemodel">
+        <ui:repeat var="pi" value="#{game.players}">
+            <div class="player" id="#{pi.player.id}"
+                 data-name="#{pi.name}" data-icon="#{pi.iconUrl}"
+                 data-color="#{pi.color}" data-isin="#{game.isIconIn(pi.player)}" 
+                 data-x="#{game.getIconPos(pi.player).x}" data-y="#{game.getIconPos(pi.player).y}"/>
+        </ui:repeat>
         <ui:repeat var="c" value="#{game.companies}">
             <div class="company" id="#{c.id}"
                  data-x="#{c.x}" data-y="#{c.y}"
@@ -79,14 +85,18 @@
             <div class="railedge" id="#{e.id}"
                  data-owner-name="#{e.owner.info.name}"  
                  data-from-x="#{e.from.x}" data-from-y="#{e.from.y}"
-                 data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"/>
+                 data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"
+                 data-pid="#{e.owner.id}" data-ismine="#{game.player.id == e.owner.id}"
+                 />
+        
         </ui:repeat>
 
         <ui:repeat var="st" value="#{game.stations}">
             <div class="station" id="#{st.id}"
                  data-owner-name="#{st.owner.info.name}"  
                  data-x="#{st.platform.railNode.x}" data-y="#{st.platform.railNode.y}"
-                 data-name="#{st.name}" data-gatenum="#{st.ticketGate.gateNum}" data-capacity="#{st.platform.capacity}"/>
+                 data-name="#{st.name}" data-gatenum="#{st.ticketGate.gateNum}" 
+                 data-capacity="#{st.platform.capacity}" data-pid="#{st.owner.id}"/>
         </ui:repeat>
 
         <ui:repeat var="l" value="#{game.lines}">

@@ -39,7 +39,9 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 import org.primefaces.context.RequestContext;
 
@@ -64,22 +66,23 @@ public class ClickMenuBean implements Serializable {
     @Inject
     protected RushHourResourceBundle msg;
 
-    protected double clickX;
-
-    protected double clickY;
+    protected Pointable click;
 
     protected double scale;
 
     @PostConstruct
     public void init() {
         player = pCon.findByToken(session.getToken());
-        clickX = Double.parseDouble(getRequestMap().get("clickX"));
-        clickY = Double.parseDouble(getRequestMap().get("clickY"));
+        
+        click = new SimplePoint(
+                Double.parseDouble(getRequestMap().get("clickX")),
+                Double.parseDouble(getRequestMap().get("clickY"))
+        );
         scale = Double.parseDouble(getRequestMap().get("scale"));
     }
 
     public boolean canCreateRail() {
-        return rCon.findNodeIn(player, clickX, clickY, scale - 4).isEmpty();
+        return rCon.findNodeIn(player, click, scale - 4).isEmpty();
     }
 
     @Transactional
@@ -87,18 +90,18 @@ public class ClickMenuBean implements Serializable {
         getRequestContext().closeDialog(
                 new OperationBean(
                         OperationBean.Type.RAIL_CREATE,
-                        rCon.create(player, clickX, clickY)));
+                        rCon.create(player, click)));
     }
 
     public boolean canExtendRail() {
-        return !rCon.findNodeIn(player, clickX, clickY, scale - 3).isEmpty();
+        return !rCon.findNodeIn(player, click, scale - 3).isEmpty();
     }
 
     public void extendRail() {
         getRequestContext().closeDialog(
                 new OperationBean(
                         OperationBean.Type.RAIL_EXTEND,
-                        rCon.findNodeIn(player, clickX, clickY, scale - 3).get(0)));
+                        rCon.findNodeIn(player, click, scale - 3).get(0)));
     }
 
     protected FacesContext getFacesContext() {

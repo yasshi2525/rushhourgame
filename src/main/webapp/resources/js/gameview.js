@@ -37,9 +37,14 @@ var spriteResources = {
 
 var lineResources = {
     railedge: {
-        color: 0xaaaaaa,
-        slide: 3,
-        scale: 3
+        my: {
+            slide: 5,
+            scale: 3
+        },
+        other: {
+            slide: 3,
+            scale: 1
+        }
     }
 };
 
@@ -76,8 +81,11 @@ exports.init = function (param) {
 initPixi = function () {
     var scope = $(document).data('scope');
 
-    var app = new pixi.Application(window.innerWidth, window.innerHeight);
-    scope.$gameview.get(0).appendChild(app.view); // get(0)がないとダメ
+    var renderer = pixi.autoDetectRenderer(
+            window.innerWidth, window.innerHeight, {
+                backgroundColor: 0x333333
+            });
+    scope.$gameview.get(0).appendChild(renderer.view); // get(0)がないとダメ
     scope.$canvas = $('#gameview canvas')
             .css('position', 'fixed')
             .css('left', '0px')
@@ -86,8 +94,8 @@ initPixi = function () {
 
     initEventHandler(); //イベントハンドラ登録
 
-    scope.renderer = app.renderer;
-    scope.stage = app.stage;
+    scope.renderer = renderer;
+    scope.stage = new pixi.Container();
 
     // 複数形にすると、要素名と一致しなく不便だったので、単数形
     scope.graphics = {
@@ -96,7 +104,8 @@ initPixi = function () {
         'lonelyrailnode': {},
         'railedge': {},
         'station': {},
-        'stepforhuman': {}
+        'stepforhuman': {},
+        'icon': {}
     };
 
     // 画像をロードしたあと、イベントハンドラスプライトを表示
@@ -104,9 +113,14 @@ initPixi = function () {
 };
 
 loadImage = function (resources) {
+    var scope = $(document).data('scope');
     for (var key in resources) {
         pixi.loader.add(key, resources[key]);
     }
+    $('.player').each(function (i, elm) {
+        pixi.loader.add('p' + $(elm).attr('id'), $(elm).data('icon'));
+        scope.player[$(elm).attr('id')] = $(elm);
+    });
     pixi.loader.load(fetchGraphics);
 };
 
@@ -149,17 +163,7 @@ fetchGraphics = function () {
     for (var name in spriteResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
-            if (scope.graphics[name][$(elm).attr('id')]) {
-                // 更新
-                scope.graphics[name][$(elm).attr('id')].old = false;
-                updateSprite(
-                        scope.graphics[name][$(elm).attr('id')],
-                        $(elm));
-            } else {
-                // 新規作成
-                scope.graphics[name][$(elm).attr('id')]
-                        = stageResourceSprite(name, $(elm));
-            }
+            upsertSprite(name, name, $(elm).attr('id'), $(elm));
         });
     }
 
@@ -181,6 +185,12 @@ fetchGraphics = function () {
         });
     }
 
+    $('.player').each(function (i, elm) {
+        if ($(elm).data('isin')) {
+            upsertSprite('icon', 'p' + $(elm).attr('id'), $(elm).attr('id'), $(elm), true);
+        }
+    });
+
     // divタグ中に存在しないリソースを削除
     for (var name in scope.graphics) {
         for (var key in scope.graphics[name]) {
@@ -191,6 +201,18 @@ fetchGraphics = function () {
         }
     }
     scope.renderer.render(scope.stage);
+};
+
+upsertSprite = function (name, restype, id, $elm, isBringToFront) {
+    var scope = $(document).data('scope');
+    if (scope.graphics[name][id]) {
+        // 更新
+        scope.graphics[name][id].old = false;
+        updateSprite(scope.graphics[name][id], $elm, isBringToFront);
+    } else {
+        // 新規作成
+        scope.graphics[name][id] = stageResourceSprite(restype, $elm);
+    }
 };
 
 stageResourceSprite = function (type, $elm) {
@@ -210,12 +232,18 @@ stageResourceSprite = function (type, $elm) {
     return obj;
 };
 
-updateSprite = function (sprite, $elm) {
+updateSprite = function (sprite, $elm, isBringToFront) {
+    var scope = $(document).data('scope');
     var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
 
     sprite.position.set(pos.x, pos.y);
+
+    if (isBringToFront) {
+        scope.stage.removeChild(sprite);
+        scope.stage.addChild(sprite);
+    }
 };
 
 /**
@@ -226,6 +254,9 @@ updateSprite = function (sprite, $elm) {
  */
 stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
+    var appliedOpts = $elm.data('ismine') ? opts.my : opts.other;
+    var color = scope.player[$elm.data('pid')].data('color').replace('#', '0x');
+    var scope = $(document).data('scope');
     var obj = new pixi.Graphics();
 
     var from = toViewPos(
@@ -235,9 +266,9 @@ stageLine = function ($elm, opts) {
             parseFloat($elm.data('to-x')),
             parseFloat($elm.data('to-y')));
 
-    var line = slideEdge(from, to, opts.slide);
+    var line = slideEdge(from, to, appliedOpts.slide);
 
-    obj.lineStyle(opts.scale, opts.color)
+    obj.lineStyle(appliedOpts.scale, color)
             .moveTo(line.fromx, line.fromy)
             .lineTo(line.tox, line.toy);
 
@@ -302,7 +333,7 @@ onDragEnd = function (event) {
 
     var mousePos = toViewPosFromMouse(event);
 
-    if (this.startPosition && this.startPosition.x === mousePos.x 
+    if (this.startPosition && this.startPosition.x === mousePos.x
             && this.startPosition.y === mousePos.y) {
         // クリックと判定した
         // 当初 mouse move のイベントの有無でクリックかどうか判定していたが、

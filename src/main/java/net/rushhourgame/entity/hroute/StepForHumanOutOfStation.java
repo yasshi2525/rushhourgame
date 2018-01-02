@@ -32,6 +32,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
 import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
@@ -83,9 +84,9 @@ public class StepForHumanOutOfStation extends AbstractEntity implements StepForH
     }
     
     @Override
-    public boolean isAreaIn(double centerX, double centerY, double scale) {
-        return isAreaIn(_from, centerX, centerY, scale)
-                ||  isAreaIn(_to, centerX, centerY, scale);
+    public boolean isAreaIn(Pointable center, double scale) {
+        return isAreaIn(_from, center, scale)
+                ||  isAreaIn(_to, center, scale);
     }
     
     @Override

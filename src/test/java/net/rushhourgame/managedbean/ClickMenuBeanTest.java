@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -49,6 +51,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     protected ClickMenuBean inst;
 
     protected Map<String, String> map;
+    
+    protected Pointable p;
 
     @Before
     @Override
@@ -74,6 +78,9 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map = new HashMap<>();
 
         doReturn(map).when(externalContext).getRequestParameterMap();
+        
+        p = new SimplePoint(0, 0);
+        inst.click = p;
     }
 
     @Test
@@ -87,7 +94,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarRight() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
         
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -100,7 +107,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarLeft() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -113,7 +120,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarTop() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -126,7 +133,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarBottom() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -139,7 +146,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearRight() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
         System.out.println(TCON.findAll("RailNode", RailNode.class));
 
         // scale 4 (幅16)のとき、±1を近いと判定
@@ -153,7 +160,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearLeft() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -166,7 +173,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearTop() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -179,7 +186,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearBottom() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -206,7 +213,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testCanExtendRail() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         map.put("scale", "3.0");
         map.put("clickX", "0.0");
@@ -217,7 +224,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testExtendRail() throws RushHourException {
-        RAILCON.create(createPlayer(), 0, 0);
+        RAILCON.create(createPlayer(), p);
 
         map.put("scale", "3.0");
         map.put("clickX", "0.0");

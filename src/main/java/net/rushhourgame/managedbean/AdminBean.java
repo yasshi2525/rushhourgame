@@ -61,10 +61,7 @@ public class AdminBean implements Serializable {
         if (p == null) {
             //ログインしていないときはAdminでログイン
             SimpleUserData data = new SimpleUserData();
-            data.setColor("#AAAAAA");
-            data.setIconUrl("admin_image.png");
             data.setName(ADMIN_USER);
-            data.setTextColor("#000000");
             p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, data, session.getLocale());
             session.setToken(p.getToken());
         }

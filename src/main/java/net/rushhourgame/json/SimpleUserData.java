@@ -50,7 +50,7 @@ public class SimpleUserData implements UserData, Serializable {
 
     public SimpleUserData() {
         name = "NoName";
-        iconUrl = "no_image.png";
+        iconUrl = "resources/image/s_player.png";
         color = "#AAAAAA";
         textColor = "#000000";
     }

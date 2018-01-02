@@ -51,10 +51,12 @@ import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.exception.RushHourException;
@@ -96,12 +98,10 @@ public class GameViewBean implements Serializable {
     protected RushHourResourceBundle msg;
     protected Player player;
 
-    protected double centerX;
-    protected double centerY;
+    protected SimplePoint center;
     protected double scale;
 
-    protected double clickX;
-    protected double clickY;
+    protected SimplePoint click;
 
     protected RailNode tailNode;
 
@@ -113,21 +113,21 @@ public class GameViewBean implements Serializable {
     @PostConstruct
     public void init() {
         player = pCon.findByToken(session.getToken());
-        centerX = session.getCenterX();
-        centerY = session.getCenterY();
+        center = new SimplePoint(session.getCenterX(), session.getCenterY());
+        click = new SimplePoint();
         scale = session.getScale();
     }
 
     public void registerClickPos() {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
-        clickX = Double.parseDouble(reqParam.get("gamePos.x"));
-        clickY = Double.parseDouble(reqParam.get("gamePos.y"));
+        click.setX(Double.parseDouble(reqParam.get("gamePos.x")));
+        click.setY(Double.parseDouble(reqParam.get("gamePos.y")));
     }
 
     public void openClickMenu() {
         Map<String, List<String>> params = new HashMap<>();
-        params.put("clickX", Collections.singletonList(Double.toString(clickX)));
-        params.put("clickY", Collections.singletonList(Double.toString(clickY)));
+        params.put("clickX", Collections.singletonList(Double.toString(click.getX())));
+        params.put("clickY", Collections.singletonList(Double.toString(click.getY())));
         params.put("scale", Collections.singletonList(Double.toString(scale)));
 
         RequestContext context = getRequestContext();
@@ -145,72 +145,76 @@ public class GameViewBean implements Serializable {
     protected RequestContext getRequestContext() {
         return RequestContext.getCurrentInstance();
     }
+    
+    public List<PlayerInfo> getPlayers() {
+        return pCon.findAll();
+    }
 
     public List<Company> getCompanies() {
-        return cCon.findIn(centerX, centerY, getLoadScale());
+        return cCon.findIn(center, getLoadScale());
     }
 
     public List<Residence> getResidences() {
-        return rCon.findIn(centerX, centerY, getLoadScale());
+        return rCon.findIn(center, getLoadScale());
     }
 
     public List<RailNode> getMyRailNodes() {
-        return railCon.findNodeIn(player, centerX, centerY, getLoadScale());
+        return railCon.findNodeIn(player, center, getLoadScale());
     }
 
     @Transactional
     public List<RailNode> getMyLonelyRailNodes() {
-        return railCon.findLonelyIn(player, centerX, centerY, getLoadScale());
+        return railCon.findLonelyIn(player, center, getLoadScale());
     }
 
     public List<RailEdge> getRailEdges() {
-        return railCon.findEdgeIn(centerX, centerY, getLoadScale());
+        return railCon.findEdgeIn(center, getLoadScale());
     }
 
     public List<Station> getStations() {
-        return stCon.findIn(centerX, centerY, getLoadScale());
+        return stCon.findIn(center, getLoadScale());
     }
 
     @Transactional
     public List<Line> getLines() {
-        return lCon.findIn(centerX, centerY, getLoadScale());
+        return lCon.findIn(center, getLoadScale());
     }
 
     public List<StepForHuman> getStepForHuman() {
-        return sCon.findIn(centerX, centerY, getLoadScale());
+        return sCon.findIn(center, getLoadScale());
     }
 
     public double getClickX() {
-        return clickX;
+        return click.getX();
     }
 
     public void setClickX(double clickX) {
-        this.clickX = clickX;
+        click.setX(clickX);
     }
 
     public double getClickY() {
-        return clickY;
+        return click.getY();
     }
 
     public void setClickY(double clickY) {
-        this.clickY = clickY;
+        click.setY(clickY);
     }
 
     public double getCenterX() {
-        return centerX;
+        return center.getX();
     }
 
     public void setCenterX(double centerX) {
-        this.centerX = centerX;
+        center.setX(centerX);
         session.setCenterX(centerX);
     }
 
     public double getCenterY() {
-        return centerY;
+        return center.getY();
     }
 
     public void setCenterY(double centerY) {
-        this.centerY = centerY;
+        center.setY(centerY);
         session.setCenterY(centerY);
     }
 
@@ -242,7 +246,7 @@ public class GameViewBean implements Serializable {
         }
 
         // 敷設開始しているのにメッセージが出てしまうので、tailNodeがnullであることを条件に追加
-        if (!railCon.findLonelyIn(player, centerX, centerY, scale).isEmpty()
+        if (!railCon.findLonelyIn(player, center, scale).isEmpty()
                 && tailNode == null) {
             showLonelyRailTutorial();
         }
@@ -274,7 +278,7 @@ public class GameViewBean implements Serializable {
     @Transactional
     public void extendRail() throws RushHourException {
         // 接続するときはクライアント側で近似座標を求めている
-        List<RailNode> veryneighbors = railCon.findNodeIn(player, clickX, clickY, -10);
+        List<RailNode> veryneighbors = railCon.findNodeIn(player, click, -10);
 
         // ダブルクリックすると、neighbor = tailnode になるので、先にゼロ距離判定
         if (isClickedSurroundTailNode()) {
@@ -292,7 +296,7 @@ public class GameViewBean implements Serializable {
             }
         } else {
             // 延伸
-            tailNode = railCon.extend(player, tailNode, clickX, clickY);
+            tailNode = railCon.extend(player, tailNode, click);
             showExtendedRailAnnouncement();
             getRequestContext().execute("nextExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
@@ -362,7 +366,19 @@ public class GameViewBean implements Serializable {
     }
 
     protected boolean isClickedSurroundTailNode() {
-        return Math.sqrt((tailNode.getX() - clickX) * (tailNode.getX() - clickX)
-                + (tailNode.getY() - clickY) * (tailNode.getY() - clickY)) < Math.pow(2, scale - 4);
+        return click.distTo(tailNode) < Math.pow(2, scale - 4);
+    }
+    
+    public Player getPlayer() {
+        return player;
+    }
+    
+    public boolean isIconIn(Player p) {
+        return railCon.findNearestEdge(p, center, scale) != null;
+    }
+    
+    public Pointable getIconPos(Player p) {
+        RailEdge edge = railCon.findNearestEdge(p, center, scale);
+        return edge == null ? new SimplePoint() : edge;
     }
 }

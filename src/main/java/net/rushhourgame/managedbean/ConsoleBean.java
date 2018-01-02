@@ -43,8 +43,10 @@ import net.rushhourgame.controller.StationController;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 
@@ -83,8 +85,7 @@ public class ConsoleBean implements Serializable{
     
     protected Player player;
     
-    protected double x;
-    protected double y;
+    protected SimplePoint p;
     protected String text;
     
     protected RailNode tailRail;
@@ -94,26 +95,27 @@ public class ConsoleBean implements Serializable{
     @PostConstruct
     public void init() {
         player = pCon.findByToken(session.getToken());
+        p = new SimplePoint();
     }
     
     @Transactional
     public void createCompany() throws RushHourException{
-        cCon.create(x, y);
+        cCon.create(p);
     }
     
     @Transactional
     public void createResidence() throws RushHourException {
-        rCon.create(x, y);
+        rCon.create(p);
     }
     
     @Transactional
     public void createRail() throws RushHourException {
-        tailRail = railCon.create(player, x, y);
+        tailRail = railCon.create(player, p);
     }
     
     @Transactional
     public void extendRail() throws RushHourException {
-        tailRail = railCon.extend(player, tailRail, x, y);
+        tailRail = railCon.extend(player, tailRail, p);
     }
     
     @Transactional
@@ -121,7 +123,7 @@ public class ConsoleBean implements Serializable{
         tailRail = em.merge(tailRail);
         em.refresh(tailRail);
         tailRail = tailRail.getInEdges().get(tailRail.getInEdges().size() - 1).getFrom();
-        tailRail = railCon.extend(player, tailRail, x, y);
+        tailRail = railCon.extend(player, tailRail, p);
     }
     
     @Transactional
@@ -137,19 +139,19 @@ public class ConsoleBean implements Serializable{
      }
     
     public double getX() {
-        return x;
+        return p.getX();
     }
 
     public void setX(double x) {
-        this.x = x;
+        p.setX(x);
     }
 
     public double getY() {
-        return y;
+        return p.getY();
     }
 
     public void setY(double y) {
-        this.y = y;
+        p.setY(y);
     }
 
     public String getText() {

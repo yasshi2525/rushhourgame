@@ -38,6 +38,7 @@ $(function(){
             lonelyrailnode : 'resources/image/s_lonelyrail.png',
             station : 'resources/image/s_station.png',
             train : 'resources/image/s_train.png'
-        }
+        },
+        player: {}
     });
 });

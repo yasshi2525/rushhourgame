@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +32,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.event.ActionEvent;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
 import org.junit.Before;
@@ -61,6 +65,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
 
     protected static final int CLICK_X = 50;
     protected static final int CLICK_Y = 60;
+    protected static final Pointable CLICK_POS = new SimplePoint(CLICK_X, CLICK_Y);
 
     @Mock
     protected SelectEvent event;
@@ -79,6 +84,9 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.lCon = LCON;
         inst.sCon = SCON;
         inst.em = EM;
+        inst.center = new SimplePoint();
+        inst.click = new SimplePoint();
+        
         try {
             player = createPlayer();
         } catch (RushHourException ex) {
@@ -138,7 +146,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testGetMyLonelyRailNodes() throws RushHourException {
         inst.player = player;
-        RAILCON.create(player, CLICK_X, CLICK_Y);
+        RAILCON.create(player, CLICK_POS);
         when(inst.getLoadScale()).thenReturn(16.0);
         EM.flush();
         inst.getMyLonelyRailNodes();
@@ -200,9 +208,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testInitTutorialLonely() throws RushHourException {
         inst.player = player;
-        inst.centerX = 50;
-        inst.centerY = 60;
-        RAILCON.create(player, CLICK_X, CLICK_Y);
+        inst.center = new SimplePoint(50, 60);
+        RAILCON.create(player, CLICK_POS);
         EM.flush();
         doReturn(facesContext).when(inst).getFacesContext();
 
@@ -232,13 +239,12 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailLoop() throws RushHourException {
         inst.player = player;
-        RailNode r1 = RAILCON.create(player, 1, 1);
-        RailNode r2 = RAILCON.extend(player, r1, 10, 10);
+        RailNode r1 = RAILCON.create(player, new SimplePoint(1, 1));
+        RailNode r2 = RAILCON.extend(player, r1, new SimplePoint(10, 10));
         EM.flush();
         inst.tailNode = r2;
         
-        inst.clickX = 0.99999999;
-        inst.clickY = 0.99999999;
+        inst.click = new SimplePoint(0.99999999, 0.99999999);
         
         doReturn(facesContext).when(inst).getFacesContext();
         
@@ -251,11 +257,10 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailConnected() throws RushHourException {
         inst.player = player;
-        RailNode r1 = RAILCON.create(player, 1, 1);
-        RailNode r2 = RAILCON.create(player, 10.0, 10.0);
+        RailNode r1 = RAILCON.create(player, new SimplePoint(1, 1));
+        RailNode r2 = RAILCON.create(player, new SimplePoint(10, 10));
         inst.tailNode = r1;
-        inst.clickX = 9.99999999;
-        inst.clickY = 9.99999999;
+        inst.click = new SimplePoint(9.99999999, 9.99999999);
         
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
@@ -273,9 +278,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailZeroDistance() throws RushHourException {
         inst.player = player;
-        inst.tailNode = RAILCON.create(player, 10, 10);
-        inst.clickX = 10.01;
-        inst.clickY = 10.01;
+        inst.tailNode = RAILCON.create(player, new SimplePoint(10, 10));
+        inst.click = new SimplePoint(10.01, 10.01);
         
         doReturn(facesContext).when(inst).getFacesContext();
         
@@ -288,10 +292,9 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailExtending() throws RushHourException {
         inst.player = player;
-        RailNode r1 = RAILCON.create(player, 10, 10);
+        RailNode r1 = RAILCON.create(player, new SimplePoint(10, 10));
         inst.tailNode = r1;
-        inst.clickX = 20;
-        inst.clickY = 20;
+        inst.click = new SimplePoint(20, 20);
         
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
@@ -306,7 +309,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRail() throws RushHourException {
         inst.player = player;
-        inst.tailNode = RAILCON.create(player, 10, 10);
+        inst.tailNode = RAILCON.create(player, new SimplePoint(10, 10));
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
 
@@ -318,5 +321,38 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.setUnderOperation(true);
         inst.finishesOperation();
         assertFalse(inst.isUnderOperation());
+    }
+    
+    @Test
+    public void testGetPlayer() {
+        inst.player = player;
+        assertEquals(inst.getPlayer(), player);
+    }
+    
+    @Test
+    public void testGetPlayerInfos() {
+        assertEquals(1, inst.getPlayers().size());
+    }
+    
+    @Test
+    public void testIconPosNull() {
+        assertFalse(inst.isIconIn(player));
+        assertTrue(0 == inst.getIconPos(player).getX());
+        assertTrue(0 == inst.getIconPos(player).getY());
+    }
+    
+    @Test
+    public void testIconPos() throws RushHourException {
+        inst.player = player;
+        inst.scale = 16;
+        RailNode far1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode far2 = RAILCON.extend(player, far1, new SimplePoint(100, 200));
+        
+        RailNode near1 = RAILCON.create(player, new SimplePoint(10, 10));
+        RailNode near2 = RAILCON.extend(player, near1, new SimplePoint(10, 20));
+        
+        assertTrue(inst.isIconIn(player));
+        assertTrue(10 == inst.getIconPos(player).getX());
+        assertTrue(15 == inst.getIconPos(player).getY());
     }
 }

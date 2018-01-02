@@ -35,9 +35,11 @@ import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
@@ -54,10 +56,12 @@ import org.junit.Before;
 public class StepForHumanControllerTest extends AbstractControllerTest {
 
     protected StepForHumanController inst;
-    protected double TEST_X = 10.0;
-    protected double TEST_Y = 20.0;
-    protected double TEST_X2 = 30.0;
-    protected double TEST_Y2 = 40.0;
+    protected static final double TEST_X = 10.0;
+    protected static final double TEST_Y = 20.0;
+    protected static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
+    protected static final double TEST_X2 = 30.0;
+    protected static final double TEST_Y2 = 40.0;
+    protected static final Pointable TEST_POS2 = new SimplePoint(TEST_X2, TEST_Y2);
 
     @Before
     @Override
@@ -70,12 +74,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testFindIn() throws RushHourException {
         // 家 駅(0,0)-駅(1,0) 会社
         
-        RCON.create(-1, 0);
-        CCON.create(2, 0);
+        RCON.create(new SimplePoint(-1, 0));
+        CCON.create(new SimplePoint(2, 0));
         
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), 1, 1);
+        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(1, 1));
         STCON.create(owner, r2, "_test2");
         EM.flush();
         EM.refresh(r2);
@@ -88,14 +92,14 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         LineStep tail = LCON.extend(extend, owner, back);
         LCON.end(tail, owner);
         
-        assertEquals(11, inst.findIn(0, 0, 2).size());
-        assertEquals(0, inst.findIn(10, 10, 2).size());
+        assertEquals(11, inst.findIn(new SimplePoint(0, 0), 2).size());
+        assertEquals(0, inst.findIn(new SimplePoint(10, 10), 2).size());
     }
 
     @Test
     public void testAddCompanyToEmptyWorld() throws RushHourException {
         // このなかで addCompanyが呼ばれる
-        CCON.create(TEST_X, TEST_Y);
+        CCON.create(TEST_POS);
 
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
@@ -110,7 +114,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddResidenceToEmptyWorld() throws RushHourException {
         // このなかで addResidenceが呼ばれる
-        RCON.create(TEST_X, TEST_Y);
+        RCON.create(TEST_POS);
 
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
@@ -157,8 +161,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testAddCompanyToOneResidenceWorld() throws RushHourException {
-        Residence r = RCON.create(10, 10);
-        Company c = CCON.create(20, 10);
+        Residence r = RCON.create(new SimplePoint(10, 10));
+        Company c = CCON.create(new SimplePoint(20, 10));
 
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
@@ -189,8 +193,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testAddResidenceToOneCompanyWorld() throws RushHourException {
-        CCON.create(20, 10);
-        RCON.create(10, 10);
+        CCON.create(new SimplePoint(20, 10));
+        RCON.create(new SimplePoint(10, 10));
 
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
@@ -207,7 +211,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddCompanyToStationWorld() throws RushHourException {
         Station st = createStation();
-        Company c = CCON.create(20, 10);
+        Company c = CCON.create(new SimplePoint(20, 10));
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -227,7 +231,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddResidenceToStationWorld() throws RushHourException {
         Station st = createStation();
-        Residence r = RCON.create(20, 10);
+        Residence r = RCON.create(new SimplePoint(20, 10));
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -251,10 +255,10 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testTwoResidenceTwoCompany() throws RushHourException {
-        RCON.create(TEST_X, TEST_Y);
-        RCON.create(TEST_X2, TEST_Y2);
-        CCON.create(TEST_X, TEST_Y);
-        CCON.create(TEST_X2, TEST_Y2);
+        RCON.create(TEST_POS);
+        RCON.create(TEST_POS2);
+        CCON.create(TEST_POS);
+        CCON.create(TEST_POS2);
 
         assertEquals(4, inst.findAll().size());
         assertDirectlyNumEquals(4);
@@ -267,8 +271,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testAddStationToOneRsdCmpWorld() throws RushHourException {
-        RCON.create(TEST_X, TEST_Y);
-        CCON.create(TEST_X, TEST_Y);
+        RCON.create(TEST_POS);
+        CCON.create(TEST_POS);
         Station st = createStation();
 
         // R -> Gate <-> Platform
@@ -296,7 +300,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testAddCompletedLine() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_X, TEST_Y);
+        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
         STCON.create(owner, r2, "_test2");
         EM.flush();
         EM.refresh(r2);

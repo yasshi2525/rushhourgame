@@ -27,11 +27,13 @@ import java.util.List;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
 
 /**
@@ -41,6 +43,7 @@ import org.junit.Before;
 public class RouteSearcherTest extends AbstractControllerTest {
 
     protected RouteSearcher inst;
+    protected static final Pointable TEST_POS = new SimplePoint();
     
     @Before
     @Override
@@ -56,14 +59,14 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testFindRelayPointAllOneCompany() throws RushHourException {
-        CCON.create(0, 0);
+        CCON.create(TEST_POS);
         assertEquals(1, inst.findRelayPointAll().size());
     }
     
     @Test
     public void testFindRelayPointAllRsdCmp() throws RushHourException {
-        RCON.create(0, 0);
-        CCON.create(0, 0);
+        RCON.create(TEST_POS);
+        CCON.create(TEST_POS);
         assertEquals(2, inst.findRelayPointAll().size());
     }
     
@@ -74,8 +77,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testBuildRouteNodesRsdCmp() throws RushHourException {
-        RCON.create(0, 0);
-        CCON.create(0, 0);
+        RCON.create(TEST_POS);
+        CCON.create(TEST_POS);
         assertEquals(2, inst.buildRouteNodes(inst.findRelayPointAll()).size());
     }
     
@@ -87,8 +90,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testBuildRouteEdgesRsdCmp() throws RushHourException {
-        RCON.create(0, 0);
-        CCON.create(0, 0);
+        RCON.create(TEST_POS);
+        CCON.create(TEST_POS);
         
         List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
         assertEquals(1L, inst.buildRouteEdges(SCON.findAll(), nodes).size());
@@ -102,7 +105,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testSearchOnlyCmp() throws RushHourException {
-        CCON.create(0, 0);
+        CCON.create(TEST_POS);
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
@@ -120,8 +123,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
      */
     @Test
     public void testSearchUnreach() throws RushHourException {
-        CCON.create(10, 10);
-        CCON.create(20, 20);
+        CCON.create(new SimplePoint(10, 10));
+        CCON.create(new SimplePoint(20, 20));
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
@@ -138,8 +141,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testSearch() throws RushHourException {
-        RCON.create(10, 10);
-        CCON.create(10, 20);
+        RCON.create(new SimplePoint(10, 10));
+        CCON.create(new SimplePoint(10, 20));
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
@@ -162,18 +165,18 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testIsReachableRsdCmp() throws RushHourException {
-        Residence r = RCON.create(10, 10);
-        Company c = CCON.create(10, 20);
+        Residence r = RCON.create(new SimplePoint(10, 10));
+        Company c = CCON.create(new SimplePoint(10, 2));
         assertTrue(inst.call());
         assertTrue(inst.isReachable(r, c));
     }
     
     @Test
     public void testCall() throws RushHourException {
-        Residence r1 = RCON.create(10, 10);
-        Company c1 = CCON.create(10, 20);
-        Residence r2 = RCON.create(100, 100);
-        Company c2 = CCON.create(200, 200);
+        Residence r1 = RCON.create(new SimplePoint(10, 10));
+        Company c1 = CCON.create(new SimplePoint(10, 20));
+        Residence r2 = RCON.create(new SimplePoint(100, 100));
+        Company c2 = CCON.create(new SimplePoint(200, 200));
         
         assertTrue(inst.call());
         

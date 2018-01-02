@@ -27,6 +27,8 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.persistence.TypedQuery;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.SimplePoint;
 
 /**
  *
@@ -36,43 +38,43 @@ import net.rushhourgame.entity.Player;
 public class PointEntityController extends AbstractController{
     private static final long serialVersionUID = 1L;
     
-    protected boolean exists(String query, double x, double y) {
+    protected boolean exists(String query, Pointable p) {
         return (em.createNamedQuery(query, Number.class)
-                .setParameter("x", x)
-                .setParameter("y", y)
+                .setParameter("x", p.getX())
+                .setParameter("y", p.getY())
                 .getSingleResult()).longValue() == 1L;
     }
     
-    protected boolean exists(String query, Player owner, double x, double y) {
+    protected boolean exists(String query, Player owner, Pointable p) {
         return (em.createNamedQuery(query, Number.class)
                 .setParameter("owner", owner)
-                .setParameter("x", x)
-                .setParameter("y", y)
+                .setParameter("x", p.getX())
+                .setParameter("y", p.getY())
                 .getSingleResult()).longValue() == 1L;
     }
     
-    protected <T> List<T> findIn(TypedQuery<T> query, double centerX, double centerY, double scale){
+    protected <T> List<T> findIn(TypedQuery<T> query, Pointable center, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
         return query
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
+                .setParameter("x1", center.getX() - width / 2.0)
+                .setParameter("x2", center.getX() + width / 2.0)
+                .setParameter("y1", center.getY() - height / 2.0)
+                .setParameter("y2", center.getY() + height / 2.0)
                 .getResultList();
     }
     
-    protected <T> List<T> findIn(TypedQuery<T> query, Player owner, double centerX, double centerY, double scale){
+    protected <T> List<T> findIn(TypedQuery<T> query, Player owner, Pointable center, double scale){
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
         return query
                 .setParameter("owner", owner)
-                .setParameter("x1", centerX - width / 2.0)
-                .setParameter("x2", centerX + width / 2.0)
-                .setParameter("y1", centerY - height / 2.0)
-                .setParameter("y2", centerY + height / 2.0)
+                .setParameter("x1", center.getX() - width / 2.0)
+                .setParameter("x2", center.getX() + width / 2.0)
+                .setParameter("y1", center.getY() - height / 2.0)
+                .setParameter("y2", center.getY() + height / 2.0)
                 .getResultList();
     }
 }

@@ -44,6 +44,7 @@ import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -126,7 +127,7 @@ public class DebugInitializerTest {
     @Test
     public void testInitException() throws RushHourException {
         inst.rCon = mock(ResidenceController.class);
-        doThrow(RushHourException.class).when(inst.rCon).create(anyDouble(), anyDouble());
+        doThrow(RushHourException.class).when(inst.rCon).create(any(Pointable.class));
         inst.init();
     }
 

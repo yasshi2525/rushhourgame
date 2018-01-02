@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +77,7 @@ public class PlayerController extends AbstractController {
         if (isNew) {
             p = new Player();
             p.setInfo(new PlayerInfo());
+            p.getInfo().setPlayer(p);
         }
 
         p.setUserId(userId);
@@ -148,5 +150,9 @@ public class PlayerController extends AbstractController {
             LOG.log(Level.INFO, "PlayerController#clearToken"
                     + " access token have already been remoevd. {0}", token);
         }
+    }
+    
+    public List<PlayerInfo> findAll() {
+        return em.createNamedQuery("PlayerInfo.findAll", PlayerInfo.class).getResultList();
     }
 }

@@ -32,6 +32,7 @@ import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TicketGate;
@@ -107,9 +108,9 @@ public class StationController extends PointEntityController {
         station.getTicketGate().setGateNum(num);
     }
     
-    public List<Station> findIn(double centerX, double centerY, double scale){
+    public List<Station> findIn(@NotNull Pointable center, double scale){
         return super.findIn(em.createNamedQuery("Station.findIn", Station.class), 
-                centerX, centerY, scale);
+                center, scale);
     }
 
     public List<Platform> findPlatformAll() {

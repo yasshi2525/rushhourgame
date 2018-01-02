@@ -90,7 +90,8 @@ describe('test gameview', function () {
                 'railedge': {},
                 'station': {},
                 'stepforhuman': {}
-            }
+            },
+            player: {}
         };
         $(document).data('scope', scope);
         $('#scale').text(8);
@@ -234,8 +235,12 @@ describe('test gameview', function () {
 
     describe('test stageLine', function () {
         it('create line', function () {
-            expect(stageLine($mockElm, {scale: 1, color: 0xaaaaaa}))
+            $('body').append("<div class='player' id = '128' data-color='#FFFFFF'/>");
+            scope.player['128'] = $('#128');
+            expect(stageLine($mockElm, {my : {scale: 1, color: 0xaaaaaa}}))
                     .not.toBeNull();
+            
+            $('#128').remove();
         });
     });
 

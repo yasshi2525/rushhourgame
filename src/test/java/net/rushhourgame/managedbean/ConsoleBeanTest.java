@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +54,7 @@ public class ConsoleBeanTest extends AbstractBeanTest{
     
     protected static final double TEST_X = 10.1;
     protected static final double TEST_Y = 20.1;
+    protected static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     
     @Before
     @Override
@@ -73,6 +76,7 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         inst.lCon = LCON;
         inst.player = player;
         inst.em = EM;
+        inst.p = new SimplePoint();
         
         inst.session = session;
         doReturn(player.getToken()).when(session).getToken();
@@ -92,7 +96,7 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         
         inst.createCompany();
         
-        assertEquals(1, CCON.findIn(TEST_X, TEST_Y, 2).size());
+        assertEquals(1, CCON.findIn(TEST_POS, 2).size());
         
         assertTrue(TEST_X == inst.getX());
         assertTrue(TEST_Y == inst.getY());

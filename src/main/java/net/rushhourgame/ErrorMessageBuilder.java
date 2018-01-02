@@ -30,6 +30,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Pointable;
 
 /**
  * エラーメッセージを作成する.
@@ -169,27 +170,27 @@ public class ErrorMessageBuilder implements Serializable {
         return errMsg;
     }
     
-    public ErrorMessage createResidenceDuplication(double x, double y) {
+    public ErrorMessage createResidenceDuplication(Pointable p) {
         ErrorMessage errMsg = createDuplication();
         errMsg.getTitleParams().add(msg.get(LABEL_RESIDENCE, session.getLocale()));
         errMsg.getDetailParams().add(msg.get(LABEL_RESIDENCE, session.getLocale()));
-        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {p.getX(), p.getY()}));
         return errMsg;
     }
     
-    public ErrorMessage createCompanyDuplication(double x, double y) {
+    public ErrorMessage createCompanyDuplication(Pointable p) {
         ErrorMessage errMsg = createDuplication();
         errMsg.getTitleParams().add(msg.get(LABEL_COMPANY, session.getLocale()));
         errMsg.getDetailParams().add(msg.get(LABEL_COMPANY, session.getLocale()));
-        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {p.getX(), p.getY()}));
         return errMsg;
     }
     
-    public ErrorMessage createRailNodeDuplication(double x, double y) {
+    public ErrorMessage createRailNodeDuplication(Pointable p) {
         ErrorMessage errMsg = createDuplication();
         errMsg.getTitleParams().add(msg.get(LABEL_RAIL, session.getLocale()));
         errMsg.getDetailParams().add(msg.get(LABEL_RAIL, session.getLocale()));
-        errMsg.getDetailParams().add(Arrays.toString(new Double[] {x, y}));
+        errMsg.getDetailParams().add(Arrays.toString(new Double[] {p.getX(), p.getY()}));
         return errMsg;
     }
     

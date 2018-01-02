@@ -34,7 +34,9 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TicketGate;
 import org.junit.Before;
@@ -49,8 +51,10 @@ public class StationControllerTest extends AbstractControllerTest {
     private static final String TEST_NAME = "test";
     private static final double TEST_X = 10;
     private static final double TEST_Y = 10;
+    private static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     private static final double TEST_X2 = 20;
     private static final double TEST_Y2 = 10;
+    private static final Pointable TEST_POS2 = new SimplePoint(TEST_X2, TEST_Y2);
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_NUM = 3;
 
@@ -64,7 +68,7 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         Player player = createPlayer();
-        RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
+        RailNode node = RAILCON.create(player, TEST_POS);
         Station created = inst.create(player, node, TEST_NAME);
 
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
@@ -77,7 +81,7 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testFull() throws RushHourException {
         Player player = createPlayer();
-        RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
+        RailNode node = RAILCON.create(player, TEST_POS);
         Station created = inst.create(player, node, TEST_NAME, TEST_NUM, TEST_CAPACITY);
 
         //test station
@@ -123,7 +127,7 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testCreateOtherOwner() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode node = RAILCON.create(player, TEST_X, TEST_Y);
+        RailNode node = RAILCON.create(player, TEST_POS);
         try {
             inst.create(other, node, TEST_NAME);
             fail();
@@ -135,8 +139,8 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateDuplicateName() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
-        RailNode node2 = RAILCON.extend(owner, node1, TEST_X2, TEST_Y2);
+        RailNode node1 = RAILCON.create(owner, TEST_POS);
+        RailNode node2 = RAILCON.extend(owner, node1, TEST_POS2);
         inst.create(owner, node1, "Station1");
 
         try {
@@ -155,10 +159,10 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateOtherDuplicateName() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+        RailNode node1 = RAILCON.create(owner, TEST_POS);
 
         Player other = createOther();
-        RailNode node2 = RAILCON.create(other, TEST_X2, TEST_Y2);
+        RailNode node2 = RAILCON.create(other, TEST_POS2);
 
         inst.create(owner, node1, "Station1");
 
@@ -196,8 +200,8 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testEditNameDuplication() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
-        RailNode node2 = RAILCON.extend(owner, node1, TEST_X2, TEST_Y2);
+        RailNode node1 = RAILCON.create(owner, TEST_POS);
+        RailNode node2 = RAILCON.extend(owner, node1, TEST_POS2);
         inst.create(owner, node1, "Station1");
         Station created = inst.create(owner, node2, "Station2");
 
@@ -216,10 +220,10 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testEditNameDuplicationOther() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_X, TEST_Y);
+        RailNode node1 = RAILCON.create(owner, TEST_POS);
         
         Player other = createOther();
-        RailNode node2 = RAILCON.create(other, TEST_X2, TEST_Y2);
+        RailNode node2 = RAILCON.create(other, TEST_POS2);
         
         Station created = inst.create(owner, node1, "Station1");
         inst.create(other, node2, "Station2");
@@ -273,7 +277,7 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testFindIn() throws RushHourException {
         createStation();
         
-        assertEquals(1, inst.findIn(0, 0, 1).size());
-        assertEquals(0, inst.findIn(10, 10, 1).size());
+        assertEquals(1, inst.findIn(new SimplePoint(0, 0), 1).size());
+        assertEquals(0, inst.findIn(new SimplePoint(10, 10), 1).size());
     }
 }

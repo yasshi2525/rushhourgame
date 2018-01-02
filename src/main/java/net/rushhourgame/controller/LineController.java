@@ -33,6 +33,7 @@ import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
@@ -239,11 +240,11 @@ public class LineController extends AbstractController {
         return em.createNamedQuery("Line.findAll", Line.class).getResultList();
     }
 
-    public List<Line> findIn(double centerX, double centerY, double scale) {
+    public List<Line> findIn(@NotNull Pointable center, double scale) {
         return em.createNamedQuery("Line.findAll", Line.class).getResultList()
                 .stream().filter(l -> {
                     em.refresh(l);
-                    return l.isAreaIn(centerX, centerY, scale);
+                    return l.isAreaIn(center, scale);
                 })
                 .collect(Collectors.toList());
     }

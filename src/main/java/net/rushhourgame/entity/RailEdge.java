@@ -46,10 +46,16 @@ import javax.validation.constraints.NotNull;
             query = "SELECT obj FROM RailEdge obj"
                     + " WHERE (obj._from.x > :x1 AND obj._from.x < :x2 AND obj._from.y > :y1 AND obj._from.y < :y2)"
                     + " OR (obj._to.x > :x1 AND obj._to.x < :x2 AND obj._to.y > :y1 AND obj._to.y < :y2)"
+    ),
+    @NamedQuery(
+            name = "RailEdge.findMyIn",
+            query = "SELECT obj FROM RailEdge obj"
+                    + " WHERE obj.owner = :owner AND ((obj._from.x > :x1 AND obj._from.x < :x2 AND obj._from.y > :y1 AND obj._from.y < :y2)"
+                    + " OR (obj._to.x > :x1 AND obj._to.x < :x2 AND obj._to.y > :y1 AND obj._to.y < :y2))"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
-public class RailEdge extends AbstractEntity implements Ownable {
+public class RailEdge extends AbstractEntity implements Ownable, Pointable {
 
     private static final long serialVersionUID = 1L;
 
@@ -103,4 +109,21 @@ public class RailEdge extends AbstractEntity implements Ownable {
     public boolean isOwnedBy(Player owner) {
         return isOwn(this.owner, owner);
     }
+
+    @Override
+    public double getX() {
+        return (_from.getX() + _to.getX()) / 2;
+    }
+
+    @Override
+    public double getY() {
+        return (_from.getY() + _to.getY()) / 2;
+    }
+
+    @Override
+    public double distTo(Pointable p) {
+        return calcDist(getX(), getY(), p);
+    }
+    
+    
 }

@@ -32,6 +32,7 @@ import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.assertEquals;
@@ -51,7 +52,7 @@ public class BeanValidationTest extends AbstractControllerTest {
     public void testStationCreateNameNull() throws RushHourException, NoSuchMethodException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode node = RAILCON.create(player, 10, 10);
+        RailNode node = RAILCON.create(player, new SimplePoint(10, 10));
         
         Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
                 STCON,

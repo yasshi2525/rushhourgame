@@ -40,5 +40,5 @@ public interface StepForHuman {
     
     public double getCost();
     
-    public boolean isAreaIn(double centerX, double centerY, double scale);
+    public boolean isAreaIn(Pointable center, double scale);
 }

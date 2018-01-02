@@ -33,6 +33,8 @@ import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
 
 /**
@@ -44,6 +46,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
     protected CompanyController inst;
     private static final double TEST_X = 5.1;
     private static final double TEST_Y = 10.1;
+    private static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     private static final double TEST_SCALE = 15.1;
 
     @Before
@@ -55,7 +58,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreate() throws RushHourException {
-        Company created = inst.create(TEST_X, TEST_Y);
+        Company created = inst.create(TEST_POS);
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -67,7 +70,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreate3arg() throws RushHourException {
-        Company created = inst.create(TEST_X, TEST_Y, TEST_SCALE);
+        Company created = inst.create(TEST_POS, TEST_SCALE);
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -78,9 +81,9 @@ public class CompanyControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreateDuplication() throws RushHourException {
-        inst.create(TEST_X, TEST_Y);
+        inst.create(TEST_POS);
         try {
-            inst.create(TEST_X, TEST_Y);
+            inst.create(TEST_POS);
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }

@@ -37,6 +37,7 @@ import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SignInType;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
@@ -103,7 +104,7 @@ public class AbstractControllerTest {
     
     protected static Station createStation() throws RushHourException {
         Player owner = createPlayer();
-        RailNode ndoe = RAILCON.create(owner, 0, 0);
+        RailNode ndoe = RAILCON.create(owner, new SimplePoint(0, 0));
         return STCON.create(owner, ndoe, "_test");
     }
     

@@ -32,8 +32,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
 
 /**
@@ -45,8 +47,10 @@ public class RailControllerTest extends AbstractControllerTest {
     protected RailController inst;
     private static final double TEST_X = 10;
     private static final double TEST_Y = 10;
+    private static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     private static final double TEST_X2 = 20;
     private static final double TEST_Y2 = 10;
+    private static final Pointable TEST_POS2 = new SimplePoint(TEST_X2, TEST_Y2);
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_INTERVAL = 3;
 
@@ -61,7 +65,7 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         Player player = createPlayer();
-        RailNode created = inst.create(player, TEST_X, TEST_Y);
+        RailNode created = inst.create(player, TEST_POS);
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -80,9 +84,9 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateDuplication() throws RushHourException {
         Player player = createPlayer();
-        inst.create(player, TEST_X, TEST_Y);
+        inst.create(player, TEST_POS);
         try {
-            inst.create(player, TEST_X, TEST_Y);
+            inst.create(player, TEST_POS);
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
         }
@@ -91,17 +95,17 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateOtherDuplication() throws RushHourException {
         Player player = createPlayer();
-        inst.create(player, TEST_X, TEST_Y);
+        inst.create(player, TEST_POS);
         
         Player other = createOther();
-        inst.create(other, TEST_X, TEST_Y);
+        inst.create(other, TEST_POS);
     }
 
     @Test
     public void testExtend() throws RushHourException {
         Player player = createPlayer();
-        RailNode created1 = inst.create(player, TEST_X, TEST_Y);
-        RailNode created2 = inst.extend(player, created1, TEST_X2, TEST_Y2);
+        RailNode created1 = inst.create(player, TEST_POS);
+        RailNode created2 = inst.extend(player, created1, TEST_POS2);
 
         EM.flush();
         EM.refresh(created1);
@@ -149,9 +153,9 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testExtendDuplicate() throws RushHourException {
         Player player = createPlayer();
-        RailNode create = inst.create(player, TEST_X, TEST_Y);
+        RailNode create = inst.create(player, TEST_POS);
         try {
-            inst.extend(player, create, TEST_X, TEST_Y);
+            inst.extend(player, create, TEST_POS);
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_DUP, e.getErrMsg().getTitleId());
@@ -167,9 +171,9 @@ public class RailControllerTest extends AbstractControllerTest {
     public void testExtendOther() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode create = inst.create(player, TEST_X, TEST_Y);
+        RailNode create = inst.create(player, TEST_POS);
         try {
-            inst.extend(other, create, TEST_X, TEST_Y);
+            inst.extend(other, create, TEST_POS);
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
@@ -179,8 +183,8 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testConnect() throws RushHourException {
         Player player = createPlayer();
-        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
-        RailNode r2 = inst.extend(player, r1, TEST_X2, TEST_Y2);
+        RailNode r1 = inst.create(player, TEST_POS);
+        RailNode r2 = inst.extend(player, r1, TEST_POS2);
         
         inst.connect(player, r1, r2);
     }
@@ -189,8 +193,8 @@ public class RailControllerTest extends AbstractControllerTest {
     public void testConncetOtherOwnerFrom() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
-        RailNode r2 = inst.extend(player, r1, TEST_X2, TEST_Y2);
+        RailNode r1 = inst.create(player, TEST_POS);
+        RailNode r2 = inst.extend(player, r1, TEST_POS2);
         
         try {
             inst.connect(other, r1, r2);
@@ -204,8 +208,8 @@ public class RailControllerTest extends AbstractControllerTest {
     public void testConncetOtherOwnerTo() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
-        RailNode r2 = inst.create(other, TEST_X, TEST_Y);
+        RailNode r1 = inst.create(player, TEST_POS);
+        RailNode r2 = inst.create(other, TEST_POS);
         
         try {
             inst.connect(player, r1, r2);
@@ -218,7 +222,7 @@ public class RailControllerTest extends AbstractControllerTest {
     @Test
     public void testConnectLoop() throws RushHourException {
         Player player = createPlayer();
-        RailNode r1 = inst.create(player, TEST_X, TEST_Y);
+        RailNode r1 = inst.create(player, TEST_POS);
         
         try {
             inst.connect(player, r1, r1);

@@ -92,13 +92,13 @@ public abstract class AbstractEntity implements Serializable {
         return owner.getId() == other.getId();
     }
 
-    protected boolean isAreaIn(Pointable p, double centerX, double centerY, double scale) {
+    protected boolean isAreaIn(Pointable p, Pointable center, double scale) {
         double width = Math.pow(2.0, scale);
         double height = Math.pow(2.0, scale);
         
-        return p.getX() > centerX - width / 2.0 
-                && p.getX() < centerX + width / 2.0
-                && p.getY() > centerY - height / 2.0
-                && p.getY() < centerY + height / 2.0;
+        return p.getX() > center.getX() - width / 2.0 
+                && p.getX() < center.getX() + width / 2.0
+                && p.getY() > center.getY() - height / 2.0
+                && p.getY() < center.getY() + height / 2.0;
     }
 }

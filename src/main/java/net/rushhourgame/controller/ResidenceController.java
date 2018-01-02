@@ -27,7 +27,9 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.exception.RushHourException;
 
@@ -42,29 +44,29 @@ public class ResidenceController extends PointEntityController {
     @Inject
     protected StepForHumanController sCon;
     
-    public Residence create(double x, double y) throws RushHourException{
-        return create(x, y, 
+    public Residence create(@NotNull Pointable p) throws RushHourException{
+        return create(p, 
                 Integer.parseInt(prop.get(GAME_DEF_RSD_CAPACITY)),
                 Integer.parseInt(prop.get(GAME_DEF_RSD_INTERVAL)));
     }
     
-    public Residence create(double x, double y, @Min(1) int capacity, @Min(1) int interval) throws RushHourException{
-        if (exists("Residence.exists", x, y)) {
-            throw new RushHourException(errMsgBuilder.createResidenceDuplication(x, y));
+    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) int interval) throws RushHourException{
+        if (exists("Residence.exists", p)) {
+            throw new RushHourException(errMsgBuilder.createResidenceDuplication(p));
         }
         Residence inst = new Residence();
         inst.setCapacity(capacity);
         inst.setInterval(interval);
-        inst.setX(x);
-        inst.setY(y);
+        inst.setX(p.getX());
+        inst.setY(p.getY());
         em.persist(inst);
         sCon.addResidence(inst);
         return inst;
     }
     
-    public List<Residence> findIn(double centerX, double centerY, double scale){
+    public List<Residence> findIn(@NotNull Pointable center, double scale){
         return super.findIn(em.createNamedQuery("Residence.findIn", Residence.class), 
-                centerX, centerY, scale);
+                center, scale);
     }
     
     public List<Residence> findAll() {

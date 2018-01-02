@@ -27,6 +27,7 @@ import static net.rushhourgame.controller.AbstractControllerTest.CCON;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.assertEquals;
@@ -44,7 +45,7 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrence() throws RushHourException {
-        Company original = CCON.create(1, 1);
+        Company original = CCON.create(new SimplePoint(1, 1));
         Company fromJPQL = TCON.findAll("Company", Company.class).get(0);
         
         assertEquals(original, fromJPQL);
@@ -56,7 +57,7 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQL() throws RushHourException {
-        CCON.create(1, 1);
+        CCON.create(new SimplePoint(1, 1));
         Company fromJPQL1 = TCON.findAll("Company", Company.class).get(0);
         Company fromJPQL2 = TCON.findAll("Company", Company.class).get(0);
         
@@ -69,8 +70,8 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQLrelation() throws RushHourException {
-        CCON.create(1, 1);
-        RCON.create(2, 2);
+        CCON.create(new SimplePoint(1, 1));
+        RCON.create(new SimplePoint(2, 2));
         Company fromCompanyJPQL = TCON.findAll("Company", Company.class).get(0);
         
         RelayPointForHuman fromEdgeJPQL = TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class).get(0).getTo();

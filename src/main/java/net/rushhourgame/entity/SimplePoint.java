@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,45 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.Locale;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class PlayerTest extends AbstractEntityTest{
-    protected static final String JP_NAME = "日本語名";
+public class SimplePoint implements Pointable {
 
-    @Test
-    public void testSetJPName(){
-        Player player = new Player();
-        PlayerInfo info = new PlayerInfo();
-        info.setColor("#000000");
-        info.setIconUrl("#000000");
-        info.setLocale(Locale.getDefault());
-        info.setName(JP_NAME);
-        info.setTextColor("#000000");
-        info.setPlayer(player);
-        player.setId(9999L);
-        player.setUserId("hoge");
-        player.setUserIdDigest("hoge");
-        player.setAccessToken("hoge");
-        player.setAccessTokenSecret("hoge");
-        player.setToken("token");
-        player.setInfo(info);
-        player.setSignIn(SignInType.LOCAL);
-        EM.persist(player);
+    protected double x;
+    protected double y;
+
+    public SimplePoint() {
+
+    }
+
+    public SimplePoint(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public double getX() {
+        return x;
+    }
+
+    @Override
+    public double getY() {
+        return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    @Override
+    public double distTo(Pointable p) {
+        return Math.sqrt((p.getX() - x) * (p.getX() - x)
+                + (p.getY() - y) * (p.getY() - y));
     }
 }

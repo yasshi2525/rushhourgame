@@ -25,42 +25,58 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import java.util.Locale;
+import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import net.rushhourgame.json.UserData;
 
 /**
  * プレイヤ情報
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "PlayerInfo.findAll",
+            query = "SELECT obj FROM PlayerInfo obj"
+    )
+})
 public class PlayerInfo extends AbstractEntity implements Serializable, UserData {
+
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     protected String name;
-    
+
     @NotNull
     protected String iconUrl;
-    
+
     @NotNull
     @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
     protected String color;
-    
+
     @NotNull
     @Pattern(regexp = "^#[0-9a-fA-F]{6}+$")
     protected String textColor;
-    
+
     @NotNull
     @Convert(converter = LocaleConverter.class)
     protected Locale locale;
+    
+    @NotNull
+    @OneToOne(mappedBy = "info")
+    protected Player player;
 
-    public void include(UserData data){
+    public void include(UserData data) {
         name = data.getName();
         iconUrl = data.getIconUrl();
         color = data.getColor();
@@ -109,5 +125,13 @@ public class PlayerInfo extends AbstractEntity implements Serializable, UserData
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }
