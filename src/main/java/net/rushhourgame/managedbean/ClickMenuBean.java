@@ -73,7 +73,7 @@ public class ClickMenuBean implements Serializable {
     @PostConstruct
     public void init() {
         player = pCon.findByToken(session.getToken());
-        
+
         click = new SimplePoint(
                 Double.parseDouble(getRequestMap().get("clickX")),
                 Double.parseDouble(getRequestMap().get("clickY"))
@@ -101,7 +101,15 @@ public class ClickMenuBean implements Serializable {
         getRequestContext().closeDialog(
                 new OperationBean(
                         OperationBean.Type.RAIL_EXTEND,
-                        rCon.findNodeIn(player, click, scale - 3).get(0)));
+                        rCon.findNodeIn(player, click, scale - 3).stream()
+                                .min((n1, n2) -> {
+                                    if (n1.distTo(click) > n2.distTo(click)) {
+                                        return 1;
+                                    } else if (n1.distTo(click) < n2.distTo(click)) {
+                                        return -1;
+                                    }
+                                    return 0;
+                                }).get()));
     }
 
     protected FacesContext getFacesContext() {
