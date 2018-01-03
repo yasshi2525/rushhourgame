@@ -363,9 +363,17 @@ onDragEnd = function (event) {
 
         scope.$clickX.val(gamePos.x);
         scope.$clickY.val(gamePos.y);
-        registerClickPos([
-            {name: 'gamePos.x', value: gamePos.x},
-            {name: 'gamePos.y', value: gamePos.y}]);
+
+        if (scope.neighborEdge) {
+            registerEdgeId([
+                {name: 'railEdge1.id', value: scope.neighborEdge.e1id},
+                {name: 'railEdge2.id', value: scope.neighborEdge.e2id}
+            ]);
+        } else {
+            registerClickPos([
+                {name: 'gamePos.x', value: gamePos.x},
+                {name: 'gamePos.y', value: gamePos.y}]);
+        }
     } else {
         // ドラッグと判定した
         // mouseup時のリロードは xhtml側で行う
@@ -525,6 +533,8 @@ writeTempResourceNeighbor = function () {
 
         if (nedges) {
             scope.neighborEdge = {
+                e1id: nedges.$e1.attr('id').replace('railedge', ''),
+                e2id: nedges.$e2.attr('id').replace('railedge', ''),
                 e1: stageLine(nedges.$e1, tempResources.neighborEdge),
                 e2: stageLine(nedges.$e2, tempResources.neighborEdge)
             };
@@ -595,7 +605,7 @@ findNeighbor = function (name, pos) {
                 parseFloat($(elm).data('y')));
 
         var dist = (otherPos.x - pos.x) * (otherPos.x - pos.x) + (otherPos.y - pos.y) * (otherPos.y - pos.y);
-        
+
         if (dist < minDist && dist < consts.round * consts.round) {
             neighbor = $(elm);
         }
@@ -656,4 +666,9 @@ dist = function (x1, y1, x2, y2) {
     var dx = x2 - x1;
     var dy = y2 - y1;
     return Math.sqrt(dx * dx + dy * dy);
+};
+
+handleCompleteRemoving = function () {
+    removeTempResourceNeighbor();
+    fetchGraphics();
 };

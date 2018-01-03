@@ -26,6 +26,10 @@
                              immediate="true"
                              actionListener="#{game.registerClickPos}"
                              oncomplete="fireClickMenu()"/>
+            <p:remoteCommand name="registerEdgeId"
+                             immediate="true"
+                             actionListener="#{game.registerEdgeId}"
+                             oncomplete="fireClickMenu()"/>
             <!-- remoteCommandの以下にajaxタグがおけないため、隠しコマンドを用意する -->
             <p:commandButton id="openclickmenu" process="@this" 
                              actionListener="#{game.openClickMenu}" style="display:none">
@@ -46,6 +50,14 @@
                 <h:graphicImage value="resources/image/loading.gif"/>
             </f:facet>
         </p:ajaxStatus>
+
+        <p:confirmDialog header="#{msg.confirmation}" message="#{msg.confirmationMessage}" widgetVar="confirmDialog">
+            <p:commandButton value="#{msg.remove}" type="button" style="ui-icon-check" icon="fa fa-check" 
+                              oncomplete="PF('confirmDialog').hide()">
+                <p:ajax event="click" update="gamemodel" oncomplete="handleCompleteRemoving()" listener="#{game.removeRail()}"/>
+            </p:commandButton>
+            <p:commandButton value="#{msg.cancel}" type="button" onclick="PF('confirmDialog').hide()"/>
+        </p:confirmDialog>
 
         <!-- 画面スクロール用 -->
         <p:ajax event="mouseup" update="gamemodel" oncomplete="fetchGraphics()"/>
@@ -89,7 +101,7 @@
                  data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"
                  data-pid="player#{e.owner.id}" data-ismine="#{game.player.id == e.owner.id}"
                  />
-        
+
         </ui:repeat>
 
         <ui:repeat var="st" value="#{game.stations}">

@@ -24,14 +24,20 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
@@ -40,6 +46,7 @@ import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
@@ -54,10 +61,14 @@ import org.primefaces.context.RequestContext;
 public class ClickMenuBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    @PersistenceContext
+    EntityManager em;
 
     @Inject
     protected RushHourSession session;
     protected Player player;
+    protected List<RailEdge> clickedEdges;
 
     @Inject
     protected PlayerController pCon;
@@ -79,9 +90,20 @@ public class ClickMenuBean implements Serializable {
                 Double.parseDouble(getRequestMap().get("clickY"))
         );
         scale = Double.parseDouble(getRequestMap().get("scale"));
+        
+        String e1id = getRequestMap().get("clickedEdge1");
+        String e2id = getRequestMap().get("clickedEdge2");
+        
+        if (e1id != null && e2id != null) {
+            try {
+                clickedEdges = rCon.findEdge(player, Long.parseLong(e1id), Long.parseLong(e2id));
+            } catch (RushHourException ex) {
+                Logger.getLogger(ClickMenuBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
-    public boolean canCreateRail() {
+    public boolean isDisplayCreateRail() {
         return rCon.findNodeIn(player, click, scale - 4).isEmpty();
     }
 
@@ -93,7 +115,7 @@ public class ClickMenuBean implements Serializable {
                         rCon.create(player, click)));
     }
 
-    public boolean canExtendRail() {
+    public boolean isDisplayExtendRail() {
         return !rCon.findNodeIn(player, click, scale - 3).isEmpty();
     }
 
@@ -110,6 +132,25 @@ public class ClickMenuBean implements Serializable {
                                     }
                                     return 0;
                                 }).get()));
+    }
+    
+    public boolean isDisplayRemoveRail() {
+        return clickedEdges != null;
+    }
+    
+    @Transactional
+    public boolean isEnableRemoveRail() throws RushHourException {
+        if (clickedEdges == null) {
+            return false;
+        } else {
+            clickedEdges = clickedEdges.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
+            return rCon.canRemove(player, clickedEdges);
+        }
+    }
+    
+    public void removeRail() {
+        getRequestContext().closeDialog(
+                new OperationBean(OperationBean.Type.RAIL_REMOVE));
     }
 
     protected FacesContext getFacesContext() {

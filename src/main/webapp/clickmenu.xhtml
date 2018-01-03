@@ -9,10 +9,13 @@
     <h:body>
         <h:form>
             <p:menu>
-                <p:menuitem rendered="#{menu.canCreateRail()}" value="#{msg.createRail}"
+                <p:menuitem rendered="#{menu.displayCreateRail}" value="#{msg.createRail}"
                             icon="fa fa-plus" actionListener="#{menu.createRail()}"/>
-                <p:menuitem rendered="#{menu.canExtendRail()}" value="#{msg.extendRail}"
+                <p:menuitem rendered="#{menu.displayExtendRail}" value="#{msg.extendRail}"
                             icon="fa fa-pencil" actionListener="#{menu.extendRail()}"/>
+                <p:menuitem rendered="#{menu.displayRemoveRail}" value="#{msg.removeRail}"
+                            disabled="#{!menu.enableRemoveRail}"
+                            icon="fa fa-times" actionListener="#{menu.removeRail()}"/>
             </p:menu>
         </h:form>
     </h:body>

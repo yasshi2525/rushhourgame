@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.em = EM;
         inst.center = new SimplePoint();
         inst.click = new SimplePoint();
+        inst.clickedRailEdge = new ArrayList<>();
         
         try {
             player = createPlayer();
@@ -111,10 +113,12 @@ public class GameViewBeanTest extends AbstractBeanTest {
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
         doReturn(map).when(externalContext).getRequestParameterMap();
+        inst.clickedRailEdge.add(mock(RailEdge.class));
 
         inst.registerClickPos();
         assertTrue(99.9 == inst.getClickX());
         assertTrue(199.9 == inst.getClickY());
+        assertTrue(inst.clickedRailEdge.isEmpty());
     }
 
     @Test
@@ -125,7 +129,19 @@ public class GameViewBeanTest extends AbstractBeanTest {
         doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
 
         inst.openClickMenu();
-
+    }
+    
+    @Test
+    public void testOpenClickMenuEdgeClicked() throws RushHourException {
+        inst.player = player;
+        inst.setClickX(CLICK_X);
+        inst.setClickY(CLICK_Y);
+        inst.clickedRailEdge.add(mock(RailEdge.class));
+        inst.clickedRailEdge.add(mock(RailEdge.class));
+        
+        doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
+                
+        inst.openClickMenu();
     }
 
     @Test
@@ -239,6 +255,13 @@ public class GameViewBeanTest extends AbstractBeanTest {
         doReturn(requestContext).when(inst).getRequestContext();
         inst.handleReturn(event);
         assertTrue(inst.isUnderOperation());
+    }
+    
+    @Test
+    public void testHandleReturnRailRemove() {
+        doReturn(new OperationBean(OperationBean.Type.RAIL_REMOVE, mock(RailNode.class))).when(event).getObject();
+        doReturn(requestContext).when(inst).getRequestContext();
+        inst.handleReturn(event);
     }
     
     @Test
@@ -369,5 +392,41 @@ public class GameViewBeanTest extends AbstractBeanTest {
         EM.refresh(n1);
         
         assertEquals(n1.getOutEdges().get(0), inst.getReverseEdge(n1.getInEdges().get(0)));
+    }
+    
+    @Test
+    public void testRegisterEdgeId() throws RushHourException {
+        inst.player = player;
+        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
+        EM.flush();
+        EM.refresh(n1);
+        
+        Map<String, String> map = new HashMap<>();
+        map.put("railEdge1.id", Long.toString(n1.getOutEdges().get(0).getId()));
+        map.put("railEdge2.id", Long.toString(n1.getInEdges().get(0).getId()));
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
+        doReturn(map).when(externalContext).getRequestParameterMap();
+        
+        inst.registerEdgeId();
+    }
+    
+    @Test
+    public void testRemoveRail() throws RushHourException {
+        inst.player = player;
+        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
+        EM.flush();
+        EM.refresh(n1);
+        
+        inst.clickedRailEdge = new ArrayList<>();
+        inst.clickedRailEdge.add(n1.getOutEdges().get(0));
+        inst.clickedRailEdge.add(n1.getInEdges().get(0));
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(requestContext).when(inst).getRequestContext();
+        
+        inst.removeRail();
     }
 }

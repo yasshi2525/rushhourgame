@@ -32,6 +32,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.controller.RailController;
 import net.rushhourgame.entity.troute.LineStepMoving;
 import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
@@ -149,5 +150,15 @@ public class RailEdge extends AbstractEntity implements Ownable, Pointable {
 
     public List<LineStepStopping> getStoppingSteps() {
         return stoppingSteps;
+    }
+    
+    /**
+     * これを使用する {@link RailController#findEdge(net.rushhourgame.entity.Player, long, long) }
+     * で em.find すると、違うインスタンスになってしまうため、IDを比較している.
+     * @param e 線路エッジ
+     * @return 対称関係にあるか
+     */
+    public boolean isReverse(RailEdge e) {
+        return _from.getId() == e.getTo().getId() && _to.getId() == e.getFrom().getId();
     }
 }

@@ -72,6 +72,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_EDIT = "rushhour.label.edit";
     public static final String LABEL_REMOVE = "rushhour.label.remove";
     public static final String LABEL_GO_BACK = "rushhour.label.goback";
+    public static final String LABEL_CANCEL = "rushhour.label.cancel";
     public static final String LABEL_RAIL_CREATE = "rushhour.label.rail.create";
     public static final String LABEL_RAIL_SPLIT = "rushhour.label.rail.split";
     public static final String LABEL_RAIL_EXTEND = "rushhour.label.rail.extend";
@@ -84,6 +85,8 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String LABEL_LINE_REMOVE = "rushhour.label.line.remove";
     public static final String LABEL_TRAIN_DEPLOY = "rushhour.label.train.deploy";
     public static final String LABEL_TRAIN_UNDEPLOY = "rushhour.label.train.undeploy";
+    public static final String LABEL_CONFIRM = "rushhour.label.confirm";
+    public static final String LABEL_CONFIRM_MESSAGE = "rushhour.label.confirm.message";
 
     public static final String TUTORIAL = "rushhour.tutorial";
     public static final String TUTORIAL_RAIL_CREATE = "rushhour.tutorial.rail.create";
@@ -95,6 +98,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String ANNOUNCEMENT_RAIL_CONNECT = "rushhour.announcement.rail.connect";
     public static final String ANNOUNCEMENT_RAIL_CREATENEIGHBOR = "rushhour.announcement.rail.createneighbor";
     public static final String ANNOUNCEMENT_RAIL_LOOP = "rushhour.announcement.rail.loop";
+    public static final String ANNOUNCEMENT_RAIL_REMOVE = "rushhour.announcement.rail.remove";
     
     public static final String SIGNIN_FAIL_ACTION = "rushhour.message.signin.fail.action";
     public static final String SIGNIN_FAIL = "rushhour.message.signin.fail";

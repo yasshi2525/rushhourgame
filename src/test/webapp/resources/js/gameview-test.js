@@ -102,6 +102,7 @@ describe('test gameview', function () {
         window.startGamePos = null;
         window.startPosition = null;
         window.registerClickPos = doNothing;
+        window.registerEdgeId = doNothing;
         window.extendRail = doNothing;
         mockSprite.position.reset();
     });
@@ -335,11 +336,12 @@ describe('test gameview', function () {
     describe('test onDragEnd', function () {
         beforeEach(function () {
             spyOn(window, 'toViewPosFromMouse').and.returnValue({x: 11, y: 12});
-            spyOn(window, 'toGamePos').and.returnValue({x: 11, y: 12});
             spyOn(window, 'registerClickPos').and.callFake(doNothing);
+            spyOn(window, 'registerEdgeId').and.callFake(doNothing);
         });
 
-        it('reload when clicked', function () {
+        it('send click pos when clicked', function () {
+            spyOn(window, 'toGamePos').and.returnValue({x: 11, y: 12});
             window.startPosition = {x: 11, y: 12};
             onDragEnd();
             expect(scope.$clickX.val()).toEqual('11');
@@ -350,10 +352,22 @@ describe('test gameview', function () {
             expect(window.startPosition).toBeNull();
         });
         
-        it('reload as cursor pos when clicked', function () {
+        it('send cursor pos when clicked', function () {
             window.startPosition = {x: 11, y: 12};
             scope.cursor = {x: 0, y: 0};
             onDragEnd();
+            expect(scope.$clickX.val()).toEqual('-128');
+            expect(scope.$clickY.val()).toEqual('-128');
+            expect(window.registerEdgeId.calls.any()).toEqual(false);
+            expect(window.registerClickPos.calls.any()).toEqual(true);
+        });
+        
+        it('send edge id when clicked', function () {
+            window.startPosition = {x: 11, y: 12};
+            scope.neighborEdge = {e1id: 1, e2id: 2};
+            onDragEnd();
+            expect(window.registerEdgeId.calls.any()).toEqual(true);
+            expect(window.registerClickPos.calls.any()).toEqual(false);
         });
         
         it('do nothing just when drag ended', function () {
@@ -753,6 +767,15 @@ describe('test gameview', function () {
             $('#no2').remove();
         });
     });
+    
+    describe('test handleCompleteRemoving', function() {
+        it ('test invoke', function () {
+            spyOn(window, 'fetchGraphics').and.callFake(doNothing);
+            spyOn(window, 'removeTempResourceNeighbor').and.callFake(doNothing);
+            
+            handleCompleteRemoving();
+        });
+    }); 
 
     afterEach(function () {
         $('#scale').remove();

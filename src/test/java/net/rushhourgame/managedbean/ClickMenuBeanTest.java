@@ -64,6 +64,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.session = session;
         inst.rCon = RAILCON;
         inst.pCon = PCON;
+        inst.em = EM;
         
         try {
             player = createPlayer();
@@ -84,6 +85,43 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         p = new SimplePoint(0, 0);
         inst.click = p;
     }
+    
+    @Test
+    public void testInitWithEdges() throws RushHourException {
+        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
+        EM.flush();
+        EM.refresh(n1);
+        
+        inst.player = player;
+        map.put("clickX", "11.0");
+        map.put("clickY", "12.0");
+        map.put("scale", "13.0");
+        map.put("clickedEdge1", Long.toString(n1.getOutEdges().get(0).getId()));
+        map.put("clickedEdge2", Long.toString(n1.getInEdges().get(0).getId()));
+        
+        inst.init();
+        
+        assertNotNull(inst.clickedEdges);
+        assertTrue(inst.isDisplayRemoveRail());
+        assertTrue(inst.isEnableRemoveRail());
+    }
+    
+    @Test
+    public void testInitException() throws RushHourException {
+        inst.player = player;
+        map.put("clickX", "11.0");
+        map.put("clickY", "12.0");
+        map.put("scale", "13.0");
+        map.put("clickedEdge1", "1");
+        map.put("clickedEdge2", "2");
+        
+        inst.init();
+        
+        assertNull(inst.clickedEdges);
+        assertFalse(inst.isDisplayRemoveRail());
+        assertFalse(inst.isEnableRemoveRail());
+    }
 
     @Test
     public void testCanCreateRail() {
@@ -91,7 +129,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "12.0");
         map.put("scale", "13.0");
         inst.init();
-        assertTrue(inst.canCreateRail());
+        assertTrue(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -104,7 +142,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "0.0");
         inst.init();
         
-        assertTrue(inst.canCreateRail());
+        assertTrue(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -117,7 +155,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "0.0");
         inst.init();
 
-        assertTrue(inst.canCreateRail());
+        assertTrue(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -130,7 +168,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "-1.1");
         inst.init();
 
-        assertTrue(inst.canCreateRail());
+        assertTrue(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -143,7 +181,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "1.1");
         inst.init();
 
-        assertTrue(inst.canCreateRail());
+        assertTrue(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -157,7 +195,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "0.0");
         inst.init();
 
-        assertFalse(inst.canCreateRail());
+        assertFalse(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -170,7 +208,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "0.0");
         inst.init();
 
-        assertFalse(inst.canCreateRail());
+        assertFalse(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -183,7 +221,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "-0.4");
         inst.init();
 
-        assertFalse(inst.canCreateRail());
+        assertFalse(inst.isDisplayCreateRail());
     }
 
     @Test
@@ -196,7 +234,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "0.4");
         inst.init();
 
-        assertFalse(inst.canCreateRail());
+        assertFalse(inst.isDisplayCreateRail());
     }
     
     @Test
@@ -210,7 +248,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testCanExtendRailFalse() {
-        assertFalse(inst.canExtendRail());
+        assertFalse(inst.isDisplayExtendRail());
     }
     
     @Test
@@ -221,7 +259,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickX", "0.0");
         map.put("clickY", "0.4");
         inst.init();
-        assertTrue(inst.canExtendRail());
+        assertTrue(inst.isDisplayExtendRail());
     }
     
     @Test
@@ -237,6 +275,11 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
         inst.init();
         inst.extendRail();
+    }
+    
+    @Test
+    public void testRemoveRail() {
+        inst.removeRail();
     }
 
     @Test

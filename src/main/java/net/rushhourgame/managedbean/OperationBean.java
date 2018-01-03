@@ -33,6 +33,10 @@ public class OperationBean {
     protected Type type;
     protected RailNode tailNode;
     
+    public OperationBean(Type type) {
+        this.type = type;
+    }
+    
     public OperationBean(Type type, RailNode tailNode) {
         this.type = type;
         this.tailNode = tailNode;
@@ -48,6 +52,7 @@ public class OperationBean {
     
     public enum Type {
         RAIL_CREATE,
-        RAIL_EXTEND
+        RAIL_EXTEND,
+        RAIL_REMOVE
     }
 }

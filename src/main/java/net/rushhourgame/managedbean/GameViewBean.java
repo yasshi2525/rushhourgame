@@ -24,11 +24,13 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -105,6 +107,8 @@ public class GameViewBean implements Serializable {
 
     protected RailNode tailNode;
 
+    protected List<RailEdge> clickedRailEdge;
+
     protected boolean underOperation;
 
     protected static final String GUIDE_ID = "guide";
@@ -116,12 +120,14 @@ public class GameViewBean implements Serializable {
         center = new SimplePoint(session.getCenterX(), session.getCenterY());
         click = new SimplePoint();
         scale = session.getScale();
+        clickedRailEdge = new ArrayList<>();
     }
 
     public void registerClickPos() {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
         click.setX(Double.parseDouble(reqParam.get("gamePos.x")));
         click.setY(Double.parseDouble(reqParam.get("gamePos.y")));
+        clickedRailEdge.clear();
     }
 
     public void openClickMenu() {
@@ -129,6 +135,10 @@ public class GameViewBean implements Serializable {
         params.put("clickX", Collections.singletonList(Double.toString(click.getX())));
         params.put("clickY", Collections.singletonList(Double.toString(click.getY())));
         params.put("scale", Collections.singletonList(Double.toString(scale)));
+        if (!clickedRailEdge.isEmpty()) {
+            params.put("clickedEdge1", Collections.singletonList(Long.toString(clickedRailEdge.get(0).getId())));
+            params.put("clickedEdge2", Collections.singletonList(Long.toString(clickedRailEdge.get(1).getId())));
+        }
 
         RequestContext context = getRequestContext();
         Map<String, Object> options = new HashMap<>();
@@ -145,7 +155,7 @@ public class GameViewBean implements Serializable {
     protected RequestContext getRequestContext() {
         return RequestContext.getCurrentInstance();
     }
-    
+
     public List<PlayerInfo> getPlayers() {
         return pCon.findAll();
     }
@@ -272,6 +282,10 @@ public class GameViewBean implements Serializable {
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
                 underOperation = true;
                 break;
+                
+            case RAIL_REMOVE:
+                getRequestContext().execute("PF('confirmDialog').show();");
+                break;
         }
     }
 
@@ -368,21 +382,42 @@ public class GameViewBean implements Serializable {
     protected boolean isClickedSurroundTailNode() {
         return click.distTo(tailNode) < Math.pow(2, scale - 4);
     }
-    
+
     public Player getPlayer() {
         return player;
     }
-    
+
     public boolean isIconIn(Player p) {
         return railCon.findNearestEdge(p, center, scale) != null;
     }
-    
+
     public Pointable getIconPos(Player p) {
         RailEdge edge = railCon.findNearestEdge(p, center, scale);
         return edge == null ? new SimplePoint() : edge;
     }
-    
+
     public RailEdge getReverseEdge(RailEdge e) {
         return railCon.findReverseEdge(e);
+    }
+
+    public void registerEdgeId() throws RushHourException {
+        Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
+
+        clickedRailEdge = railCon.findEdge(player,
+                Long.parseLong(reqParam.get("railEdge1.id")),
+                Long.parseLong(reqParam.get("railEdge2.id")));
+    }
+    
+    @Transactional
+    public void removeRail() throws RushHourException {
+        clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
+        railCon.remove(player, clickedRailEdge);
+        getRequestContext().execute("PF('confirmDialog').hide();");
+        showRemovedRailAnnouncement();
+    }
+    
+    protected void showRemovedRailAnnouncement() {
+        getFacesContext().addMessage(ANNOUNCEMENT_ID,
+                new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_REMOVE, session.getLocale())));
     }
 }

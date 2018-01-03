@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,26 +88,44 @@ public class RailController extends PointEntityController {
         }
         createEdge(owner, from, to);
     }
-    
-    public void remove(@NotNull Player owner, @NotNull RailEdge target) throws RushHourException {
-        if (!target.isOwnedBy(owner)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
-        }
-        RailEdge reverse = findReverseEdge(target);
-        
-        if (isInSteps(target) || isInSteps(reverse)) {
+
+    public void remove(@NotNull Player owner, @NotNull List<RailEdge> edges) throws RushHourException {
+        if (edges.size() != 2 || !edges.get(0).isReverse(edges.get(1))) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         
-        RailNode n1 = target.getFrom();
-        RailNode n2 = target.getTo();
+        RailNode n1 = edges.get(0).getFrom();
+        RailNode n2 = edges.get(0).getTo();
         
-        em.remove(target);
-        em.remove(reverse);
-        
+        for (RailEdge e : edges) {
+            if (!e.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            if (isInSteps(e)) {
+                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+            }
+            em.remove(e);
+        }
+
         em.flush();
         removeIsolatedRailNode(n1);
         removeIsolatedRailNode(n2);
+    }
+
+    public boolean canRemove(Player player, List<RailEdge> edges) throws RushHourException {
+        if (edges.size() != 2 || !edges.get(0).isReverse(edges.get(1))) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        for (RailEdge e : edges) {
+            if (!e.isOwnedBy(player)) {
+                return false;
+            }
+            if (isInSteps(e)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<RailNode> findNodeIn(@NotNull Pointable center, double scale) {
@@ -145,7 +164,6 @@ public class RailController extends PointEntityController {
                 .setParameter("y2", center.getY() + height / 2.0)
                 .getResultList();
     }
-    
 
     public boolean hasRailNode(Player owner) {
         return exists("RailNode.has", owner);
@@ -174,7 +192,7 @@ public class RailController extends PointEntityController {
 
     public RailEdge findNearestEdge(Player p, @NotNull Pointable center, double scale) {
         List<RailEdge> list = findEdgeIn(p, center, scale);
-        
+
         if (list.isEmpty()) {
             return null;
         }
@@ -183,30 +201,51 @@ public class RailController extends PointEntityController {
                 -> {
             if (e1.distTo(center) > e2.distTo(center)) {
                 return 1;
-            } 
+            }
             if (e1.distTo(center) < e2.distTo(center)) {
                 return -1;
-            } 
+            }
             return 0;
         }).get();
     }
-    
+
     public RailEdge findReverseEdge(@NotNull RailEdge e) {
         return em.createNamedQuery("RailEdge.find", RailEdge.class)
                 .setParameter("from", e.getTo())
                 .setParameter("to", e.getFrom())
                 .getSingleResult();
     }
-    
+
     protected boolean isInSteps(RailEdge e) {
         em.refresh(e);
         return !e.getMovingSteps().isEmpty() || !e.getPassingSteps().isEmpty() || !e.getStoppingSteps().isEmpty();
     }
-    
+
     protected void removeIsolatedRailNode(RailNode node) {
         em.refresh(node);
         if (node.getInEdges().isEmpty() && node.getOutEdges().isEmpty() && node.getPlatform() == null) {
             em.remove(node);
         }
+    }
+
+    public List<RailEdge> findEdge(Player p, long id1, long id2) throws RushHourException {
+        List<RailEdge> edges = new ArrayList<>();
+        RailEdge e1 = em.find(RailEdge.class, id1);
+        RailEdge e2 = em.find(RailEdge.class, id2);
+
+        if (e1 == null || e2 == null) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
+        if (!e1.isOwnedBy(p) || !e2.isOwnedBy(p)) {
+            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        }
+
+        if (!e1.isReverse(e2)) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+        edges.add(e1);
+        edges.add(e2);
+        return edges;
     }
 }
