@@ -39,16 +39,23 @@ var lineResources = {
     railedge: {
         my: {
             slide: 5,
-            scale: 3
+            scale: 3,
+            alpha: 0.5
         },
         other: {
             slide: 3,
-            scale: 1
+            scale: 1,
+            alpha: 0.5
         }
     }
 };
 
 var tempResources = {
+    neighborNode: {
+        color: 0xbf7fff,
+        radius: consts.round,
+        alpha: 0.5
+    },
     tailNode: {
         color: 0xa0a0a0,
         radius: 10,
@@ -56,12 +63,18 @@ var tempResources = {
     },
     cursor: {
         color: 0x7fff7f,
-        radius: 10,
+        radius: consts.round / 2,
         alpha: 0.5
     },
     extendEdge: {
         color: 0x7fff7f,
         width: 4,
+        alpha: 0.5
+    },
+    neighborEdge: {
+        color: 0xbf7fff,
+        slide: 5,
+        scale: 5,
         alpha: 0.5
     }
 };
@@ -142,9 +155,14 @@ initEventHandler = function () {
         'touchmove': onDragMove
     });
     // Fullscreen in pixi is resizing the renderer to be window.innerWidth by window.innerHeight
-    window.addEventListener("resize", function () {
-        scope.renderer.resize(window.innerWidth, window.innerHeight);
-    });
+    window.addEventListener("resize", handleResize);
+};
+
+handleResize = function () {
+    var scope = $(document).data('scope');
+    scope.renderer.resize(window.innerWidth, window.innerHeight);
+    fetchGraphics();
+    rewriteTempResource();
 };
 
 // fetchGraphics()にすると、ajaxでよびだされない
@@ -171,16 +189,17 @@ fetchGraphics = function () {
     for (var name in lineResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
+            var opts = $(elm).data('ismine') ? lineResources[name].my : lineResources[name].other;
             if (scope.graphics[name][$(elm).attr('id')]) {
                 // 更新する
                 // Graphicsの移動の仕方が分からなkったので、リライトする
                 scope.stage.removeChild(scope.graphics[name][$(elm).attr('id')]);
                 scope.graphics[name][$(elm).attr('id')]
-                        = stageLine($(elm), lineResources[name]);
+                        = stageLine($(elm), opts);
             } else {
                 // 新規作成
                 scope.graphics[name][$(elm).attr('id')]
-                        = stageLine($(elm), lineResources[name]);
+                        = stageLine($(elm), opts);
             }
         });
     }
@@ -254,8 +273,7 @@ updateSprite = function (sprite, $elm, isBringToFront) {
  */
 stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
-    var appliedOpts = $elm.data('ismine') ? opts.my : opts.other;
-    var color = scope.player[$elm.data('pid')].data('color').replace('#', '0x');
+    var color = opts.color ? opts.color : scope.player[$elm.data('pid')].data('color').replace('#', '0x');
     var scope = $(document).data('scope');
     var obj = new pixi.Graphics();
 
@@ -266,11 +284,13 @@ stageLine = function ($elm, opts) {
             parseFloat($elm.data('to-x')),
             parseFloat($elm.data('to-y')));
 
-    var line = slideEdge(from, to, appliedOpts.slide);
+    var line = slideEdge(from, to, opts.slide);
 
-    obj.lineStyle(appliedOpts.scale, color)
+    obj.lineStyle(opts.scale, color)
             .moveTo(line.fromx, line.fromy)
             .lineTo(line.tox, line.toy);
+
+    obj.alpha = opts.alpha;
 
     scope.stage.addChild(obj);
     return obj;
@@ -442,6 +462,8 @@ rewriteTempResource = function () {
     var scope = $(document).data('scope');
     var neighbor;
 
+    removeTempResourceNeighbor();
+
     if (scope.tailNode) {
         scope.stage.removeChild(scope.tailNode);
         var vpos = toViewPos(scope.tailNode.gamex, scope.tailNode.gamey);
@@ -460,6 +482,8 @@ rewriteTempResource = function () {
                 neighbor = npos;
             }
         }
+    } else {
+        writeTempResourceNeighbor();
     }
 
     if (scope.cursor) {
@@ -473,6 +497,39 @@ rewriteTempResource = function () {
     }
 
     scope.renderer.render(scope.stage);
+};
+
+removeTempResourceNeighbor = function () {
+    var scope = $(document).data('scope');
+    if (scope.neighborNode) {
+        scope.stage.removeChild(scope.neighborNode);
+        scope.neighborNode = null;
+    }
+    if (scope.neighborEdge) {
+        scope.stage.removeChild(scope.neighborEdge.e1);
+        scope.stage.removeChild(scope.neighborEdge.e2);
+        scope.neighborEdge = null;
+    }
+};
+
+writeTempResourceNeighbor = function () {
+    var scope = $(document).data('scope');
+
+    var $nnode = findNeighbor('railnode', scope.mousePos);
+
+    if ($nnode) {
+        var nnodepos = toViewPos(parseFloat($nnode.data('x')), parseFloat($nnode.data('y')));
+        scope.neighborNode = stageTempCircle(nnodepos, tempResources.neighborNode);
+    } else {
+        var nedges = findNeighborEdge('railedge', scope.mousePos);
+
+        if (nedges) {
+            scope.neighborEdge = {
+                e1: stageLine(nedges.$e1, tempResources.neighborEdge),
+                e2: stageLine(nedges.$e2, tempResources.neighborEdge)
+            };
+        }
+    }
 };
 
 stageTempCircle = function (pos, opts) {
@@ -538,11 +595,65 @@ findNeighbor = function (name, pos) {
                 parseFloat($(elm).data('y')));
 
         var dist = (otherPos.x - pos.x) * (otherPos.x - pos.x) + (otherPos.y - pos.y) * (otherPos.y - pos.y);
-
+        
         if (dist < minDist && dist < consts.round * consts.round) {
             neighbor = $(elm);
         }
     });
 
     return neighbor;
+};
+
+findNeighborEdge = function (name, pos, isDirect) {
+    var $nearest = null;
+    var minDist = Number.MAX_VALUE;
+    $('.' + name).filter(function () {
+        return $(this).data('ismine');
+    }).each(function (i, elm) {
+        var from = toViewPos(
+                parseFloat($(elm).data('from-x')),
+                parseFloat($(elm).data('from-y')));
+        var to = toViewPos(
+                parseFloat($(elm).data('to-x')),
+                parseFloat($(elm).data('to-y')));
+        var ev = {
+            'x': to.x - from.x,
+            'y': to.y - from.y
+        };
+        var u = {
+            'x': ev.x / dist(0, 0, ev.x, ev.y),
+            'y': ev.y / dist(0, 0, ev.x, ev.y)
+        };
+        var pv = {
+            'x': pos.x - from.x,
+            'y': pos.y - from.y
+        };
+        // 外積
+        var d = Math.abs(ev.x * pv.y - ev.y * pv.x);
+        var l = d / dist(0, 0, ev.x, ev.y);
+        if (l < consts.round) {
+            // 垂線の足がes[i]上にあるか
+            var xlen = pv.x * u.x + pv.y * u.y;
+            if (xlen <= 0 || xlen >= dist(0, 0, ev.x, ev.y)) {
+                return;
+            }
+            if (l < minDist) {
+                minDist = l;
+                $nearest = $(elm);
+            }
+        }
+    });
+    if ($nearest === null) {
+        return null;
+    }
+    return isDirect ? $nearest : {
+        '$e1': $nearest,
+        '$e2': $('#' + $nearest.data('reverseid'))
+    };
+};
+
+dist = function (x1, y1, x2, y2) {
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    return Math.sqrt(dx * dx + dy * dy);
 };

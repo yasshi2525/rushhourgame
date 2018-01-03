@@ -142,6 +142,11 @@ public class GameViewBeanTest extends AbstractBeanTest {
     public void testGetRegidences() {
         inst.getResidences();
     }
+    
+    @Test
+    public void testGetMyRailNodes() {
+        assertTrue(inst.getMyRailNodes().isEmpty());
+    }
 
     @Test
     public void testGetMyLonelyRailNodes() throws RushHourException {
@@ -342,7 +347,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     }
     
     @Test
-    public void testIconPos() throws RushHourException {
+    public void testGetIconPos() throws RushHourException {
         inst.player = player;
         inst.scale = 16;
         RailNode far1 = RAILCON.create(player, new SimplePoint(100, 100));
@@ -354,5 +359,15 @@ public class GameViewBeanTest extends AbstractBeanTest {
         assertTrue(inst.isIconIn(player));
         assertTrue(10 == inst.getIconPos(player).getX());
         assertTrue(15 == inst.getIconPos(player).getY());
+    }
+    
+    @Test
+    public void testGetReverseEdge() throws RushHourException {
+        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
+        EM.flush();
+        EM.refresh(n1);
+        
+        assertEquals(n1.getOutEdges().get(0), inst.getReverseEdge(n1.getInEdges().get(0)));
     }
 }

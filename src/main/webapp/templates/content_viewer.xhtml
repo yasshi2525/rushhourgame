@@ -54,57 +54,58 @@
     </h:panelGrid>
     <h:panelGroup id="gamemodel">
         <ui:repeat var="pi" value="#{game.players}">
-            <div class="player" id="#{pi.player.id}"
+            <div class="player" id="player#{pi.player.id}"
                  data-name="#{pi.name}" data-icon="#{pi.iconUrl}"
                  data-color="#{pi.color}" data-isin="#{game.isIconIn(pi.player)}" 
                  data-x="#{game.getIconPos(pi.player).x}" data-y="#{game.getIconPos(pi.player).y}"/>
         </ui:repeat>
         <ui:repeat var="c" value="#{game.companies}">
-            <div class="company" id="#{c.id}"
+            <div class="company" id="company#{c.id}"
                  data-x="#{c.x}" data-y="#{c.y}"
                  data-scale="#{c.scale}"/>
         </ui:repeat>
 
         <ui:repeat var="r" value="#{game.residences}">
-            <div class="residence" id="#{r.id}"
+            <div class="residence" id="residence#{r.id}"
                  data-x="#{r.x}" data-y="#{r.y}"
                  data-interval="#{r.interval}" data-capacity="#{r.capacity}"/>
         </ui:repeat>
 
         <ui:repeat var="n" value="#{game.myRailNodes}">
-            <div class="railnode" id ="#{n.id}"
+            <div class="railnode" id ="railnode#{n.id}"
                  data-x="#{n.x}" data-y="#{n.y}"/>
         </ui:repeat>
 
         <ui:repeat var="ln" value="#{game.myLonelyRailNodes}">
-            <div class="lonelyrailnode" id ="#{ln.id}"
+            <div class="lonelyrailnode" id ="lonelyrailnode#{ln.id}"
                  data-x="#{ln.x}" data-y="#{ln.y}"/>
         </ui:repeat>
 
         <ui:repeat var="e" value="#{game.railEdges}">
-            <div class="railedge" id="#{e.id}"
+            <div class="railedge" id="railedge#{e.id}"
+                 data-reverseid="railedge#{game.getReverseEdge(e).id}"
                  data-owner-name="#{e.owner.info.name}"  
                  data-from-x="#{e.from.x}" data-from-y="#{e.from.y}"
                  data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"
-                 data-pid="#{e.owner.id}" data-ismine="#{game.player.id == e.owner.id}"
+                 data-pid="player#{e.owner.id}" data-ismine="#{game.player.id == e.owner.id}"
                  />
         
         </ui:repeat>
 
         <ui:repeat var="st" value="#{game.stations}">
-            <div class="station" id="#{st.id}"
+            <div class="station" id="st#{st.id}"
                  data-owner-name="#{st.owner.info.name}"  
                  data-x="#{st.platform.railNode.x}" data-y="#{st.platform.railNode.y}"
                  data-name="#{st.name}" data-gatenum="#{st.ticketGate.gateNum}" 
-                 data-capacity="#{st.platform.capacity}" data-pid="#{st.owner.id}"/>
+                 data-capacity="#{st.platform.capacity}" data-pid="p#{st.owner.id}"/>
         </ui:repeat>
 
         <ui:repeat var="l" value="#{game.lines}">
-            <div class="line" id="#{l.id}"
+            <div class="line" id="l#{l.id}"
                  data-owner-name="#{l.owner.info.name}"
                  data-line-name="#{l.name}">
                 <ui:repeat var="lstep" value="#{l.steps}">
-                    <div class="linestep" id="#{lstep.id}"
+                    <div class="linestep" id="ls#{lstep.id}"
                          data-from-x="#{lstep.startRailNode.x}" data-from-y="#{lstep.startRailNode.y}"
                          data-to-x="#{lstep.goalRailNode.x}" data-to-y="#{lstep.goalRailNode.y}"
                          data-type="#{lstep.type}"/>
@@ -113,7 +114,7 @@
         </ui:repeat>
 
         <ui:repeat var="s" value="#{game.stepForHuman}">
-            <div class="stepforhuman" id="#{s.uid}"
+            <div class="stepforhuman" id="s#{s.uid}"
                  data-from-x="#{s.from.x}" data-from-y="#{s.from.y}"
                  data-to-x="#{s.to.x}" data-to-y="#{s.to.y}"
                  data-cost="#{s.cost}"/>

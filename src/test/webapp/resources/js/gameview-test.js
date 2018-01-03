@@ -113,6 +113,15 @@ describe('test gameview', function () {
             initEventHandler();
         });
     });
+    
+    describe('test handleResize', function () {
+        it('invoke', function () {
+            scope.renderer.resize = doNothing;
+            spyOn(window, 'fetchGraphics').and.callFake(doNothing);
+            spyOn(window, 'rewriteTempResource').and.callFake(doNothing);
+            handleResize();
+        });
+    });
 
     describe('test fetchGraphicx', function () {
         beforeEach(function () {
@@ -123,11 +132,18 @@ describe('test gameview', function () {
         });
 
         it('do nothing when empty', function () {
+            $('body').append("<div class='player' id='admin' data-isin='true'/>");
+            $('body').append("<div class='player' id='other' data-isin='false'/>");
+            spyOn(window, 'upsertSprite').and.callFake(doNothing);
+            
             fetchGraphics();
             expect(window.updateSprite.calls.any()).toEqual(false);
             expect(window.stageResourceSprite.calls.any()).toEqual(false);
             expect(scope.stage.removeChild.calls.any()).toEqual(false);
             expect(window.stageLine.calls.any()).toEqual(false);
+            
+            $('#admin').remove();
+            $('#other').remove();
         });
 
         ['company', 'residence', 'station'].forEach(function (type) {
@@ -176,7 +192,7 @@ describe('test gameview', function () {
 
         ['railedge'].forEach(function (type) {
             it('create line ' + type + ' when DOM exists', function () {
-                $('body').append("<div class='" + type + "' id = 'no1'/>");
+                $('body').append("<div class='" + type + "' id='no1' data-ismine='true'/>");
 
                 fetchGraphics();
 
@@ -231,16 +247,26 @@ describe('test gameview', function () {
             expect(mockSprite.position.x).toEqual(500);
             expect(mockSprite.position.y).toEqual(500);
         });
+        
+        it('change pos with isBringToFront', function () {
+            updateSprite(mockSprite, $mockElm, true);
+        });
     });
 
     describe('test stageLine', function () {
         it('create line', function () {
             $('body').append("<div class='player' id = '128' data-color='#FFFFFF'/>");
             scope.player['128'] = $('#128');
-            expect(stageLine($mockElm, {my : {scale: 1, color: 0xaaaaaa}}))
+            expect(stageLine($mockElm, {my: {scale: 1, color: 0xaaaaaa}}))
                     .not.toBeNull();
-            
+
             $('#128').remove();
+        });
+        
+        it('create colored line', function () {
+            $('body').append("<div class='player' id = '128' data-color='#FFFFFF'/>");
+            expect(stageLine($mockElm, {color: 0xaaaaaa, slide: 5, scale: 5, alpha: 0.5}))
+                    .not.toBeNull();
         });
     });
 
@@ -323,6 +349,13 @@ describe('test gameview', function () {
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
         });
+        
+        it('reload as cursor pos when clicked', function () {
+            window.startPosition = {x: 11, y: 12};
+            scope.cursor = {x: 0, y: 0};
+            onDragEnd();
+        });
+        
         it('do nothing just when drag ended', function () {
             window.startPosition = {x: 0, y: 0};
             onDragEnd();
@@ -383,6 +416,11 @@ describe('test gameview', function () {
             expect(toViewPosFromMouse(
                     {offsetX: 10, offsetY: 20}
             )).toEqual({x: 10, y: 20});
+        });
+        
+        it('both disabled', function () {
+            expect(toViewPosFromMouse({originalEvent: {}}
+            )).toEqual({x: 0, y: 0});
         });
     });
 
@@ -543,41 +581,105 @@ describe('test gameview', function () {
             expect(window.stageTempCircle.calls.count()).toEqual(2);
             expect(window.stageTempLine.calls.count()).toEqual(1);
         });
-        
+
         it('test rewrite when found neighbor', function () {
             spyOn(window, 'stageTempCircle').and.callThrough();
-            scope.tailNode = {x: 0, y:0, gamex: -128, gamey: -128};
+            scope.tailNode = {x: 0, y: 0, gamex: -128, gamey: -128};
             scope.cursor = {};
             scope.extendEdge = {};
             scope.mousePos = {x: 245, y: 245};
             $('body').append("<div class='railnode' id = 'no1' data-x='0.0' data-y='0.0'/>");
-            
+
             rewriteTempResource();
-            
+
             expect(scope.cursor.x).toEqual(250);
             expect(scope.cursor.y).toEqual(250);
         });
-        
+
         it('test rewrite when mouse surrounding tailNode', function () {
             spyOn(window, 'stageTempCircle').and.callThrough();
-            scope.tailNode = {x: 0, y:0, gamex: -128, gamey: -128};
+            scope.tailNode = {x: 0, y: 0, gamex: -128, gamey: -128};
             scope.cursor = {};
             scope.extendEdge = {};
-            scope.mousePos = {x: -125, y: -125};
+            scope.mousePos = {x: 5, y: 5};
             $('body').append("<div class='railnode' id = 'no1' data-x='-128.0' data-y='-128.0'/>");
-            
+
             rewriteTempResource();
-            
-            expect(scope.cursor.x).toEqual(-125);
-            expect(scope.cursor.y).toEqual(-125);
+
+            expect(scope.cursor.x).toEqual(5);
+            expect(scope.cursor.y).toEqual(5);
         });
         afterEach(function () {
             $('#no1').remove();
         });
     });
+    
+    describe('test removeTempResoureNeighbor', function() {
+        it('test remove', function() {
+            scope.neighborNode = {};
+            scope.neighborEdge = {};
+            
+            removeTempResourceNeighbor();
+            
+            expect(scope.neighborNode).toBeNull();
+            expect(scope.neighborEdge).toBeNull();
+        });
+    });
+    
+    describe('test writeTempResourceNeighbor ', function() {
+        beforeEach(function () {
+            $('body').append("<div class='railnode' id = 'no0' data-x='0.0' data-y='0.0'/>");
+        
+            $('body').append("<div class='railedge' id='no1'/>");
+            $('#no1').data('ismine', true);
+            $('#no1').data('from-x', '0');
+            $('#no1').data('from-y', '0');
+            $('#no1').data('to-x', '64');
+            $('#no1').data('to-y', '0');
+            $('#no1').data('reverseid', 'no2');
 
-    describe('test findNeighbor', function () {
-        it('test find neighbor', function () {
+            $('body').append("<div class='railedge' id='no2'/>");
+            $('#no2').data('ismine', true);
+            $('#no2').data('from-x', '64');
+            $('#no2').data('from-y', '0');
+            $('#no2').data('to-x', '0');
+            $('#no2').data('to-y', '0');
+            $('#no2').data('reverseid', 'no1');
+            
+            spyOn(window, 'stageTempCircle').and.returnValue({});
+            spyOn(window, 'stageLine').and.returnValue({});
+        });
+        
+        it('test write node', function() {
+            scope.mousePos = {x: 250, y: 250};
+            scope.neighborEdge = null;
+            
+            writeTempResourceNeighbor ();
+            
+            expect(scope.neighborNode).not.toBeNull();
+            expect(scope.neighborEdge).toBeNull();
+        });
+        
+        it('test write edge', function() {
+            scope.mousePos = {x: 300, y: 250};
+            scope.neighborNode = null;
+            
+            writeTempResourceNeighbor ();
+            
+            expect(scope.neighborNode).toBeNull();
+            expect(scope.neighborEdge.e1).toEqual({});
+            expect(scope.neighborEdge.e2).toEqual({});
+        });
+        
+        afterEach(function () {
+            $('#no0').remove();
+            $('#no1').remove();
+            $('#no2').remove();
+        });
+    });
+
+    describe('test writeTempResourceNeighbor ', function () {
+        it('test write node', function () {
             $('body').append("<div class='railnode' id = 'no1' data-x='0.0' data-y='0.0'/>");
 
             expect(findNeighbor('railnode', {x: 240, y: 240})).not.toBeNull();
@@ -592,7 +694,60 @@ describe('test gameview', function () {
 
             expect(findNeighbor('railnode', centerViewPos).attr('id')).toEqual('no2');
         });
-        
+
+        afterEach(function () {
+            $('#no1').remove();
+            $('#no2').remove();
+        });
+    });
+
+    describe('test findNeighborEdge', function () {
+        beforeEach(function () {
+            $('body').append("<div class='railedge' id='no1'/>");
+            $('#no1').data('ismine', true);
+            $('#no1').data('from-x', '0');
+            $('#no1').data('from-y', '0');
+            $('#no1').data('to-x', '64');
+            $('#no1').data('to-y', '0');
+            $('#no1').data('reverseid', 'no2');
+
+            $('body').append("<div class='railedge' id='no2'/>");
+            $('#no2').data('ismine', true);
+            $('#no2').data('from-x', '64');
+            $('#no2').data('from-y', '0');
+            $('#no2').data('to-x', '0');
+            $('#no2').data('to-y', '0');
+            $('#no2').data('reverseid', 'no1');
+
+        });
+
+        it('test do nothing when only other player edge', function () {
+            $('#no1').data('ismine', false);
+            $('#no2').data('ismine', false);
+            expect(findNeighborEdge('railedge')).toBeNull();
+        });
+
+        it('test far point', function () {
+            expect(findNeighborEdge('railedge', {x: 250, y: 280})).toBeNull();
+        });
+
+        it('test out of line', function () {
+            expect(findNeighborEdge('railedge', {x: 500, y: 250})).toBeNull();
+        });
+
+        it('test on line', function () {
+            var res = findNeighborEdge('railedge', {x: 300, y: 260});
+            expect(res).not.toBeNull();
+            expect(res.$e1.attr('id')).toEqual('no1');
+            expect(res.$e2.attr('id')).toEqual('no2');
+        });
+
+        it('test on line direct mode', function () {
+            var res = findNeighborEdge('railedge', {x: 300, y: 260}, true);
+            expect(res).not.toBeNull();
+            expect(res.attr('id')).toEqual('no1');
+        });
+
         afterEach(function () {
             $('#no1').remove();
             $('#no2').remove();
@@ -612,7 +767,11 @@ describe('test gameview', function () {
 // test gameview でいろいろmockを作っているので、別に分けた
 describe('test initPixi', function () {
     it('invoke', function () {
+        $('body').append("<div class='player' id='admin' data-icon='base/src/main/webapp/resources/image/s_player.png'/>");
+
         initPixi();
         // exports.init は見つからないといわれてできなかった。
+        
+        $('#admin').remove();
     });
 });

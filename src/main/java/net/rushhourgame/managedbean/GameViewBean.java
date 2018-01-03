@@ -381,4 +381,8 @@ public class GameViewBean implements Serializable {
         RailEdge edge = railCon.findNearestEdge(p, center, scale);
         return edge == null ? new SimplePoint() : edge;
     }
+    
+    public RailEdge getReverseEdge(RailEdge e) {
+        return railCon.findReverseEdge(e);
+    }
 }

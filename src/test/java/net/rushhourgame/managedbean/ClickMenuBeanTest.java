@@ -49,6 +49,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Spy
     protected ClickMenuBean inst;
+    
+    protected Player player;
 
     protected Map<String, String> map;
     
@@ -64,7 +66,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.pCon = PCON;
         
         try {
-            Player player = createPlayer();
+            player = createPlayer();
             doReturn(player.getToken()).when(session).getToken();
         } catch (RushHourException ex) {
             Logger.getLogger(ClickMenuBeanTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,7 +96,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarRight() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
         
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -107,7 +109,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarLeft() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -120,7 +122,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarTop() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -133,7 +135,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarBottom() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -146,7 +148,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearRight() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
         System.out.println(TCON.findAll("RailNode", RailNode.class));
 
         // scale 4 (幅16)のとき、±1を近いと判定
@@ -160,7 +162,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearLeft() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -173,7 +175,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearTop() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -186,7 +188,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearBottom() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -213,7 +215,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testCanExtendRail() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
+        RAILCON.create(player, p);
 
         map.put("scale", "3.0");
         map.put("clickX", "0.0");
@@ -224,11 +226,15 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testExtendRail() throws RushHourException {
-        RAILCON.create(createPlayer(), p);
-
         map.put("scale", "3.0");
         map.put("clickX", "0.0");
         map.put("clickY", "0.4");
+        
+        RAILCON.create(player, p);
+        RAILCON.create(player, new SimplePoint(0, 0.6));
+        RAILCON.create(player, new SimplePoint(0, 0.2));
+        RAILCON.create(player, new SimplePoint(0, 0.4));
+
         inst.init();
         inst.extendRail();
     }

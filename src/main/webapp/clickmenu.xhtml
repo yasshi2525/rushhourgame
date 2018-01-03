@@ -10,9 +10,9 @@
         <h:form>
             <p:menu>
                 <p:menuitem rendered="#{menu.canCreateRail()}" value="#{msg.createRail}"
-                            actionListener="#{menu.createRail()}"/>
+                            icon="fa fa-plus" actionListener="#{menu.createRail()}"/>
                 <p:menuitem rendered="#{menu.canExtendRail()}" value="#{msg.extendRail}"
-                            actionListener="#{menu.extendRail()}"/>
+                            icon="fa fa-pencil" actionListener="#{menu.extendRail()}"/>
             </p:menu>
         </h:form>
     </h:body>

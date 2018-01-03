@@ -191,7 +191,7 @@ public class RailController extends PointEntityController {
         }).get();
     }
     
-    protected RailEdge findReverseEdge(@NotNull RailEdge e) {
+    public RailEdge findReverseEdge(@NotNull RailEdge e) {
         return em.createNamedQuery("RailEdge.find", RailEdge.class)
                 .setParameter("from", e.getTo())
                 .setParameter("to", e.getFrom())

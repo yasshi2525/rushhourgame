@@ -233,4 +233,9 @@ public class RushHourSessionTest {
         RushHourSession.setLocale(session, Locale.ITALY);
         assertEquals(Locale.ITALY, RushHourSession.getLocale(session));
     }
+    
+    @Test
+    public void testSimpleInstance() {
+        assertNotNull(RushHourSession.getSimpleSession().findOrCreateBean());
+    }
 }
