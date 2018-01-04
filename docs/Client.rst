@@ -26,6 +26,8 @@
 線路敷設の流れ
 --------------
 
+線路の敷設を開始し、延伸する
+
 .. seqdiag::
 
     seqdiag {
@@ -63,4 +65,42 @@
         JSF ->> gameview [label = "fireClickMenu()"];
         gameview ->> GameViewBean [label = "extendRail()"];
         GameViewBean ->> gameview [label = "nextExtendingMode(x, y)", leftnote = "描画"];
+    }
+
+線路を撤去する。
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+        ユーザ => gameview [label = "onDragEnd()", leftnote = "線路エッジをクリック"] {
+            gameview ->> JSF [label = "registerEdgeId()"];
+        };
+        JSF => GameViewBean [label = "registerEdgeId", note = "線路エッジのIDを保存"];
+        JSF ->> gameview [label = "fireClickMenu()"];
+        gameview ->> GameViewBean [label = "openClickMenu()"];
+        GameViewBean -> clickmenu [label = "openDiaglog()", leftnote = "ダイアログ表示"];
+    }
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+        ユーザ => clickmenu [label = "線路撤去選択"] {
+            clickmenu ->> ClickMenuBean [label = "removeRail()"];
+        }
+            ClickMenuBean ->> gameview [label = "closeDialog()"];
+            gameview ->> GameViewBean [label = "handleReturn()"];
+            GameViewBean ->> JSF [label = "PF('confirmDialog').show()", leftnote = "確認ダイアログ表示"];
+    }
+
+.. seqdiag::
+
+    seqdiag {
+        ユーザ; gameview; clickmenu; JSF; GameViewBean; ClickMenuBean;
+        ユーザ => JSF [leftnote = "「削除」をクリック"] {
+            JSF ->> GameViewBean [label = "removeRail()"];
+        }
+        GameViewBean ->> JSF [label = "PF('confirmDialog').hide()"];
+        JSF -> gameview [label = "handleCompleteRemoving()"];
     }
