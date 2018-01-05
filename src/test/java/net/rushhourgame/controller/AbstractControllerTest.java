@@ -69,6 +69,7 @@ public class AbstractControllerTest {
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;

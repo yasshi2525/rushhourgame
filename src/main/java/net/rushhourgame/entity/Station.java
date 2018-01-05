@@ -45,13 +45,17 @@ import javax.validation.constraints.NotNull;
             query = "SELECT obj FROM Station obj JOIN RailNode n ON obj.platform = n.platform WHERE n.x > :x1 AND n.x < :x2 AND n.y > :y1 AND n.y < :y2"
     ),
     @NamedQuery(
+            name = "Station.findMyStation",
+            query = "SELECT obj FROM Station obj WHERE obj.owner = :owner"
+    ),
+    @NamedQuery(
             name = "Station.existsName",
             query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
                     + " FROM Station x WHERE x.owner = :owner AND x.name = :name"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
-public class Station extends AbstractEntity implements Pointable, Ownable {
+public class Station extends AbstractEntity implements Pointable, Ownable, Nameable {
 
     private static final long serialVersionUID = 1L;
 
@@ -92,6 +96,7 @@ public class Station extends AbstractEntity implements Pointable, Ownable {
         this.ticketGate = ticketGate;
     }
 
+    @Override
     public String getName() {
         return name;
     }

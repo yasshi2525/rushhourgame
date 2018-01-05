@@ -239,6 +239,11 @@ public class LineController extends AbstractController {
     public List<Line> findAll() {
         return em.createNamedQuery("Line.findAll", Line.class).getResultList();
     }
+    
+    public List<Line> findAll(Player p) {
+        return em.createNamedQuery("Line.findMyAll", Line.class)
+                .setParameter("owner", p).getResultList();
+    }
 
     public List<Line> findIn(@NotNull Pointable center, double scale) {
         return em.createNamedQuery("Line.findAll", Line.class).getResultList()

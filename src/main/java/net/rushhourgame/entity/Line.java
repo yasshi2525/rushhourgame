@@ -44,6 +44,10 @@ import javax.validation.constraints.NotNull;
             query = "SELECT x FROM Line x"
     ),
     @NamedQuery(
+            name = "Line.findMyAll",
+            query = "SELECT x FROM Line x WHERE x.owner = :owner"
+    ),
+    @NamedQuery(
             name = "Line.existsName",
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
                     + " FROM Line obj WHERE obj.owner = :owner AND obj.name = :name"
@@ -55,7 +59,7 @@ import javax.validation.constraints.NotNull;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
-public class Line extends AbstractEntity implements Ownable {
+public class Line extends AbstractEntity implements Ownable, Nameable {
     private static final long serialVersionUID = 1L;
     
     @NotNull
@@ -68,6 +72,7 @@ public class Line extends AbstractEntity implements Ownable {
     @OneToMany(mappedBy = "parent")
     List<LineStep> steps;
 
+    @Override
     public String getName() {
         return name;
     }

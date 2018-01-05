@@ -108,6 +108,11 @@ public class StationController extends PointEntityController {
         station.getTicketGate().setGateNum(num);
     }
     
+    public List<Station> findAll(Player owner) {
+        return em.createNamedQuery("Station.findMyStation", Station.class)
+                .setParameter("owner", owner).getResultList();
+    }
+    
     public List<Station> findIn(@NotNull Pointable center, double scale){
         return super.findIn(em.createNamedQuery("Station.findIn", Station.class), 
                 center, scale);

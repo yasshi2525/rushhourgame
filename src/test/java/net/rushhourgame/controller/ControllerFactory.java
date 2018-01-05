@@ -26,6 +26,7 @@ package net.rushhourgame.controller;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.entity.EncryptConverter;
 
 /**
@@ -120,6 +121,17 @@ public class ControllerFactory {
     public static LineRouteSearcher createLineRouteSearcher() {
         LineRouteSearcher inst = new LineRouteSearcher();
         init(inst);
+        return inst;
+    }
+    
+    public static AssistanceController createAssistanceController() {
+        AssistanceController inst = new AssistanceController();
+        inst.lCon = createLineController();
+        inst.msg = RushHourResourceBundle.getInstance();
+        inst.rCon = createRailController();
+        inst.stCon = createStationController();
+        init(inst);
+        
         return inst;
     }
 
