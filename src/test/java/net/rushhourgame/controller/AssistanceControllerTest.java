@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Nameable;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
@@ -73,7 +74,10 @@ public class AssistanceControllerTest extends AbstractControllerTest{
         
         assertTrue(node.distTo(ORGIN) == 0);
         assertEquals("駅1", node.getPlatform().getStation().getName());
-        assertTrue(LCON.findAll(player).get(0).getName().equals("路線1"));
+        Line line = LCON.findAll(player).get(0);
+        EM.refresh(line);
+        assertEquals("路線1", line.getName());
+        assertEquals(1, line.getSteps().size());
     }
 
     @Test

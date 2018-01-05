@@ -31,10 +31,12 @@ import javax.persistence.PersistenceUnit;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Nameable;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -57,8 +59,9 @@ public class AssistanceController extends AbstractController{
     
     public RailNode startWithStation(@NotNull Player player, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
         RailNode startNode = rCon.create(player, p);
-        stCon.create(player, startNode, getDefaultStationName(player, locale));
-        lCon.create(player, getDefaultLineName(player, locale));
+        Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
+        Line line = lCon.create(player, getDefaultLineName(player, locale));
+        lCon.start(line, player, station);
         return startNode;
     } 
     
