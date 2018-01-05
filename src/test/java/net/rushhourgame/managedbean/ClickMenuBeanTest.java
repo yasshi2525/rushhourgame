@@ -27,10 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -64,6 +67,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.session = session;
         inst.rCon = RAILCON;
         inst.pCon = PCON;
+        inst.aCon = ACON;
         inst.em = EM;
         
         try {
@@ -244,6 +248,10 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "12.0");
         inst.init();
         inst.createRail();
+        assertEquals(1, TCON.findAll("Station", RailNode.class).size());
+        assertEquals(1, TCON.findAll("Station", Station.class).size());
+        assertEquals(1, TCON.findAll("Line", Line.class).size());
+        assertEquals(1, TCON.findAll("LineStep", LineStep.class).size());
     }
     
     @Test
@@ -264,14 +272,26 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testExtendRail() throws RushHourException {
-        map.put("scale", "3.0");
-        map.put("clickX", "0.0");
-        map.put("clickY", "0.4");
+        map.put("scale", "6.0");
+        map.put("clickX", "1.0");
+        map.put("clickY", "1.0");
         
-        RAILCON.create(player, p);
-        RAILCON.create(player, new SimplePoint(0, 0.6));
-        RAILCON.create(player, new SimplePoint(0, 0.2));
-        RAILCON.create(player, new SimplePoint(0, 0.4));
+        RAILCON.create(player, new SimplePoint(1.0, 0.0));
+        RAILCON.create(player, new SimplePoint(1.0, 2.0));
+
+        inst.init();
+        inst.extendRail();
+    }
+    
+    @Test
+    public void testExtendRail2() throws RushHourException {
+        map.put("scale", "6.0");
+        map.put("clickX", "1.0");
+        map.put("clickY", "1.0");
+        
+        RAILCON.create(player, new SimplePoint(0.0, 2.5));
+        RAILCON.create(player, new SimplePoint(0.0, 0.0));
+        RAILCON.create(player, new SimplePoint(0.0, 0.5));
 
         inst.init();
         inst.extendRail();

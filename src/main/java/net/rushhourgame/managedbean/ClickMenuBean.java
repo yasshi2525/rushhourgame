@@ -42,6 +42,7 @@ import javax.transaction.Transactional;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.entity.Player;
@@ -74,6 +75,8 @@ public class ClickMenuBean implements Serializable {
     protected PlayerController pCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected AssistanceController aCon;
     @Inject
     protected RushHourResourceBundle msg;
 
@@ -112,7 +115,7 @@ public class ClickMenuBean implements Serializable {
         getRequestContext().closeDialog(
                 new OperationBean(
                         OperationBean.Type.RAIL_CREATE,
-                        rCon.create(player, click)));
+                        aCon.startWithStation(player, click, session.getLocale())));
     }
 
     public boolean isDisplayExtendRail() {

@@ -31,6 +31,7 @@ import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
@@ -73,6 +74,7 @@ public class AbstractBeanTest {
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
+    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
     
     @Mock

@@ -541,4 +541,9 @@ public class RailControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
+    
+    @Test
+    public void testFindNodeIn() {
+        assertTrue(inst.findNodeIn(TEST_POS, 6).isEmpty());
+    }
 }

@@ -51,6 +51,7 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(
             name = "RailNode.findMyLonelyIn",
             query = "SELECT obj FROM RailNode obj WHERE NOT EXISTS (SELECT e FROM RailEdge e WHERE obj = e._from OR obj = e._to)"
+                    + " AND NOT EXISTS (SELECT pf FROM Platform pf WHERE obj = pf.railNode)"
                     + " AND obj.owner = :owner AND obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2 "
     ),
     @NamedQuery(

@@ -379,6 +379,9 @@ public class GameViewBeanTest extends AbstractBeanTest {
         RailNode near1 = RAILCON.create(player, new SimplePoint(10, 10));
         RailNode near2 = RAILCON.extend(player, near1, new SimplePoint(10, 20));
         
+        RailNode tooFar = RAILCON.create(player, new SimplePoint(1000, 1000));
+        RailNode tooFar2 = RAILCON.extend(player, far1, new SimplePoint(1000, 2000));
+        
         assertTrue(inst.isIconIn(player));
         assertTrue(10 == inst.getIconPos(player).getX());
         assertTrue(15 == inst.getIconPos(player).getY());
