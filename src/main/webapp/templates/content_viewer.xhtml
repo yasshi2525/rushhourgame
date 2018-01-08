@@ -116,11 +116,12 @@
             <div class="line" id="l#{l.id}"
                  data-owner-name="#{l.owner.info.name}"
                  data-line-name="#{l.name}">
-                <ui:repeat var="lstep" value="#{l.steps}">
+                <ui:repeat var="lstep" value="#{game.getSortedLineSteps(l)}" varStatus="status">
                     <div class="linestep" id="ls#{lstep.id}"
                          data-from-x="#{lstep.startRailNode.x}" data-from-y="#{lstep.startRailNode.y}"
                          data-to-x="#{lstep.goalRailNode.x}" data-to-y="#{lstep.goalRailNode.y}"
-                         data-type="#{lstep.type}"/>
+                         data-type="#{lstep.type}" data-idx="#{status.index + 1}"
+                         data-pid="player#{l.owner.id}"  data-ismine="#{game.player.id == l.owner.id}"/>
                 </ui:repeat>
             </div>
         </ui:repeat>

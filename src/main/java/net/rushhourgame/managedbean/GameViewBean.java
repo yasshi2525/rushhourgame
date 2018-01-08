@@ -43,6 +43,7 @@ import javax.transaction.Transactional;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.PlayerController;
@@ -52,6 +53,7 @@ import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.Pointable;
@@ -94,6 +96,8 @@ public class GameViewBean implements Serializable {
     protected LineController lCon;
     @Inject
     protected StepForHumanController sCon;
+    @Inject
+    protected AssistanceController aCon;
     @Inject
     protected RushHourSession session;
     @Inject
@@ -190,6 +194,22 @@ public class GameViewBean implements Serializable {
         return lCon.findIn(center, getLoadScale());
     }
 
+    public List<LineStep> getSortedLineSteps(Line line) {
+        if (lCon.isCompleted(line)) {
+            List<LineStep> sorted = new ArrayList<>();
+            LineStep top = line.findTop();
+            LineStep step = top;
+
+            do {
+                sorted.add(step);
+            } while (!top.equals(step = step.getNext()));
+
+            return sorted;
+        } else {
+            return line.getSteps();
+        }
+    }
+
     public List<StepForHuman> getStepForHuman() {
         return sCon.findIn(center, getLoadScale());
     }
@@ -282,7 +302,7 @@ public class GameViewBean implements Serializable {
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
                 underOperation = true;
                 break;
-                
+
             case RAIL_REMOVE:
                 getRequestContext().execute("PF('confirmDialog').show();");
                 break;
@@ -310,7 +330,8 @@ public class GameViewBean implements Serializable {
             }
         } else {
             // 延伸
-            tailNode = railCon.extend(player, tailNode, click);
+            tailNode = em.merge(tailNode);
+            tailNode = aCon.extend(player, tailNode, click);
             showExtendedRailAnnouncement();
             getRequestContext().execute("nextExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
@@ -407,7 +428,7 @@ public class GameViewBean implements Serializable {
                 Long.parseLong(reqParam.get("railEdge1.id")),
                 Long.parseLong(reqParam.get("railEdge2.id")));
     }
-    
+
     @Transactional
     public void removeRail() throws RushHourException {
         clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
@@ -415,7 +436,7 @@ public class GameViewBean implements Serializable {
         getRequestContext().execute("PF('confirmDialog').hide();");
         showRemovedRailAnnouncement();
     }
-    
+
     protected void showRemovedRailAnnouncement() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_REMOVE, session.getLocale())));

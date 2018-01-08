@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -82,7 +83,7 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
     }
 
     public List<LineStep> getSteps() {
-        return steps;
+            return steps;
     }
 
     @Override
@@ -112,5 +113,11 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
     
     public boolean isAreaIn(Pointable center, double scale) {
         return steps.stream().anyMatch(s -> s.isAreaIn(center, scale));
+    }
+    
+    public LineStep findTop() {
+        return steps.stream()
+                .filter(step -> step.getDeparture() != null)
+                .min((s1, s2) -> (int) (s1.getId() - s2.getId())).orElse(null);
     }
 }

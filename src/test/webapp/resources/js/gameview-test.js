@@ -264,10 +264,18 @@ describe('test gameview', function () {
             $('#128').remove();
         });
         
-        it('create colored line', function () {
+        it('create colored line with label', function () {
             $('body').append("<div class='player' id = '128' data-color='#FFFFFF'/>");
             expect(stageLine($mockElm, {color: 0xaaaaaa, slide: 5, scale: 5, alpha: 0.5}))
                     .not.toBeNull();
+            $('#128').remove();
+        });
+        
+        it('create line without label', function () {
+            $('body').append("<div class='player' id = 'edge1' data-color='#FFFFFF'/>");
+            expect(stageLine($('#edge1'), {color: 0xaaaaaa, slide: 5, scale: 5, alpha: 0.5}))
+                    .not.toBeNull();
+            $('#edge1').remove();
         });
     });
 

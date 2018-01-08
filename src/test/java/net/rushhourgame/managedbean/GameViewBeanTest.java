@@ -26,6 +26,7 @@ package net.rushhourgame.managedbean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,6 +85,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.stCon = STCON;
         inst.lCon = LCON;
         inst.sCon = SCON;
+        inst.aCon = ACON;
         inst.em = EM;
         inst.center = new SimplePoint();
         inst.click = new SimplePoint();
@@ -320,7 +322,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailExtending() throws RushHourException {
         inst.player = player;
-        RailNode r1 = RAILCON.create(player, new SimplePoint(10, 10));
+        RailNode r1 = ACON.startWithStation(player, new SimplePoint(10, 10), Locale.JAPANESE);
         inst.tailNode = r1;
         inst.click = new SimplePoint(20, 20);
         
@@ -337,7 +339,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRail() throws RushHourException {
         inst.player = player;
-        inst.tailNode = RAILCON.create(player, new SimplePoint(10, 10));
+        inst.tailNode = ACON.startWithStation(player, new SimplePoint(10, 10), Locale.JAPANESE);
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
 

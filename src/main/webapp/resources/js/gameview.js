@@ -47,6 +47,18 @@ var lineResources = {
             scale: 1,
             alpha: 0.5
         }
+    },
+    linestep: {
+        my: {
+            slide: 15,
+            scale: 1,
+            alpha: 0.5
+        },
+        other: {
+            slide: 10,
+            scale: 1,
+            alpha: 0.5
+        }
     }
 };
 
@@ -118,7 +130,8 @@ initPixi = function () {
         'railedge': {},
         'station': {},
         'stepforhuman': {},
-        'icon': {}
+        'icon': {},
+        'linestep': {}
     };
 
     // 画像をロードしたあと、イベントハンドラスプライトを表示
@@ -275,6 +288,8 @@ stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
     var color = opts.color ? opts.color : scope.player[$elm.data('pid')].data('color').replace('#', '0x');
     var scope = $(document).data('scope');
+    
+    var container = new pixi.Container;
     var obj = new pixi.Graphics();
 
     var from = toViewPos(
@@ -291,9 +306,19 @@ stageLine = function ($elm, opts) {
             .lineTo(line.tox, line.toy);
 
     obj.alpha = opts.alpha;
+    
+    if ($elm.data('idx')) {
+        var idx = new pixi.Text($elm.data('idx'), {
+            fontSize: 10, fill: 0xffffff
+        });
+        idx.x = (line.fromx + line.tox) / 2 - 5;
+        idx.y = (line.fromy + line.toy) / 2 - 5;
+        container.addChild(idx);
+    }
 
-    scope.stage.addChild(obj);
-    return obj;
+    container.addChild(obj);
+    scope.stage.addChild(container);
+    return container;
 };
 
 slideEdge = function (from, to, scale) {
