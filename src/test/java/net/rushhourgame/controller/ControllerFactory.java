@@ -64,6 +64,7 @@ public class ControllerFactory {
     
     public static LineController createLineController() {
         LineController inst = new LineController();
+        inst.rCon = createRailController();
         inst.sCon = createStepForHumanController();
         init(inst);
         return inst;

@@ -78,15 +78,4 @@ public abstract class AbstractController implements Serializable{
                 .setParameter(key, value)
                 .getSingleResult()).longValue() == 1L;
     }
-
-    @SuppressWarnings("unchecked")
-    protected <T> T findBy(String query, String key, String value, T dummyInst) {
-        try {
-            return (T) em.createNamedQuery(query, dummyInst.getClass())
-                    .setParameter(key, value)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
 }

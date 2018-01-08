@@ -33,6 +33,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.entity.troute.LineStepDeparture;
+import net.rushhourgame.entity.troute.LineStepMoving;
 
 /**
  * 線路ノード
@@ -85,7 +87,7 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
 
     @OneToOne(mappedBy = "railNode")
     protected Platform platform;
-
+    
     @Override
     public double getX() {
         return x;

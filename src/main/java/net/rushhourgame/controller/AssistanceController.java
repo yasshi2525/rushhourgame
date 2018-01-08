@@ -32,9 +32,11 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Nameable;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
@@ -64,6 +66,17 @@ public class AssistanceController extends AbstractController{
         lCon.start(line, player, station);
         return startNode;
     } 
+    
+    public RailNode extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
+        RailNode extended = rCon.extend(player, tailNode, p);
+        LineStep inserted = lCon.insert(tailNode, extended, player);
+        if (inserted.getNext() == null) {
+            if (lCon.canEnd(inserted, player)) {
+                lCon.end(inserted, player);
+            }
+        }
+        return extended;
+    }
     
     protected String getDefaultStationName(Player player, Locale locale) {
         return getDefaultName(stCon.findAll(player), msg.get(LABEL_STATION, locale));

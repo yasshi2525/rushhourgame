@@ -55,7 +55,7 @@ public class LineControllerTest extends AbstractControllerTest {
 
     protected LineController inst;
     protected static final Pointable TEST_POS = new SimplePoint(10, 10);
-
+    protected static final Pointable TEST_POS2 = new SimplePoint(20, 20);
     @Before
     @Override
     public void setUp() {
@@ -468,9 +468,67 @@ public class LineControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
+
+    @Test
+    public void testInsertOtherFrom() throws RushHourException {
+        Player player = createPlayer();
+        Player other = createOther();
+        RailNode n1 = RAILCON.create(other, TEST_POS);
+
+        try {
+            inst.insert(n1, n1, player);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+
+    @Test
+    public void testInsertOtherTo() throws RushHourException {
+        Player player = createPlayer();
+        Player other = createOther();
+        RailNode n1 = RAILCON.create(player, TEST_POS);
+        RailNode n2 = RAILCON.create(other, TEST_POS);
+
+        try {
+            inst.insert(n1, n2, player);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
     
+    @Test
+    public void testInsertUnconnected() throws RushHourException {
+        Player player = createPlayer();
+        RailNode n1 = RAILCON.create(player, TEST_POS);
+        RailNode n2 = RAILCON.create(player, TEST_POS2);
+
+        try {
+            inst.insert(n1, n2, player);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testInsertEmpty() throws RushHourException {
+        Player player = createPlayer();
+        RailNode n1 = RAILCON.create(player, TEST_POS);
+        RailNode n2 = RAILCON.extend(player, n1, TEST_POS2);
+
+        try {
+            inst.insert(n1, n2, player);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+
     /**
      * DepartureからDepartureはつなげられない.
+     *
      * @throws RushHourException 例外
      */
     @Test
@@ -479,13 +537,14 @@ public class LineControllerTest extends AbstractControllerTest {
         Player owner = st.getOwner();
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st);
-        
+
         assertNotNull(start.getDeparture());
         assertFalse(inst.canEnd(start, owner));
     }
-    
+
     /**
      * MovingからDepartureはつなげられない.
+     *
      * @throws RushHourException 例外
      */
     @Test
@@ -501,13 +560,14 @@ public class LineControllerTest extends AbstractControllerTest {
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st);
         LineStep tail = inst.extend(start, owner, edge);
-        
+
         assertNotNull(tail.getMoving());
         assertFalse(inst.canEnd(tail, owner));
     }
-    
+
     /**
      * PassingからDepartureはつなげられない.
+     *
      * @throws RushHourException 例外
      */
     @Test
@@ -525,13 +585,14 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep start = inst.start(line, owner, st);
         LineStep next = inst.extend(start, owner, goEdge);
         LineStep tail = inst.extend(next, owner, backEdge, true);
-        
+
         assertNotNull(tail.getPassing());
         assertFalse(inst.canEnd(tail, owner));
     }
-    
+
     /**
      * StoppingからDepartureはつなげられる.
+     *
      * @throws RushHourException 例外
      */
     @Test
@@ -549,11 +610,11 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep start = inst.start(line, owner, st);
         LineStep next = inst.extend(start, owner, goEdge);
         LineStep tail = inst.extend(next, owner, backEdge);
-        
+
         assertNotNull(tail.getStopping());
         assertTrue(inst.canEnd(tail, owner));
     }
-    
+
     @Test
     public void testCanEndUnconnected() throws RushHourException {
         Station st1 = createStation();
@@ -563,16 +624,15 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep tail = inst.extend(start, owner, goEdge);
-        
+
         assertNotNull(tail.getStopping());
         assertFalse(inst.canEnd(tail, owner));
     }
-    
-    
+
     @Test
     public void testCanEndOtherOwner() throws RushHourException {
         Station st = createStation();
@@ -580,14 +640,14 @@ public class LineControllerTest extends AbstractControllerTest {
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st);
         Player other = createOther();
-        
+
         try {
             inst.canEnd(start, other);
         } catch (RushHourException e) {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testCanEndHavingNext() throws RushHourException {
         Station st = createStation();
@@ -596,18 +656,18 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(node2);
         RailEdge goEdge = node2.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep step1 = inst.start(line, owner, st);
         LineStep step2 = inst.extend(step1, owner, goEdge);
-        
+
         try {
             inst.canEnd(step1, owner);
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEnd() throws RushHourException {
         Station st = createStation();
@@ -623,17 +683,17 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep start = inst.start(line, owner, st);
         LineStep next = inst.extend(start, owner, goEdge);
         LineStep tail = inst.extend(next, owner, backEdge);
-        
+
         assertNotNull(tail.getStopping());
         assertTrue(inst.canEnd(tail, owner));
         assertFalse(inst.isCompleted(line));
-        
+
         inst.end(tail, owner);
-        
+
         assertEquals(start, tail.getNext());
         assertTrue(inst.isCompleted(line));
     }
-    
+
     @Test
     public void testEndOtherOwner() throws RushHourException {
         Station st = createStation();
@@ -641,14 +701,14 @@ public class LineControllerTest extends AbstractControllerTest {
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st);
         Player other = createOther();
-        
+
         try {
             inst.end(start, other);
         } catch (RushHourException e) {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
         }
     }
-    
+
     @Test
     public void testEndHavingNext() throws RushHourException {
         Station st = createStation();
@@ -657,18 +717,18 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(node2);
         RailEdge goEdge = node2.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep step1 = inst.start(line, owner, st);
         LineStep step2 = inst.extend(step1, owner, goEdge);
-        
+
         try {
             inst.end(step1, owner);
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEndUnconnected() throws RushHourException {
         Station st1 = createStation();
@@ -678,21 +738,21 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep tail = inst.extend(start, owner, goEdge);
-        
+
         assertNotNull(tail.getStopping());
         assertFalse(inst.canEnd(tail, owner));
-        
+
         try {
             inst.end(tail, owner);
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
-    
+
     @Test
     public void testEndTwoStation() throws RushHourException {
         // 駅 - 線路 - 駅
@@ -717,10 +777,10 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.refresh(line);
 
         inst.end(extended2, owner);
-        
+
         List<StepForHumanThroughTrain> throughs = SCON.findThroughTrainAll();
         assertEquals(2, throughs.size());
-        
+
         // 徒歩よりコストが安い
         StepForHumanThroughTrain through = throughs.get(0);
         assertTrue(st2.distTo(st1) > through.getCost());
@@ -729,57 +789,57 @@ public class LineControllerTest extends AbstractControllerTest {
         // st1かst2は不定？
         assertTrue(through.getUid().startsWith("train"));
     }
-    
+
     @Test
     public void testIsAreaIn() throws RushHourException {
         Station st1 = createStation();
         Player owner = st1.getOwner();
-        
+
         RailNode n1 = st1.getPlatform().getRailNode();
         RailNode n2 = RAILCON.extend(owner, n1, new SimplePoint(100, 100));
-        
+
         EM.flush();
         EM.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep extend = inst.extend(start, owner, edgeGo);
-        
+
         assertTrue(extend.isAreaIn(new SimplePoint(0, 0), 2));
         assertTrue(extend.isAreaIn(new SimplePoint(100, 100), 2));
         assertFalse(extend.isAreaIn(new SimplePoint(50, 50), 2));
     }
-    
+
     @Test
     public void testFindIn() throws RushHourException {
         Station st1 = createStation();
         Player owner = st1.getOwner();
-        
+
         RailNode n1 = st1.getPlatform().getRailNode();
         RailNode n2 = RAILCON.extend(owner, n1, new SimplePoint(100, 100));
-        
+
         EM.flush();
         EM.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
-        
+
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep extend = inst.extend(start, owner, edgeGo);
-        
+
         EM.flush();
         List<Line> scopedLine = inst.findIn(new SimplePoint(0, 0), 2);
         assertEquals(1, scopedLine.size());
         assertEquals(2, scopedLine.get(0).getSteps().size());
-        
+
         scopedLine = inst.findIn(new SimplePoint(100, 100), 2);
         assertEquals(1, scopedLine.size());
         assertEquals(2, scopedLine.get(0).getSteps().size());
-        
+
         assertTrue(inst.findIn(new SimplePoint(50, 50), 2).isEmpty());
-        
+
         assertEquals(1, inst.findAll().size());
         assertEquals(2, inst.findAll().get(0).getSteps().size());
     }

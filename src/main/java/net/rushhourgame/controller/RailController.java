@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Player;
@@ -45,9 +46,6 @@ import net.rushhourgame.exception.RushHourException;
 public class RailController extends PointEntityController {
 
     private static final long serialVersionUID = 1L;
-
-    @Inject
-    PlayerController pCon;
 
     public RailNode create(@NotNull Player owner, @NotNull Pointable p) throws RushHourException {
         if (exists("RailNode.exists", owner, p)) {
@@ -93,10 +91,10 @@ public class RailController extends PointEntityController {
         if (edges.size() != 2 || !edges.get(0).isReverse(edges.get(1))) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        
+
         RailNode n1 = edges.get(0).getFrom();
         RailNode n2 = edges.get(0).getTo();
-        
+
         for (RailEdge e : edges) {
             if (!e.isOwnedBy(owner)) {
                 throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
@@ -184,10 +182,18 @@ public class RailController extends PointEntityController {
     }
 
     public boolean existsEdge(@NotNull RailNode from, @NotNull RailNode to) {
-        return !em.createNamedQuery("RailEdge.find", RailEdge.class)
-                .setParameter("from", from)
-                .setParameter("to", to)
-                .getResultList().isEmpty();
+        return findEdge(from, to) != null;
+    }
+
+    public RailEdge findEdge(@NotNull RailNode from, @NotNull RailNode to) {
+        try {
+            return em.createNamedQuery("RailEdge.find", RailEdge.class)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public RailEdge findNearestEdge(Player p, @NotNull Pointable center, double scale) {

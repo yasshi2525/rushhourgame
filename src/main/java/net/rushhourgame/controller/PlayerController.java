@@ -55,7 +55,6 @@ import net.rushhourgame.json.UserData;
 public class PlayerController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
-    private final Player dummyInst = new Player();
     private static final Logger LOG = Logger.getLogger(PlayerController.class.getName());
     @Inject
     protected OAuthController oCon;
@@ -107,7 +106,7 @@ public class PlayerController extends AbstractController {
     public boolean existsUserId(String userId, @NotNull SignInType type) throws RushHourException {
         return findByUserId(userId, type) != null;
     }
-    
+
     public Player findByUserId(String userId, @NotNull SignInType signIn) throws RushHourException {
         if (userId == null) {
             return null;
@@ -130,7 +129,13 @@ public class PlayerController extends AbstractController {
         if (token == null) {
             return null;
         }
-        return findBy("Player.findByToken", "token", token, dummyInst);
+        try {
+            return em.createNamedQuery("Player.findByToken", Player.class)
+                    .setParameter("token", token)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public boolean isValidToken(String token) {
@@ -151,7 +156,7 @@ public class PlayerController extends AbstractController {
                     + " access token have already been remoevd. {0}", token);
         }
     }
-    
+
     public List<PlayerInfo> findAll() {
         return em.createNamedQuery("PlayerInfo.findAll", PlayerInfo.class).getResultList();
     }

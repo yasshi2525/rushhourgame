@@ -26,6 +26,8 @@ package net.rushhourgame.entity.troute;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
@@ -37,6 +39,12 @@ import net.rushhourgame.entity.RailEdge;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "LineStep.findByMovingGoalRailNode",
+            query = "SELECT obj.parent FROM LineStepMoving obj WHERE obj.running._to = :node"
+    )
+})
 public class LineStepMoving extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
