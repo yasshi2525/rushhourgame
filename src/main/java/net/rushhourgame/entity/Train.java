@@ -24,8 +24,11 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,6 +41,20 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+            name = "Train.findAll",
+            query = "SELECT obj FROM Train obj JOIN FETCH obj.deployed"
+    ),
+    @NamedQuery(
+            name = "Train.findIn",
+            query = "SELECT obj FROM Train obj WHERE obj.deployed.x > :x1 AND obj.deployed.x < :x2 AND obj.deployed.y > :y1 AND obj.deployed.y < :y2"
+    ),
+    @NamedQuery(
+            name = "Train.findMyAll",
+            query = "SELECT obj FROM Train obj WHERE obj.owner = :owner "
+    )
+})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Train extends AbstractEntity implements Pointable, Ownable {
 
@@ -57,11 +74,23 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
 
     @OneToOne(mappedBy = "train")
     protected TrainDeployed deployed;
+    
+    public boolean isDeployed() {
+        return deployed != null;
+    }
+
+    public TrainDeployed getDeployed() {
+        return deployed;
+    }
+
+    public void setDeployed(TrainDeployed deployed) {
+        this.deployed = deployed;
+    }
 
     @Override
     public double getX() {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
         return deployed.getX();
     }
@@ -69,7 +98,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     @Override
     public double getY() {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
         return deployed.getY();
     }
@@ -77,42 +106,28 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     @Override
     public double distTo(Pointable p) {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
-        return deployed.distTo(p);
+        return calcDist(deployed.getX(), deployed.getY(), p);
     }
 
-    public void nextStep() {
+    public void step(double time) {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
-        deployed.nextStep();
-    }
-
-    public void run() {
-        if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-        deployed.run();
-    }
-
-    public void idle() {
-        if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-        deployed.idle();
+        deployed.consumeTime(time);
     }
 
     public void freeHuman(List<Human> hs) {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
         deployed.freeHuman(hs);
     }
 
     public void collectHuman(List<Human> hs) {
         if (deployed == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            throw new IllegalStateException("Not deployed.");
         }
         deployed.collectHuman(hs);
     }

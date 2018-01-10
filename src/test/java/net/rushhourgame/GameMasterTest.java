@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity;
+package net.rushhourgame;
 
-import net.rushhourgame.controller.LocalTableController;
-import javax.persistence.EntityManager;
-import net.rushhourgame.LocalEntityManager;
-import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.controller.CompanyController;
+import java.util.ArrayList;
+import java.util.List;
 import net.rushhourgame.controller.ControllerFactory;
-import net.rushhourgame.controller.DigestCalculator;
-import net.rushhourgame.controller.LineController;
-import net.rushhourgame.controller.OAuthController;
-import net.rushhourgame.controller.PlayerController;
-import org.junit.After;
+import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Train;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public abstract class AbstractEntityTest {
-    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
-    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static LineController LCON = ControllerFactory.createLineController();
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
+public class GameMasterTest {
+    
+    protected GameMaster inst;
+    
+    @Mock
+    protected TrainController tCon;
+    
+    @Mock
+    protected Train train;
     
     @Before
     public void setUp() {
-        EM.getTransaction().begin();
+        inst = new GameMaster();
+        inst.prop = RushHourProperties.getInstance();
+        inst.tCon = tCon;
+    }
+
+    @Test
+    public void testInit() throws Exception {
+        inst.init();
+        assertTrue(1000 == inst.interval);
+    }
+
+    @Test
+    public void testStep() throws Exception {
+        List<Train> trains = new ArrayList<>();
+        trains.add(train);
+        
+        doReturn(trains).when(tCon).findAll();
+        inst.step();
     }
     
-    @After
-    public void tearDown() {
-        EM.getTransaction().rollback();
-    }
 }

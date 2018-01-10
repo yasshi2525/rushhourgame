@@ -62,11 +62,6 @@ public class LineStep extends AbstractEntity implements Ownable {
     @OneToOne
     protected LineStep next;
 
-    protected TargetType target;
-
-    @ManyToOne
-    protected RailEdge onRail;
-
     @ManyToOne
     protected Station onStation;
 
@@ -99,22 +94,6 @@ public class LineStep extends AbstractEntity implements Ownable {
 
     public void setNext(LineStep next) {
         this.next = next;
-    }
-
-    public TargetType getTarget() {
-        return target;
-    }
-
-    public void setTarget(TargetType target) {
-        this.target = target;
-    }
-
-    public RailEdge getOnRail() {
-        return onRail;
-    }
-
-    public void setOnRail(RailEdge onRail) {
-        this.onRail = onRail;
     }
 
     public Station getOnStation() {
@@ -158,14 +137,6 @@ public class LineStep extends AbstractEntity implements Ownable {
 
     public LineStepPassing getPassing() {
         return passing;
-    }
-
-    public enum TargetType {
-        RAIL_LINE, STATION
-    }
-
-    public enum ActionType {
-        STOP, PASS
     }
     
     public RailNode getStartRailNode() {

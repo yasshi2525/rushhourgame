@@ -23,10 +23,13 @@
  */
 package net.rushhourgame.entity;
 
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -45,73 +48,128 @@ public class TrainDeployed extends AbstractEntity {
 
     @NotNull
     @ManyToOne
-    protected Line on;
-
-    @NotNull
-    @ManyToOne
     protected LineStep current;
 
+    @Min(0)
+    @Max(1)
     protected double process;
 
-    protected void incrementProcess(double val) {
-        process += val;
-        if (process >= 1.0) {
-            process = 1.0;
-        }
+    protected double x;
+    protected double y;
+
+    public Train getTrain() {
+        return train;
     }
 
-    public void nextStep() {
-        current = current.getNext();
+    public void setTrain(Train train) {
+        this.train = train;
+    }
+    
+    public LineStep getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(LineStep current) {
+        this.current = current;
         process = 0.0;
+        registerPoint();
     }
 
-    public void run() {
-        if (current == null || current.getTarget() != LineStep.TargetType.RAIL_LINE) {
-            return;
-        }
-        incrementProcess(train.getSpeed() / current.getOnRail().getDist());
-        if (process >= 1.0) {
-            nextStep();
+    public void consumeTime(@Min(0) double remainTime) {
+        while (remainTime > 0) {
+            if (shouldRun()) {
+                remainTime -= consumeTimeByRunning(remainTime);
+            }
+            if (shouldShiftStep()) {
+                shiftStep();
+            }
+            if (shouldStay()) {
+                remainTime -= consumeTimeByStaying(remainTime);
+            }
+            if (shouldShiftStep()) {
+                shiftStep();
+            }
         }
     }
 
-    public void idle() {
-        if (current == null || current.getTarget() != LineStep.TargetType.STATION) {
-            return;
-        }
-        incrementProcess(train.getMobility());
-        if (process >= 1.0) {
-            nextStep();
-        }
+    protected boolean shouldRun() {
+        return current.getMoving() != null || current.getStopping() != null || current.getPassing() != null;
+    }
+
+    protected boolean shouldStay() {
+        return current.getDeparture() != null;
+    }
+
+    protected double consumeTimeByRunning(@Min(0) double time) {
+        return run(Math.min(calcMovableDist(time), calcRemainDist()));
+    }
+
+    protected double calcRemainDist() {
+        return current.getDist() * (1.0 - process);
+    }
+
+    protected double calcMovableDist(@Min(0) double time) {
+        return train.getSpeed() * time;
+    }
+
+    /**
+     * 指定された距離走行する
+     *
+     * @param dist 走行する距離
+     * @return 消費した時間
+     */
+    protected double run(@Min(0) double dist) {
+        process += dist / current.getDist();
+        registerPoint();
+        return dist / train.getSpeed();
+    }
+
+    protected double consumeTimeByStaying(@Min(0) double time) {
+        return stay(Math.min(time, calcStayableTime()));
+    }
+
+    protected double calcStayableTime() {
+        return train.getMobility() * (1.0 - process);
+    }
+
+    /**
+     * 指定された時間停車する。
+     *
+     * @param time 停車する時間
+     * @return 消費した時間
+     */
+    protected double stay(@Min(0) double time) {
+        process += time / train.getMobility();
+        return time;
+    }
+
+    protected void registerPoint() {
+        x = current.getStartRailNode().getX() * (1.0 - process)
+                + current.getGoalRailNode().getX() * process;
+        y = current.getStartRailNode().getY() * (1.0 - process)
+                + current.getGoalRailNode().getY() * process;
     }
 
     public double getX() {
-        switch (current.getTarget()) {
-            case STATION:
-                return current.getOnStation().getX();
-            case RAIL_LINE:
-                return current.getOnRail().getFrom().getX()
-                        + (current.getOnRail().getTo().getX() - current.getOnRail().getFrom().getX())
-                        * process;
-        }
-        return Double.NaN;
+        return x;
     }
 
     public double getY() {
-        switch (current.getTarget()) {
-            case STATION:
-                return current.getOnStation().getY();
-            case RAIL_LINE:
-                return current.getOnRail().getFrom().getY()
-                        + (current.getOnRail().getTo().getY() - current.getOnRail().getFrom().getY())
-                        * process;
-        }
-        return Double.NaN;
+        return y;
     }
 
-    public double distTo(Pointable other) {
-        return Math.sqrt((other.getX() - getX()) * (other.getX() - getX())
-                + (other.getY() - getY()) * (other.getY() - getY()));
+    public void registerPoint(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    protected boolean shouldShiftStep() {
+        return process >= 1.0;
+    }
+    
+    protected void shiftStep() {
+        current = current.getNext();
+        process = 0.0;
     }
 
     public void freeHuman(List<Human> hs) {

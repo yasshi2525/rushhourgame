@@ -89,6 +89,7 @@ public class RushHourProperties implements Serializable {
     public static final String ADMINISTRATOR = "rushhour.administrator";
     public static final String LANG = "rushhour.lang";
 
+    public static final String GAME_INTERVAL = "rushhour.game.interval";
     public static final String GAME_DEF_OAUTH_PURGE_DAY = "rushhour.game.default.oauth.purgeday";
     public static final String GAME_DEF_CMP_SCALE = "rushhour.game.default.company.scale";
     public static final String GAME_DEF_RSD_CAPACITY = "rushhour.game.default.residence.capacity";
@@ -96,6 +97,9 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_GATE_NUM = "rushhour.game.default.ticketgate.num";
     public static final String GAME_DEF_PLT_CAPACITY = "rushhour.game.default.platform.capacity";
     public static final String GAME_DEF_TRAIN_COSTRATE = "rushhour.game.default.train.costrate";
+    
+    public static final String GAME_DEF_TRAIN_MOBILITY = "rushhour.game.default.train.mobility";
+    public static final String GAME_DEF_TRAIN_SPEED = "rushhour.game.default.train.speed";
     
     //--------------------------------------------------------------------------
     protected static final String CONSTANTS_PATH = "constants.properties";

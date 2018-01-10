@@ -135,6 +135,12 @@ public class ControllerFactory {
         
         return inst;
     }
+    
+    public static TrainController createTrainController() {
+        TrainController inst = new TrainController();
+        init(inst);
+        return inst;
+    }
 
     protected static void init(AbstractController inst) {
         inst.em = LocalEntityManager.createEntityManager();

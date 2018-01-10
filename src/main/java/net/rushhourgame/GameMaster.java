@@ -23,13 +23,37 @@
  */
 package net.rushhourgame;
 
+import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
+import javax.inject.Inject;
+import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.controller.TrainController;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Singleton
-public class GameMaster {
+public class GameMaster implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     
+    @Inject
+    TrainController tCon;
+    @Inject
+    RushHourProperties prop;
+    
+    protected double interval;
+    
+    @PostConstruct
+    public void init() {
+        interval = Double.parseDouble(prop.get(GAME_INTERVAL));
+    }
+    
+    public void step() {
+        tCon.findAll().forEach(t -> {
+            tCon.step(t, interval);
+        });
+    }
 }
