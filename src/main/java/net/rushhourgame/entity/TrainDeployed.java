@@ -52,7 +52,7 @@ public class TrainDeployed extends AbstractEntity {
 
     @Min(0)
     @Max(1)
-    protected double process;
+    protected double progress;
 
     protected double x;
     protected double y;
@@ -71,11 +71,11 @@ public class TrainDeployed extends AbstractEntity {
 
     public void setCurrent(LineStep current) {
         this.current = current;
-        process = 0.0;
+        progress = 0.0;
         registerPoint();
     }
 
-    public void consumeTime(@Min(0) double remainTime) {
+    public void consumeTime(@Min(0) long remainTime) {
         while (remainTime > 0) {
             if (shouldRun()) {
                 remainTime -= consumeTimeByRunning(remainTime);
@@ -100,15 +100,15 @@ public class TrainDeployed extends AbstractEntity {
         return current.getDeparture() != null;
     }
 
-    protected double consumeTimeByRunning(@Min(0) double time) {
+    protected long consumeTimeByRunning(@Min(0) long time) {
         return run(Math.min(calcMovableDist(time), calcRemainDist()));
     }
 
     protected double calcRemainDist() {
-        return current.getDist() * (1.0 - process);
+        return current.getDist() * (1.0 - progress);
     }
 
-    protected double calcMovableDist(@Min(0) double time) {
+    protected double calcMovableDist(@Min(0) long time) {
         return train.getSpeed() * time;
     }
 
@@ -118,18 +118,18 @@ public class TrainDeployed extends AbstractEntity {
      * @param dist 走行する距離
      * @return 消費した時間
      */
-    protected double run(@Min(0) double dist) {
-        process += dist / current.getDist();
+    protected long run(@Min(0) double dist) {
+        progress += dist / current.getDist();
         registerPoint();
-        return dist / train.getSpeed();
+        return (long) Math.ceil(dist / train.getSpeed());
     }
 
-    protected double consumeTimeByStaying(@Min(0) double time) {
+    protected long consumeTimeByStaying(@Min(0) long time) {
         return stay(Math.min(time, calcStayableTime()));
     }
 
-    protected double calcStayableTime() {
-        return train.getMobility() * (1.0 - process);
+    protected long calcStayableTime() {
+        return (long) Math.ceil(train.getMobility() * (1.0 - progress));
     }
 
     /**
@@ -138,16 +138,16 @@ public class TrainDeployed extends AbstractEntity {
      * @param time 停車する時間
      * @return 消費した時間
      */
-    protected double stay(@Min(0) double time) {
-        process += time / train.getMobility();
+    protected long stay(@Min(0) long time) {
+        progress += time / (double) train.getMobility();
         return time;
     }
 
     protected void registerPoint() {
-        x = current.getStartRailNode().getX() * (1.0 - process)
-                + current.getGoalRailNode().getX() * process;
-        y = current.getStartRailNode().getY() * (1.0 - process)
-                + current.getGoalRailNode().getY() * process;
+        x = current.getStartRailNode().getX() * (1.0 - progress)
+                + current.getGoalRailNode().getX() * progress;
+        y = current.getStartRailNode().getY() * (1.0 - progress)
+                + current.getGoalRailNode().getY() * progress;
     }
 
     public double getX() {
@@ -164,12 +164,12 @@ public class TrainDeployed extends AbstractEntity {
     }
 
     protected boolean shouldShiftStep() {
-        return process >= 1.0;
+        return progress >= 1.0;
     }
     
     protected void shiftStep() {
         current = current.getNext();
-        process = 0.0;
+        progress = 0.0;
     }
 
     public void freeHuman(List<Human> hs) {

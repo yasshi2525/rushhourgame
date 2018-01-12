@@ -133,7 +133,15 @@
                  data-cost="#{s.cost}"/>
         </ui:repeat>
     </h:panelGroup>
-
+    
+    <h:panelGroup id="gamemovablemodel">
+        <p:poll interval="1" update="gamemovablemodel" oncomplete="fetchMovableGraphics()"/>
+        <ui:repeat var="t" value="#{game.trains}">
+            <div class="train" id="train#{t.id}"
+                 data-x="#{t.x}" data-y="#{t.y}"/>
+        </ui:repeat>
+    </h:panelGroup>
+    
     <!-- 拡大縮小用 -->
     <h:panelGrid columns="1" class="zoombar">
         <h:outputText  id="scale" value="#{game.scale}"/>

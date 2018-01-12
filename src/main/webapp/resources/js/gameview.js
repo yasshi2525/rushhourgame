@@ -62,6 +62,10 @@ var lineResources = {
     }
 };
 
+var movableResources = {
+    train: {}
+};
+
 var tempResources = {
     neighborNode: {
         color: 0xbf7fff,
@@ -134,6 +138,10 @@ initPixi = function () {
         'linestep': {}
     };
 
+    scope.movablegraphics = {
+        'train': {}
+    };
+
     // 画像をロードしたあと、イベントハンドラスプライトを表示
     loadImage(scope.resources);
 };
@@ -183,18 +191,13 @@ fetchGraphics = function () {
     var scope = $(document).data('scope');
 
     // 既存のリソースにマークをつける
-    // 更新後、マークが残っていたら削除する。
-    for (var name in scope.graphics) {
-        for (var key in scope.graphics[name]) {
-            scope.graphics[name][key].old = true;
-        }
-    }
+    markOldToGraphics(scope.graphics);
 
     // 画像つきリソースを作成する。
     for (var name in spriteResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
-            upsertSprite(name, name, $(elm).attr('id'), $(elm));
+            upsertSprite(name, name, scope.graphics, $(elm).attr('id'), $(elm));
         });
     }
 
@@ -219,31 +222,60 @@ fetchGraphics = function () {
 
     $('.player').each(function (i, elm) {
         if ($(elm).data('isin')) {
-            upsertSprite('icon', 'p' + $(elm).attr('id'), $(elm).attr('id'), $(elm), true);
+            upsertSprite('icon', 'p' + $(elm).attr('id'), scope.graphics, $(elm).attr('id'), $(elm), true);
         }
     });
 
     // divタグ中に存在しないリソースを削除
-    for (var name in scope.graphics) {
-        for (var key in scope.graphics[name]) {
-            if (scope.graphics[name][key].old) {
-                scope.stage.removeChild(scope.graphics[name][key]);
-                delete scope.graphics[name][key];
-            }
-        }
-    }
+    deleteOldGraphics(scope.graphics);
     scope.renderer.render(scope.stage);
 };
 
-upsertSprite = function (name, restype, id, $elm, isBringToFront) {
+markOldToGraphics = function (graphics) {
+    // 既存のリソースにマークをつける
+    // 更新後、マークが残っていたら削除する。
+    for (var name in graphics) {
+        for (var key in graphics[name]) {
+            graphics[name][key].old = true;
+        }
+    }
+};
+
+deleteOldGraphics = function (graphics) {
     var scope = $(document).data('scope');
-    if (scope.graphics[name][id]) {
+    // divタグ中に存在しないリソースを削除
+    for (var name in graphics) {
+        for (var key in graphics[name]) {
+            if (graphics[name][key].old) {
+                scope.stage.removeChild(graphics[name][key]);
+                delete graphics[name][key];
+            }
+        }
+    }
+};
+
+fetchMovableGraphics = function () {
+    var scope = $(document).data('scope');
+    markOldToGraphics(scope.movablegraphics);
+
+    for (var name in movableResources) {
+        $('.' + name).each(function (i, elm) {
+            upsertSprite(name, name, scope.movablegraphics, $(elm).attr('id'), $(elm));
+        });
+    }
+    
+    deleteOldGraphics(scope.movablegraphics);
+    scope.renderer.render(scope.stage);
+};
+
+upsertSprite = function (name, restype, graphics, id, $elm, isBringToFront) {
+    if (graphics[name][id]) {
         // 更新
-        scope.graphics[name][id].old = false;
-        updateSprite(scope.graphics[name][id], $elm, isBringToFront);
+        graphics[name][id].old = false;
+        updateSprite(graphics[name][id], $elm, isBringToFront);
     } else {
         // 新規作成
-        scope.graphics[name][id] = stageResourceSprite(restype, $elm);
+        graphics[name][id] = stageResourceSprite(restype, $elm);
     }
 };
 
@@ -288,7 +320,7 @@ stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
     var color = opts.color ? opts.color : scope.player[$elm.data('pid')].data('color').replace('#', '0x');
     var scope = $(document).data('scope');
-    
+
     var container = new pixi.Container;
     var obj = new pixi.Graphics();
 
@@ -306,7 +338,7 @@ stageLine = function ($elm, opts) {
             .lineTo(line.tox, line.toy);
 
     obj.alpha = opts.alpha;
-    
+
     if ($elm.data('idx')) {
         var idx = new pixi.Text($elm.data('idx'), {
             fontSize: 10, fill: 0xffffff

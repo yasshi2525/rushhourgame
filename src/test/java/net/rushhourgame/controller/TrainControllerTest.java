@@ -61,10 +61,10 @@ public class TrainControllerTest extends AbstractControllerTest {
         super.setUp();
         try {
             player = createPlayer();
-            RailNode node = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
-            ACON.extend(player, node, new SimplePoint(20.0, 25.0));
+            AssistanceController.Result result = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
+            ACON.extend(player, result.node, new SimplePoint(20.0, 25.0));
             EM.flush();
-            lineStep = TCON.findAll("Line", Line.class).get(0).findTop();
+            lineStep = result.line.findTop();
         } catch (RushHourException ex) {
             Logger.getLogger(TrainControllerTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -74,7 +74,7 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         Train created = inst.create(player);
-        assertTrue(0.1 == created.getMobility());
+        assertEquals(100, created.getMobility());
         assertTrue(0.2 == created.getSpeed());
         assertTrue(created.isPrivilegedBy(player));
         assertEquals(player, created.getOwner());

@@ -91,6 +91,9 @@ describe('test gameview', function () {
                 'station': {},
                 'stepforhuman': {}
             },
+            movablegraphics : {
+                'train': {}
+            },
             player: {}
         };
         $(document).data('scope', scope);
@@ -232,6 +235,14 @@ describe('test gameview', function () {
             afterEach(function () {
                 $('#no1.' + type).remove();
             });
+        });
+    });
+    
+    describe('test fetchMovableGraphics', function () {
+        it('test invoke', function () {
+            $('body').append("<div class='train' id = 'no1'/>");
+            fetchMovableGraphics();
+            $('#no1.train').remove();
         });
     });
 

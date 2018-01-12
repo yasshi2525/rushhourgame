@@ -65,9 +65,6 @@ public class LineStep extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Station onStation;
 
-    @OneToMany
-    protected List<Train> trains;
-
     @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
     protected LineStepMoving moving;
 
@@ -102,10 +99,6 @@ public class LineStep extends AbstractEntity implements Ownable {
 
     public void setOnStation(Station onStation) {
         this.onStation = onStation;
-    }
-
-    public List<Train> getTrains() {
-        return trains;
     }
 
     @Override

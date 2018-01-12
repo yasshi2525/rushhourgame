@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.event.ActionEvent;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
@@ -86,6 +87,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.lCon = LCON;
         inst.sCon = SCON;
         inst.aCon = ACON;
+        inst.tCon = TRCON;
         inst.em = EM;
         inst.center = new SimplePoint();
         inst.click = new SimplePoint();
@@ -159,6 +161,11 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testGetRegidences() {
         inst.getResidences();
+    }
+    
+    @Test
+    public void testGetTrains() {
+        inst.getTrains();
     }
     
     @Test
@@ -322,7 +329,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRailExtending() throws RushHourException {
         inst.player = player;
-        RailNode r1 = ACON.startWithStation(player, new SimplePoint(10, 10), Locale.JAPANESE);
+        RailNode r1 = ACON.startWithStation(player, 
+                new SimplePoint(10, 10), Locale.JAPANESE).node;
         inst.tailNode = r1;
         inst.click = new SimplePoint(20, 20);
         
@@ -339,7 +347,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testExtendRail() throws RushHourException {
         inst.player = player;
-        inst.tailNode = ACON.startWithStation(player, new SimplePoint(10, 10), Locale.JAPANESE);
+        inst.tailNode = ACON.startWithStation(player, 
+                new SimplePoint(10, 10), Locale.JAPANESE).node;
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(requestContext).when(inst).getRequestContext();
 
@@ -433,5 +442,14 @@ public class GameViewBeanTest extends AbstractBeanTest {
         doReturn(requestContext).when(inst).getRequestContext();
         
         inst.removeRail();
+    }
+    
+    @Test
+    public void testSortedLine() throws RushHourException {
+        AssistanceController.Result start = ACON.startWithStation(player, CLICK_POS, Locale.JAPANESE);
+        inst.getSortedLineSteps(start.line);
+        
+        ACON.extend(player, start.node, new SimplePoint());
+        inst.getSortedLineSteps(start.line);
     }
 }

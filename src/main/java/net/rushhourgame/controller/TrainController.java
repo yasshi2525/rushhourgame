@@ -48,11 +48,11 @@ public class TrainController extends PointEntityController {
     private static final long serialVersionUID = 1L;
     
     public Train create(@NotNull Player p) {
-        return create(p, Double.parseDouble(prop.get(GAME_DEF_TRAIN_MOBILITY)), 
+        return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)), 
                 Double.parseDouble(prop.get(GAME_DEF_TRAIN_SPEED)));
     }
 
-    public Train create(@NotNull Player p, double mobility, double speed) {
+    public Train create(@NotNull Player p, long mobility, double speed) {
         Train train = new Train();
         train.setOwner(p);
         train.setMobility(mobility);
@@ -100,8 +100,13 @@ public class TrainController extends PointEntityController {
         return em.createNamedQuery("Train.findMyAll", Train.class)
                 .setParameter("owner", p).getResultList();
     }
+    
+    public List<Train> findBy(@NotNull Line line) {
+        return em.createNamedQuery("Train.findByLine", Train.class)
+                .setParameter("line", line).getResultList();
+    }
 
-    public void step(Train t, double time) {
+    public void step(Train t, long time) {
         if (t.isDeployed()) {
             t.step(time);
         }

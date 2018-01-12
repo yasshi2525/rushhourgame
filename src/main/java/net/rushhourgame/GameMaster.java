@@ -25,8 +25,16 @@ package net.rushhourgame;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.controller.TrainController;
 
@@ -34,23 +42,33 @@ import net.rushhourgame.controller.TrainController;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@Startup
+@DependsOn("RushHourProperties")
 @Singleton
 public class GameMaster implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
+    @Resource
+    protected TimerService timerService;
     @Inject
-    TrainController tCon;
+    protected TrainController tCon;
     @Inject
-    RushHourProperties prop;
+    protected RushHourProperties prop;
     
-    protected double interval;
+    Timer timer;
+    
+    protected long interval;
     
     @PostConstruct
     public void init() {
-        interval = Double.parseDouble(prop.get(GAME_INTERVAL));
+        interval = Long.parseLong(prop.get(GAME_INTERVAL));
+        TimerConfig config = new TimerConfig("RushHour", true);
+        timer = timerService.createIntervalTimer(0L, interval, config);
     }
     
+    @Timeout
+    @Transactional
     public void step() {
         tCon.findAll().forEach(t -> {
             tCon.step(t, interval);

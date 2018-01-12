@@ -59,15 +59,15 @@ public class AssistanceController extends AbstractController{
     @Inject
     RushHourResourceBundle msg;
     
-    public RailNode startWithStation(@NotNull Player player, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
+    public Result startWithStation(@NotNull Player player, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
         RailNode startNode = rCon.create(player, p);
         Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
         Line line = lCon.create(player, getDefaultLineName(player, locale));
         lCon.start(line, player, station);
-        return startNode;
+        return new Result(startNode, line);
     } 
     
-    public RailNode extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
+    public Result extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
         RailNode extended = rCon.extend(player, tailNode, p);
         LineStep inserted = lCon.insert(tailNode, extended, player);
         if (inserted.getNext() == null) {
@@ -75,7 +75,7 @@ public class AssistanceController extends AbstractController{
                 lCon.end(inserted, player);
             }
         }
-        return extended;
+        return new Result(extended, inserted.getParent());
     }
     
     protected String getDefaultStationName(Player player, Locale locale) {
@@ -93,6 +93,16 @@ public class AssistanceController extends AbstractController{
                     .findAny().isPresent()) {
                 return name;
             }
+        }
+    }
+    
+    public static class Result {
+        public RailNode node;
+        public Line line;
+
+        public Result(RailNode node, Line line) {
+            this.node = node;
+            this.line = line;
         }
     }
 }

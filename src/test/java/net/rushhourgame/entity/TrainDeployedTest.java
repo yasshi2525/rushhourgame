@@ -88,24 +88,24 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doNothing().when(inst).registerPoint();
         inst.setCurrent(step);
         assertEquals(step, inst.getCurrent());
-        assertTrue(0.0 == inst.process);
+        assertTrue(0.0 == inst.progress);
     }
 
     @Test
     public void testConsumeTimeDoNothing() {
-        inst.consumeTime(0.0);
+        inst.consumeTime(0);
     }
     
     @Test
     public void testConsumeTimeRunning() {
         doReturn(true).when(inst).shouldRun();
-        doReturn(0.5).when(inst).consumeTimeByRunning(anyDouble());
+        doReturn(500L).when(inst).consumeTimeByRunning(anyLong());
         doReturn(false).when(inst).shouldShiftStep();
         doReturn(false).when(inst).shouldStay();
         
-        inst.consumeTime(1.0);
+        inst.consumeTime(1000);
         
-        verify(inst, times(2)).consumeTimeByRunning(anyDouble());
+        verify(inst, times(2)).consumeTimeByRunning(anyLong());
     }
     
     @Test
@@ -113,23 +113,23 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doReturn(false).when(inst).shouldRun();
         doReturn(false).when(inst).shouldShiftStep();
         doReturn(true).when(inst).shouldStay();
-        doReturn(0.5).when(inst).consumeTimeByStaying(anyDouble());
+        doReturn(500L).when(inst).consumeTimeByStaying(anyLong());
         
-        inst.consumeTime(1.0);
+        inst.consumeTime(1000);
         
-        verify(inst, times(2)).consumeTimeByStaying(anyDouble());
+        verify(inst, times(2)).consumeTimeByStaying(anyLong());
     }
     
     @Test
     public void testConsumeTimeShiftStep() {
         doReturn(true).when(inst).shouldRun();
-        doReturn(0.5).when(inst).consumeTimeByRunning(anyDouble());
+        doReturn(500L).when(inst).consumeTimeByRunning(anyLong());
         doReturn(true).when(inst).shouldShiftStep();
         doReturn(true).when(inst).shouldStay();
-        doReturn(0.5).when(inst).consumeTimeByStaying(anyDouble());
+        doReturn(500L).when(inst).consumeTimeByStaying(anyLong());
         doNothing().when(inst).shiftStep();
         
-        inst.consumeTime(1.0);
+        inst.consumeTime(1000);
         
         verify(inst, times(2)).shiftStep();
     }
@@ -168,10 +168,10 @@ public class TrainDeployedTest extends AbstractEntityTest {
     @Test
     public void testConsumeTimeByRunning() {
         inst.current = moving;
-        doReturn(10.0).when(inst).calcMovableDist(anyDouble());
+        doReturn(10.0).when(inst).calcMovableDist(anyLong());
         doReturn(5.0).when(inst).calcRemainDist();
-        doReturn(1.0).when(inst).run(anyDouble());
-        inst.consumeTimeByRunning(1.0);
+        doReturn(1000L).when(inst).run(anyDouble());
+        inst.consumeTimeByRunning(1000);
         verify(inst, times(1)).run(5.0);
     }
 
@@ -179,26 +179,26 @@ public class TrainDeployedTest extends AbstractEntityTest {
     public void testCalcRemainDist() {
         inst.current = moving;
         doReturn(10.0).when(moving).getDist();
-        inst.process = 1.0;
+        inst.progress = 1.0;
         assertTrue(0.0 ==inst.calcRemainDist());
         
-        inst.process = 0.0;
+        inst.progress = 0.0;
         assertTrue(10.0 ==inst.calcRemainDist());
         
-        inst.process = 0.5;
+        inst.progress = 0.5;
         assertTrue(5.0 ==inst.calcRemainDist());
     }
 
     @Test
     public void testCalcMovableDist() {
         doReturn(0.0).when(train).getSpeed();
-        assertTrue(0.0 == inst.calcMovableDist(0.0));
-        assertTrue(0.0 == inst.calcMovableDist(1.0));
+        assertTrue(0.0 == inst.calcMovableDist(0));
+        assertTrue(0.0 == inst.calcMovableDist(1));
         
         doReturn(10.0).when(train).getSpeed();
-        assertTrue(0.0 == inst.calcMovableDist(0.0));
-        assertTrue(10.0 == inst.calcMovableDist(1.0));
-        assertTrue(100.0 == inst.calcMovableDist(10.0));
+        assertTrue(0.0 == inst.calcMovableDist(0));
+        assertTrue(10.0 == inst.calcMovableDist(1));
+        assertTrue(100.0 == inst.calcMovableDist(10));
     }
 
     @Test
@@ -209,42 +209,43 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doNothing().when(inst).registerPoint();
         
         assertTrue(0.0 == inst.run(0));
-        assertTrue(0.0 == inst.process);
+        assertTrue(0.0 == inst.progress);
     }
 
     @Test
     public void testConsumeTimeByStaying() {
-        doReturn(0.5).when(inst).calcStayableTime();
-        inst.consumeTimeByStaying(1.0);
+        doReturn(5L).when(inst).calcStayableTime();
+        doReturn(5L).when(inst).stay(anyLong());
+        inst.consumeTimeByStaying(10);
         
-        verify(inst, times(1)).stay(0.5);
+        verify(inst, times(1)).stay(5);
     }
 
     @Test
     public void testCalcStayableTime() {
-        doReturn(10.0).when(train).getMobility();
+        doReturn(100L).when(train).getMobility();
         
-        inst.process = 0.0;
-        assertTrue(10.0 == inst.calcStayableTime());
+        inst.progress = 0.0;
+        assertEquals(100, inst.calcStayableTime());
         
-        inst.process = 0.5;
-        assertTrue(5.0 == inst.calcStayableTime());
+        inst.progress = 0.5;
+        assertEquals(50, inst.calcStayableTime());
         
-        inst.process = 1.0;
-        assertTrue(0.0 == inst.calcStayableTime());
+        inst.progress = 1.0;
+        assertEquals(0, inst.calcStayableTime());
     }
 
     @Test
     public void testStay() {
-        inst.process = 0.0;
-        doReturn(10.0).when(train).getMobility();
+        inst.progress = 0.0;
+        doReturn(10L).when(train).getMobility();
         
-        assertTrue(0.0 == inst.stay(0.0));
+        assertTrue(0.0 == inst.stay(0));
         
-        assertTrue(0.0 == inst.process);
+        assertTrue(0.0 == inst.progress);
         
-        assertTrue(10.0 == inst.stay(10.0));
-        assertTrue(1.0 == inst.process);
+        assertTrue(10.0 == inst.stay(10));
+        assertTrue(1.0 == inst.progress);
     }
 
     @Test
@@ -259,17 +260,17 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doReturn(20.0).when(start).getY();
         doReturn(40.0).when(goal).getY();
         
-        inst.process = 0.0;
+        inst.progress = 0.0;
         inst.registerPoint();
         assertTrue(20.0 == inst.getX());
         assertTrue(20.0 == inst.getY());
         
-        inst.process = 0.5;
+        inst.progress = 0.5;
         inst.registerPoint();
         assertTrue(30.0 == inst.getX());
         assertTrue(30.0 == inst.getY());
         
-        inst.process = 1.0;
+        inst.progress = 1.0;
         inst.registerPoint();
         assertTrue(40.0 == inst.getX());
         assertTrue(40.0 == inst.getY());
@@ -286,7 +287,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
     public void testShouldShiftStep() {
         assertFalse(inst.shouldShiftStep());
         
-        inst.process = 1.0;
+        inst.progress = 1.0;
         assertTrue(inst.shouldShiftStep());
     }
 
@@ -297,7 +298,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
         
         inst.shiftStep();
         assertEquals(stop, inst.current);
-        assertTrue(0.0 == inst.process);
+        assertTrue(0.0 == inst.progress);
     }
 
     @Test

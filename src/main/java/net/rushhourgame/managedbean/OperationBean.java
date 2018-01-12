@@ -23,6 +23,8 @@
  */
 package net.rushhourgame.managedbean;
 
+import net.rushhourgame.controller.AssistanceController;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.RailNode;
 
 /**
@@ -32,6 +34,7 @@ import net.rushhourgame.entity.RailNode;
 public class OperationBean {
     protected Type type;
     protected RailNode tailNode;
+    protected Line line;
     
     public OperationBean(Type type) {
         this.type = type;
@@ -40,6 +43,12 @@ public class OperationBean {
     public OperationBean(Type type, RailNode tailNode) {
         this.type = type;
         this.tailNode = tailNode;
+    }
+    
+    public OperationBean(Type type, AssistanceController.Result result) {
+        this.type = type;
+        this.tailNode = result.node;
+        this.line = result.line;
     }
 
     public Type getType() {

@@ -51,21 +51,6 @@ public abstract class AbstractController implements Serializable{
     @Inject
     protected ErrorMessageBuilder errMsgBuilder;
 
-    /**
-     * テーブルに指定した id のエンティティが存在するか返す
-     *
-     * @param query query
-     * @param key key
-     * @param value value
-     * @return boolean
-     */
-    protected boolean exists(String query, String key, String value) {
-        // count は intを返す場合とlongを返す場合がある(環境依存)
-        return (em.createNamedQuery(query, Number.class)
-                .setParameter(key, value)
-                .getSingleResult()).longValue() == 1L;
-    }
-    
     protected boolean exists(String query, Player owner) {
         return (em.createNamedQuery(query, Number.class)
                 .setParameter("owner", owner)

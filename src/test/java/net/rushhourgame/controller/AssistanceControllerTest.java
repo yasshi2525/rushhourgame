@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.rushhourgame.controller.AssistanceController.Result;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Nameable;
@@ -73,13 +74,13 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStartWithStation() throws Exception {
-        RailNode node = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result res = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
         EM.flush();
-        EM.refresh(node);
+        EM.refresh(res.node);
 
-        assertTrue(node.distTo(ORGIN) == 0);
-        assertEquals("駅1", node.getPlatform().getStation().getName());
-        Line line = LCON.findAll(player).get(0);
+        assertTrue(res.node.distTo(ORGIN) == 0);
+        assertEquals("駅1", res.node.getPlatform().getStation().getName());
+        Line line = res.line;
         EM.refresh(line);
         assertEquals("路線1", line.getName());
         assertEquals(1, line.getSteps().size());
@@ -116,25 +117,24 @@ public class AssistanceControllerTest extends AbstractControllerTest {
     @Test
     public void testExtend() throws RushHourException {
         // start -- goal        
-        RailNode start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode goal = inst.extend(player, start, EXTENDED);
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result goal = inst.extend(player, start.node, EXTENDED);
 
-        assertEquals(1, LCON.findAll(player).size());
-        Line line = LCON.findAll(player).get(0);
+        Line line = start.line;
         assertTrue(LCON.isCompleted(line));
 
         EM.refresh(line);
 
         LineStep dep = findTop(line);
-        assertDeparture(dep, start);
+        assertDeparture(dep, start.node);
 
         // start -> goal
         LineStep moving = dep.getNext();
-        assertMoving(moving, start, goal);
+        assertMoving(moving, start.node, goal.node);
 
         // start <- goal
         LineStep stop = moving.getNext();
-        assertStopping(stop, goal, start);
+        assertStopping(stop, goal.node, start.node);
 
         assertEquals(dep, stop.getNext());
     }
@@ -142,39 +142,38 @@ public class AssistanceControllerTest extends AbstractControllerTest {
     @Test
     public void testExtendForkV() throws RushHourException {
         // n2 - start - n1
-        RailNode start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode n1 = inst.extend(player, start, EXTENDED);
-        RailNode n2 = inst.extend(player, start, EXTENDED2);
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result n1 = inst.extend(player, start.node, EXTENDED);
+        Result n2 = inst.extend(player, start.node, EXTENDED2);
 
-        assertEquals(1, LCON.findAll(player).size());
-        Line line = LCON.findAll(player).get(0);
+        Line line = start.line;
         assertTrue(LCON.isCompleted(line));
 
         EM.refresh(line);
 
         // n2 -- [start] -- n1        
         LineStep dep2 = findTop(line);
-        assertDeparture(dep2, start);
+        assertDeparture(dep2, start.node);
 
         // n2 <- start -- n1
         LineStep moving2 = dep2.getNext();
-        assertMoving(moving2, start, n2);
+        assertMoving(moving2, start.node, n2.node);
 
         // n2 -> start -- n1
         LineStep stop2 = moving2.getNext();
-        assertStopping(stop2, n2, start);
+        assertStopping(stop2, n2.node, start.node);
 
         // n2 - [start] -- n1
         LineStep dep1 = stop2.getNext();
-        assertDeparture(dep1, start);
+        assertDeparture(dep1, start.node);
 
         // n2 -- start -> n1
         LineStep moving1 = dep1.getNext();
-        assertMoving(moving1, start, n1);
+        assertMoving(moving1, start.node, n1.node);
 
         // n2 -- start <- n1
         LineStep stop1 = moving1.getNext();
-        assertStopping(stop1, n1, start);
+        assertStopping(stop1, n1.node, start.node);
 
         assertEquals(dep2, stop1.getNext());
     }
@@ -182,9 +181,9 @@ public class AssistanceControllerTest extends AbstractControllerTest {
     @Test
     public void testExtendForkI() throws RushHourException {
         // start - n1 - n2
-        RailNode start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode n1 = inst.extend(player, start, EXTENDED);
-        RailNode n2 = inst.extend(player, n1, EXTENDED2);
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result n1 = inst.extend(player, start.node, EXTENDED);
+        Result n2 = inst.extend(player, n1.node, EXTENDED2);
 
         assertEquals(1, LCON.findAll(player).size());
         Line line = LCON.findAll(player).get(0);
@@ -194,23 +193,23 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
         //[start]-- n1 -- n2        
         LineStep top = findTop(line);
-        assertDeparture(top, start);
+        assertDeparture(top, start.node);
 
         // start -> n1 -- n2
         LineStep step = top.getNext();
-        assertMoving(step, start, n1);
+        assertMoving(step, start.node, n1.node);
 
         // start -- n1 -> n2
         step = step.getNext();
-        assertMoving(step, n1, n2);
+        assertMoving(step, n1.node, n2.node);
 
         // start -- n1 <- n2
         step = step.getNext();
-        assertMoving(step, n2, n1);
+        assertMoving(step, n2.node, n1.node);
         
         // start <- n1 -- n2
         step = step.getNext();
-        assertStopping(step, n1, start);
+        assertStopping(step, n1.node, start.node);
         
         assertEquals(top, step.getNext());
     }
@@ -220,26 +219,25 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         //         n3
         //         |
         // start - n1 - n2
-        RailNode start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode n1 = inst.extend(player, start, EXTENDED);
-        RailNode n2 = inst.extend(player, n1, EXTENDED2);
-        RailNode n3 = inst.extend(player, n1, EXTENDED3);
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result n1 = inst.extend(player, start.node, EXTENDED);
+        Result n2 = inst.extend(player, n1.node, EXTENDED2);
+        Result n3 = inst.extend(player, n1.node, EXTENDED3);
         
-        assertEquals(1, LCON.findAll(player).size());
-        Line line = LCON.findAll(player).get(0);
+        Line line = start.line;
         assertTrue(LCON.isCompleted(line));
                 
         EM.refresh(line);
         // start -> n1 -> n3 -> n1 -> n2 -> n1 -> start
         LineStep top = findTop(line);    
-        assertDeparture(top, start);
+        assertDeparture(top, start.node);
         LineStep step = top.getNext();
-        assertMoving(step, start, n1);
-        assertMoving(step = step.getNext(), n1, n3);
-        assertMoving(step = step.getNext(), n3, n1);
-        assertMoving(step = step.getNext(), n1, n2);
-        assertMoving(step = step.getNext(), n2, n1);
-        assertStopping(step = step.getNext(), n1, start);
+        assertMoving(step, start.node, n1.node);
+        assertMoving(step = step.getNext(), n1.node, n3.node);
+        assertMoving(step = step.getNext(), n3.node, n1.node);
+        assertMoving(step = step.getNext(), n1.node, n2.node);
+        assertMoving(step = step.getNext(), n2.node, n1.node);
+        assertStopping(step = step.getNext(), n1.node, start.node);
         
         assertEquals(top, step.getNext());
     }
@@ -249,31 +247,30 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         //       n3
         //        |
         // n2 - start - n1
-        RailNode start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode n1 = inst.extend(player, start, EXTENDED);
-        RailNode n2 = inst.extend(player, start, EXTENDED2);
-        RailNode n3 = inst.extend(player, start, EXTENDED3);
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result n1 = inst.extend(player, start.node, EXTENDED);
+        Result n2 = inst.extend(player, start.node, EXTENDED2);
+        Result n3 = inst.extend(player, start.node, EXTENDED3);
         
-        assertEquals(1, LCON.findAll(player).size());
-        Line line = LCON.findAll(player).get(0);
+        Line line = start.line;
         assertTrue(LCON.isCompleted(line));
                 
         EM.refresh(line);
         
         // start -> n3 -> start -> n2 -> start -> n1 -> start
         LineStep top = findTop(line);    
-        assertDeparture(top, start);
+        assertDeparture(top, start.node);
         LineStep step = top.getNext();
-        assertMoving(step, start, n3);
-        assertStopping(step = step.getNext(), n3, start);
+        assertMoving(step, start.node, n3.node);
+        assertStopping(step = step.getNext(), n3.node, start.node);
         
-        assertDeparture(step = step.getNext(), start);
-        assertMoving(step = step.getNext(), start, n2);
-        assertStopping(step = step.getNext(), n2, start);
+        assertDeparture(step = step.getNext(), start.node);
+        assertMoving(step = step.getNext(), start.node, n2.node);
+        assertStopping(step = step.getNext(), n2.node, start.node);
         
-        assertDeparture(step = step.getNext(), start);
-        assertMoving(step = step.getNext(), start, n1);
-        assertStopping(step = step.getNext(), n1, start);
+        assertDeparture(step = step.getNext(), start.node);
+        assertMoving(step = step.getNext(), start.node, n1.node);
+        assertStopping(step = step.getNext(), n1.node, start.node);
         
         assertEquals(top, step.getNext());
     }

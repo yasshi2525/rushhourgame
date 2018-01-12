@@ -51,6 +51,7 @@ import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
+import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
@@ -63,6 +64,7 @@ import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.Train;
 import net.rushhourgame.exception.RushHourException;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -98,6 +100,8 @@ public class GameViewBean implements Serializable {
     protected StepForHumanController sCon;
     @Inject
     protected AssistanceController aCon;
+    @Inject
+    protected TrainController tCon;
     @Inject
     protected RushHourSession session;
     @Inject
@@ -212,6 +216,10 @@ public class GameViewBean implements Serializable {
 
     public List<StepForHuman> getStepForHuman() {
         return sCon.findIn(center, getLoadScale());
+    }
+    
+    public List<Train> getTrains() {
+        return tCon.findIn(center, getLoadScale());
     }
 
     public double getClickX() {
@@ -331,7 +339,11 @@ public class GameViewBean implements Serializable {
         } else {
             // 延伸
             tailNode = em.merge(tailNode);
-            tailNode = aCon.extend(player, tailNode, click);
+            AssistanceController.Result result = aCon.extend(player, tailNode, click);
+            tailNode = result.node;
+            if (tCon.findBy(result.line).isEmpty()) {
+                tCon.deploy(tCon.create(player), player, result.line.findTop());
+            }
             showExtendedRailAnnouncement();
             getRequestContext().execute("nextExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");

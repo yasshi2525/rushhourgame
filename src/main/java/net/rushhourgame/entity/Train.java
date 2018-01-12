@@ -53,6 +53,10 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(
             name = "Train.findMyAll",
             query = "SELECT obj FROM Train obj WHERE obj.owner = :owner "
+    ),
+    @NamedQuery(
+            name = "Train.findByLine",
+            query = "SELECT t FROM Train t WHERE t.deployed.current.parent = :line"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
@@ -67,7 +71,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     protected String name;
     protected int capacity;
     protected double speed;
-    protected double mobility;
+    protected long mobility;
 
     @OneToMany
     protected List<Human> passengers;
@@ -111,7 +115,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         return calcDist(deployed.getX(), deployed.getY(), p);
     }
 
-    public void step(double time) {
+    public void step(long time) {
         if (deployed == null) {
             throw new IllegalStateException("Not deployed.");
         }
@@ -159,11 +163,11 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         this.speed = speed;
     }
 
-    public double getMobility() {
+    public long getMobility() {
         return mobility;
     }
 
-    public void setMobility(double mobility) {
+    public void setMobility(long mobility) {
         this.mobility = mobility;
     }
 }

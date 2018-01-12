@@ -25,6 +25,7 @@ package net.rushhourgame;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.TimerService;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Train;
@@ -54,6 +55,7 @@ public class GameMasterTest {
     @Before
     public void setUp() {
         inst = new GameMaster();
+        inst.timerService = mock(TimerService.class);
         inst.prop = RushHourProperties.getInstance();
         inst.tCon = tCon;
     }
@@ -61,7 +63,7 @@ public class GameMasterTest {
     @Test
     public void testInit() throws Exception {
         inst.init();
-        assertTrue(1000 == inst.interval);
+        assertEquals(1000, inst.interval);
     }
 
     @Test
