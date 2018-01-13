@@ -101,6 +101,7 @@ public class LineControllerTest extends AbstractControllerTest {
 
         assertEquals(owner, parent.getOwner());
         assertEquals(line, parent.getParent());
+        assertTrue(0 == parent.getDist());
         assertNull(parent.getMoving());
         assertNull(parent.getPassing());
         assertNull(parent.getStopping());
@@ -253,6 +254,7 @@ public class LineControllerTest extends AbstractControllerTest {
         assertNull(extended.getDeparture());
         assertNotNull(extended.getMoving());
         assertEquals(extended, extended.getMoving().getParent());
+        assertTrue(edge.getDist() == extended.getDist());
         assertNull(extended.getStopping());
         assertNull(extended.getPassing());
     }
@@ -285,6 +287,7 @@ public class LineControllerTest extends AbstractControllerTest {
         assertNull(extended.getMoving());
         assertNotNull(extended.getStopping());
         assertEquals(extended, extended.getStopping().getParent());
+        assertTrue(edge.getDist() == extended.getDist());
         assertNull(extended.getPassing());
     }
 
@@ -351,6 +354,7 @@ public class LineControllerTest extends AbstractControllerTest {
         assertNull(extended.getStopping());
         assertNotNull(extended.getPassing());
         assertEquals(extended, extended.getPassing().getParent());
+        assertTrue(edge.getDist() == extended.getDist());
         assertEquals(edge, extended.getPassing().getRunning());
         assertEquals(st2.getPlatform(), extended.getPassing().getGoal());
     }
@@ -789,6 +793,43 @@ public class LineControllerTest extends AbstractControllerTest {
         // st1かst2は不定？
         assertTrue(through.getUid().startsWith("train"));
     }
+    
+    @Test
+    public void testEndDoubleLine() throws RushHourException {
+        Station st1 = createStation();
+        Player owner = st1.getOwner();
+        RailNode n1 = st1.getPlatform().getRailNode();
+        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
+        
+        EM.flush();
+        EM.refresh(n2);
+
+        RailEdge edgeGo1 = n2.getInEdges().get(0);
+        RailEdge edgeBack1 = n2.getOutEdges().get(0);
+
+        Line line = inst.create(owner, TEST_NAME);
+        LineStep start1 = inst.start(line, owner, st1);
+        LineStep extended1 = inst.extend(start1, owner, edgeGo1);
+        LineStep extended2 = inst.extend(extended1, owner, edgeBack1);
+        inst.end(extended2, owner);
+        
+        RailNode n3 = RAILCON.create(owner, TEST_POS2);
+        RailNode n4 = RAILCON.extend(owner, n3, new SimplePoint(100, 100));
+        
+        EM.flush();
+        EM.refresh(n4);
+
+        RailEdge edgeGo2 = n4.getInEdges().get(0);
+        RailEdge edgeBack2 = n4.getOutEdges().get(0);
+        
+        Station st2 = STCON.create(owner, n3, "test2");
+        
+        LineStep start2 = inst.start(line, owner, st2);
+        LineStep extended3 = inst.extend(start2, owner, edgeGo2);
+        LineStep extended4 = inst.extend(extended3, owner, edgeBack2);
+        
+        inst.end(extended4, owner);
+    }
 
     @Test
     public void testIsAreaIn() throws RushHourException {
@@ -842,5 +883,12 @@ public class LineControllerTest extends AbstractControllerTest {
 
         assertEquals(1, inst.findAll().size());
         assertEquals(2, inst.findAll().get(0).getSteps().size());
+    }
+    
+    @Test
+    public void testAutocreateNotEnd() throws RushHourException {
+        Station st1 = createStation();
+        Line line = inst.autocreate(st1.getOwner(), st1, TEST_NAME);
+        assertFalse(inst.isCompleted(line));
     }
 }

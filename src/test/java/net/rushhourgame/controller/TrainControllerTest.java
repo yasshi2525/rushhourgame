@@ -202,4 +202,10 @@ public class TrainControllerTest extends AbstractControllerTest {
         inst.step(train, 0);
     }
 
+    @Test
+    public void testStepUndeploy() throws RushHourException {
+        Train train = spy(inst.create(player));
+        inst.step(train, 0);
+        verify(train, times(0)).step(anyLong());
+    }
 }

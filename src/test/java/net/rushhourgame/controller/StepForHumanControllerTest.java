@@ -93,6 +93,10 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         LCON.end(tail, owner);
         
         assertEquals(11, inst.findIn(new SimplePoint(0, 0), 2).size());
+        inst.findIn(new SimplePoint(0, 0), -1);
+        inst.findIn(new SimplePoint(2, 0), -1);
+        inst.findIn(new SimplePoint(2, -1), -1);
+        inst.findIn(new SimplePoint(2, 1), -1);
         assertEquals(0, inst.findIn(new SimplePoint(10, 10), 2).size());
     }
 

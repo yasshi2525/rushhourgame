@@ -507,6 +507,28 @@ public class RailControllerTest extends AbstractControllerTest {
     }
     
     @Test
+    public void testRemoveIsolatedRailNodeInvalidNode() throws RushHourException {
+        Player player = createPlayer();
+        RailNode r1 = inst.create(player, TEST_POS);
+        RailNode r2 = inst.create(player, TEST_POS2);
+        RailEdge edge = new RailEdge();
+        edge.setOwner(player);
+        edge.setFrom(r1);
+        edge.setTo(r2);
+        EM.persist(edge);
+        EM.flush();
+        inst.removeIsolatedRailNode(r1);
+        inst.removeIsolatedRailNode(r2);
+    }
+    
+    @Test
+    public void testRemoveIsolatedRailNodeStationNode() throws RushHourException {
+        Station st = createStation();
+        
+        inst.removeIsolatedRailNode(st.getPlatform().getRailNode());
+    }
+    
+    @Test
     public void testFindEdgeOther() throws RushHourException {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
@@ -525,6 +547,37 @@ public class RailControllerTest extends AbstractControllerTest {
     }
     
     @Test
+    public void testFindEdgeHalfOther() throws RushHourException {
+        Player player = createPlayer();
+        RailNode created = inst.create(player, TEST_POS);
+        inst.extend(player, created, TEST_POS2);
+        
+        Player other = createOther();
+        RailNode createdOther = inst.create(other, TEST_POS);
+        inst.extend(other, createdOther, TEST_POS2);
+        EM.flush();
+        EM.refresh(created);
+        EM.refresh(createdOther);
+        
+        try {
+            inst.findEdge(createOther(), 
+                    created.getInEdges().get(0).getId(),
+                    createdOther.getOutEdges().get(0).getId());
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+        try {
+            inst.findEdge(createOther(), 
+                    createdOther.getOutEdges().get(0).getId(),
+                    created.getInEdges().get(0).getId());
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+    
+    @Test
     public void testFindEdgeIndependent() throws RushHourException {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
@@ -536,6 +589,23 @@ public class RailControllerTest extends AbstractControllerTest {
             inst.findEdge(player, 
                     created.getInEdges().get(0).getId(),
                     created.getInEdges().get(0).getId());
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
+    
+    @Test
+    public void testFindEdgeUnexisted() throws RushHourException {
+        Player player = createPlayer();
+        RailNode created = inst.create(player, TEST_POS);
+        inst.extend(player, created, TEST_POS2);
+        EM.flush();
+        EM.refresh(created);
+        try {
+            inst.findEdge(player, 
+                    created.getInEdges().get(0).getId(),
+                    9999);
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());

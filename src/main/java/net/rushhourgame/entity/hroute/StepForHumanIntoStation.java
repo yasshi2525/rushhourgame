@@ -86,8 +86,8 @@ public class StepForHumanIntoStation extends AbstractEntity implements StepForHu
     }
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
-        return isAreaIn(_from, center, scale)
-                ||  isAreaIn(_to, center, scale);
+        // platform と ticketgate は同じ座標なので platformの座標で検査
+        return isAreaIn(_to, center, scale);
     }
     
     @Override

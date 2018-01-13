@@ -274,6 +274,17 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         
         assertEquals(top, step.getNext());
     }
+    
+    @Test
+    public void testExtendWithLineController() throws RushHourException {
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        RailNode n2 = RAILCON.extend(player, start.node, EXTENDED);
+        EM.flush();
+        EM.refresh(n2);
+        EM.refresh(start.line);
+        LCON.extend(start.line.findTop(), player, n2.getInEdges().get(0));
+        inst.extend(player, n2, EXTENDED2);
+    }
 
     protected static LineStep findTop(Line line) {
         return line.getSteps().stream()

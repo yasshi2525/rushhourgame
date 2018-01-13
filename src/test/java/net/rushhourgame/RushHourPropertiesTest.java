@@ -374,7 +374,7 @@ public class RushHourPropertiesTest {
 
         verify(watchService, times(1)).take();
     }
-
+    
     /**
      * Overflowイベントが発生して終了.
      *
@@ -399,6 +399,63 @@ public class RushHourPropertiesTest {
         when(watchKey.pollEvents()).thenReturn(eventList);
 
         when(watchEvent.kind()).thenReturn(StandardWatchEventKinds.OVERFLOW);
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(1)).take();
+        verify(watchEvent, times(1)).kind();
+    }
+    
+    @Test
+    public void testConfigWatchingServiceOtherEvent() throws InterruptedException {
+        Path configPath = mock(Path.class);
+        WatchService watchService = mock(WatchService.class);
+        WatchKey watchKey = mock(WatchKey.class);
+        WatchEvent watchEvent = mock(WatchEvent.class);
+
+        List<WatchEvent<?>> eventList = new ArrayList<>();
+        eventList.add(watchEvent);
+
+        when(configPath.toAbsolutePath()).thenReturn(configPath);
+        when(configPath.getParent()).thenReturn(configPath);
+
+        when(watchService.take()).thenReturn(watchKey);
+
+        when(watchKey.pollEvents()).thenReturn(eventList);
+
+        when(watchEvent.kind()).thenReturn(StandardWatchEventKinds.ENTRY_DELETE);
+
+        RushHourProperties.ConfigWatchingService service
+                = inst.new ConfigWatchingService(configPath, watchService);
+
+        service.run();
+
+        verify(watchService, times(1)).take();
+        verify(watchEvent, times(1)).kind();
+    }
+    
+    @Test
+    public void testConfigWatchingServiceOtherFile() throws InterruptedException {
+        Path configPath = mock(Path.class);
+        WatchService watchService = mock(WatchService.class);
+        WatchKey watchKey = mock(WatchKey.class);
+        WatchEvent watchEvent = mock(WatchEvent.class);
+
+        List<WatchEvent<?>> eventList = new ArrayList<>();
+        eventList.add(watchEvent);
+
+        when(configPath.toAbsolutePath()).thenReturn(configPath);
+        when(configPath.getParent()).thenReturn(configPath);
+
+        when(watchService.take()).thenReturn(watchKey);
+
+        when(watchKey.pollEvents()).thenReturn(eventList);
+
+        when(watchEvent.kind()).thenReturn(StandardWatchEventKinds.ENTRY_MODIFY);
+        when(watchEvent.context()).thenReturn(mock(Path.class));
 
         RushHourProperties.ConfigWatchingService service
                 = inst.new ConfigWatchingService(configPath, watchService);

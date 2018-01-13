@@ -112,6 +112,22 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     }
     
     @Test
+    public void testInitWithInvalidEdge() throws RushHourException {
+        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
+        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
+        EM.flush();
+        EM.refresh(n1);
+        
+        inst.player = player;
+        map.put("clickX", "11.0");
+        map.put("clickY", "12.0");
+        map.put("scale", "13.0");
+        map.put("clickedEdge1", Long.toString(n1.getOutEdges().get(0).getId()));
+        
+        inst.init();
+    }
+    
+    @Test
     public void testInitException() throws RushHourException {
         inst.player = player;
         map.put("clickX", "11.0");

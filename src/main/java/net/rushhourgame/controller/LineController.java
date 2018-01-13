@@ -191,7 +191,7 @@ public class LineController extends AbstractController {
         LineStep insertedGoal = extend(insertedStart, owner, back);
         
         // 新規に停車をする場合、発車ステップを入れて後続との整合性をとる
-        if (insertedGoal.getStopping() != null && goal != null && goal.getDeparture() == null) {
+        if (insertedGoal.getStopping() != null && goal != null) {
             insertedGoal = createDeparture(insertedGoal.getStopping());
         }
         

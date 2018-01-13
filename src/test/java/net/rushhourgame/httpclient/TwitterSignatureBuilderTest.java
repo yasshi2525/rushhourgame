@@ -164,7 +164,13 @@ public class TwitterSignatureBuilderTest {
         String expected = prop.get(TWITTER_CONSUMER_SECRET) + "&" + OATUTH_SECRET;
         assertEquals(expected, inst.createSigningKey());
 
+        // no consumer secret
+        inst.consumerSecret = null;
+        expected = "&" + OATUTH_SECRET;
+        assertEquals(expected, inst.createSigningKey());
+        
         // no oauth secret key
+        inst.consumerSecret = prop.get(TWITTER_CONSUMER_SECRET);
         inst.oAuthTokenSecret = null;
         expected = prop.get(TWITTER_CONSUMER_SECRET) + "&";
         assertEquals(expected, inst.createSigningKey());

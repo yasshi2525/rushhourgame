@@ -260,7 +260,7 @@ public abstract class HttpClient implements Serializable {
         Pattern p = Pattern.compile("(.+)=(.+)");
         for (String token : split) {
             Matcher m = p.matcher(token);
-            if (m.matches() && m.groupCount() == 2) {
+            if (m.matches()) {
                 map.put(m.group(1), m.group(2));
             }
         }

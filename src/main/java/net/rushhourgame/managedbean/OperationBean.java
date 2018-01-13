@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.managedbean;
 
+import java.io.Serializable;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.RailNode;
@@ -31,7 +32,9 @@ import net.rushhourgame.entity.RailNode;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class OperationBean {
+public class OperationBean implements Serializable{
+
+    private static final long serialVersionUID = 1L;
     protected Type type;
     protected RailNode tailNode;
     protected Line line;

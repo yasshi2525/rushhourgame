@@ -24,9 +24,11 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.Locale;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
@@ -34,6 +36,7 @@ import static org.junit.Assert.*;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Station;
 import org.junit.Before;
 
 /**
@@ -156,6 +159,22 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertTrue(10 == begin.getCost());
         assertNull(goal.getVia());
         assertEquals(goal, begin.getVia());
+    }
+    
+    @Test
+    public void testSearchDetour() throws RushHourException {
+        RCON.create(new SimplePoint(-10, -10));
+        CCON.create(new SimplePoint(10, 1000));
+        Player p = createPlayer();
+        AssistanceController.Result result = ACON.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
+        ACON.extend(p, result.node, new SimplePoint(0, 990));
+        
+        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
+        List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
+        inst.buildRouteEdges(SCON.findAll(), nodes);
+        
+        RouteNode goal = nodes.get(1);
+        inst.search(nodes, goal);
     }
     
     @Test(expected = NullPointerException.class)
