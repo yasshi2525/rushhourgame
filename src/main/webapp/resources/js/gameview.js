@@ -391,6 +391,7 @@ toViewPos = function (x, y) {
 handleSlide = function (event, ui) {
     $('#scale').text(ui.value / 100);
     fetchGraphics();
+    fetchMovableGraphics();
     rewriteTempResource();
 };
 
@@ -457,6 +458,7 @@ onDragMove = function (event) {
         scope.$centerY.val(newCenterPos.y);
 
         fetchGraphics();
+        fetchMovableGraphics();
 
         if (scope.tailNode) {
             var pos = toViewPos(scope.tailNode.gamex, scope.tailNode.gamey);
