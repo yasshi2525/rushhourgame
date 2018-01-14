@@ -34,7 +34,6 @@
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/rushhourtest"/>
       <property name="javax.persistence.jdbc.user" value="rushhourtest"/>
       <property name="javax.persistence.jdbc.password" value="rushhourtest"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
     </properties>
   </persistence-unit>
 </persistence>
