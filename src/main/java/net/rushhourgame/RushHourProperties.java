@@ -42,16 +42,14 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.context.ApplicationScoped;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Startup
-@Singleton
+@ApplicationScoped
 public class RushHourProperties implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -108,7 +106,7 @@ public class RushHourProperties implements Serializable {
     transient protected WatchService watchService;
     protected Properties constants = new Properties();
     protected Properties config = new Properties();
-
+    
     /**
      * デフォルトの設定とユーザの設定を読み込む。
      */
@@ -166,6 +164,7 @@ public class RushHourProperties implements Serializable {
                 // ファイルが更新されたらリロードされるようにする。
                 executorService.submit(
                         new ConfigWatchingService(userConfig, watchService));
+                LOG.log(Level.INFO, "{0}#init success to start to watch user config", this.getClass().getSimpleName());
             } else {
                 LOG.log(Level.WARNING, "{0}#init fail to start watching service because executorService is null.", this.getClass().getSimpleName());
             }

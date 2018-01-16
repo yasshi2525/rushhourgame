@@ -33,7 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ejb.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.controller.route.RouteEdge;
@@ -48,7 +48,7 @@ import net.rushhourgame.entity.StepForHuman;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Singleton
+@ApplicationScoped
 public class RouteSearcher extends AbstractController implements Callable<Boolean> {
 
     private static final long serialVersionUID = 1L;

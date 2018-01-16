@@ -27,16 +27,14 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Startup
-@Singleton
+@ApplicationScoped
 public class RushHourResourceBundle extends AbstractResourceBundle {
 
     private static final long serialVersionUID = 1L;

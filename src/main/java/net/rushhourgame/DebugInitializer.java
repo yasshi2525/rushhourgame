@@ -24,46 +24,27 @@
 package net.rushhourgame;
 
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
-import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.entity.Player;
-import net.rushhourgame.entity.RailEdge;
-import net.rushhourgame.entity.RailNode;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.SimplePoint;
-import net.rushhourgame.entity.Station;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 
@@ -71,8 +52,7 @@ import net.rushhourgame.json.SimpleUserData;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Startup
-@Singleton
+@ApplicationScoped
 public class DebugInitializer {
     //@Inject
     //protected RouteSearcher searcher;

@@ -25,13 +25,17 @@ package net.rushhourgame;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import javax.ejb.TimerService;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Train;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -52,17 +56,21 @@ public class GameMasterTest {
     @Mock
     protected Train train;
     
+    @Mock
+    protected ManagedExecutorService executor;
+    
     @Before
     public void setUp() {
         inst = new GameMaster();
-        inst.timerService = mock(TimerService.class);
+        inst.executorService = executor;
+        inst.timerService = mock(ManagedScheduledExecutorService.class);
         inst.prop = RushHourProperties.getInstance();
         inst.tCon = tCon;
     }
 
     @Test
     public void testInit() throws Exception {
-        inst.init();
+        inst.init(null);
         assertEquals(1000, inst.interval);
     }
 
@@ -72,7 +80,7 @@ public class GameMasterTest {
         trains.add(train);
         
         doReturn(trains).when(tCon).findAll();
-        inst.step();
+        inst.run();
     }
     
 }

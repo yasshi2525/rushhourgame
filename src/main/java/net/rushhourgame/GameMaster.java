@@ -24,52 +24,73 @@
 package net.rushhourgame;
 
 import java.io.Serializable;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.DependsOn;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
+import javax.enterprise.event.TransactionPhase;
+import javax.enterprise.inject.spi.EventMetadata;
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.TrainController;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Startup
-@DependsOn("RushHourProperties")
-@Singleton
-public class GameMaster implements Serializable {
+@ApplicationScoped
+public class GameMaster implements Serializable, Runnable {
+    private static final Logger LOG = Logger.getLogger(GameMaster.class.getName());
 
     private static final long serialVersionUID = 1L;
     
     @Resource
-    protected TimerService timerService;
+    protected ManagedScheduledExecutorService timerService;
     @Inject
     protected TrainController tCon;
     @Inject
     protected RushHourProperties prop;
-    
-    Timer timer;
+    @Inject
+    protected RouteSearcher searcher;
+    @Resource
+    protected ManagedExecutorService executorService;
     
     protected long interval;
     
-    @PostConstruct
-    public void init() {
+    public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) {
+        LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[] {this.getClass().getSimpleName(), event});
         interval = Long.parseLong(prop.get(GAME_INTERVAL));
+        executorService.submit(searcher);
         TimerConfig config = new TimerConfig("RushHour", true);
-        timer = timerService.createIntervalTimer(0L, interval, config);
+        timerService.scheduleWithFixedDelay(this, interval, interval, TimeUnit.MILLISECONDS);
+        LOG.log(Level.INFO, "{0}#init end initialization", this.getClass().getSimpleName());
     }
     
-    @Timeout
     @Transactional
-    public void step() {
+    @Override
+    public void run() {
         tCon.findAll().forEach(t -> {
             tCon.step(t, interval);
         });
