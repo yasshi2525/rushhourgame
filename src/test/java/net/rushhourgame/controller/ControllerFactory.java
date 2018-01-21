@@ -38,6 +38,8 @@ public class ControllerFactory {
     public static ResidenceController createResidenceController() {
         ResidenceController inst = new ResidenceController();
         inst.sCon = createStepForHumanController();
+        inst.cCon = createCompanyController();
+        inst.hCon = createHumanController();
         init(inst);
         return inst;
     }
@@ -138,6 +140,12 @@ public class ControllerFactory {
     
     public static TrainController createTrainController() {
         TrainController inst = new TrainController();
+        init(inst);
+        return inst;
+    }
+    
+    public static HumanController createHumanController() {
+        HumanController inst = new HumanController();
         init(inst);
         return inst;
     }

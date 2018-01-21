@@ -120,15 +120,7 @@ public class DebugInitializerTest {
     
 
     @Test
-    public void testInit() {
+    public void testInit() throws RushHourException {
         inst.init();
     }
-    
-    @Test
-    public void testInitException() throws RushHourException {
-        inst.rCon = mock(ResidenceController.class);
-        doThrow(RushHourException.class).when(inst.rCon).create(any(Pointable.class));
-        inst.init();
-    }
-
 }

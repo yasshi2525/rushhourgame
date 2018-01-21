@@ -23,14 +23,19 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -40,6 +45,13 @@ import net.rushhourgame.exception.RushHourException;
 @Dependent
 public class ResidenceController extends PointEntityController {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ResidenceController.class.getName());
+    
+    @Inject
+    protected HumanController hCon;
+    
+    @Inject
+    protected CompanyController cCon;
     
     @Inject
     protected StepForHumanController sCon;
@@ -47,16 +59,17 @@ public class ResidenceController extends PointEntityController {
     public Residence create(@NotNull Pointable p) throws RushHourException{
         return create(p, 
                 Integer.parseInt(prop.get(GAME_DEF_RSD_CAPACITY)),
-                Integer.parseInt(prop.get(GAME_DEF_RSD_INTERVAL)));
+                Long.parseLong(prop.get(GAME_DEF_RSD_INTERVAL)));
     }
     
-    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) int interval) throws RushHourException{
+    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval) throws RushHourException{
         if (exists("Residence.exists", p)) {
             throw new RushHourException(errMsgBuilder.createResidenceDuplication(p));
         }
         Residence inst = new Residence();
         inst.setCapacity(capacity);
         inst.setInterval(interval);
+        inst.setCount((long) (interval * Math.random()));
         inst.setX(p.getX());
         inst.setY(p.getY());
         em.persist(inst);
@@ -71,5 +84,21 @@ public class ResidenceController extends PointEntityController {
     
     public List<Residence> findAll() {
         return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+    }
+    
+    public void step(@NotNull Residence r, long interval) {
+        r.step(interval);
+        while (r.expires()) {
+            List<Company> companies = cCon.findAll();
+            if (companies.isEmpty()) {
+                LOG.log(Level.WARNING, "{0}#step() skip create human because there is no company.", ResidenceController.class.getSimpleName());
+                return;
+            }
+            Collections.shuffle(companies);
+            for (int i = 0; i < r.getCapacity(); i++) {
+                hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+            }
+            r.consume();
+        }
     }
 }

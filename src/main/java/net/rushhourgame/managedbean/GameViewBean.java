@@ -45,6 +45,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
+import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
@@ -53,6 +54,7 @@ import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
@@ -102,6 +104,8 @@ public class GameViewBean implements Serializable {
     protected AssistanceController aCon;
     @Inject
     protected TrainController tCon;
+    @Inject
+    protected HumanController hCon;
     @Inject
     protected RushHourSession session;
     @Inject
@@ -191,6 +195,10 @@ public class GameViewBean implements Serializable {
 
     public List<Station> getStations() {
         return stCon.findIn(center, getLoadScale());
+    }
+    
+    public List<Human> getHumans() {
+        return hCon.findIn(center, getLoadScale());
     }
 
     @Transactional

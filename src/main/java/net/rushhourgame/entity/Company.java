@@ -70,9 +70,6 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
     protected double x;
     protected double y;
 
-    @OneToMany(mappedBy = "dest")
-    private List<Human> humans;
-
     @OneToMany(mappedBy = "_to")
     protected List<StepForHumanDirectly> directlyList;
 
@@ -85,10 +82,6 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
 
     public void setScale(double scale) {
         this.scale = scale;
-    }
-
-    public List<Human> getHumans() {
-        return humans;
     }
 
     @Override

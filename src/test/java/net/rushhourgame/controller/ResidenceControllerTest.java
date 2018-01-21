@@ -31,10 +31,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -54,6 +56,8 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createResidenceController();
+        inst.cCon = spy(ControllerFactory.createCompanyController());
+        inst.hCon = spy(ControllerFactory.createHumanController());
     }
 
     @Test
@@ -95,5 +99,33 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         inst.create(TEST_POS);
         assertFalse(inst.findIn(TEST_POS, 2).isEmpty());
         assertTrue(inst.findIn(new SimplePoint(-100, -100), 2).isEmpty());
+    }
+    
+    @Test
+    public void testStepDoNothing() throws RushHourException {
+        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        inst.step(created, 0L);
+        
+        verify(inst.cCon, times(0)).findAll();
+    }
+    
+    @Test
+    public void testStepNoCmpWorld() throws RushHourException {
+        Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        inst.step(created, TEST_INTERVAL);
+        
+        verify(created, times(0)).getCapacity();
+    }
+    
+    @Test
+    public void testStepGenerating() throws RushHourException {
+        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        Company dest = CCON.create(TEST_POS);
+        
+        inst.step(src, TEST_INTERVAL);
+        
+        verify(src, times(2)).expires();
+        verify(inst.hCon, times(TEST_CAPACITY)).create(any(Pointable.class), any(Residence.class), any(Company.class));
+        assertTrue(src.getCount() < src.getInterval());
     }
 }

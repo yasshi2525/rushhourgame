@@ -70,6 +70,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
     public void setUp() {
         super.setUp();
         inst.train = train;
+        doReturn(mock(Station.class)).when(stop).getOnStation();
         doReturn(_dep).when(dep).getDeparture();
         doReturn(_stop).when(stop).getStopping();
         doReturn(_pass).when(pass).getPassing();
@@ -303,12 +304,24 @@ public class TrainDeployedTest extends AbstractEntityTest {
 
     @Test
     public void testFreeHuman() {
-        inst.freeHuman(new ArrayList<>());
+        ArrayList<Human> list = new ArrayList<>();
+        Human h = mock(Human.class);
+        list.add(h);
+        inst.current = stop;
+        
+        inst.freeHuman(list);
+        verify(h, times(1)).getOffTrain(any(Station.class));
     }
 
     @Test
     public void testCollectHuman() {
-        inst.collectHuman(new ArrayList<>());
+        ArrayList<Human> list = new ArrayList<>();
+        Human h = mock(Human.class);
+        list.add(h);
+        inst.current = dep;
+        
+        inst.collectHuman(list);
+        verify(h, times(1)).getInTrain(any(Train.class));
     }
     
 }

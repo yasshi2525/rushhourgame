@@ -140,6 +140,10 @@
             <div class="train" id="train#{t.id}"
                  data-x="#{t.x}" data-y="#{t.y}"/>
         </ui:repeat>
+        <ui:repeat var="h" value="#{game.humans}">
+            <div class="train" id="train#{h.id}"
+                 data-x="#{h.x}" data-y="#{h.y}"/>
+        </ui:repeat>
     </h:panelGroup>
     
     <!-- 拡大縮小用 -->

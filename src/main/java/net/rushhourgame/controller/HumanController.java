@@ -24,6 +24,7 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import javax.enterprise.context.Dependent;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
@@ -34,6 +35,7 @@ import net.rushhourgame.entity.Residence;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@Dependent
 public class HumanController extends PointEntityController {
     
     private static final long serialVersionUID = 1L;
@@ -44,11 +46,19 @@ public class HumanController extends PointEntityController {
         human.setY(point.getY());
         human.setSrc(src);
         human.setDest(dst);
+        em.persist(human);
         return human;
+    }
+    
+    public List<Human> findAll() {
+        return em.createNamedQuery("Human.findAll", Human.class).getResultList();
     }
     
     public List<Human> findIn(@NotNull Pointable center, double scale) {
         return findIn(em.createNamedQuery("Human.findIn", Human.class), center, scale);
     }
     
+    public void step(Human h, long interval) {
+        h.step(interval);
+    }
 }

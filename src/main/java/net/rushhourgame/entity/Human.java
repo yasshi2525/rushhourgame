@@ -36,6 +36,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NamedQueries({
     @NamedQuery(
+            name = "Human.findAll",
+            query = "SELECT obj FROM Human obj"
+    ),
+    @NamedQuery(
             name = "Human.findIn",
             query = "SELECT obj FROM Human obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
     )
@@ -55,6 +59,10 @@ public class Human extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Company dest;
+    
+    public void step(long interval) {
+        throw new UnsupportedOperationException();
+    }
 
     public void idle() {
 

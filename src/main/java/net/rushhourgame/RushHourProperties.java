@@ -92,6 +92,7 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_CMP_SCALE = "rushhour.game.default.company.scale";
     public static final String GAME_DEF_RSD_CAPACITY = "rushhour.game.default.residence.capacity";
     public static final String GAME_DEF_RSD_INTERVAL = "rushhour.game.default.residence.interval";
+    public static final String GAME_DEF_RSD_PRODIST = "rushhour.game.default.residence.producedist";
     public static final String GAME_DEF_GATE_NUM = "rushhour.game.default.ticketgate.num";
     public static final String GAME_DEF_PLT_CAPACITY = "rushhour.game.default.platform.capacity";
     public static final String GAME_DEF_TRAIN_COSTRATE = "rushhour.game.default.train.costrate";

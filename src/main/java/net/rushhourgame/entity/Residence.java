@@ -52,11 +52,12 @@ import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
     @NamedQuery(
             name = "Residence.findIn",
             query = "SELECT obj FROM Residence obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
-    ),
+    )
+    ,
     @NamedQuery(
             name = "Residence.exists",
             query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
-                    + " FROM Residence obj WHERE obj.x = :x AND obj.y = :y"
+            + " FROM Residence obj WHERE obj.x = :x AND obj.y = :y"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"x", "y"}))
@@ -67,14 +68,11 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
     @Min(1)
     protected int capacity;
     @Min(1)
-    protected int _interval;
-    protected int count;
+    protected long _interval;
+    protected long count;
 
     protected double x;
     protected double y;
-
-    @OneToMany(mappedBy = "src")
-    private List<Human> humans;
 
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanDirectly> directlyList;
@@ -90,36 +88,32 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
         this.capacity = capacity;
     }
 
-    public int getInterval() {
+    public long getInterval() {
         return _interval;
     }
 
-    public void setInterval(int _interval) {
+    public void setInterval(long _interval) {
         this._interval = _interval;
     }
 
-    public int getCount() {
+    public long getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(long count) {
         this.count = count;
     }
 
-    public void step() {
-        count++;
+    public void step(long interval) {
+        count += interval;
     }
 
-    public void reset() {
-        count = 0;
+    public void consume() {
+        count -= _interval;
     }
 
     public boolean expires() {
         return count >= _interval;
-    }
-
-    public List<Human> getHumans() {
-        return humans;
     }
 
     @Override

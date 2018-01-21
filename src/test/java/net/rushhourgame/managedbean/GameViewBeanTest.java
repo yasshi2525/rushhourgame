@@ -90,6 +90,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.sCon = SCON;
         inst.aCon = ACON;
         inst.tCon = TRCON;
+        inst.hCon = HCON;
         inst.em = EM;
         inst.center = new SimplePoint();
         inst.click = new SimplePoint();
@@ -202,6 +203,11 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testGetStepForHuman() {
         inst.getStepForHuman();
+    }
+    
+    @Test
+    public void testGetHumans() {
+        inst.getHumans();
     }
 
     @Test

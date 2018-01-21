@@ -30,7 +30,11 @@ import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import net.rushhourgame.controller.ControllerFactory;
+import net.rushhourgame.controller.HumanController;
+import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Train;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,6 +43,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -51,10 +56,13 @@ public class GameMasterTest {
     protected GameMaster inst;
     
     @Mock
-    protected TrainController tCon;
-    
+    protected DebugInitializer debug;
     @Mock
     protected Train train;
+    @Mock
+    protected Residence rsd;
+    @Mock
+    protected Human human;
     
     @Mock
     protected ManagedExecutorService executor;
@@ -62,10 +70,13 @@ public class GameMasterTest {
     @Before
     public void setUp() {
         inst = new GameMaster();
+        inst.debug = debug;
         inst.executorService = executor;
         inst.timerService = mock(ManagedScheduledExecutorService.class);
         inst.prop = RushHourProperties.getInstance();
-        inst.tCon = tCon;
+        inst.tCon = spy(ControllerFactory.createTrainController());
+        inst.hCon = spy(ControllerFactory.createHumanController());
+        inst.rCon = spy(ControllerFactory.createResidenceController());
     }
 
     @Test
@@ -73,14 +84,30 @@ public class GameMasterTest {
         inst.init(null);
         assertEquals(1000, inst.interval);
     }
+    
+    @Test
+    public void testRunDoNothing() {
+        inst.run();
+    }
 
     @Test
-    public void testStep() throws Exception {
+    public void testRun() throws Exception {
         List<Train> trains = new ArrayList<>();
         trains.add(train);
+        List<Residence> rsds = new ArrayList<>();
+        rsds.add(rsd);
+        List<Human> humans = new ArrayList<>();
+        humans.add(human);
         
-        doReturn(trains).when(tCon).findAll();
+        doReturn(trains).when(inst.tCon).findAll();
+        doReturn(humans).when(inst.hCon).findAll();
+        doReturn(rsds).when(inst.rCon).findAll();
+        
         inst.run();
+        
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong());
+        verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
+        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
     }
     
 }

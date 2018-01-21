@@ -62,8 +62,16 @@ var lineResources = {
     }
 };
 
-var movableResources = {
+var movableSprites = {
     train: {}
+};
+
+var movableCircles = {
+    human: {
+        color: 0xff69b4,
+        radius: 3,
+        alpha: 0.5
+    }
 };
 
 var tempResources = {
@@ -139,7 +147,8 @@ initPixi = function () {
     };
 
     scope.movablegraphics = {
-        'train': {}
+        'train': {},
+        'human': {}
     };
 
     // 画像をロードしたあと、イベントハンドラスプライトを表示
@@ -258,12 +267,22 @@ fetchMovableGraphics = function () {
     var scope = $(document).data('scope');
     markOldToGraphics(scope.movablegraphics);
 
-    for (var name in movableResources) {
+    for (var name in movableSprites) {
         $('.' + name).each(function (i, elm) {
             upsertSprite(name, name, scope.movablegraphics, $(elm).attr('id'), $(elm));
         });
     }
-    
+
+    for (var name in movableCircles) {
+        $('.' + name).each(function (i, elm) {
+            var pos = toViewPos(
+                    parseFloat($(elm).data('x')),
+                    parseFloat($(elm).data('y')));
+            upsertCircle(name, scope.movablegraphics,
+                    $(elm).attr('id'), pos, movableCircles[name])
+        });
+    }
+
     deleteOldGraphics(scope.movablegraphics);
     scope.renderer.render(scope.stage);
 };
@@ -601,9 +620,21 @@ writeTempResourceNeighbor = function () {
     }
 };
 
+upsertCircle = function (name, graphics, id, pos, opts) {
+    if (graphics[name][id]) {
+        // 更新
+        graphics[name][id].old = false;
+        graphics[name][id].x = pos.x;
+        graphics[name][id].y = pos.y;
+    } else {
+        // 新規作成
+        graphics[name][id] = stageTempCircle(pos, opts);
+    }
+};
+
 stageTempCircle = function (pos, opts) {
     var scope = $(document).data('scope');
-    var obj = new PIXI.Graphics();
+    var obj = new pixi.Graphics();
     obj.x = pos.x;
     obj.y = pos.y;
     obj.alpha = opts.alpha;

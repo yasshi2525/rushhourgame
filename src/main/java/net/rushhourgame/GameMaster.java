@@ -53,8 +53,11 @@ import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.controller.HumanController;
+import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  *
@@ -71,16 +74,24 @@ public class GameMaster implements Serializable, Runnable {
     @Inject
     protected TrainController tCon;
     @Inject
+    protected ResidenceController rCon;
+    @Inject
+    protected HumanController hCon;
+    @Inject
     protected RushHourProperties prop;
     @Inject
     protected RouteSearcher searcher;
+    @Inject
+    protected DebugInitializer debug;
     @Resource
     protected ManagedExecutorService executorService;
     
     protected long interval;
     
-    public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) {
+    @Transactional
+    public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[] {this.getClass().getSimpleName(), event});
+        debug.init();
         interval = Long.parseLong(prop.get(GAME_INTERVAL));
         executorService.submit(searcher);
         TimerConfig config = new TimerConfig("RushHour", true);
@@ -91,8 +102,14 @@ public class GameMaster implements Serializable, Runnable {
     @Transactional
     @Override
     public void run() {
+        rCon.findAll().forEach(r -> {
+            rCon.step(r, interval);
+        });
         tCon.findAll().forEach(t -> {
             tCon.step(t, interval);
+        });
+        hCon.findAll().forEach(t -> {
+            hCon.step(t, interval);
         });
     }
 }

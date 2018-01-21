@@ -70,6 +70,7 @@ public class AbstractControllerTest {
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
+    protected final static HumanController HCON = ControllerFactory.createHumanController();
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;

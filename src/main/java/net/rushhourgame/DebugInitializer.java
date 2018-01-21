@@ -32,9 +32,13 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.ServletContext;
+import javax.transaction.Transactional;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.OAuthController;
@@ -54,9 +58,7 @@ import net.rushhourgame.json.SimpleUserData;
  */
 @ApplicationScoped
 public class DebugInitializer {
-    //@Inject
-    //protected RouteSearcher searcher;
-
+    
     @PersistenceContext
     protected EntityManager em;
 
@@ -77,54 +79,11 @@ public class DebugInitializer {
     @Resource
     ManagedExecutorService executorService;
 
-    @PostConstruct
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void init() {
-        try {
-            rCon.create(new SimplePoint(0, 0));
-            
-            cCon.create(new SimplePoint(0, 1));
-            cCon.create(new SimplePoint(1, 0));
-            rCon.create(new SimplePoint(1, 1));
-            
-            rCon.create(new SimplePoint(0, 2));
-            rCon.create(new SimplePoint(2, 0));
-            cCon.create(new SimplePoint(2, 2));
-
-            cCon.create(new SimplePoint(0, 4));
-            cCon.create(new SimplePoint(4, 0));
-            rCon.create(new SimplePoint(4, 4));
-            
-            rCon.create(new SimplePoint(0, 8));
-            rCon.create(new SimplePoint(8, 0));
-            cCon.create(new SimplePoint(8, 8));
-            
-            cCon.create(new SimplePoint(0, 16));
-            cCon.create(new SimplePoint(16, 0));
-            rCon.create(new SimplePoint(16, 16));
-            
-            Player owner = pCon.upsertPlayer(
-                    "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
-            
-            // r1 r2 r3
-            //    r4
-            
-            /*RailNode r1 = railCon.create(owner, 10, 20);
-            RailNode r2 = railCon.extend(owner, r1, 30, 20);
-            RailNode r3 = railCon.extend(owner, r2, 40, 20);
-            RailNode r4 = railCon.extend(owner, r2, 30, 30);
-            
-            Station st1 = stCon.create(owner, r1, "debug_west");
-            Station st3 = stCon.create(owner, r3, "debug_east");
-            Station st4 = stCon.create(owner, r4, "debug_south");
-            
-            em.flush();
-            
-            lCon.autocreate(owner, st4, "debug");*/
-            
-            //executorService.submit(searcher);
-        } catch (RushHourException e) {
-            Logger.getLogger(DebugInitializer.class.getName()).log(Level.SEVERE, null, e);
+    @Transactional
+    public void init() throws RushHourException {
+        for (int i = 0; i < 20; i++) {
+            rCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
+            cCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
         }
     }
 }

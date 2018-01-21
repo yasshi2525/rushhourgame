@@ -35,6 +35,10 @@ public class SimplePoint implements Pointable {
     public SimplePoint() {
 
     }
+    
+    public SimplePoint(Pointable p) {
+        this(p.getX(), p.getY());
+    }
 
     public SimplePoint(double x, double y) {
         this.x = x;
@@ -63,5 +67,11 @@ public class SimplePoint implements Pointable {
     public double distTo(Pointable p) {
         return Math.sqrt((p.getX() - x) * (p.getX() - x)
                 + (p.getY() - y) * (p.getY() - y));
+    }
+    
+    public Pointable makeNearPoint(double dist) {
+        double radian = Math.random() * Math.PI * 2;
+        
+        return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
     }
 }

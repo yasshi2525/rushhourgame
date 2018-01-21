@@ -35,6 +35,7 @@ import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
+import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.LocalTableController;
 import net.rushhourgame.controller.OAuthController;
@@ -74,6 +75,7 @@ public class AbstractBeanTest {
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static TrainController TRCON = ControllerFactory.createTrainController();
+    protected final static HumanController HCON = ControllerFactory.createHumanController();
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();

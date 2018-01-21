@@ -91,8 +91,9 @@ describe('test gameview', function () {
                 'station': {},
                 'stepforhuman': {}
             },
-            movablegraphics : {
-                'train': {}
+            movablegraphics: {
+                'train': {},
+                'human': {}
             },
             player: {}
         };
@@ -117,7 +118,7 @@ describe('test gameview', function () {
             initEventHandler();
         });
     });
-    
+
     describe('test handleResize', function () {
         it('invoke', function () {
             scope.renderer.resize = doNothing;
@@ -139,13 +140,13 @@ describe('test gameview', function () {
             $('body').append("<div class='player' id='admin' data-isin='true'/>");
             $('body').append("<div class='player' id='other' data-isin='false'/>");
             spyOn(window, 'upsertSprite').and.callFake(doNothing);
-            
+
             fetchGraphics();
             expect(window.updateSprite.calls.any()).toEqual(false);
             expect(window.stageResourceSprite.calls.any()).toEqual(false);
             expect(scope.stage.removeChild.calls.any()).toEqual(false);
             expect(window.stageLine.calls.any()).toEqual(false);
-            
+
             $('#admin').remove();
             $('#other').remove();
         });
@@ -237,12 +238,14 @@ describe('test gameview', function () {
             });
         });
     });
-    
+
     describe('test fetchMovableGraphics', function () {
         it('test invoke', function () {
             $('body').append("<div class='train' id = 'no1'/>");
+            $('body').append("<div class='human' id = 'no2'/>");
             fetchMovableGraphics();
             $('#no1.train').remove();
+            $('#no2.human').remove();
         });
     });
 
@@ -259,7 +262,7 @@ describe('test gameview', function () {
             expect(mockSprite.position.x).toEqual(500);
             expect(mockSprite.position.y).toEqual(500);
         });
-        
+
         it('change pos with isBringToFront', function () {
             updateSprite(mockSprite, $mockElm, true);
         });
@@ -274,14 +277,14 @@ describe('test gameview', function () {
 
             $('#128').remove();
         });
-        
+
         it('create colored line with label', function () {
             $('body').append("<div class='player' id = '128' data-color='#FFFFFF'/>");
             expect(stageLine($mockElm, {color: 0xaaaaaa, slide: 5, scale: 5, alpha: 0.5}))
                     .not.toBeNull();
             $('#128').remove();
         });
-        
+
         it('create line without label', function () {
             $('body').append("<div class='player' id = 'edge1' data-color='#FFFFFF'/>");
             expect(stageLine($('#edge1'), {color: 0xaaaaaa, slide: 5, scale: 5, alpha: 0.5}))
@@ -370,7 +373,7 @@ describe('test gameview', function () {
             expect(window.startGamePos).toBeNull();
             expect(window.startPosition).toBeNull();
         });
-        
+
         it('send cursor pos when clicked', function () {
             window.startPosition = {x: 11, y: 12};
             scope.cursor = {x: 0, y: 0};
@@ -380,7 +383,7 @@ describe('test gameview', function () {
             expect(window.registerEdgeId.calls.any()).toEqual(false);
             expect(window.registerClickPos.calls.any()).toEqual(true);
         });
-        
+
         it('send edge id when clicked', function () {
             window.startPosition = {x: 11, y: 12};
             scope.neighborEdge = {e1id: 1, e2id: 2};
@@ -388,7 +391,7 @@ describe('test gameview', function () {
             expect(window.registerEdgeId.calls.any()).toEqual(true);
             expect(window.registerClickPos.calls.any()).toEqual(false);
         });
-        
+
         it('do nothing just when drag ended', function () {
             window.startPosition = {x: 0, y: 0};
             onDragEnd();
@@ -450,7 +453,7 @@ describe('test gameview', function () {
                     {offsetX: 10, offsetY: 20}
             )).toEqual({x: 10, y: 20});
         });
-        
+
         it('both disabled', function () {
             expect(toViewPosFromMouse({originalEvent: {}}
             )).toEqual({x: 0, y: 0});
@@ -646,23 +649,23 @@ describe('test gameview', function () {
             $('#no1').remove();
         });
     });
-    
-    describe('test removeTempResoureNeighbor', function() {
-        it('test remove', function() {
+
+    describe('test removeTempResoureNeighbor', function () {
+        it('test remove', function () {
             scope.neighborNode = {};
             scope.neighborEdge = {};
-            
+
             removeTempResourceNeighbor();
-            
+
             expect(scope.neighborNode).toBeNull();
             expect(scope.neighborEdge).toBeNull();
         });
     });
-    
-    describe('test writeTempResourceNeighbor ', function() {
+
+    describe('test writeTempResourceNeighbor ', function () {
         beforeEach(function () {
             $('body').append("<div class='railnode' id = 'no0' data-x='0.0' data-y='0.0'/>");
-        
+
             $('body').append("<div class='railedge' id='no1'/>");
             $('#no1').data('ismine', true);
             $('#no1').data('from-x', '0');
@@ -678,32 +681,32 @@ describe('test gameview', function () {
             $('#no2').data('to-x', '0');
             $('#no2').data('to-y', '0');
             $('#no2').data('reverseid', 'no1');
-            
+
             spyOn(window, 'stageTempCircle').and.returnValue({});
             spyOn(window, 'stageLine').and.returnValue({});
         });
-        
-        it('test write node', function() {
+
+        it('test write node', function () {
             scope.mousePos = {x: 250, y: 250};
             scope.neighborEdge = null;
-            
-            writeTempResourceNeighbor ();
-            
+
+            writeTempResourceNeighbor();
+
             expect(scope.neighborNode).not.toBeNull();
             expect(scope.neighborEdge).toBeNull();
         });
-        
-        it('test write edge', function() {
+
+        it('test write edge', function () {
             scope.mousePos = {x: 300, y: 250};
             scope.neighborNode = null;
-            
-            writeTempResourceNeighbor ();
-            
+
+            writeTempResourceNeighbor();
+
             expect(scope.neighborNode).toBeNull();
             expect(scope.neighborEdge.e1).toEqual({});
             expect(scope.neighborEdge.e2).toEqual({});
         });
-        
+
         afterEach(function () {
             $('#no0').remove();
             $('#no1').remove();
@@ -786,15 +789,15 @@ describe('test gameview', function () {
             $('#no2').remove();
         });
     });
-    
-    describe('test handleCompleteRemoving', function() {
-        it ('test invoke', function () {
+
+    describe('test handleCompleteRemoving', function () {
+        it('test invoke', function () {
             spyOn(window, 'fetchGraphics').and.callFake(doNothing);
             spyOn(window, 'removeTempResourceNeighbor').and.callFake(doNothing);
-            
+
             handleCompleteRemoving();
         });
-    }); 
+    });
 
     afterEach(function () {
         $('#scale').remove();
@@ -813,7 +816,7 @@ describe('test initPixi', function () {
 
         initPixi();
         // exports.init は見つからないといわれてできなかった。
-        
+
         $('#admin').remove();
     });
 });
