@@ -61,7 +61,7 @@ public class Human extends AbstractEntity implements Pointable {
     protected Company dest;
     
     public void step(long interval) {
-        throw new UnsupportedOperationException();
+        //
     }
 
     public void idle() {

@@ -65,10 +65,11 @@ import net.rushhourgame.exception.RushHourException;
  */
 @ApplicationScoped
 public class GameMaster implements Serializable, Runnable {
+
     private static final Logger LOG = Logger.getLogger(GameMaster.class.getName());
 
     private static final long serialVersionUID = 1L;
-    
+
     @Resource
     protected ManagedScheduledExecutorService timerService;
     @Inject
@@ -85,20 +86,20 @@ public class GameMaster implements Serializable, Runnable {
     protected DebugInitializer debug;
     @Resource
     protected ManagedExecutorService executorService;
-    
+
     protected long interval;
-    
+
     @Transactional
     public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
-        LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[] {this.getClass().getSimpleName(), event});
+        LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[]{this.getClass().getSimpleName(), event});
         debug.init();
         interval = Long.parseLong(prop.get(GAME_INTERVAL));
         executorService.submit(searcher);
         TimerConfig config = new TimerConfig("RushHour", true);
         timerService.scheduleWithFixedDelay(this, interval, interval, TimeUnit.MILLISECONDS);
-        LOG.log(Level.INFO, "{0}#init end initialization", this.getClass().getSimpleName());
+        LOG.log(Level.INFO, "{0}#init end initialization", GameMaster.class.getSimpleName());
     }
-    
+
     @Transactional
     @Override
     public void run() {
@@ -108,8 +109,8 @@ public class GameMaster implements Serializable, Runnable {
         tCon.findAll().forEach(t -> {
             tCon.step(t, interval);
         });
-        hCon.findAll().forEach(t -> {
-            hCon.step(t, interval);
+        hCon.findAll().forEach(h -> {
+            hCon.step(h, interval);
         });
     }
 }
