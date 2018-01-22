@@ -25,6 +25,7 @@ package net.rushhourgame.managedbean;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 import javax.faces.context.ExternalContext;
@@ -110,6 +111,15 @@ public class ErrorBeanTest extends AbstractBeanTest {
     @Test
     public void testGetStackTrace() {
         inst.throwable = new Throwable();
+        assertNotNull(inst.getStackTrace());
+    }
+    
+    @Test
+    public void testGetStackTraceException() throws IOException {
+        inst.throwable = new Throwable();
+        StringWriter sw = spy(StringWriter.class);
+        doReturn(sw).when(inst).getStringWriter();
+        doThrow(new IOException("hoge")).when(sw).close();
         assertNotNull(inst.getStackTrace());
     }
 }

@@ -78,6 +78,7 @@ public class ServletFilter implements Filter {
                     LOG.log(Level.FINE, "{0}#handleLocale Unsuppoert language : {0}",
                             new Object[]{this.getClass().getSimpleName(), request.getParameter("lang")});
                     locale = Locale.ENGLISH;
+                    break;
             }
         }
 
