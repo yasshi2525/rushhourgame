@@ -23,48 +23,42 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.validation.constraints.NotNull;
-import static net.rushhourgame.RushHourProperties.*;
+import static net.rushhourgame.controller.AbstractControllerTest.SCON;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.exception.RushHourException;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class HumanController extends PointEntityController {
+public class HumanControllerTest extends AbstractControllerTest {
+
+    protected HumanController inst;
+    protected Pointable origin = new SimplePoint();
     
-    private static final long serialVersionUID = 1L;
-    
-    public Human create(@NotNull Pointable point, @NotNull Residence src, @NotNull Company dst) {
-        Human human = new Human();
-        human.setX(point.getX());
-        human.setY(point.getY());
-        human.setSrc(src);
-        human.setDest(dst);
-        human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
-        em.persist(human);
-        return human;
+    @Before
+    @Override
+    public void setUp() {
+        super.setUp();
+        inst = ControllerFactory.createHumanController();
+    }
+
+    @Test
+    public void testStep() throws RushHourException {
+        Residence src = RCON.create(origin);
+        Company dst = CCON.create(origin);
+        
+        Human h = inst.create(origin, src, dst);
+        
+        inst.step(h, 1000000);
     }
     
-    public List<Human> findAll() {
-        return em.createNamedQuery("Human.findAll", Human.class).getResultList();
-    }
-    
-    public List<Human> findIn(@NotNull Pointable center, double scale) {
-        return findIn(em.createNamedQuery("Human.findIn", Human.class), center, scale);
-    }
-    
-    public void step(Human h, long interval) {
-        h.step(interval);
-        h.consumeLifespan(interval);
-        if (h.shouldDie()) {
-            em.remove(h);
-        }
-    }
 }

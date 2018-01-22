@@ -50,7 +50,7 @@ public class Human extends AbstractEntity implements Pointable {
 
     protected double x;
     protected double y;
-    protected int liveCount;
+    protected long lifespan;
 
     @NotNull
     @ManyToOne
@@ -122,12 +122,20 @@ public class Human extends AbstractEntity implements Pointable {
         this.y = y;
     }
 
-    public int getLiveCount() {
-        return liveCount;
+    public long getLifespan() {
+        return lifespan;
     }
 
-    public void incrementLiveCount() {
-        liveCount++;
+    public void consumeLifespan(long interval) {
+        lifespan -= interval;
+    }
+
+    public void setLifespan(long lifespan) {
+        this.lifespan = lifespan;
+    }
+    
+    public boolean shouldDie() {
+        return lifespan < 0;
     }
 
     public Residence getSrc() {
