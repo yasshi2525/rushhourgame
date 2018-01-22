@@ -63,33 +63,31 @@ public class TwitterUserDataParser implements Serializable {
                     break;
                 case VALUE_STRING:
                     if (depth == 1) {
-                        if (key != null) {
-                            switch (key) {
-                                case "name":
-                                    obj.name = parser.getString();
-                                    break;
-                                case "screen_name":
-                                    obj.screen_name = parser.getString();
-                                    break;
-                                case "profile_background_color":
-                                    obj.profile_background_color = "#" + parser.getString();
-                                    break;
-                                case "profile_image_url":
-                                    obj.profile_image_url = parser.getString();
-                                    break;
-                                case "profile_image_url_https":
-                                    obj.profile_image_url_https = parser.getString();
-                                    break;
-                                case "profile_link_color":
-                                    obj.profile_link_color = "#" + parser.getString();
-                                    break;
-                                case "profile_text_color":
-                                    obj.profile_text_color = "#" + parser.getString();
-                                    break;
-                                default:
-                                    
-                                    break;
-                            }
+                        switch (key) {
+                            case "name":
+                                obj.name = parser.getString();
+                                break;
+                            case "screen_name":
+                                obj.screen_name = parser.getString();
+                                break;
+                            case "profile_background_color":
+                                obj.profile_background_color = "#" + parser.getString();
+                                break;
+                            case "profile_image_url":
+                                obj.profile_image_url = parser.getString();
+                                break;
+                            case "profile_image_url_https":
+                                obj.profile_image_url_https = parser.getString();
+                                break;
+                            case "profile_link_color":
+                                obj.profile_link_color = "#" + parser.getString();
+                                break;
+                            case "profile_text_color":
+                                obj.profile_text_color = "#" + parser.getString();
+                                break;
+                            default:
+
+                                break;
                         }
                     }
             }
