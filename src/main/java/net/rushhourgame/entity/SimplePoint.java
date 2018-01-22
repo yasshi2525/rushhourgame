@@ -69,7 +69,8 @@ public class SimplePoint implements Pointable {
                 + (p.getY() - y) * (p.getY() - y));
     }
     
-    public Pointable makeNearPoint(double dist) {
+    public Pointable makeNearPoint(double maxdist) {
+        double dist = Math.random() * maxdist;
         double radian = Math.random() * Math.PI * 2;
         
         return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
