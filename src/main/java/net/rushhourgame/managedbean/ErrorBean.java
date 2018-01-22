@@ -87,7 +87,7 @@ public class ErrorBean implements Serializable {
 
     public String getStackTrace() {
         try (
-                StringWriter sw = new StringWriter();
+                StringWriter sw = getStringWriter();
                 PrintWriter pw = new PrintWriter(sw);) {
             throwable.printStackTrace(pw);
             return sw.toString();
@@ -95,5 +95,13 @@ public class ErrorBean implements Serializable {
             Logger.getLogger(ErrorBean.class.getName()).log(Level.SEVERE, null, ex);
             return ex.getMessage();
         }
+    }
+    
+    /**
+     * モック化するために別メソッドにした。
+     * @return 
+     */
+    protected StringWriter getStringWriter() {
+        return new StringWriter();
     }
 }
