@@ -244,6 +244,7 @@ describe('test gameview', function () {
             $('body').append("<div class='train' id = 'no1'/>");
             $('body').append("<div class='human' id = 'no2'/>");
             fetchMovableGraphics();
+            fetchMovableGraphics();
             $('#no1.train').remove();
             $('#no2.human').remove();
         });
