@@ -99,7 +99,7 @@ public class ErrorBean implements Serializable {
     
     /**
      * モック化するために別メソッドにした。
-     * @return 
+     * @return StringWriter
      */
     protected StringWriter getStringWriter() {
         return new StringWriter();
