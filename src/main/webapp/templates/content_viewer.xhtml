@@ -10,7 +10,7 @@
         <h:panelGroup id="controllpanel" rendered="#{player.signIn}">
             <p:growl for="announcement" autoUpdate="true" life="3000"/>
             #{game.initGuide()}
-            <p:messages for="guide" autoUpdate="true" showDetail="true"/>
+            <p:messages for="guide"  showDetail="true"/>
 
             <p:commandButton id="test" value="#{msg.goBack}"
                              rendered="#{game.underOperation}"
