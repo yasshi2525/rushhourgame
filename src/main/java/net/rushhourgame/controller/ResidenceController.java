@@ -33,6 +33,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;

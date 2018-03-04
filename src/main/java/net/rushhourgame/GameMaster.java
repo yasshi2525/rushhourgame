@@ -110,6 +110,9 @@ public class GameMaster implements Serializable, Runnable {
             tCon.step(t, interval);
         });
         hCon.findAll().forEach(h -> {
+            if (h.getCurrent() == null) {
+                h.setCurrent(searcher.getStart(h.getSrc(), h.getDest()));  // HumanControllerから RouteSearcherを呼ぶと循環してしまう
+            }
             hCon.step(h, interval);
         });
     }

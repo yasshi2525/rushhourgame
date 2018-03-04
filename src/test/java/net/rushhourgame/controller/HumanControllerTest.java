@@ -50,7 +50,7 @@ public class HumanControllerTest extends AbstractControllerTest {
         super.setUp();
         inst = ControllerFactory.createHumanController();
     }
-
+    
     @Test
     public void testStep() throws RushHourException {
         Residence src = RCON.create(origin);

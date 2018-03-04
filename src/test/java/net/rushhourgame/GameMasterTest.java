@@ -32,7 +32,9 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.Train;
@@ -73,6 +75,7 @@ public class GameMasterTest {
         inst.debug = debug;
         inst.executorService = executor;
         inst.timerService = mock(ManagedScheduledExecutorService.class);
+        inst.searcher = mock(RouteSearcher.class);
         inst.prop = RushHourProperties.getInstance();
         inst.tCon = spy(ControllerFactory.createTrainController());
         inst.hCon = spy(ControllerFactory.createHumanController());
@@ -98,13 +101,17 @@ public class GameMasterTest {
         rsds.add(rsd);
         List<Human> humans = new ArrayList<>();
         humans.add(human);
+        doReturn(mock(Residence.class)).when(human).getSrc();
+        doReturn(mock(Company.class)).when(human).getDest();
         
         doReturn(trains).when(inst.tCon).findAll();
         doReturn(humans).when(inst.hCon).findAll();
         doReturn(rsds).when(inst.rCon).findAll();
         
+        inst.searcher.call();
         inst.run();
         
+        verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
         verify(inst.hCon, times(1)).step(any(Human.class), anyLong());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());

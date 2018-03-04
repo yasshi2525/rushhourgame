@@ -25,6 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.entity.Company;
@@ -40,7 +41,7 @@ import net.rushhourgame.entity.Residence;
 public class HumanController extends PointEntityController {
     
     private static final long serialVersionUID = 1L;
-    
+       
     public Human create(@NotNull Pointable point, @NotNull Residence src, @NotNull Company dst) {
         Human human = new Human();
         human.setX(point.getX());

@@ -31,7 +31,10 @@ import java.util.List;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public interface RelayPointForHuman extends Pointable {
-
+    public long getId();
+    
+    public boolean equalsId(RelayPointForHuman other);
+    
     public List<StepForHuman> getOutEdges();
 
     public List<StepForHuman> getInEdges();

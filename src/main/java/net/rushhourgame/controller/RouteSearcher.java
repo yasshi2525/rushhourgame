@@ -66,7 +66,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Inject
     protected StationController stCon;
 
-    transient protected final Map<Company, List<RouteNode>> routes = new HashMap<>();
+    transient protected final Map<Long, List<RouteNode>> routes = new HashMap<>();
 
     /**
      * 経路情報をすべて破棄する.
@@ -76,11 +76,14 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     }
 
     public boolean isReachable(@NotNull Residence r, @NotNull Company c) {
-        return routes.get(c).stream().anyMatch(node -> node.getOriginal().equals(r));
+        return routes.get(c.getId()).stream()
+                .anyMatch(node -> node.getOriginal().equalsId(r));
     }
-    
+
     public RouteNode getStart(@NotNull Residence r, @NotNull Company c) {
-        return routes.get(c).stream().filter(node -> node.getOriginal().equals(r)).findFirst().get();
+        return routes.get(c.getId()).stream()
+                .filter(node -> node.getOriginal().equalsId(r))
+                .findFirst().get();
     }
 
     @Override
@@ -104,14 +107,16 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             List<RouteEdge> edges = buildRouteEdges(originalEdges, nodes);
 
             // goal の取得
-            RouteNode goal = nodes.stream().filter(node -> node.getOriginal().equals(company)).findFirst().get();
-            
+            RouteNode goal = nodes.stream()
+                    .filter(node -> node.getOriginal().equalsId(company))
+                    .findFirst().get();
+
             search(nodes, goal);
-            
+
             // 経路探索結果を登録
-            routes.put(company, nodes);
+            routes.put(company.getId(), nodes);
         });
-        
+
         LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
         return true;
     }
@@ -128,37 +133,38 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 )
         ).collect(Collectors.toList());
     }
-    
+
     protected List<RouteNode> buildRouteNodes(List<RelayPointForHuman> originalNodes) {
         return originalNodes.stream().map(original -> new RouteNode(original)).collect(Collectors.toList());
     }
-    
+
     /**
      * StepForHuman から RouteEdge を作成する
+     *
      * @param originalEdges StepForHuman
      * @param nodes RouteEdge
      * @return List&gt;RouteEdge&lt;
      */
     protected List<RouteEdge> buildRouteEdges(List<StepForHuman> originalEdges, List<RouteNode> nodes) {
         return originalEdges.stream().map(original -> {
-                // from に対応する node の取得
-                RouteNode from = nodes.stream().filter(node -> 
-                        node.getOriginal().equals(original.getFrom())
-                ).findFirst().get();
-                
-                // to に対応する node の取得
-                RouteNode to = nodes.stream().filter(node -> 
-                        node.getOriginal().equals(original.getTo())
-                ).findFirst().get();
-                
-                RouteEdge edge = new RouteEdge(original, from, to);
-                
-                // Node へのリンクを追加
-                from.getOutEdges().add(edge);
-                to.getInEdges().add(edge);
-                
-                return edge;
-            }).collect(Collectors.toList());
+            // from に対応する node の取得
+            RouteNode from = nodes.stream()
+                    .filter(node -> node.getOriginal().equalsId(original.getFrom())
+            ).findFirst().get();
+
+            // to に対応する node の取得
+            RouteNode to = nodes.stream()
+                    .filter(node -> node.getOriginal().equalsId(original.getTo())
+            ).findFirst().get();
+
+            RouteEdge edge = new RouteEdge(original, from, to);
+
+            // Node へのリンクを追加
+            from.getOutEdges().add(edge);
+            to.getInEdges().add(edge);
+
+            return edge;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -168,7 +174,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
      * @param goal 目的地
      */
     protected void search(List<RouteNode> nodes, RouteNode goal) {
-        
+
         nodes.forEach(node -> node.setCost(Double.MAX_VALUE));
 
         goal.setCost(0);

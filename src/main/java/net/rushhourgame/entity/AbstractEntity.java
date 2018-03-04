@@ -75,6 +75,10 @@ public abstract class AbstractEntity implements Serializable {
     public void setUpdated(Date updated) {
         this.updated = new Date(updated.getTime());
     }
+    
+    public boolean equalsId(RelayPointForHuman other) {
+        return this.getClass().equals(other.getClass()) && this.id == other.getId();
+    }
 
     protected double calcDist(double x, double y, Pointable other) {
         return Math.sqrt((other.getX() - x) * (other.getX() - x)

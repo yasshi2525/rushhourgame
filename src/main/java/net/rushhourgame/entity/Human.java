@@ -28,6 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.controller.route.RouteNode;
 
 /**
  * 人
@@ -59,6 +60,8 @@ public class Human extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Company dest;
+    
+    protected transient RouteNode current;
     
     public void step(long interval) {
         //
@@ -152,6 +155,14 @@ public class Human extends AbstractEntity implements Pointable {
 
     public void setDest(Company dest) {
         this.dest = dest;
+    }
+
+    public RouteNode getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(RouteNode current) {
+        this.current = current;
     }
 
     @Override
