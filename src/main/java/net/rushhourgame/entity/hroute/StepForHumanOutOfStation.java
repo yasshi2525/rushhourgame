@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RelayPointForHuman;
@@ -92,5 +93,15 @@ public class StepForHumanOutOfStation extends AbstractEntity implements StepForH
     @Override
     public String getUid() {
         return "outof" + getId();
+    }
+    
+    @Override
+    public long step(Human h, long interval, double speed) {
+        return interval;
+    }
+
+    @Override
+    public boolean isFinished(Human h) {
+        return false;
     }
 }

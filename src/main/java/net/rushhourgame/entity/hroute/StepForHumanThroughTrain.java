@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Pointable;
@@ -102,15 +103,25 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
     public void setCost(double cost) {
         this.cost = cost;
     }
-    
+
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
         return isAreaIn(_from, center, scale)
-                ||  isAreaIn(_to, center, scale);
+                || isAreaIn(_to, center, scale);
     }
-    
+
     @Override
     public String getUid() {
         return "train" + getId();
+    }
+
+    @Override
+    public long step(Human h, long interval, double speed) {
+        return interval;
+    }
+
+    @Override
+    public boolean isFinished(Human h) {
+        return false;
     }
 }

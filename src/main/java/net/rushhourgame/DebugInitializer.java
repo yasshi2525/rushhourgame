@@ -32,6 +32,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -39,6 +40,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.OAuthController;
@@ -56,9 +58,10 @@ import net.rushhourgame.json.SimpleUserData;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@ApplicationScoped
+@Dependent
 public class DebugInitializer {
-    
+    private static final Logger LOG = Logger.getLogger(GameMaster.class.getName());
+
     @PersistenceContext
     protected EntityManager em;
 
@@ -76,14 +79,26 @@ public class DebugInitializer {
     protected StationController stCon;
     @Inject
     protected LineController lCon;
+    @Inject
+    protected AssistanceController aCon;
+
     @Resource
     ManagedExecutorService executorService;
 
     @Transactional
     public void init() throws RushHourException {
-        for (int i = 0; i < 20; i++) {
-            rCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
-            cCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
-        }
+        LOG.log(Level.INFO, "{0}#init start initialization", new Object[]{this.getClass().getSimpleName()});
+        rCon.create(new SimplePoint(-200, -100));
+        cCon.create(new SimplePoint(200, 100));
+
+        Player owner = pCon.upsertPlayer(
+                "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+
+        AssistanceController.Result startRes = aCon.startWithStation(owner, new SimplePoint(-200, 0), Locale.getDefault());
+        AssistanceController.Result goalRes = aCon.extend(owner, startRes.node, new SimplePoint(200, 0));
+
+        stCon.create(owner, goalRes.node, "hoge");
+        
+        LOG.log(Level.INFO, "{0}#init end initialization", new Object[]{this.getClass().getSimpleName()});
     }
 }

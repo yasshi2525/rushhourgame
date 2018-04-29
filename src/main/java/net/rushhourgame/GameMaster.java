@@ -88,12 +88,14 @@ public class GameMaster implements Serializable, Runnable {
     protected ManagedExecutorService executorService;
 
     protected long interval;
+    protected double humanSpeed;
 
     @Transactional
     public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[]{this.getClass().getSimpleName(), event});
         debug.init();
         interval = Long.parseLong(prop.get(GAME_INTERVAL));
+        humanSpeed = Double.parseDouble(prop.get(GAME_DEF_HUMAN_SPEED));
         executorService.submit(searcher);
         TimerConfig config = new TimerConfig("RushHour", true);
         timerService.scheduleWithFixedDelay(this, interval, interval, TimeUnit.MILLISECONDS);
@@ -113,7 +115,11 @@ public class GameMaster implements Serializable, Runnable {
             if (h.getCurrent() == null) {
                 h.setCurrent(searcher.getStart(h.getSrc(), h.getDest()));  // HumanControllerから RouteSearcherを呼ぶと循環してしまう
             }
-            hCon.step(h, interval);
+            hCon.step(h, interval, humanSpeed);
         });
+    }
+    
+    public void research() {
+        executorService.submit(searcher);
     }
 }

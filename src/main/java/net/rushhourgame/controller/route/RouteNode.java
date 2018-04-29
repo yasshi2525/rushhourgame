@@ -70,6 +70,14 @@ public class RouteNode implements Comparable<RouteNode> {
     public List<RouteEdge> getOutEdges() {
         return outEdges;
     }
+    
+    public boolean isEnd() {
+        return via == null;
+    }
+    
+    public RouteEdge getViaEdge() {
+        return outEdges.stream().filter(e -> e.to.equals(via)).findFirst().get();
+    }
 
     @Override
     public int compareTo(RouteNode o) {

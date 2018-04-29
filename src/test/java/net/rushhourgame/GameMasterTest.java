@@ -112,7 +112,7 @@ public class GameMasterTest {
         inst.run();
         
         verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong());
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
     }

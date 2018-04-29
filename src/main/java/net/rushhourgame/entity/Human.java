@@ -28,10 +28,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 
 /**
  * 人
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
@@ -39,7 +41,8 @@ import net.rushhourgame.controller.route.RouteNode;
     @NamedQuery(
             name = "Human.findAll",
             query = "SELECT obj FROM Human obj"
-    ),
+    )
+    ,
     @NamedQuery(
             name = "Human.findIn",
             query = "SELECT obj FROM Human obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
@@ -60,11 +63,27 @@ public class Human extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Company dest;
+
+    protected transient RouteEdge current;
     
-    protected transient RouteNode current;
-    
-    public void step(long interval) {
-        //
+    protected boolean isFinished;
+
+    public void step(long interval, double speed) {
+        if (isFinished || current == null) {
+            return;
+        }
+        
+        while (interval > 0) {
+            interval -= current.getOriginal().step(this, interval, speed);
+            if (current.getOriginal().isFinished(this)) {
+                // 目的地に到着した
+                if (current.getTo().isEnd()) {
+                    isFinished = true;
+                    return;
+                }
+                current = current.getTo().getViaEdge();
+            }
+        }
     }
 
     public void idle() {
@@ -76,7 +95,7 @@ public class Human extends AbstractEntity implements Pointable {
     }
 
     public boolean finishes() {
-        throw new UnsupportedOperationException();
+        return isFinished;
     }
 
     public void enterStation() {
@@ -136,9 +155,9 @@ public class Human extends AbstractEntity implements Pointable {
     public void setLifespan(long lifespan) {
         this.lifespan = lifespan;
     }
-    
+
     public boolean shouldDie() {
-        return lifespan < 0;
+        return lifespan < 0 || finishes();
     }
 
     public Residence getSrc() {
@@ -157,16 +176,23 @@ public class Human extends AbstractEntity implements Pointable {
         this.dest = dest;
     }
 
-    public RouteNode getCurrent() {
+    public RouteEdge getCurrent() {
         return current;
     }
 
     public void setCurrent(RouteNode current) {
-        this.current = current;
+        this.current = current.getViaEdge();
     }
 
     @Override
     public double distTo(Pointable p) {
         return calcDist(x, y, p);
+    }
+    
+    public void moveTo(Pointable to, double dist) {
+        double theta = Math.atan2(to.getY() - y, to.getX() - x);
+        
+        x += dist * Math.cos(theta);
+        y += dist * Math.sin(theta);
     }
 }

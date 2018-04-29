@@ -41,4 +41,8 @@ public interface StepForHuman {
     public double getCost();
     
     public boolean isAreaIn(Pointable center, double scale);
+    
+    public long step(Human h, long interval, double speed);
+    
+    public boolean isFinished(Human h);
 }

@@ -32,6 +32,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.AbstractEntity;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.RelayPointForHuman;
@@ -92,5 +93,15 @@ public class StepForHumanDirectly extends AbstractEntity implements StepForHuman
     @Override
     public String getUid() {
         return "directly" + getId();
+    }
+
+    @Override
+    public long step(Human h, long interval, double speed) {
+        return walkTo(h, interval, speed, _to);
+    }
+
+    @Override
+    public boolean isFinished(Human h) {
+        return h.distTo(_to) == 0;
     }
 }

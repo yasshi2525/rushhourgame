@@ -105,4 +105,15 @@ public abstract class AbstractEntity implements Serializable {
                 && p.getY() > center.getY() - height / 2.0
                 && p.getY() < center.getY() + height / 2.0;
     }
+    
+    protected long walkTo(Human h, long interval, double speed, Pointable dst) {
+        if (interval * speed < h.distTo(dst)) {
+            h.moveTo(dst, interval * speed);
+            return interval;
+        } else {
+            h.setX(dst.getX());
+            h.setY(dst.getY());
+            return (long) (h.distTo(dst) / speed);
+        }
+    }
 }

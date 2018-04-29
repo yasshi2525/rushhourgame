@@ -58,7 +58,7 @@ public class HumanControllerTest extends AbstractControllerTest {
         
         Human h = inst.create(origin, src, dst);
         
-        inst.step(h, 1000000);
+        inst.step(h, 1000000, 0.00001);
     }
     
 }

@@ -32,6 +32,7 @@ import javax.transaction.UserTransaction;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
+import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
@@ -72,6 +73,7 @@ public class DebugInitializerTest {
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
+    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     
     protected static ValidatorFactory validatorFactory;
@@ -95,6 +97,7 @@ public class DebugInitializerTest {
         //inst.searcher = SEARCHER;
         inst.em = EM;
         
+        inst.aCon = ACON;
         inst.rCon = RCON;
         inst.cCon = CCON;
         inst.oCon = OCON;
