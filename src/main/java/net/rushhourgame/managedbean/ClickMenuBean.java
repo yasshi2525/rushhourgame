@@ -51,6 +51,7 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -112,7 +113,7 @@ public class ClickMenuBean implements Serializable {
 
     @Transactional
     public void createRail() throws RushHourException {
-        getRequestContext().closeDialog(
+        getDialog().closeDynamic(
                 new OperationBean(
                         OperationBean.Type.RAIL_CREATE,
                         aCon.startWithStation(player, click, session.getLocale())));
@@ -123,7 +124,7 @@ public class ClickMenuBean implements Serializable {
     }
 
     public void extendRail() {
-        getRequestContext().closeDialog(
+        getDialog().closeDynamic(
                 new OperationBean(
                         OperationBean.Type.RAIL_EXTEND,
                         rCon.findNodeIn(player, click, scale - 3).stream()
@@ -152,7 +153,7 @@ public class ClickMenuBean implements Serializable {
     }
     
     public void removeRail() {
-        getRequestContext().closeDialog(
+        getDialog().closeDynamic(
                 new OperationBean(OperationBean.Type.RAIL_REMOVE));
     }
 
@@ -160,8 +161,8 @@ public class ClickMenuBean implements Serializable {
         return FacesContext.getCurrentInstance();
     }
 
-    protected RequestContext getRequestContext() {
-        return RequestContext.getCurrentInstance();
+    protected PrimeFaces.Dialog getDialog() {
+        return PrimeFaces.current().dialog();
     }
 
     protected Map<String, String> getRequestMap() {

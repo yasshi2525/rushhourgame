@@ -57,6 +57,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -88,7 +89,10 @@ public class AbstractBeanTest {
     protected ExternalContext externalContext;
     
     @Mock
-    protected RequestContext requestContext;
+    protected PrimeFaces primeface;
+    
+    @Mock
+    protected PrimeFaces.Dialog dialog;
     
     @Mock
     protected RushHourSession session;

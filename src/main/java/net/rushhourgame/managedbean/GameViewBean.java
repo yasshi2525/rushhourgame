@@ -68,6 +68,7 @@ import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.Train;
 import net.rushhourgame.exception.RushHourException;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
@@ -152,20 +153,20 @@ public class GameViewBean implements Serializable {
             params.put("clickedEdge2", Collections.singletonList(Long.toString(clickedRailEdge.get(1).getId())));
         }
 
-        RequestContext context = getRequestContext();
+        PrimeFaces.Dialog context = getPrimeface().dialog();
         Map<String, Object> options = new HashMap<>();
         options.put("width", 250);
         options.put("modal", true);
 
-        context.openDialog("clickmenu", options, params);
+        context.openDynamic("clickmenu", options, params);
     }
 
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
 
-    protected RequestContext getRequestContext() {
-        return RequestContext.getCurrentInstance();
+    protected PrimeFaces getPrimeface() {
+        return PrimeFaces.current();
     }
 
     public List<PlayerInfo> getPlayers() {
@@ -306,7 +307,7 @@ public class GameViewBean implements Serializable {
                 tailNode = op.getTailNode();
                 showCreatedRailAnnouncement();
                 showExtendingRailGuide();
-                getRequestContext().execute("startExtendingMode("
+                getPrimeface().executeScript("startExtendingMode("
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
                 underOperation = true;
                 break;
@@ -314,13 +315,13 @@ public class GameViewBean implements Serializable {
             case RAIL_EXTEND:
                 tailNode = op.getTailNode();
                 showExtendingRailGuide();
-                getRequestContext().execute("startExtendingMode("
+                getPrimeface().executeScript("startExtendingMode("
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
                 underOperation = true;
                 break;
 
             case RAIL_REMOVE:
-                getRequestContext().execute("PF('confirmDialog').show();");
+                getPrimeface().executeScript("PF('confirmDialog').show();");
                 break;
         }
     }
@@ -341,7 +342,7 @@ public class GameViewBean implements Serializable {
                 railCon.connect(player, tailNode, veryneighbors.get(0));
                 tailNode = veryneighbors.get(0);
                 showConnectedRailAnnouncement();
-                getRequestContext().execute("nextExtendingMode("
+                getPrimeface().executeScript("nextExtendingMode("
                         + tailNode.getX() + ", " + tailNode.getY() + ")");
             }
         } else {
@@ -353,7 +354,7 @@ public class GameViewBean implements Serializable {
                 tCon.deploy(tCon.create(player), player, result.line.findTop());
             }
             showExtendedRailAnnouncement();
-            getRequestContext().execute("nextExtendingMode("
+            getPrimeface().executeScript("nextExtendingMode("
                     + tailNode.getX() + ", " + tailNode.getY() + ")");
         }
 
@@ -453,7 +454,7 @@ public class GameViewBean implements Serializable {
     public void removeRail() throws RushHourException {
         clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
         railCon.remove(player, clickedRailEdge);
-        getRequestContext().execute("PF('confirmDialog').hide();");
+        getPrimeface().executeScript("PF('confirmDialog').hide();");
         showRemovedRailAnnouncement();
     }
 

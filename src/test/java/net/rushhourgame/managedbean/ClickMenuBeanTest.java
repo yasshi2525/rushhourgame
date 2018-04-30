@@ -80,7 +80,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(dialog).when(inst).getDialog();
 
         map = new HashMap<>();
 
@@ -329,7 +329,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     }
     
     @Test
-    public void testRequestContext() {
-        assertNull(new ClickMenuBean().getRequestContext());
+    public void testGetDialog() {
+        assertNotNull(new ClickMenuBean().getDialog());
     }
 }

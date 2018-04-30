@@ -23,11 +23,15 @@
  */
 package net.rushhourgame.entity;
 
+import java.io.Serializable;
+
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class SimplePoint implements Pointable {
+public class SimplePoint implements Pointable, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected double x;
     protected double y;

@@ -52,6 +52,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
@@ -133,8 +134,9 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.player = player;
         inst.setClickX(CLICK_X);
         inst.setClickY(CLICK_Y);
-        doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
-
+        doReturn(primeface).when(inst).getPrimeface();
+        doReturn(dialog).when(primeface).dialog();
+        
         inst.openClickMenu();
     }
 
@@ -146,7 +148,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.clickedRailEdge.add(mock(RailEdge.class));
         inst.clickedRailEdge.add(mock(RailEdge.class));
 
-        doReturn(mock(RequestContext.class)).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
+        doReturn(dialog).when(primeface).dialog();
 
         inst.openClickMenu();
     }
@@ -222,8 +225,8 @@ public class GameViewBeanTest extends AbstractBeanTest {
     }
 
     @Test
-    public void testGetRequestContext() {
-        assertNull(new GameViewBean().getRequestContext());
+    public void testGetPrimeface() {
+        assertNotNull(new GameViewBean().getPrimeface());
     }
 
     @Test
@@ -272,7 +275,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     public void testHandleReturnRailCreate() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_CREATE, mock(RailNode.class))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
         assertTrue(inst.isUnderOperation());
     }
@@ -281,7 +284,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     public void testHandleReturnRailExtend() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_EXTEND, mock(RailNode.class))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
         assertTrue(inst.isUnderOperation());
     }
@@ -289,7 +292,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     @Test
     public void testHandleReturnRailRemove() {
         doReturn(new OperationBean(OperationBean.Type.RAIL_REMOVE, mock(RailNode.class))).when(event).getObject();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
     }
 
@@ -320,12 +323,12 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.click = new SimplePoint(9.99999999, 9.99999999);
 
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
 
         inst.extendRail();
 
         verify(inst, times(1)).showConnectedRailAnnouncement();
-        verify(inst, times(1)).getRequestContext();
+        verify(inst, times(1)).getPrimeface();
         verify(inst, times(1)).showExtendingRailGuide();
 
         assertTrue(RAILCON.existsEdge(r1, r2));
@@ -355,12 +358,12 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.click = new SimplePoint(20, 20);
 
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
 
         inst.extendRail();
 
         verify(inst, times(1)).showExtendedRailAnnouncement();
-        verify(inst, times(1)).getRequestContext();
+        verify(inst, times(1)).getPrimeface();
         verify(inst, times(1)).showExtendingRailGuide();
     }
 
@@ -370,7 +373,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.tailNode = ACON.startWithStation(player,
                 new SimplePoint(10, 10), Locale.JAPANESE).node;
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
 
         inst.extendRail();
     }
@@ -387,7 +390,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         TRCON.deploy(t, player, result.line.findTop());
         
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
 
         inst.extendRail();
     }
@@ -476,7 +479,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.clickedRailEdge.add(n1.getInEdges().get(0));
 
         doReturn(facesContext).when(inst).getFacesContext();
-        doReturn(requestContext).when(inst).getRequestContext();
+        doReturn(primeface).when(inst).getPrimeface();
 
         inst.removeRail();
     }

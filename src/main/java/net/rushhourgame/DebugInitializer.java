@@ -58,7 +58,7 @@ import net.rushhourgame.json.SimpleUserData;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
+@ApplicationScoped
 public class DebugInitializer {
     private static final Logger LOG = Logger.getLogger(GameMaster.class.getName());
 
