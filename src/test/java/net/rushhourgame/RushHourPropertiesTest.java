@@ -154,7 +154,7 @@ public class RushHourPropertiesTest {
     public void testInitLoadingUserConfig() throws IOException {
         LOG.log(Level.INFO, "{0}#testInitLoadingUserConfig", new Object[]{this.getClass().getSimpleName()});
         Path configPath = FileSystems.getDefault().getPath(CONFIG_PATH);
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream("user_config_base.properties");
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("net/rushhourgame/conf/user_config_base.properties");
         Files.copy(in, configPath, StandardCopyOption.REPLACE_EXISTING);
         inst.init();
         assertEquals("changedPassword", inst.get(RushHourProperties.ROOT_PASSWORD));

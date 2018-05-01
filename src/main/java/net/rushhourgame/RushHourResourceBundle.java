@@ -147,7 +147,7 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String UNKNOWN_ACTION = "rushhour.message.unknown.action";
 
     protected RushHourResourceBundle() {
-        super("message");
+        super("net.rushhourgame.conf.message");
         LOG.log(Level.INFO, "{0}#constructor", this.getClass().getSimpleName());
     }
 

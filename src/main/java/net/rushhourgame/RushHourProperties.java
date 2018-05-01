@@ -102,8 +102,8 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_HUMAN_SPEED = "rushhour.game.default.human.speed";
     
     //--------------------------------------------------------------------------
-    protected static final String CONSTANTS_PATH = "constants.properties";
-    protected static final String TEMPLATE_CONFIG_PATH = "template_config.properties";
+    protected static final String CONSTANTS_PATH = "net/rushhourgame/conf/constants.properties";
+    protected static final String TEMPLATE_CONFIG_PATH = "net/rushhourgame/conf/template_config.properties";
 
     transient protected WatchService watchService;
     protected Properties constants = new Properties();
