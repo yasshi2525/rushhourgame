@@ -87,18 +87,13 @@ public class GameMaster implements Serializable, Runnable {
     @Resource
     protected ManagedExecutorService executorService;
 
-    protected long interval;
-    protected double humanSpeed;
-
     @Transactional
     public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[]{this.getClass().getSimpleName(), event});
         debug.init();
-        interval = Long.parseLong(prop.get(GAME_INTERVAL));
-        humanSpeed = Double.parseDouble(prop.get(GAME_DEF_HUMAN_SPEED));
         executorService.submit(searcher); // TODO : 経路計算中は人を経路に従って進ませない排他処理
         // RouteSearcherは別スレッドなのでトランザクション外
-        timerService.scheduleWithFixedDelay(this, interval * 5, interval, TimeUnit.MILLISECONDS);
+        timerService.scheduleWithFixedDelay(this, getInterval() * 5, getInterval(), TimeUnit.MILLISECONDS);
         LOG.log(Level.INFO, "{0}#init end initialization", GameMaster.class.getSimpleName());
     }
 
@@ -108,16 +103,16 @@ public class GameMaster implements Serializable, Runnable {
         LOG.log(Level.FINE, "{0}#run", new Object[]{this.getClass().getSimpleName()});
         try {
             rCon.findAll().forEach(r -> {
-                rCon.step(r, interval);
+                rCon.step(r, getInterval());
             });
             tCon.findAll().forEach(t -> {
-                tCon.step(t, interval);
+                tCon.step(t, getInterval());
             });
             hCon.findAll().forEach(h -> {
                 if (h.getCurrent() == null) {
                     h.setCurrent(searcher.getStart(h.getSrc(), h.getDest()));  // HumanControllerから RouteSearcherを呼ぶと循環してしまう
                 }
-                hCon.step(h, interval, humanSpeed);
+                hCon.step(h, getInterval(), getHumanSpeed());
             });
         } catch (Throwable e) {
             LOG.log(Level.SEVERE, "GameMaster#run exception in run()", e);
@@ -127,5 +122,13 @@ public class GameMaster implements Serializable, Runnable {
 
     public void research() {
         executorService.submit(searcher);
+    }
+    
+    protected long getInterval() {
+        return Long.parseLong(prop.get(GAME_INTERVAL));
+    }
+    
+    protected double getHumanSpeed() {
+        return Double.parseDouble(prop.get(GAME_DEF_HUMAN_SPEED));
     }
 }

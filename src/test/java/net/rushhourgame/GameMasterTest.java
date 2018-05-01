@@ -87,7 +87,7 @@ public class GameMasterTest {
     @Test
     public void testInit() throws Exception {
         inst.init(null);
-        assertEquals(1000, inst.interval);
+        assertEquals(1000, inst.getInterval());
     }
     
     @Test
