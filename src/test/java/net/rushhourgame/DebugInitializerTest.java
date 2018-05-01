@@ -45,6 +45,7 @@ import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
+import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
@@ -74,6 +75,7 @@ public class DebugInitializerTest {
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
+    protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     
     protected static ValidatorFactory validatorFactory;
@@ -105,6 +107,7 @@ public class DebugInitializerTest {
         inst.railCon = RAILCON;
         inst.stCon = STCON;
         inst.lCon = LCON;
+        inst.tCon = TRAINCON;
         
         EM.getTransaction().begin();
     }

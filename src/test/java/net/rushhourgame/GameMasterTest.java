@@ -26,6 +26,7 @@ package net.rushhourgame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
@@ -74,6 +75,7 @@ public class GameMasterTest {
         inst = new GameMaster();
         inst.debug = debug;
         inst.executorService = executor;
+        doReturn(mock(Future.class)).when(executor).submit(any(RouteSearcher.class));
         inst.timerService = mock(ManagedScheduledExecutorService.class);
         inst.searcher = mock(RouteSearcher.class);
         inst.prop = RushHourProperties.getInstance();

@@ -348,7 +348,7 @@ public class GameViewBean implements Serializable {
         } else {
             // 延伸
             tailNode = em.merge(tailNode);
-            AssistanceController.Result result = aCon.extend(player, tailNode, click);
+            AssistanceController.Result result = aCon.extendWithStation(player, tailNode, click, session.getLocale());
             tailNode = result.node;
             if (tCon.findBy(result.line).isEmpty()) {
                 tCon.deploy(tCon.create(player), player, result.line.findTop());

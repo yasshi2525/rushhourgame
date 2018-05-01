@@ -53,6 +53,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createRouteSearcher();
+        inst.init();
     }
     
     @Test
@@ -161,20 +162,35 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(goal, begin.getVia());
     }
     
+    /**
+     * detourは迂回という意味. 駅まで遠回りすることで最短時間でつく
+     * @throws RushHourException 
+     */
     @Test
     public void testSearchDetour() throws RushHourException {
-        RCON.create(new SimplePoint(-10, -10));
-        CCON.create(new SimplePoint(10, 1000));
+        Residence r = RCON.create(new SimplePoint(-10, -10));
+        Company c = CCON.create(new SimplePoint(10, 1000));
         Player p = createPlayer();
         AssistanceController.Result result = ACON.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
-        ACON.extend(p, result.node, new SimplePoint(0, 990));
+        AssistanceController.Result extend = ACON.extendWithStation(p, result.node, new SimplePoint(0, 990), Locale.JAPANESE);
         
         List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
         List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
-        inst.buildRouteEdges(SCON.findAll(), nodes);
+        List<RouteEdge> edges = inst.buildRouteEdges(SCON.findAll(), nodes);
+        
+        for (RouteEdge edge : edges) {
+            System.out.println(edge);
+        }
         
         RouteNode goal = nodes.get(1);
         inst.search(nodes, goal);
+        
+        assertEquals(nodes.get(0).getOriginal(), r);
+        assertEquals(nodes.get(0).getVia().getOriginal(), result.station.getTicketGate());
+        assertEquals(nodes.get(0).getVia().getVia().getOriginal(), result.station.getPlatform());
+        assertEquals(nodes.get(0).getVia().getVia().getVia().getOriginal(), extend.station.getPlatform());
+        assertEquals(nodes.get(0).getVia().getVia().getVia().getVia().getOriginal(), extend.station.getTicketGate());
+        assertEquals(nodes.get(0).getVia().getVia().getVia().getVia().getVia().getOriginal(), c);
     }
     
     @Test(expected = NullPointerException.class)

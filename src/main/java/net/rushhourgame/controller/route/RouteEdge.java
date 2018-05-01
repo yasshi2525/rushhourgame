@@ -23,7 +23,11 @@
  */
 package net.rushhourgame.controller.route;
 
+import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.TicketGate;
 
 /**
  *
@@ -55,4 +59,13 @@ public class RouteEdge {
     public RouteNode getTo() {
         return to;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("RouteEdge_");
+        sb.append(from);
+        sb.append("_->_");
+        sb.append(to);
+        return sb.toString();
+}
 }

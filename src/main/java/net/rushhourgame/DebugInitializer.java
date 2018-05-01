@@ -48,9 +48,12 @@ import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Player;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Train;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 
@@ -58,7 +61,7 @@ import net.rushhourgame.json.SimpleUserData;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@ApplicationScoped
+@Dependent
 public class DebugInitializer {
     private static final Logger LOG = Logger.getLogger(GameMaster.class.getName());
 
@@ -81,6 +84,8 @@ public class DebugInitializer {
     protected LineController lCon;
     @Inject
     protected AssistanceController aCon;
+    @Inject
+    protected TrainController tCon;
 
     @Resource
     ManagedExecutorService executorService;
@@ -88,16 +93,18 @@ public class DebugInitializer {
     @Transactional
     public void init() throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization", new Object[]{this.getClass().getSimpleName()});
-        rCon.create(new SimplePoint(-200, -100));
-        cCon.create(new SimplePoint(200, 100));
+        rCon.create(new SimplePoint(-50, -25));
+        cCon.create(new SimplePoint(50, 25));
 
         Player owner = pCon.upsertPlayer(
                 "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 
-        AssistanceController.Result startRes = aCon.startWithStation(owner, new SimplePoint(-200, 0), Locale.getDefault());
-        AssistanceController.Result goalRes = aCon.extend(owner, startRes.node, new SimplePoint(200, 0));
-
-        stCon.create(owner, goalRes.node, "hoge");
+        AssistanceController.Result startRes = aCon.startWithStation(owner, new SimplePoint(-50, 0), Locale.getDefault());
+        AssistanceController.Result goalRes = aCon.extendWithStation(owner, startRes.node, new SimplePoint(50, 0), Locale.getDefault());
+        
+        Train train = tCon.create(owner);
+        tCon.deploy(train, owner, startRes.line.findTop());
+        em.flush();
         
         LOG.log(Level.INFO, "{0}#init end initialization", new Object[]{this.getClass().getSimpleName()});
     }

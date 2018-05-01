@@ -64,18 +64,30 @@ public class AssistanceController extends AbstractController{
         Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
         Line line = lCon.create(player, getDefaultLineName(player, locale));
         lCon.start(line, player, station);
-        return new Result(startNode, line);
+        return new Result(startNode, station, line);
     } 
     
     public Result extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
+        return _extend(player, tailNode, p, null, false);
+    }
+    
+    public Result extendWithStation(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
+        return _extend(player, tailNode, p, locale, true);
+    }
+    
+    protected Result _extend(Player player, RailNode tailNode, Pointable p, Locale locale, boolean isWithStation) throws RushHourException {
         RailNode extended = rCon.extend(player, tailNode, p);
+        Station station = null;
+        if (isWithStation) {
+            station = stCon.create(player, extended, getDefaultStationName(player, locale));
+        }
         LineStep inserted = lCon.insert(tailNode, extended, player);
         if (inserted.getNext() == null) {
             if (lCon.canEnd(inserted, player)) {
                 lCon.end(inserted, player);
             }
         }
-        return new Result(extended, inserted.getParent());
+        return new Result(extended, station, inserted.getParent());
     }
     
     protected String getDefaultStationName(Player player, Locale locale) {
@@ -98,10 +110,12 @@ public class AssistanceController extends AbstractController{
     
     public static class Result {
         public RailNode node;
+        public Station station;
         public Line line;
 
-        public Result(RailNode node, Line line) {
+        public Result(RailNode node, Station station, Line line) {
             this.node = node;
+            this.station = station;
             this.line = line;
         }
     }

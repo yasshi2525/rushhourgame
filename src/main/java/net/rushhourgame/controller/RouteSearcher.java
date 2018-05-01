@@ -23,7 +23,6 @@
  */
 package net.rushhourgame.controller;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.enterprise.context.ApplicationScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.controller.route.RouteEdge;
@@ -48,7 +48,7 @@ import net.rushhourgame.entity.StepForHuman;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@ApplicationScoped
+@Dependent
 public class RouteSearcher extends AbstractController implements Callable<Boolean> {
 
     private static final long serialVersionUID = 1L;
@@ -66,7 +66,12 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Inject
     protected StationController stCon;
 
-    transient protected final Map<Long, List<RouteNode>> routes = new HashMap<>();
+    protected Map<Long, List<RouteNode>> routes;
+
+    @PostConstruct
+    public void init() {
+        routes = new HashMap<>();
+    }
 
     /**
      * 経路情報をすべて破棄する.
@@ -89,7 +94,14 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Override
     public Boolean call() {
         LOG.log(Level.INFO, "{0}#call start.", this.getClass().getSimpleName());
-
+        // DebugInitializerのトランザクションがコミットされるまで待機する
+        // TODO : 排他処理
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RouteSearcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         // 今まで保持していた情報をすべて破棄
         flush();
 
@@ -106,6 +118,10 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             // edgeの用意
             List<RouteEdge> edges = buildRouteEdges(originalEdges, nodes);
 
+            edges.forEach(edge -> {
+                LOG.log(Level.FINE, edge.toString());
+            });
+
             // goal の取得
             RouteNode goal = nodes.stream()
                     .filter(node -> node.getOriginal().equalsId(company))
@@ -118,6 +134,11 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         });
 
         LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
+        for (Long id : routes.keySet()) {
+            routes.get(id).forEach((node) -> {
+                LOG.log(Level.FINE, node.toString());
+            });
+        }
         return true;
     }
 
@@ -150,12 +171,12 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             // from に対応する node の取得
             RouteNode from = nodes.stream()
                     .filter(node -> node.getOriginal().equalsId(original.getFrom())
-            ).findFirst().get();
+                    ).findFirst().get();
 
             // to に対応する node の取得
             RouteNode to = nodes.stream()
                     .filter(node -> node.getOriginal().equalsId(original.getTo())
-            ).findFirst().get();
+                    ).findFirst().get();
 
             RouteEdge edge = new RouteEdge(original, from, to);
 
