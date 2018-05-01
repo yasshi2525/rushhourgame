@@ -23,11 +23,17 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -35,16 +41,27 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.controller.route.PermanentRouteEdge;
+import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.controller.route.TemporaryHumanPoint;
+import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
+import net.rushhourgame.controller.route.TemporaryHumanRouteNode;
+import net.rushhourgame.controller.route.TemporaryHumanStep;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.StepForHuman;
+import net.rushhourgame.entity.TicketGate;
 
 /**
- * 経路計算機. 経路探索処理中は経路にしたがった移動動作をしないこと (HashMapを使っているため)
+ * 経路計算機. 経路探索処理中は経路にしたがった移動動作をしないこと (HashMapを使っているため). これを使う ExecutorService
+ * のスレッドプールサイズは1にすること (同時に実行されることを想定していないため)
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
@@ -68,20 +85,48 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
 
     protected Map<Long, List<RouteNode>> routes;
 
+    public Lock lock;
+
     @PostConstruct
     public void init() {
         routes = new HashMap<>();
+        lock = new ReentrantReadWriteLock().writeLock();
+    }
+
+    /**
+     * 経路情報を使用している人を抽出する. HumanController経由だと情報が古い
+     *
+     * @return 人リスト (キーは会社ID)
+     */
+    protected Map<Long, Set<Human>> collectHumans() {
+        Map<Long, Set<Human>> result = new HashMap<>();
+
+        routes.forEach((id, nodes) -> {
+            result.put(id, new HashSet<>());
+
+            nodes.stream().filter(node -> !node.isEnd())
+                    .forEach(node -> result.get(id).addAll(node.getViaEdge().getRefferedHuman()));
+        });
+        return result;
     }
 
     /**
      * 経路情報をすべて破棄する.
+     *
+     * @param humans
      */
-    public void flush() {
+    protected void flush(Map<Long, Set<Human>> humans) {
+        humans.values().forEach(hs -> hs.forEach(h -> h.flushCurrent()));
         routes.clear();
+
+    }
+    
+    public boolean isAvailable() {
+        return !routes.isEmpty();
     }
 
     public boolean isReachable(@NotNull Residence r, @NotNull Company c) {
-        return routes.get(c.getId()).stream()
+        return routes.containsKey(c.getId()) && routes.get(c.getId()).stream()
                 .anyMatch(node -> node.getOriginal().equalsId(r));
     }
 
@@ -92,100 +137,59 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     }
 
     @Override
+    @Transactional
     public Boolean call() {
         LOG.log(Level.INFO, "{0}#call start.", this.getClass().getSimpleName());
-        // DebugInitializerのトランザクションがコミットされるまで待機する
-        // TODO : 排他処理
+        lock.lock();
         try {
-            Thread.sleep(1000L);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RouteSearcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        // 今まで保持していた情報をすべて破棄
-        flush();
+            // 人情報を退避
+            Map<Long, Set<Human>> humans = collectHumans();
 
-        // すべての会社への行き方を求める
-        // 探索すると、全開始点からgoalまでの行き方が分かる
-        // したがって、すべての住宅からすべての会社へ行く道を検索する必要はない。
-        List<StepForHuman> originalEdges = sCon.findAll();
-        List<Company> dests = cCon.findAll();
-        List<RelayPointForHuman> originalNodes = findRelayPointAll();
+            // 今まで保持していた情報をすべて破棄
+            flush(humans);
 
-        dests.forEach((company) -> {
-            // nodeの用意
-            List<RouteNode> nodes = buildRouteNodes(originalNodes);
-            // edgeの用意
-            List<RouteEdge> edges = buildRouteEdges(originalEdges, nodes);
+            // すべての会社への行き方を求める
+            // すべての住宅からすべての会社へ行く道を検索する必要はない。
+            // なぜなら探索すると、全開始点からgoalまでの行き方が分かるから
+            cCon.findAll().forEach(company -> {
+                PermanentObjPack pPack = this.new PermanentObjPack();
+                TemporaryObjPack tPack = this.new TemporaryObjPack(pPack, humans.get(company.getId()));
 
-            edges.forEach(edge -> {
-                LOG.log(Level.FINE, edge.toString());
+                // 移動中の人座標を経路に追加
+                List<RouteNode> nodes = constructRouteNodes(pPack, tPack);
+                List<RouteEdge> edges = constructRouteEdges(pPack, tPack);
+
+                edges.forEach(edge -> {
+                    LOG.log(Level.FINE, edge.toString());
+                });
+
+                search(nodes, pPack.companyNodes.get(company));
+
+                // 経路探索結果を登録
+                routes.put(company.getId(), nodes);
+
+                // 移動中の人に移動経路をセット
+                tPack.humanNodes.forEach(node -> node.registerCurrentTaskToHuman());
             });
 
-            // goal の取得
-            RouteNode goal = nodes.stream()
-                    .filter(node -> node.getOriginal().equalsId(company))
-                    .findFirst().get();
-
-            search(nodes, goal);
-
-            // 経路探索結果を登録
-            routes.put(company.getId(), nodes);
-        });
-
-        LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
-        for (Long id : routes.keySet()) {
-            routes.get(id).forEach((node) -> {
-                LOG.log(Level.FINE, node.toString());
-            });
+            LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
+            for (Long id : routes.keySet()) {
+                routes.get(id).forEach((node) -> {
+                    LOG.log(Level.INFO, node.toString());
+                });
+            }
+        } finally {
+            lock.unlock();
         }
         return true;
     }
 
-    protected List<RelayPointForHuman> findRelayPointAll() {
-        return Stream.concat(
-                rCon.findAll().stream(),
-                Stream.concat(
-                        cCon.findAll().stream(),
-                        Stream.concat(
-                                stCon.findPlatformAll().stream(),
-                                stCon.findTicketGate().stream()
-                        )
-                )
-        ).collect(Collectors.toList());
+    protected List<RouteNode> constructRouteNodes(PermanentObjPack pPack, TemporaryObjPack tPack) {
+        return Stream.concat(pPack.allNodes.stream(), tPack.humanNodes.stream()).collect(Collectors.toList());
     }
 
-    protected List<RouteNode> buildRouteNodes(List<RelayPointForHuman> originalNodes) {
-        return originalNodes.stream().map(original -> new RouteNode(original)).collect(Collectors.toList());
-    }
-
-    /**
-     * StepForHuman から RouteEdge を作成する
-     *
-     * @param originalEdges StepForHuman
-     * @param nodes RouteEdge
-     * @return List&gt;RouteEdge&lt;
-     */
-    protected List<RouteEdge> buildRouteEdges(List<StepForHuman> originalEdges, List<RouteNode> nodes) {
-        return originalEdges.stream().map(original -> {
-            // from に対応する node の取得
-            RouteNode from = nodes.stream()
-                    .filter(node -> node.getOriginal().equalsId(original.getFrom())
-                    ).findFirst().get();
-
-            // to に対応する node の取得
-            RouteNode to = nodes.stream()
-                    .filter(node -> node.getOriginal().equalsId(original.getTo())
-                    ).findFirst().get();
-
-            RouteEdge edge = new RouteEdge(original, from, to);
-
-            // Node へのリンクを追加
-            from.getOutEdges().add(edge);
-            to.getInEdges().add(edge);
-
-            return edge;
-        }).collect(Collectors.toList());
+    protected List<RouteEdge> constructRouteEdges(PermanentObjPack pPack, TemporaryObjPack tPack) {
+        return Stream.concat(pPack.allEdges.stream(), tPack.humanEdges.stream()).collect(Collectors.toList());
     }
 
     /**
@@ -215,6 +219,121 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                     queue.offer(y);
                 }
             });
+        }
+    }
+
+    protected final class PermanentObjPack {
+
+        protected List<Residence> residences;
+        protected List<Company> companies;
+        protected List<TicketGate> ticketGates;
+        protected List<Platform> platforms;
+
+        protected List<StepForHuman> steps;
+
+        protected Map<Residence, RouteNode> residenceNodes = new HashMap<>();
+        protected Map<Company, RouteNode> companyNodes = new HashMap<>();
+        protected Map<TicketGate, RouteNode> ticketGateNodes = new HashMap<>();
+        protected Map<Platform, RouteNode> platformNodes = new HashMap<>();
+        protected List<RouteNode> allNodes;
+
+        protected List<RouteEdge> allEdges;
+
+        public PermanentObjPack() {
+            fetchObj();
+            buildRouteNode();
+            buildRouteEdge();
+        }
+
+        protected void fetchObj() {
+            residences = rCon.findAll();
+            companies = cCon.findAll();
+            ticketGates = stCon.findTicketGateAll();
+            platforms = stCon.findPlatformAll();
+            steps = sCon.findAll();
+        }
+
+        protected void buildRouteNode() {
+            residences.stream().forEach(o -> residenceNodes.put(o, new PermanentRouteNode(o)));
+            companies.stream().forEach(o -> companyNodes.put(o, new PermanentRouteNode(o)));
+            ticketGates.stream().forEach(o -> ticketGateNodes.put(o, new PermanentRouteNode(o)));
+            platforms.stream().forEach(o -> platformNodes.put(o, new PermanentRouteNode(o)));
+
+            allNodes = new ArrayList<>();
+            allNodes.addAll(residenceNodes.values());
+            allNodes.addAll(companyNodes.values());
+            allNodes.addAll(ticketGateNodes.values());
+            allNodes.addAll(platformNodes.values());
+        }
+
+        protected void buildRouteEdge() {
+            allEdges = steps.stream().map(original -> {
+                // from に対応する node の取得
+                RouteNode from = allNodes.stream()
+                        .filter(node -> node.getOriginal().equalsId(original.getFrom())
+                        ).findFirst().get();
+
+                // to に対応する node の取得
+                RouteNode to = allNodes.stream()
+                        .filter(node -> node.getOriginal().equalsId(original.getTo())
+                        ).findFirst().get();
+
+                RouteEdge edge = new PermanentRouteEdge(original, from, to);
+
+                // Node へのリンクを追加
+                from.getOutEdges().add(edge);
+                to.getInEdges().add(edge);
+
+                return edge;
+            }).collect(Collectors.toList());
+        }
+    }
+
+    protected final class TemporaryObjPack {
+
+        protected List<TemporaryHumanRouteNode> humanNodes;
+        protected List<TemporaryHumanRouteEdge> humanEdges;
+
+        public TemporaryObjPack(PermanentObjPack pPack, Set<Human> humans) {
+            buildHumanNodes(humans);
+            buildHumanEdges(pPack);
+        }
+
+        protected void buildHumanNodes(Set<Human> humans) {
+            humanNodes = humans != null
+                    ? humans.stream().map(h -> new TemporaryHumanRouteNode(new TemporaryHumanPoint(h))).collect(Collectors.toList())
+                    : Collections.emptyList();
+        }
+
+        protected void buildHumanEdges(PermanentObjPack pPack) {
+            humanEdges = new ArrayList<>();
+
+            humanNodes.forEach(humanN -> {
+                switch (humanN.getHuman().getStandingOn()) {
+                    case GROUND:
+                        // 人(改札外) -> 会社
+                        // 人(改札外) -> 改札
+                        pPack.companyNodes.values().forEach(companyN -> addHumanEdges(humanN, companyN));
+                        pPack.ticketGateNodes.values().forEach(ticketGateN -> addHumanEdges(humanN, ticketGateN));
+                        break;
+                    case PLATFORM:
+                        // 人(プラットフォーム上) -> そのプラットフォーム
+                        addHumanEdges(humanN, pPack.platformNodes.get(humanN.getHuman().getOnPlatform()));
+                        break;
+                    case TRAIN:
+                        // 人(電車内) -> (何もしない TODO : どうする？)
+                        break;
+                }
+            });
+        }
+
+        protected void addHumanEdges(TemporaryHumanRouteNode humanN, RouteNode to) {
+            TemporaryHumanRouteEdge edge = new TemporaryHumanRouteEdge(humanN, to);
+
+            humanN.getOutEdges().add(edge);
+            to.getInEdges().add(edge);
+
+            humanEdges.add(edge);
         }
     }
 }

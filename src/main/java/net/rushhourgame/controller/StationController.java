@@ -122,7 +122,7 @@ public class StationController extends PointEntityController {
         return em.createNamedQuery("Platform.findAll", Platform.class).getResultList();
     }
 
-    public List<TicketGate> findTicketGate() {
+    public List<TicketGate> findTicketGateAll() {
         return em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
     }
 

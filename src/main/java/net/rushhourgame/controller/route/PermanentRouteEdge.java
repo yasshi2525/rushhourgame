@@ -23,35 +23,24 @@
  */
 package net.rushhourgame.controller.route;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
+public class PermanentRouteEdge extends AbstractRouteEdge implements RouteEdge {
 
-    public RelayPointForHuman getOriginal();
+    public PermanentRouteEdge(StepForHuman original, RouteNode from, RouteNode to) {
+        super(original, from, to);
+    }
 
-    public double getCost();
-
-    public void setCost(double cost);
-    
-    public RouteNode getVia();
-
-    public void setVia(RouteNode via);
-
-    public List<RouteEdge> getInEdges();
-
-    public List<RouteEdge> getOutEdges();
-
-    public boolean isEnd();
-
-    public RouteEdge getViaEdge();
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("pRouteEdge_");
+        sb.append(from);
+        sb.append("_->_");
+        sb.append(to);
+        return sb.toString();
+    }
 }

@@ -95,8 +95,6 @@ public class DebugInitializerTest {
         executor = Executors.newSingleThreadExecutor();
         inst = new DebugInitializer();
         
-        inst.executorService = mock(ManagedExecutorService.class);
-        //inst.searcher = SEARCHER;
         inst.em = EM;
         
         inst.aCon = ACON;

@@ -23,11 +23,21 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import net.rushhourgame.controller.route.PermanentRouteEdge;
+import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
@@ -35,18 +45,27 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.Train;
+import net.rushhourgame.json.SimpleUserData;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class RouteSearcherTest extends AbstractControllerTest {
 
     protected RouteSearcher inst;
     protected static final Pointable TEST_POS = new SimplePoint();
+    protected static final Pointable ORIGIN = new SimplePoint();
+    protected static final Pointable FAR = new SimplePoint(10, 20);
     
     @Before
     @Override
@@ -57,65 +76,76 @@ public class RouteSearcherTest extends AbstractControllerTest {
     }
     
     @Test
-    public void testFindRelayPointAllEmptyWorld() {
-        assertEquals(0, inst.findRelayPointAll().size());
+    public void testCollectHumansEmpty() {
+        assertTrue(inst.collectHumans().isEmpty());
     }
     
     @Test
-    public void testFindRelayPointAllOneCompany() throws RushHourException {
-        CCON.create(TEST_POS);
-        assertEquals(1, inst.findRelayPointAll().size());
-    }
-    
-    @Test
-    public void testFindRelayPointAllRsdCmp() throws RushHourException {
-        RCON.create(TEST_POS);
-        CCON.create(TEST_POS);
-        assertEquals(2, inst.findRelayPointAll().size());
-    }
-    
-    @Test
-    public void testBuildRouteNodesEmptyWorld() {
-        assertEquals(0, inst.buildRouteNodes(inst.findRelayPointAll()).size());
-    }
-    
-    @Test
-    public void testBuildRouteNodesRsdCmp() throws RushHourException {
-        RCON.create(TEST_POS);
-        CCON.create(TEST_POS);
-        assertEquals(2, inst.buildRouteNodes(inst.findRelayPointAll()).size());
-    }
-    
-    @Test
-    public void testBuildRouteEdgesEmptyWorld() {
-        List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
-        assertEquals(0, inst.buildRouteEdges(SCON.findAll(), nodes).size());
-    }
-    
-    @Test
-    public void testBuildRouteEdgesRsdCmp() throws RushHourException {
-        RCON.create(TEST_POS);
-        CCON.create(TEST_POS);
+    public void testCollectHumansOneEntry() {
+        RouteNode node = mock(RouteNode.class);
+        List<RouteNode> nodes = new ArrayList<>();
+        nodes.add(node);
         
-        List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
-        assertEquals(1L, inst.buildRouteEdges(SCON.findAll(), nodes).size());
+        RouteEdge edge = mock(RouteEdge.class);
+        Set<Human> hs = new HashSet<>();
+        Human h = mock(Human.class);
+        hs.add(h);
+        
+        doReturn(edge).when(node).getViaEdge();
+        doReturn(hs).when(edge).getRefferedHuman();
+        
+        inst.routes.put(1L, nodes);
+        
+        Map<Long, Set<Human>> actual = inst.collectHumans();
+        
+        assertTrue(actual.containsKey(1L));
+        assertEquals(1, actual.get(1L).size());
+    }
+    
+    @Test
+    public void testFlush() {
+        Map<Long, Set<Human>> humans = new HashMap<>(); 
+        Set<Human> hs = new HashSet<>();
+        Human human = new Human();
+        hs.add(human);
+        humans.put(1L, hs);
+        
+        RouteNode node = mock(RouteNode.class);
+        RouteEdge edge = mock(RouteEdge.class);
+        doReturn(edge).when(node).getViaEdge();
+        
+        human.setCurrent(node);
+        
+        inst.flush(humans);
+        
+        assertNull(human.getCurrent());
+    }
+    
+    public void testIsReachableEmptyWorld() {
+        assertFalse(inst.isReachable(new Residence(), new Company()));
+    }
+    
+    @Test
+    public void testIsReachableRsdCmp() throws RushHourException {
+        Residence r = RCON.create(new SimplePoint(10, 10));
+        Company c = CCON.create(new SimplePoint(10, 2));
+        assertTrue(inst.call());
+        assertTrue(inst.isReachable(r, c));
     }
     
     @Test
     public void testSearchEmptyWorld() {
-        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
-        inst.search(inst.buildRouteNodes(originalEdges), new RouteNode(new Company()));
+        inst.search(new ArrayList<>(), new PermanentRouteNode(new Company()));
     }
     
     @Test
     public void testSearchOnlyCmp() throws RushHourException {
-        CCON.create(TEST_POS);
+        Company cmp = CCON.create(TEST_POS);
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
         
-        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
-        List<RouteNode> nodes = inst.buildRouteNodes(inst.findRelayPointAll());
+        RouteNode goal = pPack.companyNodes.get(cmp);
         
-        RouteNode goal = nodes.get(0);
-        inst.search(inst.buildRouteNodes(originalEdges), goal);
+        inst.search(pPack.allNodes, goal);
         
         assertTrue(0 == goal.getCost());
         assertNull(goal.getVia());
@@ -127,15 +157,14 @@ public class RouteSearcherTest extends AbstractControllerTest {
      */
     @Test
     public void testSearchUnreach() throws RushHourException {
-        CCON.create(new SimplePoint(10, 10));
-        CCON.create(new SimplePoint(20, 20));
+        Company cmp1 = CCON.create(new SimplePoint(10, 10));
+        Company cmp2 = CCON.create(new SimplePoint(20, 20));
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
         
-        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
-        List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
+        RouteNode begin = pPack.companyNodes.get(cmp1);
+        RouteNode goal = pPack.companyNodes.get(cmp2);
         
-        RouteNode begin = nodes.get(0);
-        RouteNode goal = nodes.get(1);
-        inst.search(nodes, goal);
+        inst.search(pPack.allNodes, goal);
         
         assertTrue(0 == goal.getCost());
         assertTrue(Double.MAX_VALUE == begin.getCost());
@@ -145,16 +174,14 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testSearch() throws RushHourException {
-        RCON.create(new SimplePoint(10, 10));
-        CCON.create(new SimplePoint(10, 20));
+        Residence rsd = RCON.create(new SimplePoint(10, 10));
+        Company cmp = CCON.create(new SimplePoint(10, 20));
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+              
+        RouteNode begin = pPack.residenceNodes.get(rsd);
+        RouteNode goal = pPack.companyNodes.get(cmp);
         
-        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
-        List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
-        inst.buildRouteEdges(SCON.findAll(), nodes);
-        
-        RouteNode begin = nodes.get(0);
-        RouteNode goal = nodes.get(1);
-        inst.search(nodes, goal);
+        inst.search(pPack.allNodes, goal);
         
         assertTrue(0 == goal.getCost());
         assertTrue(10 == begin.getCost());
@@ -174,40 +201,26 @@ public class RouteSearcherTest extends AbstractControllerTest {
         AssistanceController.Result result = ACON.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
         AssistanceController.Result extend = ACON.extendWithStation(p, result.node, new SimplePoint(0, 990), Locale.JAPANESE);
         
-        List<RelayPointForHuman> originalEdges = inst.findRelayPointAll();
-        List<RouteNode> nodes = inst.buildRouteNodes(originalEdges);
-        List<RouteEdge> edges = inst.buildRouteEdges(SCON.findAll(), nodes);
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
         
-        for (RouteEdge edge : edges) {
+        for (RouteEdge edge : pPack.allEdges) {
             System.out.println(edge);
         }
         
-        RouteNode goal = nodes.get(1);
-        inst.search(nodes, goal);
+        RouteNode goal = pPack.companyNodes.get(c);
+        inst.search(pPack.allNodes, goal);
         
-        assertEquals(nodes.get(0).getOriginal(), r);
-        assertEquals(nodes.get(0).getVia().getOriginal(), result.station.getTicketGate());
-        assertEquals(nodes.get(0).getVia().getVia().getOriginal(), result.station.getPlatform());
-        assertEquals(nodes.get(0).getVia().getVia().getVia().getOriginal(), extend.station.getPlatform());
-        assertEquals(nodes.get(0).getVia().getVia().getVia().getVia().getOriginal(), extend.station.getTicketGate());
-        assertEquals(nodes.get(0).getVia().getVia().getVia().getVia().getVia().getOriginal(), c);
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void testIsReachableEmptyWorld() {
-        assertFalse(inst.isReachable(new Residence(), new Company()));
+        RouteNode start = pPack.residenceNodes.get(r);
+        assertEquals(start.getOriginal(), r);
+        assertEquals(start.getVia().getOriginal(), result.station.getTicketGate());
+        assertEquals(start.getVia().getVia().getOriginal(), result.station.getPlatform());
+        assertEquals(start.getVia().getVia().getVia().getOriginal(), extend.station.getPlatform());
+        assertEquals(start.getVia().getVia().getVia().getVia().getOriginal(), extend.station.getTicketGate());
+        assertEquals(start.getVia().getVia().getVia().getVia().getVia().getOriginal(), c);
     }
     
     @Test
-    public void testIsReachableRsdCmp() throws RushHourException {
-        Residence r = RCON.create(new SimplePoint(10, 10));
-        Company c = CCON.create(new SimplePoint(10, 2));
-        assertTrue(inst.call());
-        assertTrue(inst.isReachable(r, c));
-    }
-    
-    @Test
-    public void testCall() throws RushHourException {
+    public void testCallNoHuman() throws RushHourException {
         Residence r1 = RCON.create(new SimplePoint(10, 10));
         Company c1 = CCON.create(new SimplePoint(10, 20));
         Residence r2 = RCON.create(new SimplePoint(100, 100));
@@ -229,5 +242,185 @@ public class RouteSearcherTest extends AbstractControllerTest {
         RouteEdge edge = inst.getStart(r1, c1).getOutEdges().get(0);
         assertNotNull(edge.getTo());
         assertNotNull(edge.getOriginal());
+    }
+    
+    @Test
+    public void testCallWithHuman() throws RushHourException {
+        Residence r = RCON.create(new SimplePoint(10, 10));
+        Company c = CCON.create(new SimplePoint(10, 20));
+        Human h = HCON.create(TEST_POS, r, c);
+        
+        assertTrue(inst.call());
+        
+        h.setCurrent(inst.getStart(h.getSrc(), h.getDest()));
+        
+        assertTrue(inst.call());
+        
+        assertTrue(h.getCurrent() instanceof TemporaryHumanRouteEdge);
+    }
+    
+    @Test
+    public void testPermanentObjSmallWorld() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        
+        assertEquals(1, pPack.residences.size());
+        assertEquals(1, pPack.companies.size());
+        assertEquals(2, pPack.ticketGates.size());
+        assertEquals(2, pPack.platforms.size());
+        assertEquals(11, pPack.steps.size());
+        
+        RouteNode rN = pPack.residenceNodes.get(world.rsd);
+        assertNotNull(rN);
+        assertEquals(0, rN.getInEdges().size());
+        assertEquals(3, rN.getOutEdges().size());
+        
+        RouteNode cN = pPack.companyNodes.get(world.cmp);
+        assertNotNull(cN);
+        assertEquals(3, cN.getInEdges().size());
+        assertEquals(0, cN.getOutEdges().size());
+        
+        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
+        assertNotNull(tg1N);
+        assertEquals(2, tg1N.getInEdges().size());
+        assertEquals(2, tg1N.getOutEdges().size());
+        
+        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
+        assertNotNull(tg2N);
+        assertEquals(2, tg2N.getInEdges().size());
+        assertEquals(2, tg2N.getOutEdges().size());
+        
+        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform());
+        assertNotNull(p1N);
+        assertEquals(2, p1N.getInEdges().size());
+        assertEquals(2, p1N.getOutEdges().size());
+        
+        RouteNode p2N = pPack.platformNodes.get(world.st2.getPlatform());
+        assertNotNull(p2N);
+        assertEquals(2, p2N.getInEdges().size());
+        assertEquals(2, p2N.getOutEdges().size());
+        
+        assertEquals(6, pPack.allNodes.size());
+        assertEquals(11, pPack.allEdges.size());
+    }
+    
+    @Test
+    public void testTemporaryObjPackEmptyWorld() {
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        
+        RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, null);
+
+        assertNotNull(tPack.humanNodes);
+        assertTrue(tPack.humanNodes.isEmpty());
+        assertNotNull(tPack.humanEdges);
+        assertTrue(tPack.humanEdges.isEmpty());
+    }
+    
+    @Test
+    public void testTemporaryObjPackSmallWorld() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        Set<Human> hs = new HashSet<>();
+        hs.add(world.h);
+        
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        
+        RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
+
+        assertEquals(1, tPack.humanNodes.size());
+        assertEquals(3, tPack.humanEdges.size());
+        assertEquals(0, tPack.humanNodes.get(0).getInEdges().size());
+        assertEquals(3, tPack.humanNodes.get(0).getOutEdges().size());
+        
+        RouteNode cN = pPack.companyNodes.get(world.cmp);
+        assertNotNull(cN);
+        assertEquals(4, cN.getInEdges().size());
+        assertEquals(0, cN.getOutEdges().size());
+        
+        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
+        assertNotNull(tg1N);
+        assertEquals(3, tg1N.getInEdges().size());
+        assertEquals(2, tg1N.getOutEdges().size());
+        
+        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
+        assertNotNull(tg2N);
+        assertEquals(3, tg2N.getInEdges().size());
+        assertEquals(2, tg2N.getOutEdges().size());
+    }
+    
+    @Test
+    public void testTemporaryObjPackSmallWorldOnPlatform() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        Set<Human> hs = new HashSet<>();
+        world.h.setOnPlatform(world.st1.getPlatform());
+        hs.add(world.h);
+        
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        
+        RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
+
+        assertEquals(1, tPack.humanNodes.size());
+        assertEquals(1, tPack.humanEdges.size());
+        assertEquals(0, tPack.humanNodes.get(0).getInEdges().size());
+        assertEquals(1, tPack.humanNodes.get(0).getOutEdges().size());
+        
+        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform());
+        assertNotNull(p1N);
+        assertEquals(3, p1N.getInEdges().size());
+        assertEquals(2, p1N.getOutEdges().size());
+    }
+    
+    @Test
+    public void testTemporaryObjPackSmallWorldOnTrain() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        Set<Human> hs = new HashSet<>();
+        world.h.setOnTrain(world.t);
+        hs.add(world.h);
+        
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        
+        RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
+
+        assertEquals(1, tPack.humanNodes.size());
+        assertEquals(0, tPack.humanEdges.size());
+        assertEquals(0, tPack.humanNodes.get(0).getInEdges().size());
+        assertEquals(0, tPack.humanNodes.get(0).getOutEdges().size());
+    } 
+    
+    /**
+     * R St--St C
+     * @return WorldPack
+     * @throws RushHourException 
+     */
+    protected WorldPack createSmallWorld() throws RushHourException {
+        WorldPack pack = new WorldPack();
+        pack.rsd = RCON.create(ORIGIN);
+        pack.cmp = CCON.create(FAR);
+        pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+        
+        AssistanceController.Result start = ACON.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
+        pack.st1 = start.station;
+        pack.l = start.line;
+        
+        AssistanceController.Result end = ACON.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
+        pack.st2 = end.station;
+        
+        pack.h = HCON.create(ORIGIN, pack.rsd, pack.cmp);
+        
+        pack.t = TRAINCON.create(pack.owner);
+        TRAINCON.deploy(pack.t, pack.owner, pack.l.findTop());
+        
+        return pack;
+    }
+    
+    protected static class WorldPack {
+        public Residence rsd;
+        public Company cmp;
+        public Player owner;
+        public Station st1;
+        public Station st2;
+        public Human h;
+        public Train t;
+        public Line l;
     }
 }

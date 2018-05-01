@@ -23,7 +23,10 @@
  */
 package net.rushhourgame.controller.route;
 
+import java.util.HashSet;
+import java.util.Set;
 import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.StepForHuman;
@@ -33,39 +36,19 @@ import net.rushhourgame.entity.TicketGate;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class RouteEdge {
-    final protected StepForHuman original;
-    final protected RouteNode from;
-    final protected RouteNode to;
-
-    public RouteEdge(StepForHuman original, RouteNode from, RouteNode to) {
-        this.original = original;
-        this.from = from;
-        this.to = to;
-    }
+public interface RouteEdge {
     
-    public double getCost() {
-        return original.getCost();
-    }
+    public double getCost();
 
-    public StepForHuman getOriginal() {
-        return original;
-    }
+    public StepForHuman getOriginal();
 
-    public RouteNode getFrom() {
-        return from;
-    }
+    public RouteNode getFrom();
 
-    public RouteNode getTo() {
-        return to;
-    }
+    public RouteNode getTo();
     
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("RouteEdge_");
-        sb.append(from);
-        sb.append("_->_");
-        sb.append(to);
-        return sb.toString();
-}
+    public void reffer(Human h);
+    
+    public void unreffer(Human h);
+    
+    public Set<Human> getRefferedHuman();
 }

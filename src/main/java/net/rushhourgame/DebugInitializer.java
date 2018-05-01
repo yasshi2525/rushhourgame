@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.Initialized;
@@ -86,9 +85,6 @@ public class DebugInitializer {
     protected AssistanceController aCon;
     @Inject
     protected TrainController tCon;
-
-    @Resource
-    ManagedExecutorService executorService;
 
     @Transactional
     public void init() throws RushHourException {

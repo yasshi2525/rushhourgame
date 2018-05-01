@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,23 +35,66 @@ import net.rushhourgame.entity.TicketGate;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
+public abstract class AbstractRouteNode implements RouteNode {
 
-    public RelayPointForHuman getOriginal();
+    protected final RelayPointForHuman original;
+    protected double cost;
+    protected RouteNode via;
+    protected List<RouteEdge> inEdges = new ArrayList<>();
+    protected List<RouteEdge> outEdges = new ArrayList<>();
 
-    public double getCost();
+    public AbstractRouteNode(RelayPointForHuman original) {
+        this.original = original;
+    }
 
-    public void setCost(double cost);
-    
-    public RouteNode getVia();
+    @Override
+    public RelayPointForHuman getOriginal() {
+        return original;
+    }
 
-    public void setVia(RouteNode via);
+    @Override
+    public double getCost() {
+        return cost;
+    }
 
-    public List<RouteEdge> getInEdges();
+    @Override
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 
-    public List<RouteEdge> getOutEdges();
+    @Override
+    public RouteNode getVia() {
+        return via;
+    }
 
-    public boolean isEnd();
+    @Override
+    public void setVia(RouteNode via) {
+        this.via = via;
+    }
 
-    public RouteEdge getViaEdge();
+    @Override
+    public List<RouteEdge> getInEdges() {
+        return inEdges;
+    }
+
+    @Override
+    public List<RouteEdge> getOutEdges() {
+        return outEdges;
+    }
+
+    @Override
+    public boolean isEnd() {
+        return via == null;
+    }
+
+    @Override
+    public RouteEdge getViaEdge() {
+        return outEdges.stream().filter(e -> e.getTo().equals(via)).findFirst().get();
+    }
+
+    @Override
+    public int compareTo(RouteNode o) {
+        return this.cost > o.getCost() ? 1
+                : this.cost < o.getCost() ? -1 : 0;
+    }
 }

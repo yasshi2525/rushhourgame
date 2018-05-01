@@ -23,8 +23,8 @@
  */
 package net.rushhourgame.entity;
 
-import net.rushhourgame.controller.route.RouteEdge;
-import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.controller.route.PermanentRouteEdge;
+import net.rushhourgame.controller.route.PermanentRouteNode;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -49,13 +49,13 @@ public class HumanTest extends AbstractEntityTest {
     protected Human inst;
 
     @Mock
-    protected RouteEdge currentEdge;
+    protected PermanentRouteEdge currentEdge;
 
     @Mock
-    protected RouteNode currentGoal;
+    protected PermanentRouteNode currentGoal;
 
     @Mock
-    protected RouteEdge nextEdge;
+    protected PermanentRouteEdge nextEdge;
 
     @Mock
     protected StepForHuman neverEndTask;
@@ -91,7 +91,7 @@ public class HumanTest extends AbstractEntityTest {
         verify(currentGoal, times(1)).isEnd();
         
         assertEquals(inst.current, currentEdge);
-        assertTrue(inst.finishes());
+        assertTrue(inst.isFinished());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class HumanTest extends AbstractEntityTest {
         verify(currentEdge, times(2)).getOriginal();
         verify(currentEdge, times(0)).getTo();
 
-        assertFalse(inst.finishes());
+        assertFalse(inst.isFinished());
         assertEquals(currentEdge, inst.current);
     }
 
@@ -148,7 +148,11 @@ public class HumanTest extends AbstractEntityTest {
         verify(neverEndTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(neverEndTask, times(1)).isFinished(any(Human.class));
 
-        assertFalse(inst.finishes());
+        verify(inst, times(1)).shiftEdge();
+        verify(currentEdge, times(1)).unreffer(any(Human.class));
+        verify(nextEdge, times(1)).reffer(any(Human.class));
+        
+        assertFalse(inst.isFinished());
         assertEquals(nextEdge, inst.current);
     }
 

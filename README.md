@@ -41,6 +41,12 @@ DB情報を登録する
 <install_dir>/glassfish/bin/asadmin create-jdbc-resource --connectionpoolid RushHourGamePool jdbc/RushHourGame  
 ```
 
+Managed Executor Serviceを登録する (Concurrency Utility)  
+```
+<install_dir>/glassfish/bin/asadmin create-managed-executor-service concurrent/RushHourGame  
+<install_dir>/glassfish/bin/asadmin create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute  
+```
+
 設定ファイルを作成する  
 `vi <install_dir>/glassfish/domains/domain1/config/rushhour_config.properties`  
 以下の内容を記述する

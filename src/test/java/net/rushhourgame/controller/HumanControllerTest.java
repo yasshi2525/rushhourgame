@@ -23,7 +23,7 @@
  */
 package net.rushhourgame.controller;
 
-import static net.rushhourgame.controller.AbstractControllerTest.SCON;
+import static net.rushhourgame.RushHourProperties.GAME_DEF_HUMAN_LIFESPAN;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Pointable;
@@ -43,12 +43,33 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     protected HumanController inst;
     protected Pointable origin = new SimplePoint();
+    protected static final double TEST_X = 10;
+    protected static final double TEST_Y = 20;
+    protected static final Pointable TEST = new SimplePoint(TEST_X, TEST_Y);
     
     @Before
     @Override
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createHumanController();
+    }
+    
+    @Test
+    public void testCreate() throws RushHourException {
+        Residence src = RCON.create(origin);
+        Company dst = CCON.create(origin);
+        
+        Human h = inst.create(TEST, src, dst);
+        
+        assertNotNull(h);
+        assertTrue(TEST_X == h.getX());
+        assertTrue(TEST_Y == h.getY());
+        assertEquals(src, h.getSrc());
+        assertEquals(dst, h.getDest());
+        assertEquals(Long.parseLong(PROP.get(GAME_DEF_HUMAN_LIFESPAN)), h.getLifespan());
+        assertEquals(Human.StandingOn.GROUND, h.getStandingOn());
+        assertNull(h.getCurrent());
+        assertFalse(h.isFinished());
     }
     
     @Test

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,46 @@
  */
 package net.rushhourgame.controller.route;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
-
-    public RelayPointForHuman getOriginal();
-
-    public double getCost();
-
-    public void setCost(double cost);
+public class TemporaryHumanRouteNode extends AbstractRouteNode implements RouteNode {
+    final protected Human human;
+    final protected TemporaryHumanPoint originalCopy;
     
-    public RouteNode getVia();
+    public TemporaryHumanRouteNode(TemporaryHumanPoint original) {
+        super(original);
+        this.human = original.getHuman();
+        this.originalCopy = original;
+    }
 
-    public void setVia(RouteNode via);
+    @Override
+    public TemporaryHumanPoint getOriginal() {
+        return originalCopy;
+    }
+    
+    public void registerCurrentTaskToHuman() {
+        human.setCurrent(this);
+    }
 
-    public List<RouteEdge> getInEdges();
-
-    public List<RouteEdge> getOutEdges();
-
-    public boolean isEnd();
-
-    public RouteEdge getViaEdge();
+    public Human getHuman() {
+        return human;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("tRouteNode_");
+        sb.append("h(");
+        sb.append(human.getId());
+        sb.append(")");
+        if (via != null) {
+            sb.append("_=>_");
+            sb.append(via.toString());
+        }
+        return sb.toString();
+    }
 }

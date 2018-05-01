@@ -42,24 +42,24 @@ public class RouteTest {
     
     @Test
     public void testCompareRouteNodeEqual() {
-        SortedSet<RouteNode> set = new TreeSet<>();
-        RouteNode r1 = new RouteNode(mock(RelayPointForHuman.class));
+        SortedSet<PermanentRouteNode> set = new TreeSet<>();
+        PermanentRouteNode r1 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r1.setCost(0);
         set.add(r1);
         
-        RouteNode r2 = new RouteNode(mock(RelayPointForHuman.class));
+        PermanentRouteNode r2 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r2.setCost(0);
         set.add(r2);
     }
     
     @Test
     public void testCompareRouteNodeGreater() {
-        SortedSet<RouteNode> set = new TreeSet<>();
-        RouteNode r1 = new RouteNode(mock(RelayPointForHuman.class));
+        SortedSet<PermanentRouteNode> set = new TreeSet<>();
+        PermanentRouteNode r1 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r1.setCost(1);
         set.add(r1);
         
-        RouteNode r2 = new RouteNode(mock(RelayPointForHuman.class));
+        PermanentRouteNode r2 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r2.setCost(0);
         set.add(r2);
         
@@ -68,12 +68,12 @@ public class RouteTest {
     
     @Test
     public void testCompareRouteNodeLess() {
-        SortedSet<RouteNode> set = new TreeSet<>();
-        RouteNode r1 = new RouteNode(mock(RelayPointForHuman.class));
+        SortedSet<PermanentRouteNode> set = new TreeSet<>();
+        PermanentRouteNode r1 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r1.setCost(0);
         set.add(r1);
         
-        RouteNode r2 = new RouteNode(mock(RelayPointForHuman.class));
+        PermanentRouteNode r2 = new PermanentRouteNode(mock(RelayPointForHuman.class));
         r2.setCost(1);
         set.add(r2);
         

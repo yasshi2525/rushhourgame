@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,54 @@
  */
 package net.rushhourgame.controller.route;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
+import java.util.HashSet;
+import java.util.Set;
+import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.StepForHuman;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
+public abstract class AbstractRouteEdge {
 
-    public RelayPointForHuman getOriginal();
+    protected Set<Human> referredHumans = new HashSet<>();
 
-    public double getCost();
+    final protected StepForHuman original;
+    final protected RouteNode from;
+    final protected RouteNode to;
 
-    public void setCost(double cost);
-    
-    public RouteNode getVia();
+    public AbstractRouteEdge(StepForHuman original, RouteNode from, RouteNode to) {
+        this.original = original;
+        this.from = from;
+        this.to = to;
+    }
 
-    public void setVia(RouteNode via);
+    public double getCost() {
+        return original.getCost();
+    }
 
-    public List<RouteEdge> getInEdges();
+    public StepForHuman getOriginal() {
+        return original;
+    }
 
-    public List<RouteEdge> getOutEdges();
+    public RouteNode getFrom() {
+        return from;
+    }
 
-    public boolean isEnd();
+    public RouteNode getTo() {
+        return to;
+    }
 
-    public RouteEdge getViaEdge();
+    public void reffer(Human h) {
+        referredHumans.add(h);
+    }
+
+    public void unreffer(Human h) {
+        referredHumans.remove(h);
+    }
+
+    public Set<Human> getRefferedHuman() {
+        return referredHumans;
+    }
 }

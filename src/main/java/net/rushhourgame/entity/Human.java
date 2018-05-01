@@ -63,6 +63,15 @@ public class Human extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Company dest;
+    
+    @NotNull
+    protected StandingOn stand;
+    
+    @ManyToOne
+    protected Platform onPlatform;
+    
+    @ManyToOne
+    protected Train onTrain;
 
     protected transient RouteEdge current;
     
@@ -81,7 +90,7 @@ public class Human extends AbstractEntity implements Pointable {
                     isFinished = true;
                     return;
                 }
-                current = current.getTo().getViaEdge();
+                shiftEdge();
             }
         }
     }
@@ -94,7 +103,7 @@ public class Human extends AbstractEntity implements Pointable {
         throw new UnsupportedOperationException();
     }
 
-    public boolean finishes() {
+    public boolean isFinished() {
         return isFinished;
     }
 
@@ -121,9 +130,41 @@ public class Human extends AbstractEntity implements Pointable {
             shiftTask();
         }*/
     }
+    
+    public void setStandingOn(StandingOn stand) {
+        this.stand = stand;
+    }
+    
+    public StandingOn getStandingOn() {
+        return stand;
+    }
 
-    protected void shiftTask() {
-        throw new UnsupportedOperationException();
+    public Platform getOnPlatform() {
+        return onPlatform;
+    }
+
+    public Train getOnTrain() {
+        return onTrain;
+    }
+
+    public void setOnPlatform(Platform onPlatform) {
+        this.onPlatform = onPlatform;
+        stand = StandingOn.PLATFORM;
+    }
+
+    public void setOnTrain(Train onTrain) {
+        this.onTrain = onTrain;
+        stand = StandingOn.TRAIN;
+    }
+    
+    protected void shiftEdge() {
+        current.unreffer(this);
+        current = current.getTo().getViaEdge();
+        current.reffer(this);
+    }
+    
+    public void flushCurrent() {
+        current = null;
     }
 
     @Override
@@ -157,7 +198,7 @@ public class Human extends AbstractEntity implements Pointable {
     }
 
     public boolean shouldDie() {
-        return lifespan < 0 || finishes();
+        return lifespan < 0 || isFinished();
     }
 
     public Residence getSrc() {
@@ -182,6 +223,7 @@ public class Human extends AbstractEntity implements Pointable {
 
     public void setCurrent(RouteNode current) {
         this.current = current.getViaEdge();
+        this.current.reffer(this);
     }
 
     @Override
@@ -194,5 +236,11 @@ public class Human extends AbstractEntity implements Pointable {
         
         x += dist * Math.cos(theta);
         y += dist * Math.sin(theta);
+    }
+    
+    public enum StandingOn {
+        GROUND,
+        PLATFORM,
+        TRAIN
     }
 }

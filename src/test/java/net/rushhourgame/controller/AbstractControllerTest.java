@@ -71,6 +71,7 @@ public class AbstractControllerTest {
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static HumanController HCON = ControllerFactory.createHumanController();
+    protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;

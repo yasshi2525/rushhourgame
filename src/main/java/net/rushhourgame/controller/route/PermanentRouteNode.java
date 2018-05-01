@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
  */
 package net.rushhourgame.controller.route;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.RelayPointForHuman;
@@ -35,23 +33,31 @@ import net.rushhourgame.entity.TicketGate;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
+public class PermanentRouteNode extends AbstractRouteNode implements RouteNode {
 
-    public RelayPointForHuman getOriginal();
+    public PermanentRouteNode(RelayPointForHuman original) {
+        super(original);
+    }
 
-    public double getCost();
-
-    public void setCost(double cost);
-    
-    public RouteNode getVia();
-
-    public void setVia(RouteNode via);
-
-    public List<RouteEdge> getInEdges();
-
-    public List<RouteEdge> getOutEdges();
-
-    public boolean isEnd();
-
-    public RouteEdge getViaEdge();
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("pRouteNode_");
+        if (original instanceof Residence) {
+            sb.append("r");
+        } else if (original instanceof Company) {
+            sb.append("c");
+        } else if (original instanceof Platform) {
+            sb.append("p");
+        } else if (original instanceof TicketGate) {
+            sb.append("g");
+        }
+        sb.append("(");
+        sb.append(original.getId());
+        sb.append(")");
+        if (via != null) {
+            sb.append("_=>_");
+            sb.append(via.toString());
+        }
+        return sb.toString();
+    }
 }

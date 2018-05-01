@@ -49,6 +49,7 @@ public class HumanController extends PointEntityController {
         human.setSrc(src);
         human.setDest(dst);
         human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
+        human.setStandingOn(Human.StandingOn.GROUND);
         em.persist(human);
         return human;
     }

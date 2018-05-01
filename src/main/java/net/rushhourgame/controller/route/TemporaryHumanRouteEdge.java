@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,30 @@
  */
 package net.rushhourgame.controller.route;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
+import net.rushhourgame.entity.Human;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
-
-    public RelayPointForHuman getOriginal();
-
-    public double getCost();
-
-    public void setCost(double cost);
+public class TemporaryHumanRouteEdge extends AbstractRouteEdge implements RouteEdge {
+    final protected Human human;
     
-    public RouteNode getVia();
+    public TemporaryHumanRouteEdge(TemporaryHumanRouteNode from, RouteNode to) {
+        super(new TemporaryHumanStep(from.getOriginal(), to.getOriginal()), from, to);
+        this.human = from.getHuman();
+    }
 
-    public void setVia(RouteNode via);
-
-    public List<RouteEdge> getInEdges();
-
-    public List<RouteEdge> getOutEdges();
-
-    public boolean isEnd();
-
-    public RouteEdge getViaEdge();
+    public Human getHuman() {
+        return human;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("tRouteEdge_");
+        sb.append(from);
+        sb.append("_->_");
+        sb.append(to);
+        return sb.toString();
+    }
 }
