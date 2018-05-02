@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import javax.persistence.EntityManager;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
 import org.junit.Test;
@@ -62,6 +63,9 @@ public class HumanTest extends AbstractEntityTest {
 
     @Mock
     protected StepForHuman onetimeTask;
+    
+    @Mock
+    protected EntityManager em;
 
     @Before
     @Override
@@ -80,12 +84,12 @@ public class HumanTest extends AbstractEntityTest {
     
     @Test
     public void testStep() {
-        doReturn(onetimeTask).when(currentEdge).getOriginal();
+        doReturn(onetimeTask).when(inst).getMergedCurrent(any(EntityManager.class));
         doReturn(true).when(currentGoal).isEnd();
         
-        inst.step(VALID_INTERVAL, VALID_SPEED);
+        inst.step(em, VALID_INTERVAL, VALID_SPEED);
         
-        verify(currentEdge, times(2)).getOriginal();
+        verify(inst, times(1)).getMergedCurrent(any(EntityManager.class));
         verify(onetimeTask, times(1)).isFinished(any(Human.class));
         verify(currentEdge, times(1)).getTo();
         verify(currentGoal, times(1)).isEnd();
@@ -98,34 +102,36 @@ public class HumanTest extends AbstractEntityTest {
     public void testStepNoActionWhenFinished() {
         inst.isFinished = true;
 
-        inst.step(VALID_INTERVAL, VALID_SPEED);
+        inst.step(em, VALID_INTERVAL, VALID_SPEED);
 
-        verify(currentEdge, times(0)).getOriginal();
+        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
     }
 
     @Test
     public void testStepNoActionWhenNoRoute() {
         inst.current = null;
 
-        inst.step(VALID_INTERVAL, VALID_SPEED);
+        inst.step(em, VALID_INTERVAL, VALID_SPEED);
 
-        verify(currentEdge, times(0)).getOriginal();
+        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
     }
 
     @Test
     public void testStepNothingWhenNoInterval() {
-        inst.step(NO_INTERVAL, VALID_SPEED);
+        inst.step(em, NO_INTERVAL, VALID_SPEED);
 
-        verify(currentEdge, times(0)).getOriginal();
+        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
     }
 
     @Test
     public void testStepProceededButNotEnded() {
-        doReturn(neverEndTask).when(currentEdge).getOriginal();
+        doReturn(neverEndTask).when(inst).getMergedCurrent(any(EntityManager.class));
 
-        inst.step(VALID_INTERVAL, VALID_SPEED);
+        inst.step(em, VALID_INTERVAL, VALID_SPEED);
 
-        verify(currentEdge, times(2)).getOriginal();
+        verify(inst, times(1)).getMergedCurrent(any(EntityManager.class));
+        verify(neverEndTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
+        verify(neverEndTask, times(1)).isFinished(any(Human.class));
         verify(currentEdge, times(0)).getTo();
 
         assertFalse(inst.isFinished());
@@ -136,17 +142,21 @@ public class HumanTest extends AbstractEntityTest {
     public void testStepShiftTask() {
         doReturn(onetimeTask).when(currentEdge).getOriginal();
         doReturn(neverEndTask).when(nextEdge).getOriginal();
+        
+        doReturn(onetimeTask).when(em).merge(eq(onetimeTask));
+        doReturn(neverEndTask).when(em).merge(eq(neverEndTask));
 
-        inst.step(VALID_INTERVAL, VALID_SPEED);
+        inst.step(em, VALID_INTERVAL, VALID_SPEED);
 
-        verify(currentEdge, times(2)).getOriginal();
+        verify(inst, times(2)).getMergedCurrent(any(EntityManager.class));
+        
         verify(onetimeTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(onetimeTask, times(1)).isFinished(any(Human.class));
         verify(currentEdge, times(2)).getTo();
 
-        verify(nextEdge, times(2)).getOriginal();
         verify(neverEndTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(neverEndTask, times(1)).isFinished(any(Human.class));
+        verify(neverEndTask, times(0)).getTo();
 
         verify(inst, times(1)).shiftEdge();
         verify(currentEdge, times(1)).unreffer(any(Human.class));
@@ -155,100 +165,32 @@ public class HumanTest extends AbstractEntityTest {
         assertFalse(inst.isFinished());
         assertEquals(nextEdge, inst.current);
     }
-
+    
     @Test
-    public void testIdle() {
+    public void testEnterIntoPlatform() {
+        TicketGate tg = mock(TicketGate.class);
+        Platform p = mock(Platform.class);
+        
+        inst.enterIntoPlatform(tg, p);
+        
+        verify(tg, times(1)).pass();
+        verify(p, times(1)).enter();
+        
+        assertEquals(p, inst.getOnPlatform());
+        assertEquals(Human.StandingOn.PLATFORM, inst.getStandingOn());
     }
-
+    
     @Test
-    public void testWalk() {
-    }
-
-    @Test
-    public void testFinishes() {
-    }
-
-    @Test
-    public void testEnterStation() {
-    }
-
-    @Test
-    public void testExitStation() {
-    }
-
-    @Test
-    public void testGetInTrain() {
-    }
-
-    @Test
-    public void testGetOffTrain() {
-    }
-
-    @Test
-    public void testShiftTask() {
-    }
-
-    @Test
-    public void testGetX() {
-    }
-
-    @Test
-    public void testSetX() {
-    }
-
-    @Test
-    public void testGetY() {
-    }
-
-    @Test
-    public void testSetY() {
-    }
-
-    @Test
-    public void testGetLifespan() {
-    }
-
-    @Test
-    public void testConsumeLifespan() {
-    }
-
-    @Test
-    public void testSetLifespan() {
-    }
-
-    @Test
-    public void testShouldDie() {
-    }
-
-    @Test
-    public void testGetSrc() {
-    }
-
-    @Test
-    public void testSetSrc() {
-    }
-
-    @Test
-    public void testGetDest() {
-    }
-
-    @Test
-    public void testSetDest() {
-    }
-
-    @Test
-    public void testGetCurrent() {
-    }
-
-    @Test
-    public void testSetCurrent() {
-    }
-
-    @Test
-    public void testDistTo() {
-    }
-
-    @Test
-    public void testMoveTo() {
+    public void testExitFromPlatform() {
+        Platform p = mock(Platform.class);
+        TicketGate tg = mock(TicketGate.class);
+        
+        inst.exitFromPlatform(p, tg);
+        
+        verify(p, times(1)).exit();
+        verify(tg, times(1)).pass();
+        
+        assertNull(inst.getOnPlatform());
+        assertEquals(Human.StandingOn.GROUND, inst.getStandingOn());
     }
 }

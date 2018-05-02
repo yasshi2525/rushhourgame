@@ -41,6 +41,7 @@ import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
+import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
@@ -86,6 +87,7 @@ public class GameMasterTest {
     protected static final CompanyController CCON = ControllerFactory.createCompanyController();
     protected static final AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected static final PlayerController PCON = ControllerFactory.createPlayController();
+    protected static final StationController STCON = ControllerFactory.createStationController();
     
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
@@ -108,6 +110,7 @@ public class GameMasterTest {
         inst.searcher.lock = lock;
         inst.searcher.init();
         inst.prop = RushHourProperties.getInstance();
+        inst.stCon = spy(STCON);
         inst.tCon = spy(TCON);
         inst.hCon = spy(HCON);
         inst.rCon = spy(RCON);
@@ -150,6 +153,7 @@ public class GameMasterTest {
         
         inst.run();
         
+        verify(inst.stCon, times(2)).step(any(Station.class), anyLong());
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
         verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());

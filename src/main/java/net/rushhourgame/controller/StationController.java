@@ -6,7 +6,7 @@
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * to pass, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
@@ -49,15 +49,21 @@ public class StationController extends PointEntityController {
 
     @Inject
     protected StepForHumanController sCon;
+    
+    public void step(Station st, long interval) {
+        // 専有されていた改札機を開放する
+        st.getTicketGate().step(interval);
+    }
 
     public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name) throws RushHourException {
         return create(owner, node, name,
                 Integer.parseInt(prop.get(GAME_DEF_GATE_NUM)),
-                Integer.parseInt(prop.get(GAME_DEF_PLT_CAPACITY)));
+                Integer.parseInt(prop.get(GAME_DEF_PLT_CAPACITY)),
+                Double.parseDouble(prop.get(GAME_DEF_GATE_MOBILITY)));
     }
 
     public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name,
-            @Min(1) int gatenum, @Min(1) int platformCapacity) throws RushHourException {
+            @Min(1) int gatenum, @Min(1) int platformCapacity, @Min(0) double gateMobility) throws RushHourException {
         if (!node.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
@@ -69,7 +75,7 @@ public class StationController extends PointEntityController {
         s.setOwner(owner);
         s.setName(name);
 
-        s.setTicketGate(createTicketGate(s, gatenum));
+        s.setTicketGate(createTicketGate(s, gatenum, gateMobility));
         s.setPlatform(createPlatform(s, node, platformCapacity));
 
         em.persist(s);
@@ -108,6 +114,10 @@ public class StationController extends PointEntityController {
         station.getTicketGate().setGateNum(num);
     }
     
+    public List<Station> findAll() {
+        return em.createNamedQuery("Station.findAll", Station.class).getResultList();
+    }
+    
     public List<Station> findAll(Player owner) {
         return em.createNamedQuery("Station.findMyStation", Station.class)
                 .setParameter("owner", owner).getResultList();
@@ -135,10 +145,11 @@ public class StationController extends PointEntityController {
         return p;
     }
 
-    protected TicketGate createTicketGate(Station s, int num) {
+    protected TicketGate createTicketGate(Station s, int num, double mobility) {
         TicketGate gate = new TicketGate();
         gate.setStation(s);
         gate.setGateNum(num);
+        gate.setMobility(mobility);
 
         return gate;
     }

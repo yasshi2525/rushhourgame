@@ -352,7 +352,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testTemporaryObjPackSmallWorldOnPlatform() throws RushHourException {
         WorldPack world = createSmallWorld();
         Set<Human> hs = new HashSet<>();
-        world.h.setOnPlatform(world.st1.getPlatform());
+        world.h.enterIntoPlatform(world.st1.getTicketGate(), world.st1.getPlatform());
         hs.add(world.h);
         
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();

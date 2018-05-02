@@ -6,7 +6,7 @@
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * to pass, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
@@ -98,11 +98,15 @@ public class StepForHumanIntoStation extends AbstractEntity implements StepForHu
     
     @Override
     public long step(Human h, long interval, double speed) {
+        if (_from.canEnter()) {
+            h.enterIntoPlatform(_from, _to);
+            return 0;
+        }
         return interval;
     }
 
     @Override
     public boolean isFinished(Human h) {
-        return false;
+        return _to.equals(h.getOnPlatform());
     }
 }

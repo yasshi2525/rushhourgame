@@ -6,7 +6,7 @@
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * to pass, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
@@ -58,8 +58,14 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     @OneToOne
     protected Station station;
 
+    @Min(0)
+    protected double mobility;
+    
     @Min(1)
     protected int gateNum;
+    
+    @Min(0)
+    protected double occupied;
     
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanIntoStation> stFromList;
@@ -73,6 +79,31 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanStationToCompany> cmpList;
     
+    public void step(long interval) {
+        occupied -= mobility * interval;
+        if (occupied < 0) {
+            occupied = 0;
+        }
+    }
+    
+    public boolean canEnter() {
+        return isAvailable() && station.getPlatform().canEnter();
+    }
+    
+    public boolean canExit() {
+        return isAvailable();
+    }
+    
+    public void pass() {
+        if (!canEnter()) {
+            throw new IllegalStateException("Tried to enter full station.");
+        }
+        occupied++;
+    }
+    
+    protected boolean isAvailable() {
+        return gateNum - occupied >= 1.0;
+    }
 
     public Station getStation() {
         return station;
@@ -88,6 +119,14 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
 
     public void setGateNum(int gateNum) {
         this.gateNum = gateNum;
+    }
+
+    public double getMobility() {
+        return mobility;
+    }
+
+    public void setMobility(double mobility) {
+        this.mobility = mobility;
     }
 
     @Override

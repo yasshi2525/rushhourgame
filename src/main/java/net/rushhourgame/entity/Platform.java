@@ -83,6 +83,9 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     @Min(1)
     protected int capacity;
+    
+    @Min(0)
+    protected int occupied;
 
     public Station getStation() {
         return station;
@@ -106,6 +109,25 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+    
+    public boolean canEnter() {
+        return capacity - occupied >= 1;
+    }
+    
+    public void enter() {
+        enter(false);
+    }
+    
+    public void enter(boolean force) {
+        if (!force && !canEnter()) {
+            throw new IllegalStateException("Tried to enter full platform.");
+        }
+        occupied++;
+    }
+    
+    public void exit() {
+        occupied--;
     }
 
     @Override

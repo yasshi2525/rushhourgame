@@ -63,7 +63,7 @@ public class HumanController extends PointEntityController {
     }
     
     public void step(Human h, long interval, double speed) {
-        h.step(interval, speed);
+        h.step(em, interval, speed);
         h.consumeLifespan(interval);
         if (h.shouldDie()) {
             em.remove(h);

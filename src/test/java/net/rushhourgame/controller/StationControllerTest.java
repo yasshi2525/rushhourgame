@@ -6,7 +6,7 @@
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * to pass, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
@@ -57,6 +57,7 @@ public class StationControllerTest extends AbstractControllerTest {
     private static final Pointable TEST_POS2 = new SimplePoint(TEST_X2, TEST_Y2);
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_NUM = 3;
+    private static final double TEST_MOBILITY = 0.002;
 
     @Before
     @Override
@@ -73,6 +74,8 @@ public class StationControllerTest extends AbstractControllerTest {
 
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
                 created.getTicketGate().getGateNum());
+        assertTrue(Double.parseDouble(PROP.get(GAME_DEF_GATE_MOBILITY))
+                == created.getTicketGate().getMobility());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_PLT_CAPACITY)),
                 created.getPlatform().getCapacity());
 
@@ -82,7 +85,7 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testFull() throws RushHourException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_POS);
-        Station created = inst.create(player, node, TEST_NAME, TEST_NUM, TEST_CAPACITY);
+        Station created = inst.create(player, node, TEST_NAME, TEST_NUM, TEST_CAPACITY, TEST_MOBILITY);
 
         //test station
         assertNotNull(created);
@@ -102,6 +105,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertEquals(player, gate.getOwner());
         assertEquals(created, gate.getStation());
         assertEquals(TEST_NUM, gate.getGateNum());
+        assertTrue(TEST_MOBILITY == gate.getMobility());
         assertTrue(gate.isOwnedBy(player));
         assertTrue(gate.isPrivilegedBy(player));
 

@@ -56,6 +56,7 @@ import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
+import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.exception.RushHourException;
 
@@ -76,6 +77,8 @@ public class GameMaster implements Serializable, Runnable {
     protected TrainController tCon;
     @Inject
     protected ResidenceController rCon;
+    @Inject
+    protected StationController stCon;
     @Inject
     protected HumanController hCon;
     @Inject
@@ -107,6 +110,9 @@ public class GameMaster implements Serializable, Runnable {
         }
         
         try {
+            stCon.findAll().forEach(st -> {
+                stCon.step(st, getInterval());
+            });
             rCon.findAll().forEach(r -> {
                 rCon.step(r, getInterval());
             });

@@ -6,7 +6,7 @@
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * to pass, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
@@ -24,6 +24,7 @@
 package net.rushhourgame.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -77,14 +78,15 @@ public class Human extends AbstractEntity implements Pointable {
     
     protected boolean isFinished;
 
-    public void step(long interval, double speed) {
+    public void step(EntityManager em, long interval, double speed) {
         if (isFinished || current == null) {
             return;
         }
         
         while (interval > 0) {
-            interval -= current.getOriginal().step(this, interval, speed);
-            if (current.getOriginal().isFinished(this)) {
+            StepForHuman currentStep = getMergedCurrent(em);
+            interval -= currentStep.step(this, interval, speed);
+            if (currentStep.isFinished(this)) {
                 // 目的地に到着した
                 if (current.getTo().isEnd()) {
                     isFinished = true;
@@ -93,6 +95,11 @@ public class Human extends AbstractEntity implements Pointable {
                 shiftEdge();
             }
         }
+    }
+    
+    protected StepForHuman getMergedCurrent(EntityManager em) {
+        // currentはメモリ上にキャッシュされるため、Entityの情報が古い
+        return em.merge(current.getOriginal());
     }
 
     public void idle() {
@@ -147,9 +154,18 @@ public class Human extends AbstractEntity implements Pointable {
         return onTrain;
     }
 
-    public void setOnPlatform(Platform onPlatform) {
-        this.onPlatform = onPlatform;
+    public void enterIntoPlatform(TicketGate from, Platform to) {
+        from.pass();
+        to.enter();
+        this.onPlatform = to;
         stand = StandingOn.PLATFORM;
+    }
+    
+    public void exitFromPlatform(Platform from, TicketGate to) {
+        from.exit();
+        to.pass();
+        this.onPlatform = null;
+        stand = StandingOn.GROUND;
     }
 
     public void setOnTrain(Train onTrain) {
