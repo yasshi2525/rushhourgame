@@ -113,7 +113,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     /**
      * 経路情報をすべて破棄する.
      *
-     * @param humans
+     * @param humans 人
      */
     protected void flush(Map<Long, Set<Human>> humans) {
         humans.values().forEach(hs -> hs.forEach(h -> h.flushCurrent()));

@@ -43,7 +43,6 @@ DB情報を登録する
 
 Managed Executor Serviceを登録する (Concurrency Utility)  
 ```
-<install_dir>/glassfish/bin/asadmin create-managed-executor-service concurrent/RushHourGame  
 <install_dir>/glassfish/bin/asadmin create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute  
 ```
 
