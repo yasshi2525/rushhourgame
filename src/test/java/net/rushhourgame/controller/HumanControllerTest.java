@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import static net.rushhourgame.RushHourProperties.GAME_DEF_HUMAN_LIFESPAN;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
@@ -79,7 +80,7 @@ public class HumanControllerTest extends AbstractControllerTest {
         
         Human h = inst.create(origin, src, dst);
         
-        inst.step(h, 1000000, 0.00001);
+        inst.step(h, 1000000, 0.00001, new ArrayList<>());
     }
     
 }

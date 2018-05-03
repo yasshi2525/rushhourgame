@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import static net.rushhourgame.RushHourResourceBundle.GAME_DATA_INCONSIST;
 import static net.rushhourgame.RushHourResourceBundle.GAME_NO_PRIVILEDGE_OTHER_OWNED;
 import net.rushhourgame.entity.Line;
@@ -76,6 +77,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train created = inst.create(player);
         assertEquals(100, created.getMobility());
         assertTrue(0.2 == created.getSpeed());
+        assertEquals(20, created.getCapacity());
         assertTrue(created.isPrivilegedBy(player));
         assertEquals(player, created.getOwner());
 
@@ -98,19 +100,7 @@ public class TrainControllerTest extends AbstractControllerTest {
             assertEquals("Not deployed.", e.getMessage());
         }
         try {
-            created.collectHuman(new ArrayList<>());
-            fail();
-        } catch (IllegalStateException e) {
-            assertEquals("Not deployed.", e.getMessage());
-        }
-        try {
-            created.freeHuman(new ArrayList<>());
-            fail();
-        } catch (IllegalStateException e) {
-            assertEquals("Not deployed.", e.getMessage());
-        }
-        try {
-            created.step(0);
+            created.step(new ArrayList<>(), 0);
             fail();
         } catch (IllegalStateException e) {
             assertEquals("Not deployed.", e.getMessage());
@@ -121,8 +111,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testDeploy() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        train.collectHuman(new ArrayList<>());
-        train.freeHuman(new ArrayList<>());
         assertTrue(10.0 == train.getX());
         assertTrue(15.0 == train.getY());
         assertTrue(0.0 == train.distTo(new SimplePoint(10.0, 15.0)));
@@ -199,13 +187,13 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testStep() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        inst.step(train, 0);
+        inst.step(train, 0, new ArrayList<>());
     }
 
     @Test
     public void testStepUndeploy() throws RushHourException {
         Train train = spy(inst.create(player));
-        inst.step(train, 0);
-        verify(train, times(0)).step(anyLong());
+        inst.step(train, 0, new ArrayList<>());
+        verify(train, times(0)).step(anyList(), anyLong());
     }
 }

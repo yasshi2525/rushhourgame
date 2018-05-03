@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 <https://twitter.com/yasshi2525>.
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,11 @@
  */
 package net.rushhourgame.entity;
 
-import java.util.List;
-
 /**
- * 他のインスタンスとEdgeで結ばれるもの
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RelayPointForHuman extends Identifiable, Pointable {
-    
-    public List<StepForHuman> getOutEdges();
-
-    public List<StepForHuman> getInEdges();
+public interface Identifiable {
+    public long getId();
+    public boolean equalsId(Identifiable other);
 }

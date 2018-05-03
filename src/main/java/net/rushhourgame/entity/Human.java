@@ -31,6 +31,7 @@ import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 
 /**
  * 人
@@ -72,7 +73,7 @@ public class Human extends AbstractEntity implements Pointable {
     protected Platform onPlatform;
     
     @ManyToOne
-    protected Train onTrain;
+    protected TrainDeployed onTrain;
 
     protected transient RouteEdge current;
     
@@ -114,28 +115,19 @@ public class Human extends AbstractEntity implements Pointable {
         return isFinished;
     }
 
-    public void enterStation() {
-        throw new UnsupportedOperationException();
+    public void getInTrain(TrainDeployed t) {
+        onPlatform.exit();
+        onPlatform = null;
+        onTrain = t;
+        stand = StandingOn.TRAIN;
     }
 
-    public void exitStation() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void getInTrain(Train t) {
-        /*if (true) {
-            x = t.getX();
-            y = t.getY();
-            shiftTask();
-        }*/
-    }
-
-    public void getOffTrain(Station st) {
-        /*if (true) {
-            x = st.getX();
-            y = st.getY();
-            shiftTask();
-        }*/
+    public void getOffTrain(Platform platform) {
+        onTrain = null;
+        onPlatform = platform;
+        onPlatform.enter(true);
+        shiftEdge(); // 乗車タスクの完了
+        stand = StandingOn.PLATFORM;
     }
     
     public void setStandingOn(StandingOn stand) {
@@ -150,7 +142,7 @@ public class Human extends AbstractEntity implements Pointable {
         return onPlatform;
     }
 
-    public Train getOnTrain() {
+    public TrainDeployed getOnTrain() {
         return onTrain;
     }
 
@@ -168,7 +160,7 @@ public class Human extends AbstractEntity implements Pointable {
         stand = StandingOn.GROUND;
     }
 
-    public void setOnTrain(Train onTrain) {
+    public void setOnTrain(TrainDeployed onTrain) {
         this.onTrain = onTrain;
         stand = StandingOn.TRAIN;
     }
@@ -241,6 +233,24 @@ public class Human extends AbstractEntity implements Pointable {
         this.current = current.getViaEdge();
         this.current.reffer(this);
     }
+    
+    public boolean shouldRide(Platform platform, TrainDeployed train) {
+        if (platform.equalsId(onPlatform) && current != null
+                 && current.getOriginal() instanceof StepForHumanThroughTrain) {
+            // TODO : 反対方面の電車に乗ってしまう
+            return train.getCurrent().getParent().equalsId(
+                    ((StepForHumanThroughTrain) current.getOriginal()).getLine());
+        }
+        return false;
+    }
+    
+    public boolean shouldGetOff(TrainDeployed train, Platform platform) {
+        if (this.onTrain == null) {
+            return false;
+        }
+        return train.equalsId(onTrain) 
+                && platform.equalsId(current.getOriginal().getTo());
+    }
 
     @Override
     public double distTo(Pointable p) {
@@ -252,6 +262,18 @@ public class Human extends AbstractEntity implements Pointable {
         
         x += dist * Math.cos(theta);
         y += dist * Math.sin(theta);
+    }
+    
+    /**
+     * EntityManager#merge()はtransient属性をコピーしない
+     * @param em EntityManager
+     * @return attachしたオブジェクト
+     */
+    public Human merge(EntityManager em) {
+        RouteEdge _current = this.current;
+        Human newHuman = em.merge(this);
+        newHuman.current = _current;
+        return newHuman;
     }
     
     public enum StandingOn {

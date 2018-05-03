@@ -24,6 +24,8 @@
 package net.rushhourgame.entity;
 
 import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
 import net.rushhourgame.entity.troute.LineStepDeparture;
 import net.rushhourgame.entity.troute.LineStepMoving;
 import net.rushhourgame.entity.troute.LineStepPassing;
@@ -70,7 +72,6 @@ public class TrainDeployedTest extends AbstractEntityTest {
     public void setUp() {
         super.setUp();
         inst.train = train;
-        doReturn(mock(Station.class)).when(stop).getOnStation();
         doReturn(_dep).when(dep).getDeparture();
         doReturn(_stop).when(stop).getStopping();
         doReturn(_pass).when(pass).getPassing();
@@ -86,27 +87,29 @@ public class TrainDeployedTest extends AbstractEntityTest {
     @Test
     public void testSetCurrent() {
         LineStep step = mock(LineStep.class);
-        doNothing().when(inst).registerPoint();
+        doNothing().when(inst).registerPoint(null);
+        
         inst.setCurrent(step);
+        
         assertEquals(step, inst.getCurrent());
         assertTrue(0.0 == inst.progress);
     }
 
     @Test
     public void testConsumeTimeDoNothing() {
-        inst.consumeTime(0);
+        inst.consumeTime(new ArrayList<>(), 0);
     }
     
     @Test
     public void testConsumeTimeRunning() {
         doReturn(true).when(inst).shouldRun();
-        doReturn(500L).when(inst).consumeTimeByRunning(anyLong());
+        doReturn(500L).when(inst).consumeTimeByRunning(anyLong(), anyList());
         doReturn(false).when(inst).shouldShiftStep();
         doReturn(false).when(inst).shouldStay();
         
-        inst.consumeTime(1000);
+        inst.consumeTime(new ArrayList<>(), 1000);
         
-        verify(inst, times(2)).consumeTimeByRunning(anyLong());
+        verify(inst, times(2)).consumeTimeByRunning(anyLong(), anyList());
     }
     
     @Test
@@ -116,7 +119,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doReturn(true).when(inst).shouldStay();
         doReturn(500L).when(inst).consumeTimeByStaying(anyLong());
         
-        inst.consumeTime(1000);
+        inst.consumeTime(new ArrayList<>(), 1000);
         
         verify(inst, times(2)).consumeTimeByStaying(anyLong());
     }
@@ -124,15 +127,15 @@ public class TrainDeployedTest extends AbstractEntityTest {
     @Test
     public void testConsumeTimeShiftStep() {
         doReturn(true).when(inst).shouldRun();
-        doReturn(500L).when(inst).consumeTimeByRunning(anyLong());
+        doReturn(500L).when(inst).consumeTimeByRunning(anyLong(), anyList());
         doReturn(true).when(inst).shouldShiftStep();
         doReturn(true).when(inst).shouldStay();
         doReturn(500L).when(inst).consumeTimeByStaying(anyLong());
-        doNothing().when(inst).shiftStep();
+        doNothing().when(inst).shiftStep(anyList());
         
-        inst.consumeTime(1000);
+        inst.consumeTime(new ArrayList<>(), 1000);
         
-        verify(inst, times(2)).shiftStep();
+        verify(inst, times(2)).shiftStep(anyList());
     }
 
 
@@ -171,9 +174,10 @@ public class TrainDeployedTest extends AbstractEntityTest {
         inst.current = moving;
         doReturn(10.0).when(inst).calcMovableDist(anyLong());
         doReturn(5.0).when(inst).calcRemainDist();
-        doReturn(1000L).when(inst).run(anyDouble());
-        inst.consumeTimeByRunning(1000);
-        verify(inst, times(1)).run(5.0);
+        doReturn(1000L).when(inst).run(anyDouble(), anyList());
+        inst.consumeTimeByRunning(1000, new ArrayList<>());
+        
+        verify(inst, times(1)).run(eq(5.0), anyList());
     }
 
     @Test
@@ -207,9 +211,9 @@ public class TrainDeployedTest extends AbstractEntityTest {
         inst.current = moving;
         doReturn(10.0).when(moving).getDist();
         doReturn(10.0).when(train).getSpeed();
-        doNothing().when(inst).registerPoint();
+        doNothing().when(inst).registerPoint(anyList());
         
-        assertTrue(0.0 == inst.run(0));
+        assertTrue(0.0 == inst.run(0, new ArrayList<>()));
         assertTrue(0.0 == inst.progress);
     }
 
@@ -250,7 +254,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
     }
 
     @Test
-    public void testRegisterPoint_0args() {
+    public void testRegisterPoint() {
         inst.current = moving;
         RailNode start = mock(RailNode.class);
         RailNode goal = mock(RailNode.class);
@@ -262,26 +266,49 @@ public class TrainDeployedTest extends AbstractEntityTest {
         doReturn(40.0).when(goal).getY();
         
         inst.progress = 0.0;
-        inst.registerPoint();
+        inst.registerPoint(null);
         assertTrue(20.0 == inst.getX());
         assertTrue(20.0 == inst.getY());
         
         inst.progress = 0.5;
-        inst.registerPoint();
+        inst.registerPoint(null);
         assertTrue(30.0 == inst.getX());
         assertTrue(30.0 == inst.getY());
         
         inst.progress = 1.0;
-        inst.registerPoint();
+        inst.registerPoint(null);
         assertTrue(40.0 == inst.getX());
         assertTrue(40.0 == inst.getY());
     }
 
     @Test
-    public void testRegisterPoint_double_double() {
-        inst.registerPoint(10.0, 10.0);
-        assertTrue(10.0 == inst.getX());
-        assertTrue(10.0 == inst.getY());
+    public void testRegisterPointWithHuman() {
+        inst.current = moving;
+        RailNode start = mock(RailNode.class);
+        RailNode goal = mock(RailNode.class);
+        doReturn(start).when(moving).getStartRailNode();
+        doReturn(goal).when(moving).getGoalRailNode();
+        doReturn(20.0).when(start).getX();
+        doReturn(40.0).when(goal).getX();
+        doReturn(20.0).when(start).getY();
+        doReturn(40.0).when(goal).getY();
+        
+        Human human = mock(Human.class);
+        TrainDeployed deployed = mock(TrainDeployed.class);
+        doReturn(true).when(inst).equalsId(eq(deployed));
+        doReturn(deployed).when(human).getOnTrain();
+        
+        List<Human> humans = new ArrayList<>();
+        humans.add(human);
+        inst.progress = 0.5;
+        
+        inst.registerPoint(humans);
+        
+        assertTrue(30.0 == inst.getX());
+        assertTrue(30.0 == inst.getY());
+        
+        verify(human, times(1)).setX(eq(30.0));
+        verify(human, times(1)).setY(eq(30.0));
     }
 
     @Test
@@ -297,31 +324,158 @@ public class TrainDeployedTest extends AbstractEntityTest {
         inst.current = moving;
         doReturn(stop).when(moving).getNext();
         
-        inst.shiftStep();
+        inst.shiftStep(new ArrayList<>());
+        
+        verify(inst, never()).freeHuman(anyList(), nullable(Platform.class));
+        verify(inst, never()).collectHuman(anyList(), nullable(Platform.class));
+        
         assertEquals(stop, inst.current);
         assertTrue(0.0 == inst.progress);
     }
 
     @Test
-    public void testFreeHuman() {
-        ArrayList<Human> list = new ArrayList<>();
-        Human h = mock(Human.class);
-        list.add(h);
-        inst.current = stop;
-        
-        inst.freeHuman(list);
-        verify(h, times(1)).getOffTrain(any(Station.class));
-    }
-
-    @Test
-    public void testCollectHuman() {
-        ArrayList<Human> list = new ArrayList<>();
-        Human h = mock(Human.class);
-        list.add(h);
+    public void testShiftStepWhenDeparture() {
         inst.current = dep;
+        doNothing().when(inst).collectHuman(anyList(), any(Platform.class));
+        doReturn(mock(Platform.class)).when(_dep).getStaying();
         
-        inst.collectHuman(list);
-        verify(h, times(1)).getInTrain(any(Train.class));
+        inst.shiftStep(new ArrayList<>());
+        
+        verify(inst, never()).freeHuman(anyList(), nullable(Platform.class));
+        verify(inst, times(1)).collectHuman(anyList(), nullable(Platform.class));
+        verify(_dep, times(1)).getStaying();
+        verify(dep, times(1)).getNext();
+        assertTrue(0.0 == inst.progress);
     }
     
+    @Test
+    public void testShiftStepWhenStopping() {
+        inst.current = stop;
+        doNothing().when(inst).freeHuman(anyList(), any(Platform.class));
+        doReturn(mock(Platform.class)).when(_stop).getGoal();
+        
+        inst.shiftStep(new ArrayList<>());
+        
+        verify(inst, times(1)).freeHuman(anyList(), nullable(Platform.class));
+        verify(inst, never()).collectHuman(anyList(), nullable(Platform.class));
+        verify(_stop, times(1)).getGoal();
+        verify(stop, times(1)).getNext();
+        assertTrue(0.0 == inst.progress);
+    }
+    
+    @Test
+    public void testCanRide() {
+        doReturn(3).when(train).getCapacity();
+        inst.occupied = 1;
+        
+        assertTrue(inst.canRide());
+    }
+    
+    @Test
+    public void testCanRideBorder() {
+        doReturn(2).when(train).getCapacity();
+        inst.occupied = 1;
+        
+        assertTrue(inst.canRide());
+    }
+    
+    @Test
+    public void testCanRideFull() {
+        doReturn(1).when(train).getCapacity();
+        inst.occupied = 1;
+        
+        assertFalse(inst.canRide());
+    }
+    
+    @Test
+    public void testFreeHuman() {
+        Human keeper = mock(Human.class);
+        doReturn(false).when(keeper).shouldGetOff(eq(inst), any(Platform.class));
+        Human off = mock(Human.class);
+        doReturn(true).when(off).shouldGetOff(eq(inst), any(Platform.class));
+        
+        List<Human> passengers = new ArrayList<>();
+        passengers.add(keeper);
+        passengers.add(off);
+        
+        Platform platform = mock(Platform.class);
+        inst.occupied = 2;
+        
+        inst.freeHuman(passengers, platform);
+        
+        verify(off, times(1)).getOffTrain(eq(platform));
+        verify(keeper, never()).getOffTrain(any(Platform.class));
+        assertEquals(1, inst.occupied);
+    }
+    
+    @Test
+    public void testCollectHuman() {
+        Human keeper = mock(Human.class);
+        doReturn(false).when(keeper).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        Human on = mock(Human.class);
+        doReturn(true).when(on).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        
+        Platform platform = mock(Platform.class);
+        
+        List<Human> waiters = new ArrayList<>();
+        waiters.add(keeper);
+        waiters.add(on);
+        doReturn(2).when(train).getCapacity();
+        
+        inst.occupied = 0;
+        
+        inst.collectHuman(waiters, platform);
+        
+        verify(on, times(1)).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        verify(on, times(1)).getInTrain(eq(inst));
+        verify(keeper, times(1)).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        verify(keeper, never()).getInTrain(any(TrainDeployed.class));
+        verify(inst, times(1)).canRide();
+        assertEquals(1, inst.occupied);
+    }
+    
+    @Test
+    public void testCollectHumanIgnoreFar() {
+        Human far = mock(Human.class);
+        Platform platform = mock(Platform.class);
+        
+        doReturn(false).when(far).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        
+        List<Human> waiters = new ArrayList<>();
+        waiters.add(far);
+        inst.occupied = 0;
+        
+        inst.collectHuman(waiters, platform);
+        
+        verify(far, times(1)).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        verify(inst, never()).canRide();
+        assertEquals(0, inst.occupied);
+    }
+    
+    @Test
+    public void testCollectHumanFull() {
+        Human on1 = mock(Human.class);
+        doReturn(true).when(on1).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        Human on2 = mock(Human.class);
+        doReturn(true).when(on2).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        
+        Platform platform = mock(Platform.class);
+        
+        List<Human> waiters = new ArrayList<>();
+        waiters.add(on1);
+        waiters.add(on2);
+        
+        doReturn(1).when(train).getCapacity();
+        inst.occupied = 0;
+        
+        inst.collectHuman(waiters, platform);
+        
+        verify(on1, times(1)).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        verify(on1, times(1)).getInTrain(eq(inst));
+        
+        verify(on2, times(1)).shouldRide(any(Platform.class), any(TrainDeployed.class));
+        verify(on2, never()).getInTrain(any(TrainDeployed.class));
+        verify(inst, times(2)).canRide();
+        assertEquals(1, inst.occupied);
+    }
 }

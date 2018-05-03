@@ -76,14 +76,6 @@ public class Station extends AbstractEntity implements Pointable, Ownable, Namea
     @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST)
     protected TicketGate ticketGate;
 
-    public void collectHuman() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void freeHuman() {
-        throw new UnsupportedOperationException();
-    }
-
     public Platform getPlatform() {
         return platform;
     }

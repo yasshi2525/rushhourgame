@@ -26,6 +26,9 @@ package net.rushhourgame.entity;
 import javax.persistence.EntityManager;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
+import net.rushhourgame.controller.route.RouteEdge;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -66,6 +69,12 @@ public class HumanTest extends AbstractEntityTest {
     
     @Mock
     protected EntityManager em;
+    
+    @Mock
+    protected TrainDeployed train;
+    
+    @Mock
+    protected Platform platform;
 
     @Before
     @Override
@@ -192,5 +201,185 @@ public class HumanTest extends AbstractEntityTest {
         
         assertNull(inst.getOnPlatform());
         assertEquals(Human.StandingOn.GROUND, inst.getStandingOn());
+    }
+    
+    @Test
+    public void testGetInTrain() {
+        inst.onPlatform = platform;
+        
+        inst.getInTrain(train);
+        
+        verify(platform, times(1)).exit();
+        assertNull(inst.onPlatform);
+        assertEquals(train, inst.onTrain);
+        assertEquals(Human.StandingOn.TRAIN, inst.stand);
+    }
+    
+    @Test
+    public void testGetOffTrain() {
+        inst.onTrain = train;
+        
+        inst.getOffTrain(platform);
+        
+        assertNull(inst.onTrain);
+        assertEquals(platform, inst.onPlatform);
+        verify(platform, times(1)).enter(eq(true));
+        verify(inst, times(1)).shiftEdge();
+        assertEquals(Human.StandingOn.PLATFORM, inst.stand);
+    }
+    
+    @Test
+    public void testShouldRide() {
+        inst.onPlatform = platform;
+        doReturn(true).when(platform).equalsId(any(Identifiable.class));
+        
+        StepForHumanThroughTrain purpose = mock(StepForHumanThroughTrain.class);
+        RouteEdge current = mock(RouteEdge.class);
+        Line line = mock(Line.class);
+        
+        inst.current = current;
+        doReturn(purpose).when(current).getOriginal();
+        doReturn(line).when(purpose).getLine();
+        
+        LineStep lineStep = mock(LineStep.class);
+        
+        doReturn(lineStep).when(train).getCurrent();
+        doReturn(line).when(lineStep).getParent();
+        doReturn(true).when(line).equalsId(any(Identifiable.class));
+        
+        assertTrue(inst.shouldRide(platform, train));
+        
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
+        verify(current, times(2)).getOriginal();
+        verify(train, times(1)).getCurrent();
+    }
+    
+    @Test
+    public void testShouldRideDifferentPlatform() {
+        inst.onPlatform = mock(Platform.class);
+        doReturn(false).when(platform).equalsId(any(Identifiable.class));
+        
+        assertFalse(inst.shouldRide(platform, train));
+        
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
+        verify(currentEdge, never()).getOriginal();
+        verify(train, never()).getCurrent();
+    }
+    
+    @Test
+    public void testShouldRideCurrentNull() {
+        inst.onPlatform = platform;
+        doReturn(true).when(platform).equalsId(any(Identifiable.class));
+        inst.current = null;
+        
+        assertFalse(inst.shouldRide(platform, train));
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
+        verify(currentEdge, never()).getOriginal();
+        verify(train, never()).getCurrent();
+    }
+    
+    @Test
+    public void testShouldRideOutOfPurpose() {
+        inst.onPlatform = platform;
+        doReturn(true).when(platform).equalsId(any(Identifiable.class));
+        
+        StepForHumanOutOfStation purpose = mock(StepForHumanOutOfStation.class);
+        RouteEdge current = mock(RouteEdge.class);
+        doReturn(purpose).when(current).getOriginal();
+        inst.current = current;
+        
+        assertFalse(inst.shouldRide(platform, train));
+        
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
+        verify(current, times(1)).getOriginal();
+        verify(train, never()).getCurrent();
+    }
+    
+    @Test
+    public void testShouldRideDifferentDestination() {
+        inst.onPlatform = platform;
+        doReturn(true).when(platform).equalsId(any(Identifiable.class));
+        
+        StepForHumanThroughTrain purpose = mock(StepForHumanThroughTrain.class);
+        RouteEdge current = mock(RouteEdge.class);
+        Line line = mock(Line.class);
+        
+        inst.current = current;
+        doReturn(purpose).when(current).getOriginal();
+        doReturn(line).when(purpose).getLine();
+        
+        Line otherline = mock(Line.class);
+        LineStep lineStep = mock(LineStep.class);
+        
+        doReturn(lineStep).when(train).getCurrent();
+        doReturn(otherline).when(lineStep).getParent();
+        
+        doReturn(false).when(otherline).equalsId(eq(line));
+        
+        assertFalse(inst.shouldRide(platform, train));
+        
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
+        verify(current, times(2)).getOriginal();
+        verify(train, times(1)).getCurrent();
+    }
+    
+    @Test
+    public void testShouldGetOff() {
+        inst.onTrain = train;
+        doReturn(true).when(train).equalsId(any(Identifiable.class));
+        
+        Platform destination = mock(Platform.class);
+        StepForHuman purpose = mock(StepForHuman.class);
+        RouteEdge current = mock(RouteEdge.class);
+        
+        doReturn(purpose).when(current).getOriginal();
+        doReturn(destination).when(purpose).getTo();
+        doReturn(true).when(platform).equalsId(eq(destination));
+        
+        inst.current = current;
+        
+        assertTrue(inst.shouldGetOff(train, platform));
+    }
+    
+    @Test
+    public void testShouldGetOffNull() {
+        inst.onTrain = null;
+        
+        assertFalse(inst.shouldGetOff(train, platform));
+        
+        verify(train, never()).equalsId(any(Identifiable.class));
+    }
+    
+    @Test
+    public void testShouldGetOffOtherTrain() {
+        inst.onTrain = mock(TrainDeployed.class);
+        
+        doReturn(false).when(train).equalsId(any(Identifiable.class));
+        
+        assertFalse(inst.shouldGetOff(train, platform));
+        
+        verify(train, times(1)).equalsId(any(Identifiable.class));
+        verify(platform, never()).equalsId(any(Identifiable.class));
+    }
+    
+    @Test
+    public void testShouldGetOffOtherPlatform() {
+        inst.onTrain = train;
+        doReturn(true).when(train).equalsId(any(Identifiable.class));
+        
+        Platform destination = mock(Platform.class);
+        StepForHuman purpose = mock(StepForHuman.class);
+        RouteEdge current = mock(RouteEdge.class);
+        
+        doReturn(purpose).when(current).getOriginal();
+        doReturn(destination).when(purpose).getTo();
+        doReturn(false).when(platform).equalsId(eq(destination));
+        
+        inst.current = current;
+        
+        assertFalse(inst.shouldGetOff(train, platform));
+        
+        verify(train, times(1)).equalsId(any(Identifiable.class));
+        verify(platform, times(1)).equalsId(any(Identifiable.class));
     }
 }

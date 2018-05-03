@@ -66,9 +66,7 @@ public class StepForHumanIntoStationTest extends AbstractEntityTest {
     public void testStep() {
         doReturn(true).when(gate).canEnter();
         
-        assertFalse(inst.isFinished(human));
         assertEquals(0, inst.step(human, 1000, 1));
-        assertTrue(inst.isFinished(human));
         
         verify(human, times(1)).enterIntoPlatform(any(TicketGate.class), any(Platform.class));
     }
@@ -78,7 +76,6 @@ public class StepForHumanIntoStationTest extends AbstractEntityTest {
         doReturn(false).when(gate).canEnter();
         
         assertEquals(1000, inst.step(human, 1000, 1));
-        assertFalse(inst.isFinished(human));
         
         verify(human, times(0)).enterIntoPlatform(any(TicketGate.class), any(Platform.class));
     }

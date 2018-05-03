@@ -114,7 +114,8 @@ public class GameMasterTest {
         inst.tCon = spy(TCON);
         inst.hCon = spy(HCON);
         inst.rCon = spy(RCON);
-        doNothing().when(inst.rCon).step(any(Residence.class), anyLong());
+        inst.em = spy(EM);
+        doNothing().when(inst.rCon).step(any(Residence.class), anyLong(), anyList());
         // 人を生成しないようにする
     }
     
@@ -150,13 +151,14 @@ public class GameMasterTest {
     @Test
     public void testRunBeforeRouting() throws RushHourException {
         WorldPack world = createSmallWorld();
+        inst.humans = HCON.findAll();
         
         inst.run();
         
         verify(inst.stCon, times(2)).step(any(Station.class), anyLong());
-        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
-        verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
+        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
+        verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble(), anyList());
         verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
         verify(inst.searcher, times(0)).getStart(any(Residence.class), any(Company.class));
         
@@ -166,13 +168,14 @@ public class GameMasterTest {
     @Test
     public void testRunAfterRouting() throws RushHourException {
         WorldPack world = createSmallWorld();
+        inst.humans = HCON.findAll();
         inst.searcher.call();
         
         inst.run();
         
-        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
-        verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
+        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
+        verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble(), anyList());
         verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
         verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
         

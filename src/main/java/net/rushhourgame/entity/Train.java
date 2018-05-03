@@ -73,9 +73,6 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     protected double speed;
     protected long mobility;
 
-    @OneToMany
-    protected List<Human> passengers;
-
     @OneToOne(mappedBy = "train")
     protected TrainDeployed deployed;
     
@@ -115,25 +112,11 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         return calcDist(deployed.getX(), deployed.getY(), p);
     }
 
-    public void step(long time) {
+    public void step(List<Human> humans, long time) {
         if (deployed == null) {
             throw new IllegalStateException("Not deployed.");
         }
-        deployed.consumeTime(time);
-    }
-
-    public void freeHuman(List<Human> hs) {
-        if (deployed == null) {
-            throw new IllegalStateException("Not deployed.");
-        }
-        deployed.freeHuman(hs);
-    }
-
-    public void collectHuman(List<Human> hs) {
-        if (deployed == null) {
-            throw new IllegalStateException("Not deployed.");
-        }
-        deployed.collectHuman(hs);
+        deployed.consumeTime(humans, time);
     }
 
     @Override
@@ -169,5 +152,13 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
 
     public void setMobility(long mobility) {
         this.mobility = mobility;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

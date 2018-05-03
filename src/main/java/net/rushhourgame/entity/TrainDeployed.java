@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -57,6 +58,8 @@ public class TrainDeployed extends AbstractEntity {
     protected double x;
     protected double y;
 
+    protected int occupied;
+
     public Train getTrain() {
         return train;
     }
@@ -64,7 +67,7 @@ public class TrainDeployed extends AbstractEntity {
     public void setTrain(Train train) {
         this.train = train;
     }
-    
+
     public LineStep getCurrent() {
         return current;
     }
@@ -72,22 +75,22 @@ public class TrainDeployed extends AbstractEntity {
     public void setCurrent(LineStep current) {
         this.current = current;
         progress = 0.0;
-        registerPoint();
+        registerPoint(null);
     }
 
-    public void consumeTime(@Min(0) long remainTime) {
+    public void consumeTime(List<Human> humans, @Min(0) long remainTime) {
         while (remainTime > 0) {
             if (shouldRun()) {
-                remainTime -= consumeTimeByRunning(remainTime);
+                remainTime -= consumeTimeByRunning(remainTime, humans);
             }
             if (shouldShiftStep()) {
-                shiftStep();
+                shiftStep(humans);
             }
             if (shouldStay()) {
                 remainTime -= consumeTimeByStaying(remainTime);
             }
             if (shouldShiftStep()) {
-                shiftStep();
+                shiftStep(humans);
             }
         }
     }
@@ -100,8 +103,8 @@ public class TrainDeployed extends AbstractEntity {
         return current.getDeparture() != null;
     }
 
-    protected long consumeTimeByRunning(@Min(0) long time) {
-        return run(Math.min(calcMovableDist(time), calcRemainDist()));
+    protected long consumeTimeByRunning(@Min(0) long time, List<Human> humans) {
+        return run(Math.min(calcMovableDist(time), calcRemainDist()), humans);
     }
 
     protected double calcRemainDist() {
@@ -116,11 +119,12 @@ public class TrainDeployed extends AbstractEntity {
      * 指定された距離走行する
      *
      * @param dist 走行する距離
+     * @param humans すべての人
      * @return 消費した時間
      */
-    protected long run(@Min(0) double dist) {
+    protected long run(@Min(0) double dist, List<Human> humans) {
         progress += dist / current.getDist();
-        registerPoint();
+        registerPoint(humans);
         return (long) Math.ceil(dist / train.getSpeed());
     }
 
@@ -143,11 +147,18 @@ public class TrainDeployed extends AbstractEntity {
         return time;
     }
 
-    protected void registerPoint() {
+    protected void registerPoint(List<Human> humans) {
         x = current.getStartRailNode().getX() * (1.0 - progress)
                 + current.getGoalRailNode().getX() * progress;
         y = current.getStartRailNode().getY() * (1.0 - progress)
                 + current.getGoalRailNode().getY() * progress;
+        if (humans != null) {
+            humans.stream().filter(h -> equalsId(h.getOnTrain()))
+                    .forEach(h -> {
+                        h.setX(x);
+                        h.setY(y);
+                    });
+        }
     }
 
     public double getX() {
@@ -158,29 +169,43 @@ public class TrainDeployed extends AbstractEntity {
         return y;
     }
 
-    public void registerPoint(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
     protected boolean shouldShiftStep() {
         return progress >= 1.0;
     }
-    
-    protected void shiftStep() {
+
+    protected void shiftStep(List<Human> humans) {
+        // 到着した瞬間に人を降ろす
+        if (current.getStopping() != null) {
+            freeHuman(humans, current.getStopping().getGoal());
+        }
+        // 発車する瞬間に人を乗せる
+        if (current.getDeparture() != null) {
+            collectHuman(humans, current.getDeparture().getStaying());
+        }
+
         current = current.getNext();
         progress = 0.0;
     }
 
-    public void freeHuman(List<Human> hs) {
-        for (Human h : hs) {
-            h.getOffTrain(current.getOnStation());
-        }
+    protected boolean canRide() {
+        return train.getCapacity() - occupied >= 1;
     }
 
-    public void collectHuman(List<Human> hs) {
-        for (Human h : hs) {
-            h.getInTrain(train);
-        }
+    protected void freeHuman(List<Human> humans, Platform platform) {
+        humans.stream().filter(h -> h.shouldGetOff(this, platform))
+                .forEach(h -> {
+                    h.getOffTrain(platform);
+                    occupied--;
+                });
+    }
+
+    protected void collectHuman(List<Human> humans, Platform platform) {
+        humans.stream().filter(h -> h.shouldRide(platform, this))
+                .forEach(h -> {
+                    if (canRide()) {
+                        h.getInTrain(this);
+                        occupied++;
+                    }
+                });
     }
 }

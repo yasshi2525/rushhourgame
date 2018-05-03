@@ -25,6 +25,7 @@ package net.rushhourgame.controller.route;
 
 import java.util.List;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Identifiable;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.SimplePoint;
@@ -62,7 +63,7 @@ public class TemporaryHumanPoint implements RelayPointForHuman {
     }
 
     @Override
-    public boolean equalsId(RelayPointForHuman other) {
+    public boolean equalsId(Identifiable other) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -24,6 +24,8 @@
 package net.rushhourgame;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -31,6 +33,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.DependsOn;
@@ -50,6 +53,8 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
@@ -58,6 +63,7 @@ import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -87,14 +93,22 @@ public class GameMaster implements Serializable, Runnable {
     protected RouteSearcher searcher;
     @Inject
     protected DebugInitializer debug;
+    @PersistenceContext
+    protected EntityManager em;
 
     @Resource(lookup = "concurrent/RushHourGameRoute")
     protected ManagedExecutorService executorService;
+
+    /**
+     * 永続化すると経路情報が消えてしまう
+     */
+    protected List<Human> humans;
 
     @Transactional
     public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[]{this.getClass().getSimpleName(), event});
         debug.init();
+        humans = hCon.findAll();
         timerService.scheduleWithFixedDelay(this, getInterval() * 5, getInterval(), TimeUnit.MILLISECONDS);
         LOG.log(Level.INFO, "{0}#init end initialization", GameMaster.class.getSimpleName());
     }
@@ -103,30 +117,35 @@ public class GameMaster implements Serializable, Runnable {
     @Override
     public void run() {
         LOG.log(Level.FINE, "{0}#run", new Object[]{this.getClass().getSimpleName()});
-        
+
         if (!searcher.isAvailable()) {
             executorService.submit(searcher);
             // RouteSearcherは別スレッドなのでトランザクション外
         }
-        
+
         try {
             stCon.findAll().forEach(st -> {
                 stCon.step(st, getInterval());
             });
             rCon.findAll().forEach(r -> {
-                rCon.step(r, getInterval());
+                rCon.step(r, getInterval(), humans);
             });
-            tCon.findAll().forEach(t -> {
-                tCon.step(t, getInterval());
-            });
+
             searcher.lock.lock();
             try {
-                hCon.findAll().forEach(h -> {
+                humans = humans.stream().map(
+                        h -> h.merge(em)
+                ).collect(Collectors.toList());
+                tCon.findAll().forEach(t -> {
+                    tCon.step(t, getInterval(), humans);
+                });
+                humans.forEach(h -> {
                     if (h.getCurrent() == null && searcher.isReachable(h.getSrc(), h.getDest())) {
                         h.setCurrent(searcher.getStart(h.getSrc(), h.getDest()));  // HumanControllerから RouteSearcherを呼ぶと循環してしまう
                     }
-                    hCon.step(h, getInterval(), getHumanSpeed());
+                    hCon.step(h, getInterval(), getHumanSpeed(), humans);
                 });
+                hCon.killFinishedHuman(humans);
             } finally {
                 searcher.lock.unlock();
             }

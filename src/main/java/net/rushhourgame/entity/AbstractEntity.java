@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
-public abstract class AbstractEntity implements Serializable {
+public abstract class AbstractEntity implements Identifiable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +52,7 @@ public abstract class AbstractEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updated;
 
+    @Override
     public long getId() {
         return id;
     }
@@ -76,7 +77,11 @@ public abstract class AbstractEntity implements Serializable {
         this.updated = new Date(updated.getTime());
     }
     
-    public boolean equalsId(RelayPointForHuman other) {
+    @Override
+    public boolean equalsId(Identifiable other) {
+        if (other == null) {
+            return false;
+        }
         return this.getClass().equals(other.getClass()) && this.id == other.getId();
     }
 

@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.RushHourProperties;
 import static net.rushhourgame.RushHourProperties.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
@@ -49,14 +50,16 @@ public class TrainController extends PointEntityController {
     
     public Train create(@NotNull Player p) {
         return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)), 
-                Double.parseDouble(prop.get(GAME_DEF_TRAIN_SPEED)));
+                Double.parseDouble(prop.get(GAME_DEF_TRAIN_SPEED)),
+                Integer.parseInt(prop.get(GAME_DEF_TRAIN_CAPACITY)));
     }
 
-    public Train create(@NotNull Player p, long mobility, double speed) {
+    public Train create(@NotNull Player p, long mobility, double speed, int capacity) {
         Train train = new Train();
         train.setOwner(p);
         train.setMobility(mobility);
         train.setSpeed(speed);
+        train.setCapacity(capacity);
         em.persist(train);
         return train;
     }
@@ -106,9 +109,9 @@ public class TrainController extends PointEntityController {
                 .setParameter("line", line).getResultList();
     }
 
-    public void step(Train t, long time) {
+    public void step(Train t, long time, List<Human> humans) {
         if (t.isDeployed()) {
-            t.step(time);
+            t.step(humans, time);
         }
     }
 }

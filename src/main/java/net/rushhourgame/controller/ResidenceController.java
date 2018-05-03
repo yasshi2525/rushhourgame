@@ -87,7 +87,7 @@ public class ResidenceController extends PointEntityController {
         return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
     }
     
-    public void step(@NotNull Residence r, long interval) {
+    public void step(@NotNull Residence r, long interval, List<Human> humans) {
         r.step(interval);
         while (r.expires()) {
             List<Company> companies = cCon.findAll();
@@ -97,7 +97,7 @@ public class ResidenceController extends PointEntityController {
             }
             Collections.shuffle(companies);
             for (int i = 0; i < r.getCapacity(); i++) {
-                hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+                humans.add(hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0)));
             }
             r.consume();
         }

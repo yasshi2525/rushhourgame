@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.Min;
@@ -104,7 +105,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepDoNothing() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
-        inst.step(created, 0L);
+        inst.step(created, 0L, new ArrayList<>());
         
         verify(inst.cCon, times(0)).findAll();
     }
@@ -112,7 +113,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepNoCmpWorld() throws RushHourException {
         Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
-        inst.step(created, TEST_INTERVAL);
+        inst.step(created, TEST_INTERVAL, new ArrayList<>());
         
         verify(created, times(0)).getCapacity();
     }
@@ -122,7 +123,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
         Company dest = CCON.create(TEST_POS);
         
-        inst.step(src, TEST_INTERVAL);
+        inst.step(src, TEST_INTERVAL, new ArrayList<>());
         
         verify(src, times(2)).expires();
         verify(inst.hCon, times(TEST_CAPACITY)).create(any(Pointable.class), any(Residence.class), any(Company.class));

@@ -86,7 +86,7 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     
     @Min(0)
     protected int occupied;
-
+    
     public Station getStation() {
         return station;
     }
