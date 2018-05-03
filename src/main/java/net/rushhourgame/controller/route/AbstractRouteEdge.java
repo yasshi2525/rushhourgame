@@ -69,8 +69,4 @@ public abstract class AbstractRouteEdge {
     public void unreffer(Human h) {
         referredHumans.remove(h);
     }
-
-    public Set<Human> getRefferedHuman() {
-        return referredHumans;
-    }
 }

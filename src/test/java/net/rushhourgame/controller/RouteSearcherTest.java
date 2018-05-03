@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
@@ -52,6 +53,7 @@ import net.rushhourgame.entity.Train;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -67,48 +69,22 @@ public class RouteSearcherTest extends AbstractControllerTest {
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
     
+    @Mock
+    GameMaster gm;
+    
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createRouteSearcher();
+        inst = ControllerFactory.createRouteSearcher(gm);
         inst.init();
     }
     
     @Test
-    public void testCollectHumansEmpty() {
-        assertTrue(inst.collectHumans().isEmpty());
-    }
-    
-    @Test
-    public void testCollectHumansOneEntry() {
-        RouteNode node = mock(RouteNode.class);
-        List<RouteNode> nodes = new ArrayList<>();
-        nodes.add(node);
-        
-        RouteEdge edge = mock(RouteEdge.class);
-        Set<Human> hs = new HashSet<>();
-        Human h = mock(Human.class);
-        hs.add(h);
-        
-        doReturn(edge).when(node).getViaEdge();
-        doReturn(hs).when(edge).getRefferedHuman();
-        
-        inst.routes.put(1L, nodes);
-        
-        Map<Long, Set<Human>> actual = inst.collectHumans();
-        
-        assertTrue(actual.containsKey(1L));
-        assertEquals(1, actual.get(1L).size());
-    }
-    
-    @Test
     public void testFlush() {
-        Map<Long, Set<Human>> humans = new HashMap<>(); 
-        Set<Human> hs = new HashSet<>();
+        List<Human> humans = new ArrayList<>();
         Human human = new Human();
-        hs.add(human);
-        humans.put(1L, hs);
+        humans.add(human);
         
         RouteNode node = mock(RouteNode.class);
         RouteEdge edge = mock(RouteEdge.class);
@@ -129,6 +105,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testIsReachableRsdCmp() throws RushHourException {
         Residence r = RCON.create(new SimplePoint(10, 10));
         Company c = CCON.create(new SimplePoint(10, 2));
+        doReturn(new ArrayList<>()).when(gm).getHumans();
         assertTrue(inst.call());
         assertTrue(inst.isReachable(r, c));
     }
@@ -141,7 +118,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     @Test
     public void testSearchOnlyCmp() throws RushHourException {
         Company cmp = CCON.create(TEST_POS);
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteNode goal = pPack.companyNodes.get(cmp);
         
@@ -159,7 +137,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testSearchUnreach() throws RushHourException {
         Company cmp1 = CCON.create(new SimplePoint(10, 10));
         Company cmp2 = CCON.create(new SimplePoint(20, 20));
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteNode begin = pPack.companyNodes.get(cmp1);
         RouteNode goal = pPack.companyNodes.get(cmp2);
@@ -176,7 +155,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testSearch() throws RushHourException {
         Residence rsd = RCON.create(new SimplePoint(10, 10));
         Company cmp = CCON.create(new SimplePoint(10, 20));
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
               
         RouteNode begin = pPack.residenceNodes.get(rsd);
         RouteNode goal = pPack.companyNodes.get(cmp);
@@ -201,7 +181,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         AssistanceController.Result result = ACON.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
         AssistanceController.Result extend = ACON.extendWithStation(p, result.node, new SimplePoint(0, 990), Locale.JAPANESE);
         
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         for (RouteEdge edge : pPack.allEdges) {
             System.out.println(edge);
@@ -232,6 +213,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Residence r2 = RCON.create(new SimplePoint(100, 100));
         Company c2 = CCON.create(new SimplePoint(200, 200));
         
+        doReturn(new ArrayList<>()).when(gm).getHumans();
+        
         assertTrue(inst.call());
         
         RouteNode start1_1 = inst.getStart(r1, c1);
@@ -255,6 +238,9 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Residence r = RCON.create(new SimplePoint(10, 10));
         Company c = CCON.create(new SimplePoint(10, 20));
         Human h = HCON.create(TEST_POS, r, c);
+        List<Human> list = new ArrayList<>();
+        list.add(h);
+        doReturn(list).when(gm).getHumans();
         
         assertTrue(inst.call());
         
@@ -263,19 +249,35 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertTrue(inst.call());
         
         assertTrue(h.getCurrent() instanceof TemporaryHumanRouteEdge);
+        assertTrue(inst.isAvailable());
+    }
+    
+    @Test
+    public void testBaseObjPackSmallWorld() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        List<Human> humans = new ArrayList<>();
+        humans.add(world.h);
+        inst.gm = gm;
+        doReturn(humans).when(gm).getHumans();
+        
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        
+        assertEquals(1, bPack.residences.size());
+        assertEquals(1, bPack.companies.size());
+        assertEquals(2, bPack.ticketGates.size());
+        assertEquals(2, bPack.platforms.size());
+        assertEquals(11, bPack.steps.size());
+        assertEquals(1, bPack.humans.size());
+        
+        assertTrue(bPack.humanMap.containsKey(world.cmp.getId()));
+        assertEquals(1, bPack.humanMap.get(world.cmp.getId()).size());
     }
     
     @Test
     public void testPermanentObjSmallWorld() throws RushHourException {
         WorldPack world = createSmallWorld();
-        
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
-        
-        assertEquals(1, pPack.residences.size());
-        assertEquals(1, pPack.companies.size());
-        assertEquals(2, pPack.ticketGates.size());
-        assertEquals(2, pPack.platforms.size());
-        assertEquals(11, pPack.steps.size());
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteNode rN = pPack.residenceNodes.get(world.rsd);
         assertNotNull(rN);
@@ -313,7 +315,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
     
     @Test
     public void testTemporaryObjPackEmptyWorld() {
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, null);
 
@@ -329,7 +332,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Set<Human> hs = new HashSet<>();
         hs.add(world.h);
         
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
 
@@ -361,7 +365,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         world.h.enterIntoPlatform(world.st1.getTicketGate(), world.st1.getPlatform());
         hs.add(world.h);
         
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
 
@@ -383,7 +388,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         world.h.setOnTrain(world.t.getDeployed());
         hs.add(world.h);
         
-        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack();
+        RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
+        RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
         RouteSearcher.TemporaryObjPack tPack = inst.new TemporaryObjPack(pPack, hs);
 

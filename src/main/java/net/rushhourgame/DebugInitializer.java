@@ -41,6 +41,7 @@ import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
+import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
@@ -48,6 +49,7 @@ import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
@@ -85,18 +87,27 @@ public class DebugInitializer {
     protected AssistanceController aCon;
     @Inject
     protected TrainController tCon;
+    @Inject
+    protected HumanController hCon;
 
     @Transactional
     public void init() throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization", new Object[]{this.getClass().getSimpleName()});
-        rCon.create(new SimplePoint(-50, -25));
-        cCon.create(new SimplePoint(50, 25));
+        Residence src = rCon.create(new SimplePoint(-50, -25));
+        Company dst = cCon.create(new SimplePoint(50, 25));
 
+        for (int i = 0; i < 3; i++) {
+            rCon.create(new SimplePoint(Math.random() * 200 - 100, Math.random() * 200 - 100));
+            cCon.create(new SimplePoint(Math.random() * 200 - 100, Math.random() * 200 - 100));
+        }
+        
         Player owner = pCon.upsertPlayer(
                 "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 
         AssistanceController.Result startRes = aCon.startWithStation(owner, new SimplePoint(-50, 0), Locale.getDefault());
         AssistanceController.Result goalRes = aCon.extendWithStation(owner, startRes.node, new SimplePoint(50, 0), Locale.getDefault());
+        
+        hCon.create(src, src, dst);
         
         Train train = tCon.create(owner);
         tCon.deploy(train, owner, startRes.line.findTop());

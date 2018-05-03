@@ -49,6 +49,4 @@ public interface RouteEdge {
     public void reffer(Human h);
     
     public void unreffer(Human h);
-    
-    public Set<Human> getRefferedHuman();
 }

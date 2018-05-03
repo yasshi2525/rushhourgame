@@ -32,6 +32,8 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
+import net.rushhourgame.controller.route.TemporaryHumanStep;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 
 /**
@@ -100,16 +102,16 @@ public class Human extends AbstractEntity implements Pointable {
     }
 
     protected StepForHuman getMergedCurrent(EntityManager em) {
+        if (current instanceof TemporaryHumanRouteEdge) {
+            return current.getOriginal();
+        }
+
         // currentはメモリ上にキャッシュされるため、Entityの情報が古い
         return em.merge(current.getOriginal());
     }
 
-    public void idle() {
-
-    }
-
-    public void walk() {
-        throw new UnsupportedOperationException();
+    public long walkTo(long interval, double speed, Pointable goal) {
+        return walkTo(this, interval, speed, goal);
     }
 
     public boolean isFinished() {
@@ -158,7 +160,7 @@ public class Human extends AbstractEntity implements Pointable {
         from.exit();
         to.pass();
         this.onPlatform = null;
-        
+
         Pointable newPoint = new SimplePoint(x, y).makeNearPoint(to.getProdist());
         x = newPoint.getX();
         y = newPoint.getY();
@@ -235,6 +237,9 @@ public class Human extends AbstractEntity implements Pointable {
     }
 
     public void setCurrent(RouteNode current) {
+        if (this.current != null) {
+            this.current.unreffer(this);
+        }
         this.current = current.getViaEdge();
         this.current.reffer(this);
     }

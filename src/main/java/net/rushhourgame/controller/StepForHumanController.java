@@ -26,6 +26,8 @@ package net.rushhourgame.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -53,14 +55,20 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 public class StepForHumanController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Inject
     protected LineRouteSearcher lSearcher;
-    
+
+    @Inject
+    protected RouteSearcher searcher;
+
+    @Resource(lookup = "concurrent/RushHourGameRoute")
+    protected ManagedExecutorService executorService;
+
     public List<StepForHuman> findAll() {
         return _findAll().collect(Collectors.toList());
     }
-    
+
     public List<StepForHuman> findIn(@NotNull Pointable center, double scale) {
         return _findAll().filter(s -> s.isAreaIn(center, scale))
                 .collect(Collectors.toList());
@@ -118,72 +126,102 @@ public class StepForHumanController extends AbstractController {
      * @throws RushHourException newInstがnull
      */
     public void addCompany(@NotNull Company newInst) throws RushHourException {
+        searcher.lock();
+        try {
 
-        List<Residence> residences
-                = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+            List<Residence> residences
+                    = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
 
-        for (Residence r : residences) {
-            persistStepForHuman(createDirectly(r, newInst));
-        }
+            for (Residence r : residences) {
+                persistStepForHuman(createDirectly(r, newInst));
+            }
 
-        List<TicketGate> gates
-                = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+            List<TicketGate> gates
+                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
 
-        for (TicketGate t : gates) {
-            persistStepForHuman(createStationToCompany(t, newInst));
+            for (TicketGate t : gates) {
+                persistStepForHuman(createStationToCompany(t, newInst));
+            }
+
+            // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
         }
     }
 
     public void addResidence(@NotNull Residence newInst) throws RushHourException {
+        searcher.lock();
+        try {
+            List<Company> companies
+                    = em.createNamedQuery("Company.findAll", Company.class).getResultList();
 
-        List<Company> companies
-                = em.createNamedQuery("Company.findAll", Company.class).getResultList();
+            for (Company c : companies) {
+                persistStepForHuman(createDirectly(newInst, c));
+            }
 
-        for (Company c : companies) {
-            persistStepForHuman(createDirectly(newInst, c));
-        }
+            List<TicketGate> gates
+                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
 
-        List<TicketGate> gates
-                = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+            for (TicketGate t : gates) {
+                persistStepForHuman(createResidenceToStation(newInst, t));
+            }
 
-        for (TicketGate t : gates) {
-            persistStepForHuman(createResidenceToStation(newInst, t));
+            // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
         }
     }
-    
+
     public void addStation(@NotNull Station newInst) throws RushHourException {
-        
-        // 家 -> 改札口
-        List<Residence> residences
-                = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
+        searcher.lock();
+        try {
+            // 家 -> 改札口
+            List<Residence> residences
+                    = em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
 
-        for (Residence r : residences) {
-            persistStepForHuman(createResidenceToStation(r, newInst.getTicketGate()));
-        }
-        
-        // 改札口 -> 会社
-        List<Company> companies
-                = em.createNamedQuery("Company.findAll", Company.class).getResultList();
+            for (Residence r : residences) {
+                persistStepForHuman(createResidenceToStation(r, newInst.getTicketGate()));
+            }
 
-        for (Company c : companies) {
-            persistStepForHuman(createStationToCompany(newInst.getTicketGate(), c));
+            // 改札口 -> 会社
+            List<Company> companies
+                    = em.createNamedQuery("Company.findAll", Company.class).getResultList();
+
+            for (Company c : companies) {
+                persistStepForHuman(createStationToCompany(newInst.getTicketGate(), c));
+            }
+
+            // 改札口 <-> プラットフォーム
+            persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
+            persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
+
+            // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
         }
-        
-        // 改札口 <-> プラットフォーム
-        persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
-        persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
     }
-    
+
     public void addCompletedLine(@NotNull Line line) throws RushHourException {
-        if(em.createNamedQuery("Line.isImcompleted", Number.class)
-                .setParameter("line", line)
-                .getSingleResult().longValue() == 1L) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        searcher.lock();
+        try {
+            if (em.createNamedQuery("Line.isImcompleted", Number.class)
+                    .setParameter("line", line)
+                    .getSingleResult().longValue() == 1L) {
+                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+            }
+
+            lSearcher.persist(line);
+
+            // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
         }
-        
-        lSearcher.persist(line);
-    } 
-    
+    }
+
     protected StepForHumanDirectly createDirectly(Residence from, Company to) {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
@@ -204,21 +242,21 @@ public class StepForHumanController extends AbstractController {
         inst.setTo(to);
         return inst;
     }
-    
+
     protected StepForHumanIntoStation createIntoStation(TicketGate from, Platform to) {
         StepForHumanIntoStation inst = new StepForHumanIntoStation();
         inst.setFrom(from);
         inst.setTo(to);
         return inst;
     }
-    
+
     protected StepForHumanOutOfStation createOutOfStation(Platform from, TicketGate to) {
         StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
         inst.setFrom(from);
         inst.setTo(to);
         return inst;
     }
-       
+
     protected void persistStepForHuman(StepForHuman child) {
         em.persist(child);
     }

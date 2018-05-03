@@ -24,23 +24,45 @@
 package net.rushhourgame.controller.route;
 
 import net.rushhourgame.entity.Human;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class TemporaryHumanRouteEdge extends AbstractRouteEdge implements RouteEdge {
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
+public class TemporaryHumanPointTest {
     
-    public TemporaryHumanRouteEdge(TemporaryHumanRouteNode from, RouteNode to) {
-        super(new TemporaryHumanStep(from.getOriginal(), to.getOriginal()), from, to);
+    @Spy
+    protected Human human;
+    
+    @Mock
+    protected RouteNode node;
+
+    @Test
+    public void testBean() {
+        human.setX(10);
+        human.setY(20);
+        TemporaryHumanPoint inst = new TemporaryHumanPoint(human);
+        assertEquals(human, inst.getHuman());
+        
+        inst.setNode(node);
+        assertEquals(node, inst.getNode());
+        
+        assertEquals(human.getId(), inst.getId());
+        assertFalse(inst.equalsId(null));
+        assertFalse(inst.equalsId(human));
+        assertTrue(inst.equalsId(inst));
+        assertTrue(inst.getOutEdges().isEmpty());
+        assertTrue(inst.getInEdges().isEmpty());
+        assertTrue(human.getX() == inst.getX());
+        assertTrue(human.getY() == inst.getY());
     }
     
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("tRouteEdge_");
-        sb.append(from);
-        sb.append("_->_");
-        sb.append(to);
-        return sb.toString();
-    }
 }

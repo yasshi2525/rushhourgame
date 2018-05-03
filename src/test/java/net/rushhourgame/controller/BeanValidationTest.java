@@ -33,7 +33,7 @@ import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanDirectlyTest;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

@@ -116,9 +116,10 @@ public abstract class AbstractEntity implements Identifiable, Serializable {
             h.moveTo(dst, interval * speed);
             return interval;
         } else {
+            long consumed = (long) (h.distTo(dst) / speed);
             h.setX(dst.getX());
             h.setY(dst.getY());
-            return (long) (h.distTo(dst) / speed);
+            return consumed;
         }
     }
 }

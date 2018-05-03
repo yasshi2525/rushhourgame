@@ -23,11 +23,16 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import net.rushhourgame.ErrorMessageBuilder;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.entity.EncryptConverter;
+import static org.mockito.Mockito.mock;
 
 /**
  *
@@ -107,16 +112,21 @@ public class ControllerFactory {
     public static StepForHumanController createStepForHumanController() {
         StepForHumanController inst = new StepForHumanController();
         inst.lSearcher = createLineRouteSearcher();
+        RouteSearcher searcher = new RouteSearcher(); // 循環防止
+        searcher.lock = new ReentrantReadWriteLock().writeLock();
+        inst.searcher = searcher;
         init(inst);
         return inst;
     } 
     
-    public static RouteSearcher createRouteSearcher() {
+    public static RouteSearcher createRouteSearcher(GameMaster gm) {
         RouteSearcher inst = new RouteSearcher();
         inst.cCon = createCompanyController();
         inst.rCon = createResidenceController();
         inst.stCon = createStationController();
         inst.sCon = createStepForHumanController();
+        inst.lock = new ReentrantReadWriteLock().writeLock();
+        inst.gm = gm;
         init(inst);
         return inst;
     }

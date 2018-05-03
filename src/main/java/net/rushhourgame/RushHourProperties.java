@@ -57,7 +57,7 @@ public class RushHourProperties implements Serializable {
 
     protected static RushHourProperties INSTANCE;
 
-    @Resource
+    @Resource(lookup = "concurrent/RushHourGame")
     ManagedExecutorService executorService;
 
     // constants.properties ----------------------------------------------------

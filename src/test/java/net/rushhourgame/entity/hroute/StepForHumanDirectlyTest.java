@@ -21,26 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.controller.route;
+package net.rushhourgame.entity.hroute;
 
+import net.rushhourgame.entity.AbstractEntityTest;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.TicketGate;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
+import org.mockito.Spy;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class TemporaryHumanRouteEdge extends AbstractRouteEdge implements RouteEdge {
-    
-    public TemporaryHumanRouteEdge(TemporaryHumanRouteNode from, RouteNode to) {
-        super(new TemporaryHumanStep(from.getOriginal(), to.getOriginal()), from, to);
-    }
-    
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
+public class StepForHumanDirectlyTest extends AbstractEntityTest {
+
+    @Spy
+    StepForHumanDirectly inst;
+
+    @Mock
+    Residence rsd;
+
+    @Spy
+    Company cmp;
+
+    @Spy
+    Human human;
+
+    @Before
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("tRouteEdge_");
-        sb.append(from);
-        sb.append("_->_");
-        sb.append(to);
-        return sb.toString();
+    public void setUp() {
+        super.setUp();
+        inst._from = rsd;
+        inst._to = cmp;
+    }
+
+    @Test
+    public void testStep() {
+        cmp.setX(1000);
+        
+        assertEquals(1000L, inst.step(human, 1000, 1));
+        assertTrue(inst.isFinished(human));
     }
 }

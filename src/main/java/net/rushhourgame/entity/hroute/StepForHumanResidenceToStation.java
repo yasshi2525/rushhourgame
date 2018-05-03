@@ -97,7 +97,7 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     
     @Override
     public long step(Human h, long interval, double speed) {
-        return walkTo(h, interval, speed, _to);
+        return h.walkTo(interval, speed, _to);
     }
 
     @Override

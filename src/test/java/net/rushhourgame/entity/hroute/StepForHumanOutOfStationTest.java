@@ -42,18 +42,19 @@ import org.mockito.Spy;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class StepForHumanOutOfStationTest extends AbstractEntityTest {
+
     @Spy
     StepForHumanOutOfStation inst;
-    
+
     @Mock
     TicketGate gate;
-    
+
     @Mock
     Platform platform;
-    
+
     @Spy
     Human human;
-    
+
     @Before
     @Override
     public void setUp() {
@@ -61,24 +62,34 @@ public class StepForHumanOutOfStationTest extends AbstractEntityTest {
         inst._from = platform;
         inst._to = gate;
     }
-    
+
     @Test
     public void testStep() {
         doReturn(true).when(gate).canExit();
         human.enterIntoPlatform(gate, platform);
-        
+
         assertEquals(0, inst.step(human, 1000, 1));
-        
+        assertTrue(inst.isFinished(human));
+
         verify(human, times(1)).exitFromPlatform(any(Platform.class), any(TicketGate.class));
     }
-    
+
     @Test
     public void testStepFull() {
         doReturn(false).when(gate).canExit();
         human.enterIntoPlatform(gate, platform);
-        
+
         assertEquals(1000, inst.step(human, 1000, 1));
-        
+
         verify(human, times(0)).exitFromPlatform(any(Platform.class), any(TicketGate.class));
+    }
+
+    @Test
+    public void testIsFinished() {
+        inst._from = platform;
+        doReturn(platform).when(human).getOnPlatform();
+        doReturn(true).when(platform).equalsId(eq(platform));
+        
+        assertFalse(inst.isFinished(human));
     }
 }

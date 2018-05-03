@@ -36,6 +36,7 @@ import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
+import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.LocalTableController;
 import net.rushhourgame.controller.OAuthController;
@@ -76,7 +77,7 @@ public class DebugInitializerTest {
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
-    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected final static HumanController HCON = ControllerFactory.createHumanController();
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
@@ -106,6 +107,7 @@ public class DebugInitializerTest {
         inst.stCon = STCON;
         inst.lCon = LCON;
         inst.tCon = TRAINCON;
+        inst.hCon = HCON;
         
         EM.getTransaction().begin();
     }

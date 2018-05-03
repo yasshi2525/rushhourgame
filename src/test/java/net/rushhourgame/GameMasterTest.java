@@ -26,8 +26,10 @@ package net.rushhourgame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import javax.ejb.TimerService;
@@ -80,7 +82,7 @@ public class GameMasterTest {
     protected DebugInitializer debug;
     @Mock
     protected Lock lock;
-    
+
     protected static final EntityManager EM = LocalEntityManager.createEntityManager();
     protected static final TrainController TCON = ControllerFactory.createTrainController();
     protected static final HumanController HCON = ControllerFactory.createHumanController();
@@ -89,26 +91,25 @@ public class GameMasterTest {
     protected static final AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected static final PlayerController PCON = ControllerFactory.createPlayController();
     protected static final StationController STCON = ControllerFactory.createStationController();
-    
+
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
-    
+
     @Mock
     protected ManagedExecutorService executorService;
-    
+
     @Mock
     protected ManagedScheduledExecutorService timerService;
 
     @Before
     public void setUp() {
         EM.getTransaction().begin();
-        
+
         inst = new GameMaster();
         inst.debug = debug;
         inst.executorService = executorService;
         inst.timerService = timerService;
-        inst.searcher = spy(ControllerFactory.createRouteSearcher());
-        inst.searcher.lock = lock;
+        inst.searcher = spy(ControllerFactory.createRouteSearcher(inst));
         inst.searcher.init();
         inst.prop = RushHourProperties.getInstance();
         inst.stCon = spy(STCON);
@@ -118,8 +119,9 @@ public class GameMasterTest {
         inst.em = spy(EM);
         doNothing().when(inst.rCon).step(any(Residence.class), anyLong(), anyList());
         // 人を生成しないようにする
+        doReturn(mock(Future.class)).when(executorService).submit(any(RouteSearcher.class));
     }
-    
+
     @After
     public void tearDown() {
         EM.getTransaction().rollback();
@@ -128,14 +130,24 @@ public class GameMasterTest {
     @Test
     public void testInit() throws Exception {
         inst.init(null);
-        
+
         verify(debug).init();
         verify(timerService).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
     }
 
     @Test
-    public void testRunException() {
-        inst.searcher.lock = null;
+    public void testRunException() throws InterruptedException, ExecutionException {
+        Future future = mock(Future.class);
+        doReturn(future).when(executorService).submit(any(RouteSearcher.class));
+        doThrow(ExecutionException.class).when(future).get();
+        
+        inst.run();
+    }
+    
+    @Test
+    public void testRunException2() {
+        doReturn(true).when(inst.searcher).isAvailable();
+        doThrow(NullPointerException.class).when(inst.searcher).lock();
 
         try {
             inst.run();
@@ -145,17 +157,28 @@ public class GameMasterTest {
         }
     }
 
+    @Test
+    public void testRunWhenInterrupted() throws RushHourException {
+        WorldPack world = createSmallWorld();
+        inst.humans = HCON.findAll();
+        doReturn(false).when(inst.searcher).isAvailable();
+        inst.run();
+        verify(inst.stCon, never()).step(any(Station.class), anyLong());
+    }
+
     /**
      * 経路検索前にゲームスレッドを実行
+     *
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
     public void testRunBeforeRouting() throws RushHourException {
         WorldPack world = createSmallWorld();
         inst.humans = HCON.findAll();
-        
+        doReturn(true).when(inst.searcher).isAvailable();
+
         inst.run();
-        
+
         verify(inst.stCon, times(2)).step(any(Station.class), anyLong());
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
@@ -164,18 +187,22 @@ public class GameMasterTest {
         verify(inst.searcher, never()).getStart(any(Residence.class), any(Company.class));
         verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
         verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
-        
+
         assertNull(world.h.getCurrent());
     }
-    
+
     @Test
     public void testRunAfterRouting() throws RushHourException {
-        WorldPack world = createSmallWorld();
+        WorldPack world = createSmallWorld(false);
         inst.humans = HCON.findAll();
         inst.searcher.call();
+        doReturn(true).when(inst.searcher).isAvailable();
         
+        Human human = HCON.create(ORIGIN, world.rsd, world.cmp);
+        inst.humans = HCON.findAll();
+
         inst.run();
-        
+
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
         verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
@@ -183,37 +210,45 @@ public class GameMasterTest {
         verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
         verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
         verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
-        
-        assertNotNull(world.h.getCurrent());
+
+        assertNotNull(human.getCurrent());
     }
-    
+
     /**
      * R St--St C
+     *
      * @return WorldPack
-     * @throws RushHourException 
+     * @throws RushHourException
      */
     protected WorldPack createSmallWorld() throws RushHourException {
+        return createSmallWorld(true);
+    }
+
+    protected WorldPack createSmallWorld(boolean createsHuman) throws RushHourException {
         WorldPack pack = new WorldPack();
         pack.rsd = RCON.create(ORIGIN);
         pack.cmp = CCON.create(FAR);
         pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
-        
+
         AssistanceController.Result start = ACON.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
         pack.st1 = start.station;
         pack.l = start.line;
-        
+
         AssistanceController.Result end = ACON.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
         pack.st2 = end.station;
-        
-        pack.h = HCON.create(ORIGIN, pack.rsd, pack.cmp);
-        
+
+        if (createsHuman) {
+            pack.h = HCON.create(ORIGIN, pack.rsd, pack.cmp);
+        }
+
         pack.t = TCON.create(pack.owner);
         TCON.deploy(pack.t, pack.owner, pack.l.findTop());
-        
+
         return pack;
     }
-    
+
     protected static class WorldPack {
+
         public Residence rsd;
         public Company cmp;
         public Player owner;

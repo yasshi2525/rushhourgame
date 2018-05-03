@@ -68,7 +68,6 @@ public class AbstractControllerTest {
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static LineController LCON = ControllerFactory.createLineController();
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
-    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static HumanController HCON = ControllerFactory.createHumanController();
     protected final static TrainController TRAINCON = ControllerFactory.createTrainController();

@@ -119,23 +119,31 @@ public class GameMaster implements Serializable, Runnable {
         LOG.log(Level.FINE, "{0}#run", new Object[]{this.getClass().getSimpleName()});
 
         if (!searcher.isAvailable()) {
-            executorService.submit(searcher);
-            // RouteSearcherは別スレッドなのでトランザクション外
+            try {
+                executorService.submit(searcher).get();
+                return;
+            } catch (InterruptedException | ExecutionException ex) {
+                Logger.getLogger(GameMaster.class.getName()).log(Level.SEVERE, null, ex);
+                return;
+            }
         }
 
         try {
-            stCon.findAll().forEach(st -> {
-                stCon.step(st, getInterval());
-            });
-            rCon.findAll().forEach(r -> {
-                rCon.step(r, getInterval(), humans);
-            });
-
-            searcher.lock.lock();
+            searcher.lock();
             try {
-                humans = humans.stream().map(
-                        h -> h.merge(em)
-                ).collect(Collectors.toList());
+                // 更新された場合、なにもしない
+                if (!searcher.isAvailable()) {
+                    return;
+                }
+
+                stCon.findAll().forEach(st -> {
+                    stCon.step(st, getInterval());
+                });
+                rCon.findAll().forEach(r -> {
+                    rCon.step(r, getInterval(), humans);
+                });
+
+                mergeHumans();
                 tCon.findAll().forEach(t -> {
                     tCon.step(t, getInterval(), humans);
                 });
@@ -147,16 +155,12 @@ public class GameMaster implements Serializable, Runnable {
                 });
                 hCon.killFinishedHuman(humans);
             } finally {
-                searcher.lock.unlock();
+                searcher.unlock();
             }
         } catch (Throwable e) {
             LOG.log(Level.SEVERE, "GameMaster#run exception in run()", e);
             throw e;
         }
-    }
-
-    public void research() {
-        executorService.submit(searcher);
     }
 
     protected long getInterval() {
@@ -165,5 +169,18 @@ public class GameMaster implements Serializable, Runnable {
 
     protected double getHumanSpeed() {
         return Double.parseDouble(prop.get(GAME_DEF_HUMAN_SPEED));
+    }
+
+    /**
+     * Read Only
+     * @return humans
+     */
+    public List<Human> getHumans() {
+        mergeHumans();
+        return humans;
+    }
+
+    protected void mergeHumans() {
+        humans = humans.stream().map(h -> h.merge(em)).collect(Collectors.toList());
     }
 }

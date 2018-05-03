@@ -24,9 +24,12 @@
 package net.rushhourgame.entity;
 
 import javax.persistence.EntityManager;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
+import net.rushhourgame.controller.route.RouteNode;
+import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import org.junit.Test;
@@ -419,5 +422,34 @@ public class HumanTest extends AbstractEntityTest {
         
         assertEquals(newHuman, actual);
         assertNull(actual.current);
+    }
+    
+    @Test
+    public void testMergedCurrent() {
+        inst.current = mock(TemporaryHumanRouteEdge.class);
+        StepForHuman step = mock(StepForHuman.class);
+        doReturn(step).when(inst.current).getOriginal();
+        
+        assertEquals(step, inst.getMergedCurrent(em));
+    }
+    
+    @Test
+    public void testWalkToLong() {
+        assertEquals(VALID_INTERVAL, 
+                inst.walkTo(VALID_INTERVAL, VALID_SPEED, new SimplePoint(100, 100)));
+    }
+    
+    @Test
+    public void testSearchCurrent() {
+        RouteSearcher searcher = mock(RouteSearcher.class);
+        doReturn(true).when(searcher).isReachable(any(Platform.class), any(Company.class));
+        doReturn(mock(RouteNode.class)).when(searcher).getStart(any(Platform.class), any(Company.class));
+        doNothing().when(inst).setCurrent(any(RouteNode.class));
+        inst.onPlatform = platform;
+        inst.dest = mock(Company.class);
+        
+        inst.searchCurrent(searcher);
+        
+        verify(searcher, times(1)).getStart(any(Platform.class), any(Company.class));
     }
 }

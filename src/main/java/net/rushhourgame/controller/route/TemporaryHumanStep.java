@@ -43,7 +43,7 @@ public class TemporaryHumanStep implements StepForHuman {
     
     @Override
     public String getUid() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "tmp" + from.getId();
     }
 
     @Override
@@ -63,17 +63,27 @@ public class TemporaryHumanStep implements StepForHuman {
 
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return _isAreaIn(from, center, scale)
+                ||  _isAreaIn(to, center, scale);
     }
 
     @Override
     public long step(Human h, long interval, double speed) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return h.walkTo(interval, speed, to);
     }
 
     @Override
     public boolean isFinished(Human h) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return h.distTo(to) == 0;
     }
     
+    protected boolean _isAreaIn(Pointable p, Pointable center, double scale) {
+        double width = Math.pow(2.0, scale);
+        double height = Math.pow(2.0, scale);
+        
+        return p.getX() > center.getX() - width / 2.0 
+                && p.getX() < center.getX() + width / 2.0
+                && p.getY() > center.getY() - height / 2.0
+                && p.getY() < center.getY() + height / 2.0;
+    }
 }

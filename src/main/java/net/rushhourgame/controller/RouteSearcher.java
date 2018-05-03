@@ -39,10 +39,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
@@ -66,7 +67,7 @@ import net.rushhourgame.entity.TicketGate;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
+@ApplicationScoped
 public class RouteSearcher extends AbstractController implements Callable<Boolean> {
 
     private static final long serialVersionUID = 1L;
@@ -84,9 +85,14 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Inject
     protected StationController stCon;
 
+    @Inject
+    protected GameMaster gm;
+
     protected Map<Long, List<RouteNode>> routes;
 
-    public Lock lock;
+    protected Lock lock;
+
+    protected boolean isAvailble;
 
     @PostConstruct
     public void init() {
@@ -94,21 +100,12 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         lock = new ReentrantReadWriteLock().writeLock();
     }
 
-    /**
-     * 経路情報を使用している人を抽出する. HumanController経由だと情報が古い
-     *
-     * @return 人リスト (キーは会社ID)
-     */
-    protected Map<Long, Set<Human>> collectHumans() {
-        Map<Long, Set<Human>> result = new HashMap<>();
+    public void lock() {
+        lock.lock();
+    }
 
-        routes.forEach((id, nodes) -> {
-            result.put(id, new HashSet<>());
-
-            nodes.stream().filter(node -> !node.isEnd())
-                    .forEach(node -> result.get(id).addAll(node.getViaEdge().getRefferedHuman()));
-        });
-        return result;
+    public void unlock() {
+        lock.unlock();
     }
 
     /**
@@ -116,14 +113,17 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
      *
      * @param humans 人
      */
-    protected void flush(Map<Long, Set<Human>> humans) {
-        humans.values().forEach(hs -> hs.forEach(h -> h.flushCurrent()));
+    protected void flush(List<Human> humans) {
+        humans.forEach(h -> h.flushCurrent());
         routes.clear();
-
     }
-    
+
     public boolean isAvailable() {
-        return !routes.isEmpty();
+        return isAvailble;
+    }
+
+    public void notifyUpdate() {
+        isAvailble = false;
     }
 
     public boolean isReachable(@NotNull Identifiable start, @NotNull Company c) {
@@ -140,21 +140,20 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Override
     @Transactional
     public Boolean call() {
-        LOG.log(Level.INFO, "{0}#call start.", this.getClass().getSimpleName());
+        LOG.log(Level.INFO, "{0}#call start by {1}", new Object[]{this.getClass().getSimpleName(), this});
         lock.lock();
         try {
-            // 人情報を退避
-            Map<Long, Set<Human>> humans = collectHumans();
+            BaseObjPack bPack = this.new BaseObjPack();
 
             // 今まで保持していた情報をすべて破棄
-            flush(humans);
+            flush(bPack.humans);
 
             // すべての会社への行き方を求める
             // すべての住宅からすべての会社へ行く道を検索する必要はない。
             // なぜなら探索すると、全開始点からgoalまでの行き方が分かるから
             cCon.findAll().forEach(company -> {
-                PermanentObjPack pPack = this.new PermanentObjPack();
-                TemporaryObjPack tPack = this.new TemporaryObjPack(pPack, humans.get(company.getId()));
+                PermanentObjPack pPack = this.new PermanentObjPack(bPack);
+                TemporaryObjPack tPack = this.new TemporaryObjPack(pPack, bPack.humanMap.get(company.getId()));
 
                 // 移動中の人座標を経路に追加
                 List<RouteNode> nodes = constructRouteNodes(pPack, tPack);
@@ -170,18 +169,21 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 routes.put(company.getId(), nodes);
 
                 // 移動中の人に移動経路をセット
-                tPack.humanNodes.forEach(node -> node.registerCurrentTaskToHuman());
+                // 車内の場合、行先がなくなるため、h.currentがnullになるようにする
+                tPack.humanNodes.stream().filter(node -> !node.isEnd())
+                        .forEach(node -> node.registerCurrentTaskToHuman());
             });
 
             LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
             for (Long id : routes.keySet()) {
                 routes.get(id).forEach((node) -> {
-                    LOG.log(Level.INFO, node.toString());
+                    LOG.log(Level.FINE, node.toString());
                 });
             }
         } finally {
             lock.unlock();
         }
+        isAvailble = true;
         return true;
     }
 
@@ -223,7 +225,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         }
     }
 
-    protected final class PermanentObjPack {
+    protected final class BaseObjPack {
 
         protected List<Residence> residences;
         protected List<Company> companies;
@@ -231,6 +233,37 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         protected List<Platform> platforms;
 
         protected List<StepForHuman> steps;
+
+        protected List<Human> humans;
+        protected Map<Long, Set<Human>> humanMap;
+
+        public BaseObjPack() {
+            fetchObj();
+            categorizeHumans();
+        }
+
+        protected void fetchObj() {
+            residences = rCon.findAll();
+            companies = cCon.findAll();
+            ticketGates = stCon.findTicketGateAll();
+            platforms = stCon.findPlatformAll();
+            steps = sCon.findAll();
+            humans = gm.getHumans();
+        }
+        
+        protected void categorizeHumans() {
+            humanMap = new HashMap<>();
+
+            humans.forEach(h -> {
+                if (!humanMap.containsKey(h.getDest().getId())) {
+                    humanMap.put(h.getDest().getId(), new HashSet<>());
+                }
+                humanMap.get(h.getDest().getId()).add(h);
+            });
+        }
+    }
+
+    protected final class PermanentObjPack {
 
         protected Map<Residence, RouteNode> residenceNodes = new HashMap<>();
         protected Map<Company, RouteNode> companyNodes = new HashMap<>();
@@ -240,25 +273,16 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
 
         protected List<RouteEdge> allEdges;
 
-        public PermanentObjPack() {
-            fetchObj();
-            buildRouteNode();
-            buildRouteEdge();
+        public PermanentObjPack(BaseObjPack base) {
+            buildRouteNode(base);
+            buildRouteEdge(base);
         }
 
-        protected void fetchObj() {
-            residences = rCon.findAll();
-            companies = cCon.findAll();
-            ticketGates = stCon.findTicketGateAll();
-            platforms = stCon.findPlatformAll();
-            steps = sCon.findAll();
-        }
-
-        protected void buildRouteNode() {
-            residences.stream().forEach(o -> residenceNodes.put(o, new PermanentRouteNode(o)));
-            companies.stream().forEach(o -> companyNodes.put(o, new PermanentRouteNode(o)));
-            ticketGates.stream().forEach(o -> ticketGateNodes.put(o, new PermanentRouteNode(o)));
-            platforms.stream().forEach(o -> platformNodes.put(o, new PermanentRouteNode(o)));
+        protected void buildRouteNode(BaseObjPack base) {
+            base.residences.stream().forEach(o -> residenceNodes.put(o, new PermanentRouteNode(o)));
+            base.companies.stream().forEach(o -> companyNodes.put(o, new PermanentRouteNode(o)));
+            base.ticketGates.stream().forEach(o -> ticketGateNodes.put(o, new PermanentRouteNode(o)));
+            base.platforms.stream().forEach(o -> platformNodes.put(o, new PermanentRouteNode(o)));
 
             allNodes = new ArrayList<>();
             allNodes.addAll(residenceNodes.values());
@@ -267,8 +291,8 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             allNodes.addAll(platformNodes.values());
         }
 
-        protected void buildRouteEdge() {
-            allEdges = steps.stream().map(original -> {
+        protected void buildRouteEdge(BaseObjPack base) {
+            allEdges = base.steps.stream().map(original -> {
                 // from に対応する node の取得
                 RouteNode from = allNodes.stream()
                         .filter(node -> node.getOriginal().equalsId(original.getFrom())
@@ -322,7 +346,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                         addHumanEdges(humanN, pPack.platformNodes.get(humanN.getHuman().getOnPlatform()));
                         break;
                     case TRAIN:
-                        // 人(電車内) -> (何もしない TODO : どうする？)
+                        // 人(電車内) -> (何もしない)
                         break;
                 }
             });

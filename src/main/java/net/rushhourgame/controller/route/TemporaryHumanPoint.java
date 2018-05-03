@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller.route;
 
+import java.util.Collections;
 import java.util.List;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Identifiable;
@@ -59,22 +60,25 @@ public class TemporaryHumanPoint implements RelayPointForHuman {
 
     @Override
     public long getId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return human.getId();
     }
 
     @Override
     public boolean equalsId(Identifiable other) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (other == null) {
+            return false;
+        }
+        return this.getClass().equals(other.getClass()) && this.getId() == other.getId();
     }
 
     @Override
     public List<StepForHuman> getOutEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Collections.<StepForHuman>emptyList();
     }
 
     @Override
     public List<StepForHuman> getInEdges() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Collections.<StepForHuman>emptyList();
     }
 
     @Override
