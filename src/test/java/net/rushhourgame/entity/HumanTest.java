@@ -362,6 +362,15 @@ public class HumanTest extends AbstractEntityTest {
         verify(platform, never()).equalsId(any(Identifiable.class));
     }
     
+    @Test void testShouldGetOffNoPurpose() {
+        inst.onTrain = train;
+        doReturn(true).when(train).equalsId(any(Identifiable.class));
+        inst.current = null;
+        
+        assertTrue(inst.shouldGetOff(train, platform));
+        verify(platform, never()).equalsId(any(Identifiable.class));
+    }
+    
     @Test
     public void testShouldGetOffOtherPlatform() {
         inst.onTrain = train;
@@ -381,5 +390,32 @@ public class HumanTest extends AbstractEntityTest {
         
         verify(train, times(1)).equalsId(any(Identifiable.class));
         verify(platform, times(1)).equalsId(any(Identifiable.class));
+    }
+    
+    @Test
+    public void testMerge() {
+        EntityManager em = mock(EntityManager.class);
+        Human newHuman = mock(Human.class);
+        doReturn(newHuman).when(em).merge(eq(inst));
+        
+        Human actual = inst.merge(em);
+        
+        assertEquals(newHuman, actual);
+        assertEquals(inst.current, actual.current);
+        assertFalse(inst.current.getRefferedHuman().contains(inst));
+        assertTrue(inst.current.getRefferedHuman().contains(actual));
+    }
+    
+    @Test
+    public void testMergeNull() {
+        EntityManager em = mock(EntityManager.class);
+        Human newHuman = mock(Human.class);
+        doReturn(newHuman).when(em).merge(eq(inst));
+        inst.current = null;
+        
+        Human actual = inst.merge(em);
+        
+        assertEquals(newHuman, actual);
+        assertNull(actual.current);
     }
 }

@@ -53,6 +53,7 @@ import net.rushhourgame.controller.route.TemporaryHumanRouteNode;
 import net.rushhourgame.controller.route.TemporaryHumanStep;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Identifiable;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
@@ -125,14 +126,14 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         return !routes.isEmpty();
     }
 
-    public boolean isReachable(@NotNull Residence r, @NotNull Company c) {
+    public boolean isReachable(@NotNull Identifiable start, @NotNull Company c) {
         return routes.containsKey(c.getId()) && routes.get(c.getId()).stream()
-                .anyMatch(node -> node.getOriginal().equalsId(r));
+                .anyMatch(node -> node.getOriginal().equalsId(start));
     }
 
-    public RouteNode getStart(@NotNull Residence r, @NotNull Company c) {
+    public RouteNode getStart(@NotNull Identifiable start, @NotNull Company c) {
         return routes.get(c.getId()).stream()
-                .filter(node -> node.getOriginal().equalsId(r))
+                .filter(node -> node.getOriginal().equalsId(start))
                 .findFirst().get();
     }
 

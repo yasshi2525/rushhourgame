@@ -62,7 +62,7 @@ public class HumanController extends PointEntityController {
         return findIn(em.createNamedQuery("Human.findIn", Human.class), center, scale);
     }
     
-    public void step(Human h, long interval, double speed, List<Human> humans) {
+    public void step(Human h, long interval, double speed) {
         h.step(em, interval, speed);
         h.consumeLifespan(interval);
     }

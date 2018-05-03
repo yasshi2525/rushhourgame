@@ -46,6 +46,7 @@ import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
@@ -158,9 +159,11 @@ public class GameMasterTest {
         verify(inst.stCon, times(2)).step(any(Station.class), anyLong());
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble(), anyList());
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
-        verify(inst.searcher, times(0)).getStart(any(Residence.class), any(Company.class));
+        verify(inst.searcher, never()).getStart(any(Residence.class), any(Company.class));
+        verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
+        verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
         
         assertNull(world.h.getCurrent());
     }
@@ -175,9 +178,11 @@ public class GameMasterTest {
         
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
         verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble(), anyList());
+        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
         verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
+        verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
+        verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
         
         assertNotNull(world.h.getCurrent());
     }

@@ -217,6 +217,12 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(start.getVia().getVia().getVia().getOriginal(), extend.station.getPlatform());
         assertEquals(start.getVia().getVia().getVia().getVia().getOriginal(), extend.station.getTicketGate());
         assertEquals(start.getVia().getVia().getVia().getVia().getVia().getOriginal(), c);
+        
+        inst.routes.put(c.getId(), pPack.allNodes);
+        
+        assertTrue(inst.isReachable(r, c));
+        assertTrue(inst.isReachable(result.station.getPlatform(), c));
+        assertTrue(inst.isReachable(extend.station.getPlatform(), c));
     }
     
     @Test

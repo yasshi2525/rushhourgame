@@ -140,10 +140,10 @@ public class GameMaster implements Serializable, Runnable {
                     tCon.step(t, getInterval(), humans);
                 });
                 humans.forEach(h -> {
-                    if (h.getCurrent() == null && searcher.isReachable(h.getSrc(), h.getDest())) {
-                        h.setCurrent(searcher.getStart(h.getSrc(), h.getDest()));  // HumanControllerから RouteSearcherを呼ぶと循環してしまう
+                    if (h.getCurrent() == null) {
+                        h.searchCurrent(searcher);
                     }
-                    hCon.step(h, getInterval(), getHumanSpeed(), humans);
+                    hCon.step(h, getInterval(), getHumanSpeed());
                 });
                 hCon.killFinishedHuman(humans);
             } finally {

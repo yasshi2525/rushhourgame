@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
@@ -65,25 +66,25 @@ public class Human extends AbstractEntity implements Pointable {
     @NotNull
     @ManyToOne
     protected Company dest;
-    
+
     @NotNull
     protected StandingOn stand;
-    
+
     @ManyToOne
     protected Platform onPlatform;
-    
+
     @ManyToOne
     protected TrainDeployed onTrain;
 
     protected transient RouteEdge current;
-    
+
     protected boolean isFinished;
 
     public void step(EntityManager em, long interval, double speed) {
         if (isFinished || current == null) {
             return;
         }
-        
+
         while (interval > 0) {
             StepForHuman currentStep = getMergedCurrent(em);
             interval -= currentStep.step(this, interval, speed);
@@ -97,7 +98,7 @@ public class Human extends AbstractEntity implements Pointable {
             }
         }
     }
-    
+
     protected StepForHuman getMergedCurrent(EntityManager em) {
         // currentはメモリ上にキャッシュされるため、Entityの情報が古い
         return em.merge(current.getOriginal());
@@ -129,11 +130,11 @@ public class Human extends AbstractEntity implements Pointable {
         shiftEdge(); // 乗車タスクの完了
         stand = StandingOn.PLATFORM;
     }
-    
+
     public void setStandingOn(StandingOn stand) {
         this.stand = stand;
     }
-    
+
     public StandingOn getStandingOn() {
         return stand;
     }
@@ -152,7 +153,7 @@ public class Human extends AbstractEntity implements Pointable {
         this.onPlatform = to;
         stand = StandingOn.PLATFORM;
     }
-    
+
     public void exitFromPlatform(Platform from, TicketGate to) {
         from.exit();
         to.pass();
@@ -164,13 +165,13 @@ public class Human extends AbstractEntity implements Pointable {
         this.onTrain = onTrain;
         stand = StandingOn.TRAIN;
     }
-    
+
     protected void shiftEdge() {
         current.unreffer(this);
         current = current.getTo().getViaEdge();
         current.reffer(this);
     }
-    
+
     public void flushCurrent() {
         current = null;
     }
@@ -233,49 +234,72 @@ public class Human extends AbstractEntity implements Pointable {
         this.current = current.getViaEdge();
         this.current.reffer(this);
     }
-    
+
     public boolean shouldRide(Platform platform, TrainDeployed train) {
         if (platform.equalsId(onPlatform) && current != null
-                 && current.getOriginal() instanceof StepForHumanThroughTrain) {
+                && current.getOriginal() instanceof StepForHumanThroughTrain) {
             // TODO : 反対方面の電車に乗ってしまう
             return train.getCurrent().getParent().equalsId(
                     ((StepForHumanThroughTrain) current.getOriginal()).getLine());
         }
         return false;
     }
-    
+
     public boolean shouldGetOff(TrainDeployed train, Platform platform) {
-        if (this.onTrain == null) {
+        if (this.onTrain == null || !train.equalsId(onTrain)) {
             return false;
         }
-        return train.equalsId(onTrain) 
-                && platform.equalsId(current.getOriginal().getTo());
+        // 目的なし乗車はおりる
+        return current == null || platform.equalsId(current.getOriginal().getTo());
     }
 
     @Override
     public double distTo(Pointable p) {
         return calcDist(x, y, p);
     }
-    
+
     public void moveTo(Pointable to, double dist) {
         double theta = Math.atan2(to.getY() - y, to.getX() - x);
-        
+
         x += dist * Math.cos(theta);
         y += dist * Math.sin(theta);
     }
-    
+
     /**
      * EntityManager#merge()はtransient属性をコピーしない
+     *
      * @param em EntityManager
      * @return attachしたオブジェクト
      */
     public Human merge(EntityManager em) {
-        RouteEdge _current = this.current;
         Human newHuman = em.merge(this);
-        newHuman.current = _current;
+
+        if (current != null) {
+            current.unreffer(this);
+            newHuman.current = current;
+            current.reffer(newHuman);
+        }
+
         return newHuman;
     }
-    
+
+    /**
+     * HumanControllerから RouteSearcherを呼ぶと循環してしまう
+     *
+     * @param searcher RouteSearcher
+     */
+    public void searchCurrent(RouteSearcher searcher) {
+        // 乗車中に経路再計算による目的なし乗車のため降ろされた
+        if (onPlatform != null && searcher.isReachable(onPlatform, dest)) {
+            setCurrent(searcher.getStart(onPlatform, dest));
+            return;
+        }
+
+        if (searcher.isReachable(src, dest)) {
+            setCurrent(searcher.getStart(src, dest));
+        }
+    }
+
     public enum StandingOn {
         GROUND,
         PLATFORM,
