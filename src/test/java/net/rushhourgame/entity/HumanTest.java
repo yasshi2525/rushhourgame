@@ -362,7 +362,8 @@ public class HumanTest extends AbstractEntityTest {
         verify(platform, never()).equalsId(any(Identifiable.class));
     }
     
-    @Test void testShouldGetOffNoPurpose() {
+    @Test 
+    public void testShouldGetOffNoPurpose() {
         inst.onTrain = train;
         doReturn(true).when(train).equalsId(any(Identifiable.class));
         inst.current = null;
@@ -402,8 +403,9 @@ public class HumanTest extends AbstractEntityTest {
         
         assertEquals(newHuman, actual);
         assertEquals(inst.current, actual.current);
-        assertFalse(inst.current.getRefferedHuman().contains(inst));
-        assertTrue(inst.current.getRefferedHuman().contains(actual));
+        
+        verify(actual.current, times(1)).unreffer(eq(inst));
+        verify(actual.current, times(1)).reffer(eq(actual));
     }
     
     @Test

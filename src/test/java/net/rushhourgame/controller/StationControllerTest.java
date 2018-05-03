@@ -58,6 +58,7 @@ public class StationControllerTest extends AbstractControllerTest {
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_NUM = 3;
     private static final double TEST_MOBILITY = 0.002;
+    private static final double TEST_PRODIST = 5.0;
 
     @Before
     @Override
@@ -76,16 +77,18 @@ public class StationControllerTest extends AbstractControllerTest {
                 created.getTicketGate().getGateNum());
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_GATE_MOBILITY))
                 == created.getTicketGate().getMobility());
+        assertTrue(Double.parseDouble(PROP.get(GAME_DEF_GATE_PRODIST))
+                == created.getTicketGate().getProdist());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_PLT_CAPACITY)),
                 created.getPlatform().getCapacity());
-
     }
 
     @Test
     public void testFull() throws RushHourException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_POS);
-        Station created = inst.create(player, node, TEST_NAME, TEST_NUM, TEST_CAPACITY, TEST_MOBILITY);
+        Station created = inst.create(player, node, 
+                TEST_NAME, TEST_NUM, TEST_CAPACITY, TEST_MOBILITY, TEST_PRODIST);
 
         //test station
         assertNotNull(created);
@@ -106,6 +109,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertEquals(created, gate.getStation());
         assertEquals(TEST_NUM, gate.getGateNum());
         assertTrue(TEST_MOBILITY == gate.getMobility());
+        assertTrue(TEST_PRODIST == gate.getProdist());
         assertTrue(gate.isOwnedBy(player));
         assertTrue(gate.isPrivilegedBy(player));
 

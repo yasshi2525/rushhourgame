@@ -158,6 +158,10 @@ public class Human extends AbstractEntity implements Pointable {
         from.exit();
         to.pass();
         this.onPlatform = null;
+        
+        Pointable newPoint = new SimplePoint(x, y).makeNearPoint(to.getProdist());
+        x = newPoint.getX();
+        y = newPoint.getY();
         stand = StandingOn.GROUND;
     }
 

@@ -67,6 +67,9 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     @Min(0)
     protected double occupied;
     
+    @Min(0)
+    protected double prodist;
+    
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanIntoStation> stFromList;
     
@@ -127,6 +130,14 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
 
     public void setMobility(double mobility) {
         this.mobility = mobility;
+    }
+
+    public double getProdist() {
+        return prodist;
+    }
+
+    public void setProdist(double prodist) {
+        this.prodist = prodist;
     }
 
     @Override

@@ -95,6 +95,7 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_RSD_PRODIST = "rushhour.game.default.residence.producedist";
     public static final String GAME_DEF_GATE_NUM = "rushhour.game.default.ticketgate.num";
     public static final String GAME_DEF_GATE_MOBILITY = "rushhour.game.default.ticketgate.mobility";
+    public static final String GAME_DEF_GATE_PRODIST = "rushhour.game.default.ticketgate.prodist";
     public static final String GAME_DEF_PLT_CAPACITY = "rushhour.game.default.platform.capacity";
     public static final String GAME_DEF_TRAIN_COSTRATE = "rushhour.game.default.train.costrate";
     public static final String GAME_DEF_TRAIN_MOBILITY = "rushhour.game.default.train.mobility";

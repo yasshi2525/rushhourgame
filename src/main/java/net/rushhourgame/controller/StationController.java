@@ -59,11 +59,12 @@ public class StationController extends PointEntityController {
         return create(owner, node, name,
                 Integer.parseInt(prop.get(GAME_DEF_GATE_NUM)),
                 Integer.parseInt(prop.get(GAME_DEF_PLT_CAPACITY)),
-                Double.parseDouble(prop.get(GAME_DEF_GATE_MOBILITY)));
+                Double.parseDouble(prop.get(GAME_DEF_GATE_MOBILITY)),
+                Double.parseDouble(prop.get(GAME_DEF_GATE_PRODIST)));
     }
 
     public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name,
-            @Min(1) int gatenum, @Min(1) int platformCapacity, @Min(0) double gateMobility) throws RushHourException {
+            @Min(1) int gatenum, @Min(1) int platformCapacity, @Min(0) double gateMobility, @Min(0) double prodist) throws RushHourException {
         if (!node.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
@@ -75,7 +76,7 @@ public class StationController extends PointEntityController {
         s.setOwner(owner);
         s.setName(name);
 
-        s.setTicketGate(createTicketGate(s, gatenum, gateMobility));
+        s.setTicketGate(createTicketGate(s, gatenum, gateMobility, prodist));
         s.setPlatform(createPlatform(s, node, platformCapacity));
 
         em.persist(s);
@@ -145,11 +146,12 @@ public class StationController extends PointEntityController {
         return p;
     }
 
-    protected TicketGate createTicketGate(Station s, int num, double mobility) {
+    protected TicketGate createTicketGate(Station s, int num, double mobility, double prodist) {
         TicketGate gate = new TicketGate();
         gate.setStation(s);
         gate.setGateNum(num);
         gate.setMobility(mobility);
+        gate.setProdist(prodist);
 
         return gate;
     }
