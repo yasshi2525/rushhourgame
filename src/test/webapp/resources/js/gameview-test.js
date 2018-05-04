@@ -813,11 +813,21 @@ describe('test gameview', function () {
 // test gameview でいろいろmockを作っているので、別に分けた
 describe('test initPixi', function () {
     it('invoke', function () {
+        //loadImageを2回実行するとResource読み込みエラーになる
+        spyOn(window, 'loadImage').and.callFake(function () {});
         $('body').append("<div class='player' id='admin' data-icon='base/src/main/webapp/resources/image/s_player.png'/>");
+        $('body').append("<div id='gameview'/>");
+        
+        var localScope = {
+            $gameview: $('#gameview'),
+            player: {}
+        };
+        $(document).data('scope', localScope);
 
         initPixi();
         // exports.init は見つからないといわれてできなかった。
 
         $('#admin').remove();
+        $('#gameview').remove();
     });
 });
