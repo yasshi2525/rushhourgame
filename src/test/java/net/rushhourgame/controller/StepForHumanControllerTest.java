@@ -47,6 +47,7 @@ import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
+import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 import org.junit.Before;
 
 /**
@@ -92,7 +93,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         LineStep tail = LCON.extend(extend, owner, back);
         LCON.end(tail, owner);
         
-        assertEquals(11, inst.findIn(new SimplePoint(0, 0), 2).size());
+        assertEquals(13, inst.findIn(new SimplePoint(0, 0), 2).size());
         inst.findIn(new SimplePoint(0, 0), -1);
         inst.findIn(new SimplePoint(2, 0), -1);
         inst.findIn(new SimplePoint(2, -1), -1);
@@ -113,6 +114,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
     }
 
     @Test
@@ -128,6 +130,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
     }
 
     @Test
@@ -143,6 +146,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
         
         StepForHumanIntoStation inStep = findIntoStation().get(0);
         assertEquals(st.getTicketGate(), inStep.getFrom());
@@ -175,6 +179,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
 
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getUid().startsWith("directly"));
@@ -207,6 +212,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
 
         StepForHumanDirectly directly = findDirectly().get(0);
         assertTrue(directly.getCost() == 10.0);
@@ -224,6 +230,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
         
         StepForHumanStationToCompany toStep = findToCompany().get(0);
         assertEquals(st.getTicketGate(), toStep.getFrom());
@@ -244,6 +251,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(1);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
         
         StepForHumanResidenceToStation fromStep = findFromResidence().get(0);
         assertEquals(r, fromStep.getFrom());
@@ -271,6 +279,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(0);
         assertToCompanyNumEquals(0);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
     }
 
     @Test
@@ -289,6 +298,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertFromResidenceNumEquals(1);
         assertToCompanyNumEquals(1);
         assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
         
         EM.flush();
         EM.refresh(st.getTicketGate());
@@ -319,7 +329,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         // このなかで addCompletedLine がよばれる
         LCON.end(tail, owner);
         
-        assertEquals(2, inst.findThroughTrainAll().size());
+        assertThroughTrainNumEquals(2);
+        assertTransferNumEquals(2);
     }
 
     @Test
@@ -361,6 +372,10 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     protected List<StepForHumanThroughTrain> findThroughTrain() {
         return TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
     }
+    
+    protected List<StepForHumanTransfer> findTransfer() {
+        return TCON.findAll("StepForHumanTransfer", StepForHumanTransfer.class);
+    }
 
     protected void assertDirectlyNumEquals(int expected) {
         assertEquals(expected, findDirectly().size());
@@ -384,5 +399,9 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
 
     protected void assertThroughTrainNumEquals(int expected) {
         assertEquals(expected, findThroughTrain().size());
+    }
+    
+    protected void assertTransferNumEquals(int expected) {
+        assertEquals(expected, findTransfer().size());
     }
 }

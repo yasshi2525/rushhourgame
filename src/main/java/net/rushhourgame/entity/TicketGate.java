@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +38,7 @@ import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 
 /**
  * 改札口
@@ -81,6 +83,12 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanStationToCompany> cmpList;
+    
+    @OneToMany(mappedBy = "_from")
+    protected List<StepForHumanTransfer> tgFromList;
+    
+    @OneToMany(mappedBy = "_to")
+    protected List<StepForHumanTransfer> tgToList;
     
     public void step(long interval) {
         occupied -= mobility * interval;
@@ -172,11 +180,21 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     
     @Override
     public List<StepForHuman> getOutEdges() {
-        return Stream.concat(stFromList.stream(), cmpList.stream()).collect(Collectors.toList());
+        List<StepForHuman> outList = new ArrayList<>();
+        outList.addAll(stFromList);
+        outList.addAll(tgFromList);
+        outList.addAll(cmpList);
+        
+        return outList;
     }
 
     @Override
     public List<StepForHuman> getInEdges() {
-        return Stream.concat(stToList.stream(), rsdList.stream()).collect(Collectors.toList());
+        List<StepForHuman> inList = new ArrayList<>();
+        inList.addAll(stToList);
+        inList.addAll(tgToList);
+        inList.addAll(rsdList);
+        
+        return inList;
     }
 }

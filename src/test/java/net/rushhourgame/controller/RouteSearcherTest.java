@@ -266,7 +266,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(1, bPack.companies.size());
         assertEquals(2, bPack.ticketGates.size());
         assertEquals(2, bPack.platforms.size());
-        assertEquals(11, bPack.steps.size());
+        assertEquals(13, bPack.steps.size());
         assertEquals(1, bPack.humans.size());
         
         assertTrue(bPack.humanMap.containsKey(world.cmp.getId()));
@@ -291,13 +291,13 @@ public class RouteSearcherTest extends AbstractControllerTest {
         
         RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
         assertNotNull(tg1N);
-        assertEquals(2, tg1N.getInEdges().size());
-        assertEquals(2, tg1N.getOutEdges().size());
+        assertEquals(3, tg1N.getInEdges().size());
+        assertEquals(3, tg1N.getOutEdges().size());
         
         RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
         assertNotNull(tg2N);
-        assertEquals(2, tg2N.getInEdges().size());
-        assertEquals(2, tg2N.getOutEdges().size());
+        assertEquals(3, tg2N.getInEdges().size());
+        assertEquals(3, tg2N.getOutEdges().size());
         
         RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform());
         assertNotNull(p1N);
@@ -310,7 +310,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(2, p2N.getOutEdges().size());
         
         assertEquals(6, pPack.allNodes.size());
-        assertEquals(11, pPack.allEdges.size());
+        assertEquals(13, pPack.allEdges.size());
     }
     
     @Test
@@ -349,13 +349,13 @@ public class RouteSearcherTest extends AbstractControllerTest {
         
         RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
         assertNotNull(tg1N);
-        assertEquals(3, tg1N.getInEdges().size());
-        assertEquals(2, tg1N.getOutEdges().size());
+        assertEquals(4, tg1N.getInEdges().size());
+        assertEquals(3, tg1N.getOutEdges().size());
         
         RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
         assertNotNull(tg2N);
-        assertEquals(3, tg2N.getInEdges().size());
-        assertEquals(2, tg2N.getOutEdges().size());
+        assertEquals(4, tg2N.getInEdges().size());
+        assertEquals(3, tg2N.getOutEdges().size());
     }
     
     @Test

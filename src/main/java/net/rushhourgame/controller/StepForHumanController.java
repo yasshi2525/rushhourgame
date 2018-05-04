@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,6 +47,7 @@ import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
+import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 
 /**
  *
@@ -66,33 +68,25 @@ public class StepForHumanController extends AbstractController {
     protected ManagedExecutorService executorService;
 
     public List<StepForHuman> findAll() {
-        return _findAll().collect(Collectors.toList());
+        return _findAll().stream().collect(Collectors.toList());
     }
 
     public List<StepForHuman> findIn(@NotNull Pointable center, double scale) {
-        return _findAll().filter(s -> s.isAreaIn(center, scale))
+        return _findAll().stream().filter(s -> s.isAreaIn(center, scale))
                 .collect(Collectors.toList());
     }
 
-    public Stream<StepForHuman> _findAll() {
+    protected List<StepForHuman> _findAll() {
         // 人用移動ステップをすべて取得する。
-        // concat にしたのは List.addAllより早そうと思ったから
-        return Stream.concat(
-                findDirectlyAll().stream(),
-                Stream.concat(
-                        findFromResidenceAll().stream(),
-                        Stream.concat(
-                                findIntoStationAll().stream(),
-                                Stream.concat(
-                                        findThroughTrainAll().stream(),
-                                        Stream.concat(
-                                                findOutOfStationAll().stream(),
-                                                findToCompanyAll().stream()
-                                        )
-                                )
-                        )
-                )
-        );
+        List<StepForHuman> list = new ArrayList<>();
+        list.addAll(findDirectlyAll());
+        list.addAll(findFromResidenceAll());
+        list.addAll(findIntoStationAll());
+        list.addAll(findThroughTrainAll());
+        list.addAll(findOutOfStationAll());
+        list.addAll(findTransfer());
+        list.addAll(findToCompanyAll());
+        return list;
     }
 
     public List<StepForHumanDirectly> findDirectlyAll() {
@@ -113,6 +107,10 @@ public class StepForHumanController extends AbstractController {
 
     public List<StepForHumanOutOfStation> findOutOfStationAll() {
         return em.createNamedQuery("StepForHumanOutOfStation.findAll", StepForHumanOutOfStation.class).getResultList();
+    }
+
+    public List<StepForHumanTransfer> findTransfer() {
+        return em.createNamedQuery("StepForHumanTransfer.findAll", StepForHumanTransfer.class).getResultList();
     }
 
     public List<StepForHumanStationToCompany> findToCompanyAll() {
@@ -193,6 +191,17 @@ public class StepForHumanController extends AbstractController {
                 persistStepForHuman(createStationToCompany(newInst.getTicketGate(), c));
             }
 
+            // 改札口 -> 改札口
+            List<TicketGate> ticketGates
+                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+
+            for (TicketGate gate : ticketGates) {
+                if (!newInst.getTicketGate().equals(gate)) {
+                    persistStepForHuman(createTransfer(newInst.getTicketGate(), gate));
+                    persistStepForHuman(createTransfer(gate, newInst.getTicketGate()));
+                }
+            }
+
             // 改札口 <-> プラットフォーム
             persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
             persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
@@ -252,6 +261,13 @@ public class StepForHumanController extends AbstractController {
 
     protected StepForHumanOutOfStation createOutOfStation(Platform from, TicketGate to) {
         StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
+        inst.setFrom(from);
+        inst.setTo(to);
+        return inst;
+    }
+
+    protected StepForHumanTransfer createTransfer(TicketGate from, TicketGate to) {
+        StepForHumanTransfer inst = new StepForHumanTransfer();
         inst.setFrom(from);
         inst.setTo(to);
         return inst;

@@ -23,6 +23,7 @@
     <class>net.rushhourgame.entity.hroute.StepForHumanResidenceToStation</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanStationToCompany</class>
     <class>net.rushhourgame.entity.hroute.StepForHumanThroughTrain</class>
+    <class>net.rushhourgame.entity.hroute.StepForHumanTransfer</class>
     <class>net.rushhourgame.entity.troute.LineStepDeparture</class>
     <class>net.rushhourgame.entity.troute.LineStepMoving</class>
     <class>net.rushhourgame.entity.troute.LineStepStopping</class>

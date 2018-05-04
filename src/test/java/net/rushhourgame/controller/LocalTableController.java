@@ -37,7 +37,7 @@ public class LocalTableController {
     private final String[] tableList = {
         "StepForHumanDirectly", "StepForHumanIntoStation",
         "StepForHumanOutOfStation", "StepForHumanResidenceToStation",
-        "StepForHumanStationToCompany", "StepForHumanThroughTrain",
+        "StepForHumanStationToCompany", "StepForHumanThroughTrain", "StepForHumanTransfer",
         "Human", "Company", "Residence", "Train", 
         "LineStepDeparture", "LineStepStopping", "LineStepMoving", "LineStepPassing", 
         "LineStep", "Line", "Platform", "TicketGate",
