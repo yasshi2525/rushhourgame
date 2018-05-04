@@ -109,21 +109,21 @@ public class GameMaster implements Serializable, Runnable {
     
     @PreDestroy
     public void preDestroy() {
-        LOG.log(Level.INFO, "{0}#preDestroy stop game", new Object[]{this.getClass().getSimpleName()});
+        LOG.log(Level.INFO, "{0}#preDestroy stop game", new Object[]{GameMaster.class});
         stopGame();
     }
     
     @Transactional
     public void constructTemplateWorld() throws RushHourException {
-        LOG.log(Level.INFO, "{0}#constructTemplateWorld start", new Object[]{this.getClass().getSimpleName()});
+        LOG.log(Level.INFO, "{0}#constructTemplateWorld start", new Object[]{GameMaster.class});
         debug.init();
-        LOG.log(Level.INFO, "{0}#constructTemplateWorld end", new Object[]{this.getClass().getSimpleName()});
+        LOG.log(Level.INFO, "{0}#constructTemplateWorld end", new Object[]{GameMaster.class});
     }
     
     @Transactional
     public boolean startGame() {
         if (timerFuture != null && !timerFuture.isDone()) {
-            LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{this.getClass().getSimpleName()});
+            LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
             return false;
         }
         
@@ -134,11 +134,11 @@ public class GameMaster implements Serializable, Runnable {
     
     public boolean stopGame() {
         if (timerFuture == null) {
-            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was not started.", new Object[]{this.getClass().getSimpleName()});
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was not started.", new Object[]{GameMaster.class});
             return false;
         }
         if (timerFuture.isDone()) {
-            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was already stopped.", new Object[]{this.getClass().getSimpleName()});
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was already stopped.", new Object[]{GameMaster.class});
             return false;
         }
         return timerFuture.cancel(false);
@@ -147,7 +147,7 @@ public class GameMaster implements Serializable, Runnable {
     @Transactional
     @Override
     public void run() {
-        LOG.log(Level.FINE, "{0}#run", new Object[]{this.getClass().getSimpleName()});
+        LOG.log(Level.FINE, "{0}#run", new Object[]{GameMaster.class});
 
         if (!searcher.isAvailable()) {
             try {
@@ -189,7 +189,7 @@ public class GameMaster implements Serializable, Runnable {
                 searcher.unlock();
             }
         } catch (Throwable e) {
-            LOG.log(Level.SEVERE, "GameMaster#run exception in run()", e);
+            LOG.log(Level.SEVERE, "{0}#run exception in run()", GameMaster.class);
             throw e;
         }
     }

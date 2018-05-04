@@ -161,4 +161,9 @@ public class RailEdge extends AbstractEntity implements Ownable, Pointable {
     public boolean isReverse(RailEdge e) {
         return _from.equalsId(e.getTo()) && _to.equalsId(e.getFrom());
     }
+    
+    @Override
+    public String toString() {
+        return "re(" + id + "){"+ _from + "_=>_" + _to + "}";
+    }
 }

@@ -25,6 +25,8 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.PersistenceUnit;
@@ -49,6 +51,7 @@ import net.rushhourgame.exception.RushHourException;
 public class AssistanceController extends AbstractController{
     
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(AssistanceController.class.getName());
     
     @Inject
     RailController rCon;
@@ -64,7 +67,9 @@ public class AssistanceController extends AbstractController{
         Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
         Line line = lCon.create(player, getDefaultLineName(player, locale));
         lCon.start(line, player, station);
-        return new Result(startNode, station, line);
+        Result result = new Result(startNode, station, line);
+        LOG.log(Level.INFO, "{0}#startWithStation created {1}", new Object[] {AssistanceController.class, result});
+        return result;
     } 
     
     public Result extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
@@ -87,7 +92,9 @@ public class AssistanceController extends AbstractController{
                 lCon.end(inserted, player);
             }
         }
-        return new Result(extended, station, inserted.getParent());
+        Result result = new Result(extended, station, inserted.getParent());
+        LOG.log(Level.INFO, "{0}#_extend created {1}", new Object[] {AssistanceController.class, result});
+        return result;
     }
     
     protected String getDefaultStationName(Player player, Locale locale) {
@@ -117,6 +124,11 @@ public class AssistanceController extends AbstractController{
             this.node = node;
             this.station = station;
             this.line = line;
+        }
+        
+        @Override
+        public String toString() {
+            return "{" + node + ",_" + station + ",_" + line.toStringAsRoute() + "}";
         }
     }
 }

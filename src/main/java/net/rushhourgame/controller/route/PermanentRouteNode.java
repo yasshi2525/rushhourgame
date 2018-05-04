@@ -41,23 +41,6 @@ public class PermanentRouteNode extends AbstractRouteNode implements RouteNode {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("pRouteNode_");
-        if (original instanceof Residence) {
-            sb.append("r");
-        } else if (original instanceof Company) {
-            sb.append("c");
-        } else if (original instanceof Platform) {
-            sb.append("p");
-        } else if (original instanceof TicketGate) {
-            sb.append("g");
-        }
-        sb.append("(");
-        sb.append(original.getId());
-        sb.append(")");
-        if (via != null) {
-            sb.append("_=>_");
-            sb.append(via.toString());
-        }
-        return sb.toString();
+        return "pn{" + original + "}";
     }
 }

@@ -37,10 +37,11 @@ public class TemporaryHumanRouteEdge extends AbstractRouteEdge implements RouteE
     
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("tRouteEdge_");
+        StringBuilder sb = new StringBuilder("te{");
         sb.append(from);
-        sb.append("_->_");
+        sb.append("_=>_");
         sb.append(to);
+        sb.append("}");
         return sb.toString();
     }
 }

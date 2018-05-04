@@ -74,6 +74,7 @@ public class ResidenceController extends PointEntityController {
         inst.setX(p.getX());
         inst.setY(p.getY());
         em.persist(inst);
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {ResidenceController.class, inst});
         sCon.addResidence(inst);
         return inst;
     }

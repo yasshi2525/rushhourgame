@@ -161,4 +161,9 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+    
+    @Override
+    public String toString() {
+        return "t(" + id + "){" + deployed + "}";
+    }
 }

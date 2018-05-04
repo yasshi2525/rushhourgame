@@ -109,4 +109,9 @@ public class StepForHumanIntoStation extends AbstractEntity implements StepForHu
     public boolean isFinished(Human h) {
         return _to.equalsId(h.getOnPlatform());
     }
+    
+    @Override
+    public String toString() {
+        return _toString(this);
+    }
 }

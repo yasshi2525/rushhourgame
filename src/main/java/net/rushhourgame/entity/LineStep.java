@@ -281,4 +281,22 @@ public class LineStep extends AbstractEntity implements Ownable {
         return isAreaIn(getStartRailNode(), center, scale)
                 ||  isAreaIn(getGoalRailNode(), center, scale);
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ls(" + id + "){");
+        if (departure != null) {
+            sb.append(departure);
+        } else if (moving != null) {
+            sb.append(moving);
+        } else if (passing != null) {
+            sb.append(passing);
+        } else if (stopping != null) {
+            sb.append(stopping);
+        } else {
+            sb.append("?");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

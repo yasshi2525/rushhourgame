@@ -50,4 +50,14 @@ public class LineRouteEdge {
     public LineRouteNode getFrom() {
         return from;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("le{");
+        sb.append(from);
+        sb.append("_=>_");
+        sb.append(to);
+        sb.append("}");
+        return sb.toString();
+    }
 }

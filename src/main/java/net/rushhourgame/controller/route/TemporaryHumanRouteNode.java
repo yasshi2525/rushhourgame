@@ -55,14 +55,6 @@ public class TemporaryHumanRouteNode extends AbstractRouteNode implements RouteN
     
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("tRouteNode_");
-        sb.append("h(");
-        sb.append(human.getId());
-        sb.append(")");
-        if (via != null) {
-            sb.append("_=>_");
-            sb.append(via.toString());
-        }
-        return sb.toString();
+        return "tn{" + original + "}";
     }
 }

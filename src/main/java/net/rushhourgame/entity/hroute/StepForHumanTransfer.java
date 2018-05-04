@@ -106,4 +106,9 @@ public class StepForHumanTransfer extends AbstractEntity implements StepForHuman
     public boolean isFinished(Human h) {
         return h.distTo(_to) == 0;
     }
+    
+    @Override
+    public String toString() {
+        return _toString(this);
+    }
 }

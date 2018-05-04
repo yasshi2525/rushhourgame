@@ -308,6 +308,11 @@ public class Human extends AbstractEntity implements Pointable {
             setCurrent(searcher.getStart(src, dest));
         }
     }
+    
+    @Override
+    public String toString() {
+        return "h(" + id + ")";
+    }
 
     public enum StandingOn {
         GROUND,

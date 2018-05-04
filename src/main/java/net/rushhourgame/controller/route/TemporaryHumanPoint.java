@@ -96,4 +96,8 @@ public class TemporaryHumanPoint implements RelayPointForHuman {
         return point.distTo(p);
     }
     
+    @Override
+    public String toString() {
+        return "tp{" + human + "}";
+    }
 }

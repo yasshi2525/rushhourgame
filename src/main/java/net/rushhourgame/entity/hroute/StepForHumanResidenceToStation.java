@@ -104,4 +104,9 @@ public class StepForHumanResidenceToStation extends AbstractEntity implements St
     public boolean isFinished(Human h) {
         return h.distTo(_to) == 0;
     }
+    
+    @Override
+    public String toString() {
+        return _toString(this);
+    }
 }

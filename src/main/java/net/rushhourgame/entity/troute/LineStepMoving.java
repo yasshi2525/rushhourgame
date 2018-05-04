@@ -72,4 +72,9 @@ public class LineStepMoving extends AbstractEntity {
     public void setRunning(RailEdge running) {
         this.running = running;
     }
+    
+    @Override
+    public String toString() {
+        return "mv(" + id + "){" + running + '}';
+    }
 }

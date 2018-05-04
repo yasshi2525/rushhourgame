@@ -116,4 +116,9 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
     public List<StepForHuman> getInEdges() {
         return Stream.concat(stList.stream(), directlyList.stream()).collect(Collectors.toList());
     }
+    
+    @Override
+    public String toString() {
+        return "c(" + id + ")";
+    }
 }

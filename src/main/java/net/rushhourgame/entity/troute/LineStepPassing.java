@@ -85,4 +85,9 @@ public class LineStepPassing extends AbstractEntity {
     public void setGoal(Platform goal) {
         this.goal = goal;
     }
+    
+    @Override
+    public String toString() {
+        return "pass(" + id + "){" + running + ",_" + goal + '}';
+    }
 }

@@ -120,4 +120,31 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
                 .filter(step -> step.getDeparture() != null)
                 .min((s1, s2) -> (int) (s1.getId() - s2.getId())).orElse(null);
     }
+    
+    @Override
+    public String toString() {
+        return "l(" + id + ")";
+    }
+    
+    public String toStringAsRoute() {
+        StringBuilder sb = new StringBuilder(this.toString());
+        sb.append("{");
+        if (steps != null) {
+            LineStep top = findTop();
+            if (top != null) {
+                sb.append(top);
+                LineStep next = top.getNext();
+                while(next != null) {
+                    sb.append("_->_");
+                    sb.append(next);
+                    if (next.equals(top)) {
+                        break;
+                    }
+                    next = next.getNext();
+                }
+            }
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

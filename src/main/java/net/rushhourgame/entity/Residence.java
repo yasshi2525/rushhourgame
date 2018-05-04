@@ -148,4 +148,9 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
     public List<StepForHuman> getOutEdges() {
         return Stream.concat(stList.stream(), directlyList.stream()).collect(Collectors.toList());
     }
+    
+    @Override
+    public String toString() {
+        return "r(" + id + ")";
+    }
 }

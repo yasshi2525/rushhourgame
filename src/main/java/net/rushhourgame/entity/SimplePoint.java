@@ -39,7 +39,7 @@ public class SimplePoint implements Pointable, Serializable {
     public SimplePoint() {
 
     }
-    
+
     public SimplePoint(Pointable p) {
         this(p.getX(), p.getY());
     }
@@ -72,11 +72,16 @@ public class SimplePoint implements Pointable, Serializable {
         return Math.sqrt((p.getX() - x) * (p.getX() - x)
                 + (p.getY() - y) * (p.getY() - y));
     }
-    
+
     public Pointable makeNearPoint(double maxdist) {
         double dist = Math.random() * maxdist;
         double radian = Math.random() * Math.PI * 2;
-        
+
         return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + "," + y + ")";
     }
 }

@@ -24,6 +24,8 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -47,6 +49,7 @@ import net.rushhourgame.exception.RushHourException;
 public class TrainController extends PointEntityController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(TrainController.class.getName());
     
     public Train create(@NotNull Player p) {
         return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)), 
@@ -61,6 +64,7 @@ public class TrainController extends PointEntityController {
         train.setSpeed(speed);
         train.setCapacity(capacity);
         em.persist(train);
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {TrainController.class, train});
         return train;
     }
 
@@ -76,6 +80,7 @@ public class TrainController extends PointEntityController {
         info.setTrain(train);
         info.setCurrent(lineStep);
         em.persist(info);
+        LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[] {TrainController.class, info});
 
         train.setDeployed(info);
     }
@@ -89,6 +94,7 @@ public class TrainController extends PointEntityController {
         }
 
         em.remove(train.getDeployed());
+        LOG.log(Level.INFO, "{0}#undeploy removed {1}", new Object[] {TrainController.class, train.getDeployed()});
     }
 
     public List<Train> findAll() {

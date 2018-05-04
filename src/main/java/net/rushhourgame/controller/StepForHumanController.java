@@ -25,6 +25,8 @@ package net.rushhourgame.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Resource;
@@ -57,6 +59,7 @@ import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 public class StepForHumanController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(StepForHumanController.class.getName());
 
     @Inject
     protected LineRouteSearcher lSearcher;
@@ -235,6 +238,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createDirectly created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 
@@ -242,6 +246,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanResidenceToStation inst = new StepForHumanResidenceToStation();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createResidenceToStation created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 
@@ -249,6 +254,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createStationToCompany created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 
@@ -256,6 +262,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanIntoStation inst = new StepForHumanIntoStation();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createIntoStation created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 
@@ -263,6 +270,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createOutOfStation created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 
@@ -270,6 +278,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanTransfer inst = new StepForHumanTransfer();
         inst.setFrom(from);
         inst.setTo(to);
+        LOG.log(Level.INFO, "{0}#createTransfer created {1}", new Object[] {StepForHumanController.class, inst});
         return inst;
     }
 

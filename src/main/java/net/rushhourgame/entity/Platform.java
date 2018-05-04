@@ -169,4 +169,9 @@ public class Platform extends AbstractEntity implements Pointable, RelayPointFor
     public List<StepForHuman> getInEdges() {
         return Stream.concat(tToList.stream(), stToList.stream()).collect(Collectors.toList());
     }
+    
+    @Override
+    public String toString() {
+        return "p(" + id + ")";
+    }
 }

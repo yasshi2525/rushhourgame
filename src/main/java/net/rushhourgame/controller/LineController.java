@@ -25,6 +25,8 @@ package net.rushhourgame.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -50,6 +52,7 @@ import net.rushhourgame.exception.RushHourException;
 public class LineController extends AbstractController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(LineController.class.getName());
 
     @Inject
     protected StepForHumanController sCon;
@@ -65,7 +68,8 @@ public class LineController extends AbstractController {
         inst.setName(name);
         inst.setOwner(owner);
         em.persist(inst);
-
+        
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {LineController.class, inst.toStringAsRoute()});
         return inst;
     }
 
@@ -81,6 +85,7 @@ public class LineController extends AbstractController {
 
         em.persist(parent);
 
+        LOG.log(Level.INFO, "{0}#start created {1}", new Object[] {LineController.class, parent});
         return parent;
     }
 
@@ -153,6 +158,7 @@ public class LineController extends AbstractController {
             base = createMoving(base, extend);
         }
 
+        LOG.log(Level.INFO, "{0}#extend created {1}", new Object[] {LineController.class, base});
         return base;
     }
 
@@ -197,6 +203,7 @@ public class LineController extends AbstractController {
         
         insertedGoal.setNext(goal);
         
+        LOG.log(Level.INFO, "{0}#insert created {1}", new Object[] {LineController.class, insertedGoal});
         return insertedGoal;
     }
 
@@ -337,6 +344,7 @@ public class LineController extends AbstractController {
         if (canEnd(tail, player)) {
             end(tail, player);
         }
+        LOG.log(Level.INFO, "{0}#autocreate created {1}", new Object[] {LineController.class, line.toStringAsRoute()});
         return line;
     }
 }

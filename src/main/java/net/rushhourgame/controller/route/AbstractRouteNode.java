@@ -97,4 +97,16 @@ public abstract class AbstractRouteNode implements RouteNode {
         return this.cost > o.getCost() ? 1
                 : this.cost < o.getCost() ? -1 : 0;
     }
+
+    @Override
+    public String toStringAsRoute() {
+        StringBuilder sb = new StringBuilder(this.toString());
+        RouteNode node = via;
+        while (node != null) {
+            sb.append("_->_");
+            sb.append(node.toString());
+            node = node.getVia();
+        }
+        return sb.toString();
+    }
 }

@@ -141,4 +141,9 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
     public Platform getPlatform() {
         return platform;
     }
+    
+    @Override
+    public String toString() {
+        return "rn(" + id + ")";
+    }
 }

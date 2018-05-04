@@ -24,6 +24,8 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.Min;
@@ -46,6 +48,7 @@ import net.rushhourgame.exception.RushHourException;
 public class StationController extends PointEntityController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(StationController.class.getName());
 
     @Inject
     protected StepForHumanController sCon;
@@ -80,6 +83,7 @@ public class StationController extends PointEntityController {
         s.setPlatform(createPlatform(s, node, platformCapacity));
 
         em.persist(s);
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {StationController.class, s});
         sCon.addStation(s);
 
         return s;
@@ -97,6 +101,7 @@ public class StationController extends PointEntityController {
             throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
         }
         station.setName(name);
+        LOG.log(Level.INFO, "{0}#editStationName edited {1}", new Object[] {StationController.class, station});
     }
 
     public void editPlatformCapacity(@NotNull Station station, @NotNull Player owner, @Min(1) int capacity) throws RushHourException {
@@ -105,6 +110,7 @@ public class StationController extends PointEntityController {
         }
 
         station.getPlatform().setCapacity(capacity);
+        LOG.log(Level.INFO, "{0}#editPlatformCapacity edited {1}", new Object[] {StationController.class, station});
     }
 
     public void editTicketGateNum(@NotNull Station station, @NotNull Player owner, @Min(1) int num) throws RushHourException {
@@ -113,6 +119,7 @@ public class StationController extends PointEntityController {
         }
 
         station.getTicketGate().setGateNum(num);
+        LOG.log(Level.INFO, "{0}#editTicketGateNum edited {1}", new Object[] {StationController.class, station});
     }
     
     public List<Station> findAll() {

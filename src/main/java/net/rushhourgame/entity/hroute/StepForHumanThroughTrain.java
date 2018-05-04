@@ -124,4 +124,9 @@ public class StepForHumanThroughTrain extends AbstractEntity implements StepForH
     public boolean isFinished(Human h) {
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return _toString(this);
+    }
 }

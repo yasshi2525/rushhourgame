@@ -159,12 +159,15 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 List<RouteNode> nodes = constructRouteNodes(pPack, tPack);
                 List<RouteEdge> edges = constructRouteEdges(pPack, tPack);
 
+                search(nodes, pPack.companyNodes.get(company));
+
                 edges.forEach(edge -> {
                     LOG.log(Level.FINE, edge.toString());
                 });
-
-                search(nodes, pPack.companyNodes.get(company));
-
+                nodes.forEach((node) -> {
+                    LOG.log(Level.FINE, node.toStringAsRoute());
+                });
+                
                 // 経路探索結果を登録
                 routes.put(company.getId(), nodes);
 
@@ -175,11 +178,6 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             });
 
             LOG.log(Level.INFO, "{0}#call end", this.getClass().getSimpleName());
-            for (Long id : routes.keySet()) {
-                routes.get(id).forEach((node) -> {
-                    LOG.log(Level.FINE, node.toString());
-                });
-            }
         } finally {
             lock.unlock();
         }
@@ -250,7 +248,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             steps = sCon.findAll();
             humans = gm.getHumans();
         }
-        
+
         protected void categorizeHumans() {
             humanMap = new HashMap<>();
 

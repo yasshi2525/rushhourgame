@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 yasshi2525 (https://twitter.com/yasshi2525).
+ * Copyright 2018 yasshi2525 (https://twitter.com/yasshi2525).
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,39 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.controller.route;
+package net.rushhourgame.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public interface RouteNode extends Comparable<RouteNode> {
+public class SimplePointTest {
 
-    public RelayPointForHuman getOriginal();
-
-    public double getCost();
-
-    public void setCost(double cost);
+    @Test
+    public void testToString() {
+        assertEquals("(0.0,0.0)", new SimplePoint().toString());
+    }
     
-    public RouteNode getVia();
-
-    public void setVia(RouteNode via);
-
-    public List<RouteEdge> getInEdges();
-
-    public List<RouteEdge> getOutEdges();
-
-    public boolean isEnd();
-
-    public RouteEdge getViaEdge();
-    
-    public String toStringAsRoute();
 }

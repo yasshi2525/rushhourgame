@@ -197,4 +197,9 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
         
         return inList;
     }
+    
+    @Override
+    public String toString() {
+        return "g(" + id + ")";
+    }
 }

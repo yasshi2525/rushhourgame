@@ -122,4 +122,8 @@ public abstract class AbstractEntity implements Identifiable, Serializable {
             return consumed;
         }
     }
+    
+    protected String _toString(StepForHuman step) {
+        return step.getUid() + "{" + step.getFrom() + "_=>_" + step.getTo() + "}";
+    }
 }

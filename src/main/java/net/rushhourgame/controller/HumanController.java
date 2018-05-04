@@ -24,6 +24,8 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -41,6 +43,7 @@ import net.rushhourgame.entity.Residence;
 public class HumanController extends PointEntityController {
     
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(HumanController.class.getName());
        
     public Human create(@NotNull Pointable point, @NotNull Residence src, @NotNull Company dst) {
         Human human = new Human();
@@ -51,6 +54,7 @@ public class HumanController extends PointEntityController {
         human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
         human.setStandingOn(Human.StandingOn.GROUND);
         em.persist(human);
+        LOG.log(Level.FINE, "{0}#create created {1}", new Object[] {HumanController.class, human.toString()});
         return human;
     }
     

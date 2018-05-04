@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -46,6 +48,7 @@ import net.rushhourgame.exception.RushHourException;
 public class RailController extends PointEntityController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(RailController.class.getName());
 
     public RailNode create(@NotNull Player owner, @NotNull Pointable p) throws RushHourException {
         if (exists("RailNode.exists", owner, p)) {
@@ -56,6 +59,7 @@ public class RailController extends PointEntityController {
         n.setX(p.getX());
         n.setY(p.getY());
         em.persist(n);
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {RailController.class, n});
         return n;
     }
 
@@ -74,6 +78,7 @@ public class RailController extends PointEntityController {
 
         createEdge(owner, from, to);
 
+        LOG.log(Level.INFO, "{0}#extend created {1}", new Object[] {RailController.class, to});
         return to;
     }
 
@@ -103,6 +108,7 @@ public class RailController extends PointEntityController {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
             em.remove(e);
+            LOG.log(Level.INFO, "{0}#remove removed {1}", new Object[] {RailController.class, e});
         }
 
         em.flush();
@@ -173,12 +179,14 @@ public class RailController extends PointEntityController {
         e1.setFrom(from);
         e1.setTo(to);
         em.persist(e1);
+        LOG.log(Level.INFO, "{0}#createEdge created {1}", new Object[] {RailController.class, e1});
 
         RailEdge e2 = new RailEdge();
         e2.setOwner(owner);
         e2.setFrom(to);
         e2.setTo(from);
         em.persist(e2);
+        LOG.log(Level.INFO, "{0}#createEdge created {1}", new Object[] {RailController.class, e2});
     }
 
     public boolean existsEdge(@NotNull RailNode from, @NotNull RailNode to) {
@@ -231,6 +239,7 @@ public class RailController extends PointEntityController {
         em.refresh(node);
         if (node.getInEdges().isEmpty() && node.getOutEdges().isEmpty() && node.getPlatform() == null) {
             em.remove(node);
+            LOG.log(Level.INFO, "{0}#remove removed {1}", new Object[] {RailController.class, node});
         }
     }
 

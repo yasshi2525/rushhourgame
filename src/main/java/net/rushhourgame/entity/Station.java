@@ -43,19 +43,22 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(
             name = "Station.findIn",
             query = "SELECT obj FROM Station obj JOIN RailNode n ON obj.platform = n.platform WHERE n.x > :x1 AND n.x < :x2 AND n.y > :y1 AND n.y < :y2"
-    ),
+    )
+    ,
     @NamedQuery(
             name = "Station.findAll",
             query = "SELECT obj FROM Station obj"
-    ),
+    )
+    ,
     @NamedQuery(
             name = "Station.findMyStation",
             query = "SELECT obj FROM Station obj WHERE obj.owner = :owner"
-    ),
+    )
+    ,
     @NamedQuery(
             name = "Station.existsName",
             query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-                    + " FROM Station x WHERE x.owner = :owner AND x.name = :name"
+            + " FROM Station x WHERE x.owner = :owner AND x.name = :name"
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
@@ -133,5 +136,10 @@ public class Station extends AbstractEntity implements Pointable, Ownable, Namea
     @Override
     public boolean isOwnedBy(Player owner) {
         return isOwn(this.owner, owner);
+    }
+
+    @Override
+    public String toString() {
+        return "s(" + id + "){" + ticketGate + ",_" + platform + "}";
     }
 }

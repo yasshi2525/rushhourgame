@@ -76,4 +76,19 @@ public class LineRouteNode implements Comparable<LineRouteNode> {
                 : this.cost < o.cost ? -1 : 0;
     }
 
+    @Override
+    public String toString() {
+        return "ln{" + original + "}";
+    }
+    
+    public String toStringAsRoute() {
+        StringBuilder sb = new StringBuilder(this.toString());
+        LineRouteNode next = this.via;
+        while (next != null) {
+            sb.append("_->_");
+            sb.append(next);
+            next = next.via;
+        }
+        return sb.toString();
+    }
 }

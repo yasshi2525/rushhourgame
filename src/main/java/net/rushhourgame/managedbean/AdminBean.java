@@ -59,7 +59,7 @@ public class AdminBean implements Serializable {
     @Transactional
     public void init() throws RushHourException {
         Player p = pCon.findByToken(session.getToken());
-        
+
         if (p == null) {
             //ログインしていないときはAdminでログイン
             SimpleUserData data = new SimpleUserData();
@@ -67,8 +67,12 @@ public class AdminBean implements Serializable {
             p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, data, session.getLocale());
             session.setToken(p.getToken());
         }
-        
-        gm.constructTemplateWorld();
-        gm.startGame();
+
+        try {
+            gm.constructTemplateWorld();
+            gm.startGame();
+        } catch (RushHourException e) {
+            // do-nothing
+        }
     }
 }

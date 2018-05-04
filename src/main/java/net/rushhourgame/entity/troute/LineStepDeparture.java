@@ -36,6 +36,7 @@ import net.rushhourgame.entity.Platform;
 
 /**
  * 路線ステップ発車
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
@@ -48,11 +49,11 @@ import net.rushhourgame.entity.Platform;
 public class LineStepDeparture extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     @OneToOne
     protected LineStep parent;
-    
+
     @NotNull
     @ManyToOne
     protected Platform staying;
@@ -71,5 +72,10 @@ public class LineStepDeparture extends AbstractEntity {
 
     public void setStaying(Platform staying) {
         this.staying = staying;
+    }
+
+    @Override
+    public String toString() {
+        return "dept(" + id + "){" + staying + '}';
     }
 }

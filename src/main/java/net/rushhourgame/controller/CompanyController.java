@@ -24,6 +24,8 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.DecimalMin;
@@ -41,6 +43,7 @@ import net.rushhourgame.exception.RushHourException;
 @Dependent
 public class CompanyController extends PointEntityController {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(CompanyController.class.getName());
     
     @Inject
     protected StepForHumanController sCon;
@@ -58,6 +61,7 @@ public class CompanyController extends PointEntityController {
         inst.setX(p.getX());
         inst.setY(p.getY());
         em.persist(inst);
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {CompanyController.class, inst});
         sCon.addCompany(inst);
         return inst;
     }

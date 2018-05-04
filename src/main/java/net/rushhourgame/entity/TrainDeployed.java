@@ -208,4 +208,9 @@ public class TrainDeployed extends AbstractEntity {
                     }
                 });
     }
+    
+    @Override
+    public String toString() {
+        return "td(" + id + ")";
+    }
 }

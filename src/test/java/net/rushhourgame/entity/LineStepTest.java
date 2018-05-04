@@ -114,6 +114,7 @@ public class LineStepTest extends AbstractEntityTest {
         } catch (IllegalStateException e) {
             assertEquals("line step doesn't have any children.", e.getMessage());
         }
+        assertEquals("ls(0){?}", inst.toString());
     }
 
     @Test

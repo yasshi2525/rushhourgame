@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.ejb.Singleton;
 import javax.enterprise.context.Dependent;
@@ -54,6 +56,7 @@ import net.rushhourgame.exception.RushHourException;
 public class LineRouteSearcher extends AbstractController {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(LineRouteSearcher.class.getName());
 
     public void persist(@NotNull Line completedLine) {
         em.refresh(completedLine);
@@ -81,6 +84,13 @@ public class LineRouteSearcher extends AbstractController {
             List<LineRouteEdge> edges = wrapEdge(originalEdges, nodes);
 
             search(nodes, goal);
+            
+            edges.forEach(edge -> {
+                LOG.log(Level.FINE, "{0}#persist {1}", new Object[]{LineRouteSearcher.class, edge.toString()});
+            });
+            nodes.forEach(node -> {
+                LOG.log(Level.FINE, "{0}#persist {1}", new Object[]{LineRouteSearcher.class, node.toStringAsRoute()});
+            });
 
             // goal から goal は同じ地点なので、永続化しない。
             nodes.stream().filter(
@@ -157,6 +167,7 @@ public class LineRouteSearcher extends AbstractController {
         inst.setFrom(from);
         inst.setTo(to);
         inst.setCost(cost);
+        LOG.log(Level.INFO, "{0}#createThroughTrain created {1}", new Object[]{LineRouteSearcher.class, inst});
         return inst;
     }
 

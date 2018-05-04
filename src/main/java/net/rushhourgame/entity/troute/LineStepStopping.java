@@ -85,4 +85,9 @@ public class LineStepStopping extends AbstractEntity {
     public void setGoal(Platform goal) {
         this.goal = goal;
     }
+    
+    @Override
+    public String toString() {
+        return "stop(" + id + "){" + running + ",_" + goal + '}';
+    }
 }
