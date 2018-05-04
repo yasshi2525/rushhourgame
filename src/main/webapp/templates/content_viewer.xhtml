@@ -137,7 +137,7 @@
     </h:panelGroup>
     
     <h:panelGroup id="gamemovablemodel">
-        <p:poll interval="1" update="gamemovablemodel" oncomplete="fetchMovableGraphics()"/>
+        <p:poll interval="2" update="gamemovablemodel" oncomplete="fetchMovableGraphics()"/>
         <ui:repeat var="t" value="#{game.trains}">
             <div class="train" id="train#{t.id}"
                  data-x="#{t.x}" data-y="#{t.y}"/>
