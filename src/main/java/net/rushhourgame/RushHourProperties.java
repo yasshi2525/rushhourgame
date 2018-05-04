@@ -160,7 +160,7 @@ public class RushHourProperties implements Serializable {
                 try (InputStream is = loader.getResourceAsStream(TEMPLATE_CONFIG_PATH)) {
                     Files.copy(is, userConfig, StandardCopyOption.REPLACE_EXISTING);
                 }
-                LOG.log(Level.INFO, "{0}#init success to create user config to {1}", 
+                LOG.log(Level.INFO, "{0}#init success to create user config to {1}",
                         new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath()});
             }
 
@@ -278,9 +278,11 @@ public class RushHourProperties implements Serializable {
 
         @Override
         public void run() {
-
+            LOG.log(Level.INFO, "{0}#run start", this.getClass().getSimpleName());
             try {
                 userConfig.toAbsolutePath().getParent().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+                LOG.log(Level.INFO, "{0}#run register watcher successfully to {1}",
+                        new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath().getParent().toAbsolutePath()});
             } catch (IOException ex) {
                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                 return;
@@ -290,6 +292,8 @@ public class RushHourProperties implements Serializable {
                 WatchKey key;
                 try {
                     key = watcher.take();
+                    LOG.log(Level.INFO, "{0}#run take key successfully : {1}",
+                            new Object[]{this.getClass().getSimpleName(), key});
                 } catch (InterruptedException ex) {
                     Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                     return;
@@ -299,16 +303,22 @@ public class RushHourProperties implements Serializable {
                     WatchEvent.Kind<?> kind = event.kind();
 
                     if (kind == StandardWatchEventKinds.OVERFLOW) {
+                        LOG.log(Level.INFO, "{0}#run kind of polled event was OVERFLOW.",
+                                new Object[]{this.getClass().getSimpleName()});
                         continue;
                     }
 
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                         Path file = (Path) event.context();
 
+                        LOG.log(Level.INFO, "{0}#run kind of polled event was ENTRY_MODIFY. (path = {1})",
+                                new Object[]{this.getClass().getSimpleName(), file.toAbsolutePath()});
+
                         if (file.equals(userConfig)) {
                             try (InputStream is = Files.newInputStream(userConfig)) {
                                 config.load(is);
-                                Logger.getLogger(RushHourProperties.class.getName()).log(Level.INFO, "{0}#run properties was successfully updated.", ConfigWatchingService.class.getSimpleName());
+                                LOG.log(Level.INFO, "{0}#run properties was successfully updated (path = {1})",
+                                        new Object[]{this.getClass().getSimpleName(), file.toAbsolutePath()});
                             } catch (IOException ex) {
                                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                             }
