@@ -174,7 +174,7 @@ public class RushHourProperties implements Serializable {
                 LOG.log(Level.WARNING, "{0}#init fail to start watching service because executorService is null.", this.getClass().getSimpleName());
             }
         } catch (IOException ex) {
-            LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init error during default config loading.", ex);
+            LOG.log(Level.SEVERE, this.getClass().getSimpleName() + "#init error during config loading.", ex);
         }
     }
 
@@ -306,6 +306,7 @@ public class RushHourProperties implements Serializable {
                         if (file.equals(userConfig)) {
                             try (InputStream is = Files.newInputStream(userConfig)) {
                                 config.load(is);
+                                Logger.getLogger(RushHourProperties.class.getName()).log(Level.INFO, "properties was successfully updated.");
                             } catch (IOException ex) {
                                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                             }
