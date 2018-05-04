@@ -103,7 +103,7 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_TRAIN_CAPACITY = "rushhour.game.default.train.capacity";
     public static final String GAME_DEF_HUMAN_LIFESPAN = "rushhour.game.default.human.lifespan";
     public static final String GAME_DEF_HUMAN_SPEED = "rushhour.game.default.human.speed";
-    
+
     //--------------------------------------------------------------------------
     protected static final String CONSTANTS_PATH = "net/rushhourgame/conf/constants.properties";
     protected static final String TEMPLATE_CONFIG_PATH = "net/rushhourgame/conf/template_config.properties";
@@ -111,7 +111,7 @@ public class RushHourProperties implements Serializable {
     transient protected WatchService watchService;
     protected Properties constants = new Properties();
     protected Properties config = new Properties();
-    
+
     /**
      * デフォルトの設定とユーザの設定を読み込む。
      */
@@ -152,14 +152,16 @@ public class RushHourProperties implements Serializable {
                 try (InputStream is = Files.newInputStream(userConfig)) {
                     config.load(is);
                 }
-                LOG.log(Level.INFO, "{0}#init success to load user config", this.getClass().getSimpleName());
+                LOG.log(Level.INFO, "{0}#init success to load user config from {1}",
+                        new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath()});
 
             } else {
                 // ユーザ設定ファイルがなければ新規作成
                 try (InputStream is = loader.getResourceAsStream(TEMPLATE_CONFIG_PATH)) {
                     Files.copy(is, userConfig, StandardCopyOption.REPLACE_EXISTING);
                 }
-                LOG.log(Level.INFO, "{0}#init success to create user config", this.getClass().getSimpleName());
+                LOG.log(Level.INFO, "{0}#init success to create user config to {1}", 
+                        new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath()});
             }
 
             // CDI経由で呼び出されなかったときはExecutorSericeが使えないので、
@@ -181,15 +183,15 @@ public class RushHourProperties implements Serializable {
     @PreDestroy
     public void autosave() {
         LOG.log(Level.INFO, "{0}#autosave", this.getClass().getSimpleName());
-        
-        if(watchService != null) {
+
+        if (watchService != null) {
             try {
                 watchService.close();
             } catch (IOException ex) {
                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         store();
     }
 
