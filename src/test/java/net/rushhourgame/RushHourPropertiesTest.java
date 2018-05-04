@@ -455,7 +455,9 @@ public class RushHourPropertiesTest {
         when(watchKey.pollEvents()).thenReturn(eventList);
 
         when(watchEvent.kind()).thenReturn(StandardWatchEventKinds.ENTRY_MODIFY);
-        when(watchEvent.context()).thenReturn(mock(Path.class));
+        Path contextPath = mock(Path.class);
+        when(watchEvent.context()).thenReturn(contextPath);
+        when(contextPath.resolve(nullable(Path.class))).thenReturn(mock(Path.class));
 
         RushHourProperties.ConfigWatchingService service
                 = inst.new ConfigWatchingService(configPath, watchService);

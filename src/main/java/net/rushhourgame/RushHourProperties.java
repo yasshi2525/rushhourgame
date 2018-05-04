@@ -272,7 +272,7 @@ public class RushHourProperties implements Serializable {
         protected WatchService watcher;
 
         public ConfigWatchingService(Path userConfig, WatchService watcher) {
-            this.userConfig = userConfig;
+            this.userConfig = userConfig.toAbsolutePath();
             this.watcher = watcher;
         }
 
@@ -280,9 +280,9 @@ public class RushHourProperties implements Serializable {
         public void run() {
             LOG.log(Level.INFO, "{0}#run start", this.getClass().getSimpleName());
             try {
-                userConfig.toAbsolutePath().getParent().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+                userConfig.getParent().register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
                 LOG.log(Level.INFO, "{0}#run register watcher successfully to {1}",
-                        new Object[]{this.getClass().getSimpleName(), userConfig.toAbsolutePath().getParent().toAbsolutePath()});
+                        new Object[]{this.getClass().getSimpleName(), userConfig.getParent()});
             } catch (IOException ex) {
                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                 return;
@@ -292,8 +292,8 @@ public class RushHourProperties implements Serializable {
                 WatchKey key;
                 try {
                     key = watcher.take();
-                    LOG.log(Level.INFO, "{0}#run take key successfully : {1}",
-                            new Object[]{this.getClass().getSimpleName(), key});
+                    LOG.log(Level.INFO, "{0}#run take key successfully",
+                            new Object[]{this.getClass().getSimpleName()});
                 } catch (InterruptedException ex) {
                     Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                     return;
@@ -309,12 +309,13 @@ public class RushHourProperties implements Serializable {
                     }
 
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        Path file = (Path) event.context();
+                        // event.context() は監視対象ディレクトリからの相対パスが格納される
+                        Path file = userConfig.getParent().resolve((Path) event.context());
 
                         LOG.log(Level.INFO, "{0}#run kind of polled event was ENTRY_MODIFY. (path = {1})",
-                                new Object[]{this.getClass().getSimpleName(), file.toAbsolutePath()});
+                                new Object[]{this.getClass().getSimpleName(), file == null ? null : file.toAbsolutePath()});
 
-                        if (file.equals(userConfig)) {
+                        if (userConfig.equals(file)) {
                             try (InputStream is = Files.newInputStream(userConfig)) {
                                 config.load(is);
                                 LOG.log(Level.INFO, "{0}#run properties was successfully updated (path = {1})",
