@@ -29,6 +29,7 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
@@ -46,7 +47,8 @@ import net.rushhourgame.json.SimpleUserData;
 public class AdminBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @Inject
+    protected GameMaster gm;
     @Inject
     protected PlayerController pCon;
     @Inject
@@ -65,5 +67,8 @@ public class AdminBean implements Serializable {
             p = pCon.upsertPlayer(ADMIN_USER, ADMIN_USER, ADMIN_USER, SignInType.LOCAL, data, session.getLocale());
             session.setToken(p.getToken());
         }
+        
+        gm.constructTemplateWorld();
+        gm.startGame();
     }
 }

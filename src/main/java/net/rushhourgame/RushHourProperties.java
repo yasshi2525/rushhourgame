@@ -306,7 +306,7 @@ public class RushHourProperties implements Serializable {
                         if (file.equals(userConfig)) {
                             try (InputStream is = Files.newInputStream(userConfig)) {
                                 config.load(is);
-                                Logger.getLogger(RushHourProperties.class.getName()).log(Level.INFO, "properties was successfully updated.");
+                                Logger.getLogger(RushHourProperties.class.getName()).log(Level.INFO, "{0}#run properties was successfully updated.", ConfigWatchingService.class.getSimpleName());
                             } catch (IOException ex) {
                                 Logger.getLogger(RushHourProperties.class.getName()).log(Level.SEVERE, null, ex);
                             }

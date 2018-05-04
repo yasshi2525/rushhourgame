@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import javax.ejb.TimerService;
@@ -105,7 +106,7 @@ public class GameMasterTest {
     public void setUp() {
         EM.getTransaction().begin();
 
-        inst = new GameMaster();
+        inst = spy(new GameMaster());
         inst.debug = debug;
         inst.executorService = executorService;
         inst.timerService = timerService;
@@ -128,11 +129,73 @@ public class GameMasterTest {
     }
 
     @Test
-    public void testInit() throws Exception {
-        inst.init(null);
+    public void testPreDestroy() {
+        inst.preDestroy();
+
+        verify(inst, times(1)).stopGame();
+    }
+
+    @Test
+    public void testConstructTempleateWorld() throws Exception {
+        inst.constructTemplateWorld();
 
         verify(debug).init();
-        verify(timerService).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    public void testStartGame() {
+        inst.timerFuture = null;
+
+        assertTrue(inst.startGame());
+
+        verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.hCon, times(1)).findAll();
+    }
+
+    @Test
+    public void testStartGameAlreadyRunning() {
+        inst.timerFuture = mock(ScheduledFuture.class);
+        doReturn(false).when(inst.timerFuture).isDone();
+
+        assertFalse(inst.startGame());
+        verify(inst.hCon, never()).findAll();
+        verify(timerService, never()).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    public void testStartGameWhenCanceled() {
+        inst.timerFuture = mock(ScheduledFuture.class);
+        doReturn(true).when(inst.timerFuture).isDone();
+
+        assertTrue(inst.startGame());
+        verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.hCon, times(1)).findAll();
+    }
+
+    @Test
+    public void testStopGame() {
+        inst.timerFuture = mock(ScheduledFuture.class);
+        doReturn(false).when(inst.timerFuture).isDone();
+        doReturn(true).when(inst.timerFuture).cancel(eq(false));
+
+        assertTrue(inst.stopGame());
+        verify(inst.timerFuture, times(1)).cancel(eq(false));
+    }
+
+    @Test
+    public void testStopGameNull() {
+        inst.timerFuture = null;
+
+        assertFalse(inst.stopGame());
+    }
+
+    @Test
+    public void testStopGameAlreadyCanceled() {
+        inst.timerFuture = mock(ScheduledFuture.class);
+        doReturn(true).when(inst.timerFuture).isDone();
+
+        assertFalse(inst.stopGame());
+        verify(inst.timerFuture, never()).cancel(anyBoolean());
     }
 
     @Test
@@ -140,10 +203,10 @@ public class GameMasterTest {
         Future future = mock(Future.class);
         doReturn(future).when(executorService).submit(any(RouteSearcher.class));
         doThrow(ExecutionException.class).when(future).get();
-        
+
         inst.run();
     }
-    
+
     @Test
     public void testRunException2() {
         doReturn(true).when(inst.searcher).isAvailable();
@@ -197,7 +260,7 @@ public class GameMasterTest {
         inst.humans = HCON.findAll();
         inst.searcher.call();
         doReturn(true).when(inst.searcher).isAvailable();
-        
+
         Human human = HCON.create(ORIGIN, world.rsd, world.cmp);
         inst.humans = HCON.findAll();
 

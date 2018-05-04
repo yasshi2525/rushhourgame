@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
@@ -50,12 +51,15 @@ public class AdminBeanTest extends AbstractBeanTest{
         super.setUp();
         inst.pCon = PCON;
         inst.session = session;
+        inst.gm = mock(GameMaster.class);
         doReturn(Locale.getDefault()).when(session).getLocale();
     }
 
     @Test
     public void testInitAdminLogin() throws RushHourException {
         inst.init();
+        verify(inst.gm, times(1)).constructTemplateWorld();
+        verify(inst.gm, times(1)).startGame();
     }
     
     @Test

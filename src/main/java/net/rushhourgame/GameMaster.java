@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.DependsOn;
 import javax.ejb.EJB;
@@ -79,6 +80,8 @@ public class GameMaster implements Serializable, Runnable {
 
     @Resource
     protected ManagedScheduledExecutorService timerService;
+    protected ScheduledFuture<?> timerFuture;
+    
     @Inject
     protected TrainController tCon;
     @Inject
@@ -103,14 +106,42 @@ public class GameMaster implements Serializable, Runnable {
      * 永続化すると経路情報が消えてしまう
      */
     protected List<Human> humans;
-
+    
+    @PreDestroy
+    public void preDestroy() {
+        LOG.log(Level.INFO, "{0}#preDestroy stop game", new Object[]{this.getClass().getSimpleName()});
+        stopGame();
+    }
+    
     @Transactional
-    public void init(@Observes @Initialized(ApplicationScoped.class) ServletContext event) throws RushHourException {
-        LOG.log(Level.INFO, "{0}#init start initialization : event = {1}", new Object[]{this.getClass().getSimpleName(), event});
+    public void constructTemplateWorld() throws RushHourException {
+        LOG.log(Level.INFO, "{0}#constructTemplateWorld start", new Object[]{this.getClass().getSimpleName()});
         debug.init();
+        LOG.log(Level.INFO, "{0}#constructTemplateWorld end", new Object[]{this.getClass().getSimpleName()});
+    }
+    
+    @Transactional
+    public boolean startGame() {
+        if (timerFuture != null && !timerFuture.isDone()) {
+            LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{this.getClass().getSimpleName()});
+            return false;
+        }
+        
         humans = hCon.findAll();
-        timerService.scheduleWithFixedDelay(this, getInterval() * 5, getInterval(), TimeUnit.MILLISECONDS);
-        LOG.log(Level.INFO, "{0}#init end initialization", GameMaster.class.getSimpleName());
+        timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
+        return true;
+    }
+    
+    public boolean stopGame() {
+        if (timerFuture == null) {
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was not started.", new Object[]{this.getClass().getSimpleName()});
+            return false;
+        }
+        if (timerFuture.isDone()) {
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was already stopped.", new Object[]{this.getClass().getSimpleName()});
+            return false;
+        }
+        return timerFuture.cancel(false);
     }
 
     @Transactional
