@@ -115,20 +115,10 @@ public class TicketGateTest extends AbstractEntityTest {
     public void testPass() {
         inst.gateNum = 1;
         inst.occupied = 0;
-        doReturn(true).when(platform).canEnter();
         
         inst.pass();
         
         assertTrue(1 == inst.occupied);
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void testPassFail() {
-        doReturn(false).when(inst).canEnter();
-        
-        inst.pass();
-        
-        fail();
     }
     
     public void testAvailable() {
