@@ -106,9 +106,6 @@ public class TicketGate extends AbstractEntity implements Pointable, RelayPointF
     }
     
     public void pass() {
-        if (!canEnter()) {
-            throw new IllegalStateException("Tried to enter full station.");
-        }
         occupied++;
     }
     
