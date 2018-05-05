@@ -228,7 +228,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(c2, start2_2.getVia().getOriginal());
         
         
-        RouteEdge edge = inst.getStart(r1, c1).getOutEdges().get(0);
+        RouteEdge edge = inst.getStart(r1, c1).getViaEdge();
         assertNotNull(edge.getTo());
         assertNotNull(edge.getOriginal());
     }

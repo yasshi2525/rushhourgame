@@ -42,6 +42,7 @@ public abstract class AbstractRouteNode implements RouteNode {
     protected RouteNode via;
     protected List<RouteEdge> inEdges = new ArrayList<>();
     protected List<RouteEdge> outEdges = new ArrayList<>();
+    protected RouteEdge viaEdge;
 
     public AbstractRouteNode(RelayPointForHuman original) {
         this.original = original;
@@ -86,10 +87,17 @@ public abstract class AbstractRouteNode implements RouteNode {
     public boolean isEnd() {
         return via == null;
     }
+    
+    @Override
+    public void fix() {
+        viaEdge = outEdges.stream().filter(e -> e.getTo().equals(via)).findFirst().orElse(null);
+        inEdges = null;
+        outEdges = null;
+    }
 
     @Override
     public RouteEdge getViaEdge() {
-        return outEdges.stream().filter(e -> e.getTo().equals(via)).findFirst().get();
+        return viaEdge;
     }
 
     @Override

@@ -42,7 +42,7 @@ public interface RouteNode extends Comparable<RouteNode> {
     public double getCost();
 
     public void setCost(double cost);
-    
+
     public RouteNode getVia();
 
     public void setVia(RouteNode via);
@@ -53,7 +53,12 @@ public interface RouteNode extends Comparable<RouteNode> {
 
     public boolean isEnd();
 
+    /**
+     * 経路探索が終了したら必ず呼び出す. inEdges, outEdgesの中身が残っているといつまでもGCされず、メモリ不足になる現象が生じたため
+     */
+    public void fix();
+
     public RouteEdge getViaEdge();
-    
+
     public String toStringAsRoute();
 }

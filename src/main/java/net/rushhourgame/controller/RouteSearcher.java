@@ -221,6 +221,8 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 }
             });
         }
+        
+        nodes.forEach(node -> node.fix());
     }
 
     protected final class BaseObjPack {
