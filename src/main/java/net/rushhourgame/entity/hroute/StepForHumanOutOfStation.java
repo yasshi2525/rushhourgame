@@ -101,6 +101,7 @@ public class StepForHumanOutOfStation extends AbstractEntity implements StepForH
             h.exitFromPlatform(_from, _to);
             return 0;
         }
+        h.consumeLifespan(interval);
         return interval;
     }
 

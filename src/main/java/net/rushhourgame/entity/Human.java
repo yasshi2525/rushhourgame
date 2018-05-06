@@ -213,7 +213,7 @@ public class Human extends AbstractEntity implements Pointable {
     }
 
     public boolean shouldDie() {
-        return lifespan < 0 || isFinished();
+        return lifespan <= 0 || isFinished();
     }
 
     public Residence getSrc() {

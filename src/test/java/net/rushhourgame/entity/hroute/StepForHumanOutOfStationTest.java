@@ -67,10 +67,12 @@ public class StepForHumanOutOfStationTest extends AbstractEntityTest {
     public void testStep() {
         doReturn(true).when(gate).canExit();
         human.enterIntoPlatform(gate, platform);
+        human.setLifespan(1000);
 
         assertEquals(0, inst.step(human, 1000, 1));
         assertTrue(inst.isFinished(human));
 
+        assertEquals(1000L, human.getLifespan());
         verify(human, times(1)).exitFromPlatform(any(Platform.class), any(TicketGate.class));
     }
 
@@ -78,9 +80,11 @@ public class StepForHumanOutOfStationTest extends AbstractEntityTest {
     public void testStepFull() {
         doReturn(false).when(gate).canExit();
         human.enterIntoPlatform(gate, platform);
+        human.setLifespan(1000);
 
         assertEquals(1000, inst.step(human, 1000, 1));
 
+        assertEquals(0L, human.getLifespan());
         verify(human, times(0)).exitFromPlatform(any(Platform.class), any(TicketGate.class));
     }
 

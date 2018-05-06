@@ -54,7 +54,7 @@ public class StepForHumanTransferTest extends AbstractEntityTest {
     @Mock
     TicketGate to;
 
-    @Mock
+    @Spy
     Human human;
 
     @Before
@@ -72,8 +72,11 @@ public class StepForHumanTransferTest extends AbstractEntityTest {
 
     @Test
     public void testStep() {
+        human.setLifespan(1000);
+        
         inst.step(human, 1000L, 1d);
         
+        assertEquals(1000L, human.getLifespan());
         verify(human).walkTo(eq(1000L), eq(1d), eq(to));
     }
     

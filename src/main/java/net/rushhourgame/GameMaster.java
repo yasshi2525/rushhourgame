@@ -185,7 +185,7 @@ public class GameMaster implements Serializable, Runnable {
                     }
                     hCon.step(h, getInterval(), getHumanSpeed());
                 });
-                hCon.killFinishedHuman(humans);
+                hCon.killHuman(humans);
             } finally {
                 searcher.unlock();
             }

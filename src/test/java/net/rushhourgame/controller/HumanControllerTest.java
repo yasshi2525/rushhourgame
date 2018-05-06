@@ -24,6 +24,8 @@
 package net.rushhourgame.controller;
 
 import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
 import static net.rushhourgame.RushHourProperties.GAME_DEF_HUMAN_LIFESPAN;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
@@ -83,4 +85,31 @@ public class HumanControllerTest extends AbstractControllerTest {
         inst.step(h, 1000000, 0.00001);
     }
     
+    @Test
+    public void killHumanTest() {
+        inst.em = mock(EntityManager.class);
+        
+        Human happy = spy(Human.class);
+        Human tired = spy(Human.class); // lifespan = 0
+        Human ended = spy(Human.class);
+        
+        happy.setLifespan(500);
+        tired.setLifespan(0);
+        ended.setLifespan(200);
+        
+        doReturn(false).when(happy).isFinished();
+        doReturn(false).when(tired).isFinished();
+        doReturn(true).when(ended).isFinished();
+        
+        List<Human> humans = new ArrayList<>();
+        humans.add(happy);
+        humans.add(tired);
+        humans.add(ended);
+        
+        inst.killHuman(humans);
+        
+        assertTrue(humans.contains(happy));
+        assertFalse(humans.contains(tired));
+        assertFalse(humans.contains(ended));
+    }
 }

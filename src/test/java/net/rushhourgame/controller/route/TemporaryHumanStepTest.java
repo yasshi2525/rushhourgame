@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -44,7 +45,7 @@ public class TemporaryHumanStepTest {
     protected TemporaryHumanPoint from;
     @Mock
     protected RelayPointForHuman to;
-    @Mock
+    @Spy
     protected Human human;
     
     protected final static Pointable ORIGIN = new SimplePoint();
@@ -99,9 +100,11 @@ public class TemporaryHumanStepTest {
     @Test
     public void testStep() {
         TemporaryHumanStep inst = new TemporaryHumanStep(from, to);
+        human.setLifespan(1000);
         
         inst.step(human, 0L, 0d);
         
+        assertEquals(1000L, human.getLifespan());
         verify(human, times(1)).walkTo(eq(0L), eq(0d), eq(to));
     }
     

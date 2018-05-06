@@ -41,10 +41,10 @@ import net.rushhourgame.entity.Residence;
  */
 @Dependent
 public class HumanController extends PointEntityController {
-    
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(HumanController.class.getName());
-       
+
     public Human create(@NotNull Pointable point, @NotNull Residence src, @NotNull Company dst) {
         Human human = new Human();
         human.setX(point.getX());
@@ -54,25 +54,33 @@ public class HumanController extends PointEntityController {
         human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
         human.setStandingOn(Human.StandingOn.GROUND);
         em.persist(human);
-        LOG.log(Level.FINE, "{0}#create created {1}", new Object[] {HumanController.class, human.toString()});
+        LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
         return human;
     }
-    
+
     public List<Human> findAll() {
         return em.createNamedQuery("Human.findAll", Human.class).getResultList();
     }
-    
+
     public List<Human> findIn(@NotNull Pointable center, double scale) {
         return findIn(em.createNamedQuery("Human.findIn", Human.class), center, scale);
     }
-    
+
     public void step(Human h, long interval, double speed) {
         h.step(em, interval, speed);
-        h.consumeLifespan(interval);
     }
-    
-    public void killFinishedHuman(List<Human> humans) {
-        humans.stream().filter(h -> h.shouldDie()).forEach(h -> em.remove(h));
-        humans.removeIf(h -> h.shouldDie());
+
+    public void killHuman(List<Human> humans) {
+        humans.removeIf(h -> {
+            boolean res = h.shouldDie();
+            if (res) {
+                em.remove(h);
+                if (h.getLifespan() <= 0) { 
+                    LOG.log(Level.FINE, "{0}#killFinishedHuman() deleted lifespan 0 {1} : {2})",
+                        new Object[]{HumanController.class, h.toString(), h.getCurrent()});
+                } 
+            }
+            return res;
+        });
     }
 }

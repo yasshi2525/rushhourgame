@@ -102,6 +102,7 @@ public class StepForHumanIntoStation extends AbstractEntity implements StepForHu
             h.enterIntoPlatform(_from, _to);
             return 0;
         }
+        h.consumeLifespan(interval);
         return interval;
     }
 

@@ -68,8 +68,10 @@ public class StepForHumanDirectlyTest extends AbstractEntityTest {
     @Test
     public void testStep() {
         cmp.setX(1000);
+        human.setLifespan(1000);
         
         assertEquals(1000L, inst.step(human, 1000, 1));
         assertTrue(inst.isFinished(human));
+        assertEquals(1000L, human.getLifespan());
     }
 }

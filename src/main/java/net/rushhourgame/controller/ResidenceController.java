@@ -108,7 +108,7 @@ public class ResidenceController extends PointEntityController {
                     humans.add(hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0)));
                 }
             } else {
-                LOG.log(Level.INFO, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",
+                LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",
                         new Object[]{ResidenceController.class, cost, r, companies.get(0)});
             }
 
