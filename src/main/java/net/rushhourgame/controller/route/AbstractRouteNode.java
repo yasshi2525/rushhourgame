@@ -42,6 +42,7 @@ public abstract class AbstractRouteNode implements RouteNode {
     protected RouteNode via;
     protected List<RouteEdge> inEdges = new ArrayList<>();
     protected List<RouteEdge> outEdges = new ArrayList<>();
+    protected boolean isFixed;
     protected RouteEdge viaEdge;
 
     public AbstractRouteNode(RelayPointForHuman original) {
@@ -75,11 +76,17 @@ public abstract class AbstractRouteNode implements RouteNode {
 
     @Override
     public List<RouteEdge> getInEdges() {
+        if (isFixed) {
+            throw new IllegalStateException("no more avilable route info because this object is already fixed.");
+        }
         return inEdges;
     }
 
     @Override
     public List<RouteEdge> getOutEdges() {
+        if (isFixed) {
+            throw new IllegalStateException("no more avilable route info because this object is already fixed.");
+        }
         return outEdges;
     }
 
@@ -93,6 +100,7 @@ public abstract class AbstractRouteNode implements RouteNode {
         viaEdge = outEdges.stream().filter(e -> e.getTo().equals(via)).findFirst().orElse(null);
         inEdges = null;
         outEdges = null;
+        isFixed = true;
     }
 
     @Override

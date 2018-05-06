@@ -167,6 +167,20 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertTrue(10 == begin.getCost());
         assertNull(goal.getVia());
         assertEquals(goal, begin.getVia());
+        
+        try {
+            begin.getInEdges();
+            fail();
+        } catch (IllegalStateException e) {
+            // OK
+        }
+        
+        try {
+            begin.getOutEdges();
+            fail();
+        } catch (IllegalStateException e) {
+            // OK
+        }
     }
     
     /**
