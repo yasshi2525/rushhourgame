@@ -144,7 +144,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
     @Override
     @Transactional
     public Boolean call() {
-        LOG.log(Level.INFO, "{0}#call start by {1}", new Object[]{this.getClass().getSimpleName(), this});
+        LOG.log(Level.INFO, "{0}#call start by {1}", new Object[]{RouteSearcher.class, this});
         lock.lock();
         try {
             BaseObjPack bPack = this.new BaseObjPack();

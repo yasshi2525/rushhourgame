@@ -144,6 +144,15 @@ public class GameMaster implements Serializable, Runnable {
         }
         return timerFuture.cancel(false);
     }
+    
+    public boolean search() {
+        try {
+            return executorService.submit(searcher).get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(GameMaster.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
 
     @Transactional
     @Override

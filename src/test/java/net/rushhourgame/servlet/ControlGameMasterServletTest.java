@@ -81,6 +81,7 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).constructTemplateWorld();
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
+        verify(gm, never()).search();
     }
 
     @Test
@@ -92,6 +93,7 @@ public class ControlGameMasterServletTest {
         verify(gm, times(1)).constructTemplateWorld();
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
+        verify(gm, never()).search();
         verify(out, times(1)).println(eq("success"));
     }
 
@@ -105,6 +107,7 @@ public class ControlGameMasterServletTest {
         verify(gm, times(1)).constructTemplateWorld();
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
+        verify(gm, never()).search();
         verify(out, times(1)).println(eq("failed. show log in detail."));
     }
 
@@ -118,6 +121,7 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).constructTemplateWorld();
         verify(gm, times(1)).startGame();
         verify(gm, never()).stopGame();
+        verify(gm, never()).search();
         verify(out, times(1)).println(eq("success"));
     }
 
@@ -131,6 +135,21 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).constructTemplateWorld();
         verify(gm, never()).startGame();
         verify(gm, times(1)).stopGame();
+        verify(gm, never()).search();
+        verify(out, times(1)).println(eq("success"));
+    }
+    
+    @Test
+    public void testProcessSearch() throws ServletException, IOException, RushHourException {
+        doReturn("search").when(req).getParameter(eq("op"));
+        doReturn(true).when(gm).search();
+
+        inst.doGet(req, res);
+
+        verify(gm, never()).constructTemplateWorld();
+        verify(gm, never()).startGame();
+        verify(gm, never()).stopGame();
+        verify(gm, times(1)).search();
         verify(out, times(1)).println(eq("success"));
     }
 
@@ -143,6 +162,7 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).constructTemplateWorld();
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
+        verify(gm, never()).search();
         verify(out, times(1)).println(eq("invalid GET parameter \"op\" : invalid"));
         verify(out, times(1)).println(eq("failed. show log in detail."));
     }

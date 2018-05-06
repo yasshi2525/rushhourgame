@@ -100,6 +100,9 @@ public class GameMasterTest {
 
     @Mock
     protected ManagedScheduledExecutorService timerService;
+    
+    @Mock
+    protected Future future;
 
     @Before
     public void setUp() {
@@ -119,7 +122,7 @@ public class GameMasterTest {
         inst.em = spy(EM);
         doNothing().when(inst.rCon).step(any(Residence.class), anyLong(), anyList());
         // 人を生成しないようにする
-        doReturn(mock(Future.class)).when(executorService).submit(any(RouteSearcher.class));
+        doReturn(future).when(executorService).submit(any(RouteSearcher.class));
     }
 
     @After
@@ -196,11 +199,23 @@ public class GameMasterTest {
         assertFalse(inst.stopGame());
         verify(inst.timerFuture, never()).cancel(anyBoolean());
     }
+    
+    @Test
+    public void testSearch() throws InterruptedException, ExecutionException {
+        doReturn(true).when(future).get();
+        
+        assertTrue(inst.search());
+    }
+    
+    @Test
+    public void testSearchException() throws InterruptedException, ExecutionException {
+        doThrow(ExecutionException.class).when(future).get();
+        
+        assertFalse(inst.search());
+    }
 
     @Test
     public void testRunException() throws InterruptedException, ExecutionException {
-        Future future = mock(Future.class);
-        doReturn(future).when(executorService).submit(any(RouteSearcher.class));
         doThrow(ExecutionException.class).when(future).get();
 
         inst.run();

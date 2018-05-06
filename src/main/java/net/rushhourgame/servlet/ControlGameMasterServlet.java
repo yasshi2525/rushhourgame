@@ -77,21 +77,23 @@ public class ControlGameMasterServlet extends HttpServlet {
             } else {
                 boolean res;
                 switch (op) {
-                    case "construct": {
+                    case "construct":
                         try {
                             gm.constructTemplateWorld();
                             res = true;
                         } catch (RushHourException ex) {
                             Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
                             res = false;
-                        } 
-                    }
-                    break;
+                        }
+                        break;
                     case "start":
                         res = gm.startGame();
                         break;
                     case "stop":
                         res = gm.stopGame();
+                        break;
+                    case "search":
+                        res = gm.search();
                         break;
                     default:
                         res = false;
