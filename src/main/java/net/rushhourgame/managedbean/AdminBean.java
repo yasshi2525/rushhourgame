@@ -25,6 +25,9 @@ package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -73,6 +76,8 @@ public class AdminBean implements Serializable {
             gm.startGame();
         } catch (RushHourException e) {
             // do-nothing
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(AdminBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

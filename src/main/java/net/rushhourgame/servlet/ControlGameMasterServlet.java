@@ -25,6 +25,7 @@ package net.rushhourgame.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -80,10 +81,10 @@ public class ControlGameMasterServlet extends HttpServlet {
                         try {
                             gm.constructTemplateWorld();
                             res = true;
-                        } catch (RushHourException ex) {
+                        } catch (ExecutionException | InterruptedException | RushHourException ex) {
                             Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
                             res = false;
-                        }
+                        } 
                     }
                     break;
                     case "start":
