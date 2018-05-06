@@ -39,7 +39,9 @@ public class PermanentRouteEdge extends AbstractRouteEdge implements RouteEdge {
     public String toString() {
         StringBuilder sb = new StringBuilder("pe{");
         sb.append(from);
-        sb.append("_=>_");
+        sb.append("=>");
+        sb.append(String.format("%.1f",original.getCost()));
+        sb.append("=>");
         sb.append(to);
         sb.append("}");
         return sb.toString();

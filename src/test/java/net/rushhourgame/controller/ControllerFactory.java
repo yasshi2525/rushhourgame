@@ -144,6 +144,7 @@ public class ControllerFactory {
         inst.msg = RushHourResourceBundle.getInstance();
         inst.rCon = createRailController();
         inst.stCon = createStationController();
+        inst.sCon = createStepForHumanController();
         init(inst);
         
         return inst;

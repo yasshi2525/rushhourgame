@@ -49,6 +49,10 @@ import net.rushhourgame.entity.StepForHuman;
     @NamedQuery(
             name = "StepForHumanThroughTrain.findAll",
             query = "SELECT x FROM StepForHumanThroughTrain x"
+    ),
+    @NamedQuery(
+            name = "StepForHumanThroughTrain.removeByLine",
+            query = "DELETE FROM StepForHumanThroughTrain x WHERE x.line = :line"
     )
 })
 public class StepForHumanThroughTrain extends AbstractEntity implements StepForHuman {

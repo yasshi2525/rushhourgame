@@ -61,6 +61,8 @@ public class AssistanceController extends AbstractController{
     StationController stCon;
     @Inject
     RushHourResourceBundle msg;
+    @Inject
+    StepForHumanController sCon;
     
     public Result startWithStation(@NotNull Player player, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
         RailNode startNode = rCon.create(player, p);
@@ -91,6 +93,11 @@ public class AssistanceController extends AbstractController{
             if (lCon.canEnd(inserted, player)) {
                 lCon.end(inserted, player);
             }
+        } else {
+            // 完成済みの路線でも、経路が変わるためルートを再計算させる
+            Line line = inserted.getParent();
+            em.refresh(line);
+            sCon.modifyCompletedLine(line);
         }
         Result result = new Result(extended, station, inserted.getParent());
         LOG.log(Level.INFO, "{0}#_extend created {1}", new Object[] {AssistanceController.class, result});

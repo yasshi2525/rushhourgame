@@ -65,16 +65,16 @@ public class LineStep extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Station onStation;
 
-    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     protected LineStepMoving moving;
 
-    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     protected LineStepStopping stopping;
 
-    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     protected LineStepDeparture departure;
 
-    @OneToOne(mappedBy = "parent", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     protected LineStepPassing passing;
 
     public Line getParent() {
@@ -131,7 +131,7 @@ public class LineStep extends AbstractEntity implements Ownable {
     public LineStepPassing getPassing() {
         return passing;
     }
-    
+
     public RailNode getStartRailNode() {
         if (departure != null) {
             return departure.getStaying().getRailNode();
@@ -248,7 +248,7 @@ public class LineStep extends AbstractEntity implements Ownable {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
-    
+
     public double getDist() {
         if (departure != null) {
             return 0.0;
@@ -262,7 +262,7 @@ public class LineStep extends AbstractEntity implements Ownable {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
-    
+
     public LineStepType getType() {
         if (departure != null) {
             return LineStepType.DEPARTURE;
@@ -276,12 +276,12 @@ public class LineStep extends AbstractEntity implements Ownable {
             throw new IllegalStateException("line step doesn't have any children.");
         }
     }
-    
+
     public boolean isAreaIn(Pointable center, double scale) {
         return isAreaIn(getStartRailNode(), center, scale)
-                ||  isAreaIn(getGoalRailNode(), center, scale);
+                || isAreaIn(getGoalRailNode(), center, scale);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("ls(" + id + "){");

@@ -37,6 +37,12 @@ import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -184,6 +190,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
         Result n1 = inst.extend(player, start.node, EXTENDED);
         Result n2 = inst.extend(player, n1.node, EXTENDED2);
+        EM.flush();
 
         assertEquals(1, LCON.findAll(player).size());
         Line line = LCON.findAll(player).get(0);
@@ -206,11 +213,11 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         // start -- n1 <- n2
         step = step.getNext();
         assertMoving(step, n2.node, n1.node);
-        
+
         // start <- n1 -- n2
         step = step.getNext();
         assertStopping(step, n1.node, start.node);
-        
+
         assertEquals(top, step.getNext());
     }
 
@@ -223,13 +230,13 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result n1 = inst.extend(player, start.node, EXTENDED);
         Result n2 = inst.extend(player, n1.node, EXTENDED2);
         Result n3 = inst.extend(player, n1.node, EXTENDED3);
-        
+
         Line line = start.line;
         assertTrue(LCON.isCompleted(line));
-                
+
         EM.refresh(line);
         // start -> n1 -> n3 -> n1 -> n2 -> n1 -> start
-        LineStep top = findTop(line);    
+        LineStep top = findTop(line);
         assertDeparture(top, start.node);
         LineStep step = top.getNext();
         assertMoving(step, start.node, n1.node);
@@ -238,10 +245,10 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         assertMoving(step = step.getNext(), n1.node, n2.node);
         assertMoving(step = step.getNext(), n2.node, n1.node);
         assertStopping(step = step.getNext(), n1.node, start.node);
-        
+
         assertEquals(top, step.getNext());
     }
-    
+
     @Test
     public void testExtendForkT() throws RushHourException {
         //       n3
@@ -251,30 +258,30 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result n1 = inst.extend(player, start.node, EXTENDED);
         Result n2 = inst.extend(player, start.node, EXTENDED2);
         Result n3 = inst.extend(player, start.node, EXTENDED3);
-        
+
         Line line = start.line;
         assertTrue(LCON.isCompleted(line));
-                
+
         EM.refresh(line);
-        
+
         // start -> n3 -> start -> n2 -> start -> n1 -> start
-        LineStep top = findTop(line);    
+        LineStep top = findTop(line);
         assertDeparture(top, start.node);
         LineStep step = top.getNext();
         assertMoving(step, start.node, n3.node);
         assertStopping(step = step.getNext(), n3.node, start.node);
-        
+
         assertDeparture(step = step.getNext(), start.node);
         assertMoving(step = step.getNext(), start.node, n2.node);
         assertStopping(step = step.getNext(), n2.node, start.node);
-        
+
         assertDeparture(step = step.getNext(), start.node);
         assertMoving(step = step.getNext(), start.node, n1.node);
         assertStopping(step = step.getNext(), n1.node, start.node);
-        
+
         assertEquals(top, step.getNext());
     }
-    
+
     @Test
     public void testExtendWithLineController() throws RushHourException {
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
@@ -284,6 +291,23 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         EM.refresh(start.line);
         LCON.extend(start.line.findTop(), player, n2.getInEdges().get(0));
         inst.extend(player, n2, EXTENDED2);
+    }
+
+    @Test
+    public void testExtendToCompletedLine() throws RushHourException {
+        // before : st -- st
+        // after  : st -- st -- st
+        Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        Result extended = inst.extendWithStation(player, start.node, EXTENDED, Locale.JAPANESE);
+        EM.flush();
+        
+        assertEquals(2, TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
+        
+        Result extended2 = inst.extendWithStation(player, extended.node, EXTENDED2, Locale.JAPANESE);
+        EM.flush();
+        
+        // 古いのが残っていない
+        assertEquals(6, TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
     }
 
     protected static LineStep findTop(Line line) {

@@ -348,6 +348,21 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
+    
+    @Test
+    public void testModifyCompletedLineException() throws RushHourException {
+        Station st = createStation();
+        Player owner = st.getOwner();
+        
+        Line line = LCON.create(owner, "_test");
+        LCON.start(line, owner, st);
+        try {
+            inst.modifyCompletedLine(line);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
+        }
+    }
 
     protected List<StepForHumanDirectly> findDirectly() {
         return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);

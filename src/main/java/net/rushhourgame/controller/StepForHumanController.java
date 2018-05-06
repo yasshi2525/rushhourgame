@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
@@ -234,11 +235,37 @@ public class StepForHumanController extends AbstractController {
         }
     }
 
+    public void modifyCompletedLine(@NotNull Line line) throws RushHourException {
+        searcher.lock();
+        try {
+            if (em.createNamedQuery("Line.isImcompleted", Number.class)
+                    .setParameter("line", line)
+                    .getSingleResult().longValue() == 1L) {
+                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+            }
+
+            removeAllStepForHuman(line);
+
+            lSearcher.persist(line);
+
+            // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
+        }
+    }
+
+    protected int removeAllStepForHuman(Line line) {
+        return em.createNamedQuery("StepForHumanThroughTrain.removeByLine")
+                .setParameter("line", line)
+                .executeUpdate();
+    }
+
     protected StepForHumanDirectly createDirectly(Residence from, Company to) {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createDirectly created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createDirectly created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -246,7 +273,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanResidenceToStation inst = new StepForHumanResidenceToStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createResidenceToStation created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createResidenceToStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -254,7 +281,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createStationToCompany created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createStationToCompany created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -262,7 +289,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanIntoStation inst = new StepForHumanIntoStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createIntoStation created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createIntoStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -270,7 +297,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createOutOfStation created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createOutOfStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -278,7 +305,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanTransfer inst = new StepForHumanTransfer();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createTransfer created {1}", new Object[] {StepForHumanController.class, inst});
+        LOG.log(Level.INFO, "{0}#createTransfer created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
