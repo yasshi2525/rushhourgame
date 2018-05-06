@@ -81,7 +81,7 @@ public class ControlGameMasterServlet extends HttpServlet {
                         try {
                             gm.constructTemplateWorld();
                             res = true;
-                        } catch (ExecutionException | InterruptedException | RushHourException ex) {
+                        } catch (RushHourException ex) {
                             Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
                             res = false;
                         } 

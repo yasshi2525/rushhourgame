@@ -76,8 +76,6 @@ public class AdminBean implements Serializable {
             gm.startGame();
         } catch (RushHourException e) {
             // do-nothing
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(AdminBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
     }
 }

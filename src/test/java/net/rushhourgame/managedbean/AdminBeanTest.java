@@ -57,24 +57,15 @@ public class AdminBeanTest extends AbstractBeanTest{
     }
 
     @Test
-    public void testInitAdminLogin() throws RushHourException, InterruptedException, ExecutionException {
+    public void testInitAdminLogin() throws RushHourException {
         inst.init();
         verify(inst.gm, times(1)).constructTemplateWorld();
         verify(inst.gm, times(1)).startGame();
     }
     
     @Test
-    public void testInitAdminLoginRushHourException() throws RushHourException, InterruptedException, ExecutionException {
+    public void testInitAdminLoginRushHourException() throws RushHourException {
         doThrow(RushHourException.class).when(inst.gm).constructTemplateWorld();
-        
-        inst.init();
-        verify(inst.gm, times(1)).constructTemplateWorld();
-        verify(inst.gm, never()).startGame();
-    }
-    
-    @Test
-    public void testInitAdminLoginException() throws RushHourException, InterruptedException, ExecutionException {
-        doThrow(InterruptedException.class).when(inst.gm).constructTemplateWorld();
         
         inst.init();
         verify(inst.gm, times(1)).constructTemplateWorld();

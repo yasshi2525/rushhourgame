@@ -72,7 +72,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessNoOp() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessNoOp() throws ServletException, IOException, RushHourException {
         doReturn(null).when(req).getParameter(anyString());
 
         inst.doGet(req, res);
@@ -84,7 +84,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessConstruct() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessConstruct() throws ServletException, IOException, RushHourException {
         doReturn("construct").when(req).getParameter(eq("op"));
 
         inst.doGet(req, res);
@@ -96,7 +96,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessConstructException() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessConstructException() throws ServletException, IOException, RushHourException {
         doReturn("construct").when(req).getParameter(eq("op"));
         doThrow(RushHourException.class).when(gm).constructTemplateWorld();
 
@@ -109,7 +109,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessStart() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessStart() throws ServletException, IOException, RushHourException {
         doReturn("start").when(req).getParameter(eq("op"));
         doReturn(true).when(gm).startGame();
 
@@ -122,7 +122,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessStop() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessStop() throws ServletException, IOException, RushHourException {
         doReturn("stop").when(req).getParameter(eq("op"));
         doReturn(true).when(gm).stopGame();
 
@@ -135,7 +135,7 @@ public class ControlGameMasterServletTest {
     }
 
     @Test
-    public void testProcessInvalid() throws ServletException, IOException, RushHourException, InterruptedException, ExecutionException {
+    public void testProcessInvalid() throws ServletException, IOException, RushHourException {
         doReturn("invalid").when(req).getParameter(eq("op"));
 
         inst.doGet(req, res);
