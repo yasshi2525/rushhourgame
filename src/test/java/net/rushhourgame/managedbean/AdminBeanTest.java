@@ -24,6 +24,7 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
@@ -56,10 +57,28 @@ public class AdminBeanTest extends AbstractBeanTest{
     }
 
     @Test
-    public void testInitAdminLogin() throws RushHourException {
+    public void testInitAdminLogin() throws RushHourException, InterruptedException, ExecutionException {
         inst.init();
         verify(inst.gm, times(1)).constructTemplateWorld();
         verify(inst.gm, times(1)).startGame();
+    }
+    
+    @Test
+    public void testInitAdminLoginRushHourException() throws RushHourException, InterruptedException, ExecutionException {
+        doThrow(RushHourException.class).when(inst.gm).constructTemplateWorld();
+        
+        inst.init();
+        verify(inst.gm, times(1)).constructTemplateWorld();
+        verify(inst.gm, never()).startGame();
+    }
+    
+    @Test
+    public void testInitAdminLoginException() throws RushHourException, InterruptedException, ExecutionException {
+        doThrow(InterruptedException.class).when(inst.gm).constructTemplateWorld();
+        
+        inst.init();
+        verify(inst.gm, times(1)).constructTemplateWorld();
+        verify(inst.gm, never()).startGame();
     }
     
     @Test
