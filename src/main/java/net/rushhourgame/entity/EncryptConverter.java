@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -38,7 +39,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import net.rushhourgame.RushHourProperties;
@@ -48,18 +51,21 @@ import static net.rushhourgame.RushHourProperties.*;
  * 暗号化してデータベースに登録する
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Converter
-@Dependent
+@ApplicationScoped
+@Converter(autoApply = false)
 public class EncryptConverter implements AttributeConverter<String, String> {
 
     private static final Logger LOG = Logger.getLogger(EncryptConverter.class.getName());
+    
+    @Inject
+    protected RushHourProperties prop;
 
     @Override
     public String convertToDatabaseColumn(String attribute) {
         try {
             return encrypt(attribute);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
-            LOG.log(Level.SEVERE, "OAuthTokenConverter#convertToDatabaseColumn", ex);
+            LOG.log(Level.SEVERE, "EncryptConverter#convertToDatabaseColumn", ex);
             return null;
         }
     }
@@ -69,7 +75,7 @@ public class EncryptConverter implements AttributeConverter<String, String> {
         try {
             return decrypt(dbData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException ex) {
-            LOG.log(Level.SEVERE, "OAuthTokenConverter#convertToEntityAttribute", ex);
+            LOG.log(Level.SEVERE, "EncryptConverter#convertToEntityAttribute", ex);
             return null;
         }
     }
@@ -127,13 +133,13 @@ public class EncryptConverter implements AttributeConverter<String, String> {
     }
 
     protected Cipher getCipher() throws NoSuchAlgorithmException, NoSuchPaddingException {
-        String transform = RushHourProperties.getInstance().get(ENCRYPT_TRANSFORM);
+        String transform = getProperties().get(ENCRYPT_TRANSFORM);
         return Cipher.getInstance(transform);
     }
 
     protected SecretKey loadSecretKey() {
-        String algorithm = RushHourProperties.getInstance().get(ENCRYPT_ALGORITHM);
-        String encodedSecretKey = RushHourProperties.getInstance().get(ENCRYPT_KEY);
+        String algorithm = getProperties().get(ENCRYPT_ALGORITHM);
+        String encodedSecretKey = getProperties().get(ENCRYPT_KEY);
 
         byte[] secretKeyBin = Base64.getDecoder().decode(encodedSecretKey);
         return new SecretKeySpec(secretKeyBin, algorithm);
@@ -144,5 +150,14 @@ public class EncryptConverter implements AttributeConverter<String, String> {
         byte[] _iv = new byte[16];
         random.nextBytes(_iv);
         return new IvParameterSpec(_iv);
+    }
+    
+    protected RushHourProperties getProperties() {
+        if (prop == null) {
+            LOG.log(Level.WARNING, "{0}#getProperties failed to inject prop", EncryptConverter.class);
+            return RushHourProperties.getInstance();
+        } else {
+            return prop;
+        }
     }
 }

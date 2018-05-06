@@ -24,6 +24,7 @@
 package net.rushhourgame;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
@@ -32,6 +33,7 @@ import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
+import javax.inject.Inject;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -41,11 +43,12 @@ import net.rushhourgame.exception.RushHourException;
 public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
 
     private static final Logger LOG = Logger.getLogger(RushHourExceptionHandler.class.getName());
-
-    private final ExceptionHandler wrapped;
+    
+    @Inject
+    protected ErrorMessageBuilder msgBuilder;
 
     public RushHourExceptionHandler(ExceptionHandler wrapped) {
-        this.wrapped = wrapped;
+        super(wrapped);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
                 if (ex != null) {
                     errMsg = ex.getErrMsg();
                 } else {
-                    errMsg = ErrorMessageBuilder.getInstance().createUnkownError();
+                    errMsg = getMsgBuilder().createUnkownError();
                 }
                 fc.getExternalContext().getRequestMap().put("errorMsg", errMsg);
                 fc.getExternalContext().getRequestMap().put("throwable", t);
@@ -95,12 +98,16 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
         return null;
     }
 
-    @Override
-    public ExceptionHandler getWrapped() {
-        return wrapped;
-    }
-
     protected FacesContext getFacesInstance() {
         return FacesContext.getCurrentInstance();
+    }
+    
+    protected ErrorMessageBuilder getMsgBuilder() {
+        if (msgBuilder == null) {
+            LOG.log(Level.WARNING, "{0}#getMsgBuilder failed to inject msgBuilder", RushHourExceptionHandler.class);
+            return ErrorMessageBuilder.getInstance();
+        } else {
+            return msgBuilder;
+        }
     }
 }

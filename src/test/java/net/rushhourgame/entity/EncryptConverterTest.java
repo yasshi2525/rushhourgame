@@ -26,6 +26,7 @@ package net.rushhourgame.entity;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import net.rushhourgame.RushHourProperties;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -80,5 +81,12 @@ public class EncryptConverterTest {
         
         assertNull(inst.convertToDatabaseColumn("hoge"));
         assertNull(inst.convertToEntityAttribute("hoge"));
+    }
+    
+    @Test
+    public void testGetProperties() {
+        inst.prop = mock(RushHourProperties.class);
+        
+        assertEquals(inst.prop, inst.getProperties());
     }
 }

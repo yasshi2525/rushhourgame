@@ -156,10 +156,9 @@ public class RushHourExceptionHandlerTest {
     }
 
     @Test
-    public void testGetWrapped() {
-        assertEquals(wrapped,
-                new RushHourExceptionHandler(wrapped)
-                        .getWrapped());
+    public void testGetMassageBuilder() {
+        inst.msgBuilder = mock(ErrorMessageBuilder.class);
+        assertEquals(inst.msgBuilder, inst.getMsgBuilder());
     }
     
     @Test
