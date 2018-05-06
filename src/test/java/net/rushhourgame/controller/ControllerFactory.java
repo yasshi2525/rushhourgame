@@ -40,11 +40,12 @@ import static org.mockito.Mockito.mock;
  */
 public class ControllerFactory {
 
-    public static ResidenceController createResidenceController() {
+    public static ResidenceController createResidenceController(RouteSearcher searcher) {
         ResidenceController inst = new ResidenceController();
         inst.sCon = createStepForHumanController();
         inst.cCon = createCompanyController();
         inst.hCon = createHumanController();
+        inst.searcher = searcher;
         init(inst);
         return inst;
     }
@@ -121,12 +122,12 @@ public class ControllerFactory {
     
     public static RouteSearcher createRouteSearcher(GameMaster gm) {
         RouteSearcher inst = new RouteSearcher();
+        inst.gm = gm;
         inst.cCon = createCompanyController();
-        inst.rCon = createResidenceController();
+        inst.rCon = createResidenceController(inst);
         inst.stCon = createStationController();
         inst.sCon = createStepForHumanController();
         inst.lock = new ReentrantReadWriteLock().writeLock();
-        inst.gm = gm;
         init(inst);
         return inst;
     }

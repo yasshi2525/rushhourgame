@@ -96,9 +96,9 @@ public class DebugInitializer {
         Residence src = rCon.create(new SimplePoint(-50, -25));
         Company dst = cCon.create(new SimplePoint(50, 25));
 
-        for (int i = 0; i < 3; i++) {
-            rCon.create(new SimplePoint(Math.random() * 200 - 100, Math.random() * 200 - 100));
-            cCon.create(new SimplePoint(Math.random() * 200 - 100, Math.random() * 200 - 100));
+        for (int i = 0; i < 4; i++) {
+            rCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
+            cCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
         }
         
         Player owner = pCon.upsertPlayer(

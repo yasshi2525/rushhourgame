@@ -136,6 +136,10 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 .filter(node -> node.getOriginal().equalsId(start))
                 .findFirst().get();
     }
+    
+    public double getCost(@NotNull Identifiable start, @NotNull Company c) {
+        return getStart(start, c).getCost();
+    }
 
     @Override
     @Transactional

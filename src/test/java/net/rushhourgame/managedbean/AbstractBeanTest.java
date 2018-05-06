@@ -27,10 +27,13 @@ import java.util.Locale;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
+import net.rushhourgame.DebugInitializer;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.RushHourSession;
+import net.rushhourgame.SimpleGameMaster;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
@@ -42,6 +45,7 @@ import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
@@ -73,7 +77,6 @@ public class AbstractBeanTest {
     protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static TrainController TRCON = ControllerFactory.createTrainController();
     protected final static HumanController HCON = ControllerFactory.createHumanController();
@@ -81,6 +84,9 @@ public class AbstractBeanTest {
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
+    protected final static SimpleGameMaster GM = new SimpleGameMaster();
+    protected static RouteSearcher SEARCHER;
+    protected static ResidenceController RCON;
     
     @Mock
     protected FacesContext facesContext;
@@ -102,6 +108,9 @@ public class AbstractBeanTest {
     
     @BeforeClass
     public static void setUpClass() {
+        SEARCHER = ControllerFactory.createRouteSearcher(GM);
+        RCON = ControllerFactory.createResidenceController(SEARCHER);
+        GM.init(EM, mock(DebugInitializer.class), HCON, PROP, RCON, SEARCHER, STCON, TRCON);
     }
     
     @Before

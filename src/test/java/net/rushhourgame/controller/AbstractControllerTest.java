@@ -32,8 +32,11 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
 import javax.validation.executable.ExecutableValidator;
+import net.rushhourgame.DebugInitializer;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.SimpleGameMaster;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SignInType;
@@ -49,6 +52,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
 
 /**
  *
@@ -56,6 +61,7 @@ import org.junit.rules.ExpectedException;
  */
 public class AbstractControllerTest {
 
+    protected final static SimpleGameMaster GM = new SimpleGameMaster();
     protected final static EntityManager EM = LocalEntityManager.createEntityManager();
     protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
     protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
@@ -63,7 +69,6 @@ public class AbstractControllerTest {
     protected final static PlayerController PCON = ControllerFactory.createPlayController();
     protected final static OAuthController OCON = ControllerFactory.createOAuthController();
     protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static RailController RAILCON = ControllerFactory.createRailController();
     protected final static StationController STCON = ControllerFactory.createStationController();
     protected final static LineController LCON = ControllerFactory.createLineController();
@@ -71,6 +76,8 @@ public class AbstractControllerTest {
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static HumanController HCON = ControllerFactory.createHumanController();
     protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
+    protected static RouteSearcher SEARCHER;
+    protected static ResidenceController RCON;
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
@@ -79,6 +86,9 @@ public class AbstractControllerTest {
     public static void setUpClass() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validatorForExecutables = validatorFactory.getValidator().forExecutables();
+        SEARCHER = ControllerFactory.createRouteSearcher(GM);
+        RCON = ControllerFactory.createResidenceController(SEARCHER);
+        GM.init(EM, mock(DebugInitializer.class), HCON, PROP, RCON, SEARCHER, STCON, TRAINCON);
     }
     
     @Before

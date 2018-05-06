@@ -87,7 +87,6 @@ public class GameMasterTest {
     protected static final EntityManager EM = LocalEntityManager.createEntityManager();
     protected static final TrainController TCON = ControllerFactory.createTrainController();
     protected static final HumanController HCON = ControllerFactory.createHumanController();
-    protected static final ResidenceController RCON = ControllerFactory.createResidenceController();
     protected static final CompanyController CCON = ControllerFactory.createCompanyController();
     protected static final AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected static final PlayerController PCON = ControllerFactory.createPlayController();
@@ -116,7 +115,7 @@ public class GameMasterTest {
         inst.stCon = spy(STCON);
         inst.tCon = spy(TCON);
         inst.hCon = spy(HCON);
-        inst.rCon = spy(RCON);
+        inst.rCon = spy(ControllerFactory.createResidenceController(inst.searcher));
         inst.em = spy(EM);
         doNothing().when(inst.rCon).step(any(Residence.class), anyLong(), anyList());
         // 人を生成しないようにする
@@ -289,7 +288,7 @@ public class GameMasterTest {
 
     protected WorldPack createSmallWorld(boolean createsHuman) throws RushHourException {
         WorldPack pack = new WorldPack();
-        pack.rsd = RCON.create(ORIGIN);
+        pack.rsd = inst.rCon.create(ORIGIN);
         pack.cmp = CCON.create(FAR);
         pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 

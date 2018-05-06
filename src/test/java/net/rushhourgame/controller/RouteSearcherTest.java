@@ -181,6 +181,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         } catch (IllegalStateException e) {
             // OK
         }
+        
+        assertTrue(rsd.distTo(cmp) == begin.getCost());
     }
     
     /**
@@ -218,6 +220,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertTrue(inst.isReachable(r, c));
         assertTrue(inst.isReachable(result.station.getPlatform(), c));
         assertTrue(inst.isReachable(extend.station.getPlatform(), c));
+        
+        assertTrue(r.distTo(c) > start.getCost());
     }
     
     @Test

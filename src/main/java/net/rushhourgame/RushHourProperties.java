@@ -103,6 +103,7 @@ public class RushHourProperties implements Serializable {
     public static final String GAME_DEF_TRAIN_CAPACITY = "rushhour.game.default.train.capacity";
     public static final String GAME_DEF_HUMAN_LIFESPAN = "rushhour.game.default.human.lifespan";
     public static final String GAME_DEF_HUMAN_SPEED = "rushhour.game.default.human.speed";
+    public static final String GAME_DEF_HUMAN_MAXCOST = "rushhour.game.default.human.maxcost";
 
     //--------------------------------------------------------------------------
     protected static final String CONSTANTS_PATH = "net/rushhourgame/conf/constants.properties";

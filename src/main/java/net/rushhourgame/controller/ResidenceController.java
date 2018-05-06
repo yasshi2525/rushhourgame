@@ -40,30 +40,34 @@ import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 
 /**
- * 
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
 public class ResidenceController extends PointEntityController {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ResidenceController.class.getName());
-    
+
     @Inject
     protected HumanController hCon;
-    
+
     @Inject
     protected CompanyController cCon;
-    
+
     @Inject
     protected StepForHumanController sCon;
-    
-    public Residence create(@NotNull Pointable p) throws RushHourException{
-        return create(p, 
+
+    @Inject
+    protected RouteSearcher searcher;
+
+    public Residence create(@NotNull Pointable p) throws RushHourException {
+        return create(p,
                 Integer.parseInt(prop.get(GAME_DEF_RSD_CAPACITY)),
                 Long.parseLong(prop.get(GAME_DEF_RSD_INTERVAL)));
     }
-    
-    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval) throws RushHourException{
+
+    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval) throws RushHourException {
         if (exists("Residence.exists", p)) {
             throw new RushHourException(errMsgBuilder.createResidenceDuplication(p));
         }
@@ -74,32 +78,40 @@ public class ResidenceController extends PointEntityController {
         inst.setX(p.getX());
         inst.setY(p.getY());
         em.persist(inst);
-        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {ResidenceController.class, inst});
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{ResidenceController.class, inst});
         sCon.addResidence(inst);
         return inst;
     }
-    
-    public List<Residence> findIn(@NotNull Pointable center, double scale){
-        return super.findIn(em.createNamedQuery("Residence.findIn", Residence.class), 
+
+    public List<Residence> findIn(@NotNull Pointable center, double scale) {
+        return super.findIn(em.createNamedQuery("Residence.findIn", Residence.class),
                 center, scale);
     }
-    
+
     public List<Residence> findAll() {
         return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
     }
-    
+
     public void step(@NotNull Residence r, long interval, List<Human> humans) {
         r.step(interval);
         while (r.expires()) {
             List<Company> companies = cCon.findAll();
             if (companies.isEmpty()) {
-                LOG.log(Level.WARNING, "{0}#step() skip create human because there is no company.", ResidenceController.class.getSimpleName());
+                LOG.log(Level.WARNING, "{0}#step() skip create human because there is no company.", ResidenceController.class);
                 return;
             }
             Collections.shuffle(companies);
-            for (int i = 0; i < r.getCapacity(); i++) {
-                humans.add(hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0)));
+            double cost = searcher.getCost(r, companies.get(0));
+
+            if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
+                for (int i = 0; i < r.getCapacity(); i++) {
+                    humans.add(hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0)));
+                }
+            } else {
+                LOG.log(Level.INFO, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",
+                        new Object[]{ResidenceController.class, cost, r, companies.get(0)});
             }
+
             r.consume();
         }
     }

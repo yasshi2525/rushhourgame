@@ -27,11 +27,14 @@ import java.util.ArrayList;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.Min;
+import net.rushhourgame.GameMaster;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
+import static net.rushhourgame.controller.AbstractControllerTest.CCON;
+import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
@@ -56,7 +59,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createResidenceController();
+        inst = ControllerFactory.createResidenceController(spy(SEARCHER));
         inst.cCon = spy(ControllerFactory.createCompanyController());
         inst.hCon = spy(ControllerFactory.createHumanController());
     }
@@ -122,11 +125,29 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     public void testStepGenerating() throws RushHourException {
         Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
         Company dest = CCON.create(TEST_POS);
+        RouteNode node = mock(RouteNode.class);
+        doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
+        doReturn(src.distTo(dest)).when(node).getCost();
         
         inst.step(src, TEST_INTERVAL, new ArrayList<>());
         
         verify(src, times(2)).expires();
         verify(inst.hCon, times(TEST_CAPACITY)).create(any(Pointable.class), any(Residence.class), any(Company.class));
+        assertTrue(src.getCount() < src.getInterval());
+    }
+    
+    @Test
+    public void testStepSkipGenerating() throws RushHourException {
+        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        Company dest = CCON.create(new SimplePoint(10000, 10000));
+        RouteNode node = mock(RouteNode.class);
+        doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
+        doReturn(src.distTo(dest)).when(node).getCost();
+        
+        inst.step(src, TEST_INTERVAL, new ArrayList<>());
+        
+        verify(src, times(2)).expires();
+        verify(inst.hCon, never()).create(any(Pointable.class), any(Residence.class), any(Company.class));
         assertTrue(src.getCount() < src.getInterval());
     }
 }
