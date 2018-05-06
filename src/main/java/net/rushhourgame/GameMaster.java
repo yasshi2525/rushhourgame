@@ -114,9 +114,11 @@ public class GameMaster implements Serializable, Runnable {
     }
     
     @Transactional
-    public void constructTemplateWorld() throws RushHourException {
+    public void constructTemplateWorld() throws RushHourException, InterruptedException, ExecutionException {
         LOG.log(Level.INFO, "{0}#constructTemplateWorld start", new Object[]{GameMaster.class});
         debug.init();
+        em.flush();
+        executorService.submit(searcher).get();
         LOG.log(Level.INFO, "{0}#constructTemplateWorld end", new Object[]{GameMaster.class});
     }
     
