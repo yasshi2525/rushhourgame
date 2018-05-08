@@ -59,7 +59,8 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createResidenceController(spy(SEARCHER));
+        inst = ControllerFactory.createResidenceController();
+        inst.searcher = spy(inst.searcher);
         inst.cCon = spy(ControllerFactory.createCompanyController());
         inst.hCon = spy(ControllerFactory.createHumanController());
     }
@@ -108,7 +109,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepDoNothing() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
-        inst.step(created, 0L, new ArrayList<>());
+        inst.step(created, 0L);
         
         verify(inst.cCon, times(0)).findAll();
     }
@@ -116,7 +117,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepNoCmpWorld() throws RushHourException {
         Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
-        inst.step(created, TEST_INTERVAL, new ArrayList<>());
+        inst.step(created, TEST_INTERVAL);
         
         verify(created, times(0)).getCapacity();
     }
@@ -129,7 +130,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();
         
-        inst.step(src, TEST_INTERVAL, new ArrayList<>());
+        inst.step(src, TEST_INTERVAL);
         
         verify(src, times(2)).expires();
         verify(inst.hCon, times(TEST_CAPACITY)).create(any(Pointable.class), any(Residence.class), any(Company.class));
@@ -144,7 +145,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();
         
-        inst.step(src, TEST_INTERVAL, new ArrayList<>());
+        inst.step(src, TEST_INTERVAL);
         
         verify(src, times(2)).expires();
         verify(inst.hCon, never()).create(any(Pointable.class), any(Residence.class), any(Company.class));

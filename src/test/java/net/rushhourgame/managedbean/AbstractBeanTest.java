@@ -84,9 +84,9 @@ public class AbstractBeanTest {
     protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static RushHourProperties PROP = RushHourProperties.getInstance();
-    protected final static SimpleGameMaster GM = new SimpleGameMaster();
-    protected static RouteSearcher SEARCHER;
-    protected static ResidenceController RCON;
+    protected final static GameMaster GM = ControllerFactory.createGameMaster();
+    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     
     @Mock
     protected FacesContext facesContext;
@@ -105,13 +105,6 @@ public class AbstractBeanTest {
     
     @Mock
     protected RushHourResourceBundle msg;
-    
-    @BeforeClass
-    public static void setUpClass() {
-        SEARCHER = ControllerFactory.createRouteSearcher(GM);
-        RCON = ControllerFactory.createResidenceController(SEARCHER);
-        GM.init(EM, mock(DebugInitializer.class), HCON, PROP, RCON, SEARCHER, STCON, TRCON);
-    }
     
     @Before
     public void setUp() {

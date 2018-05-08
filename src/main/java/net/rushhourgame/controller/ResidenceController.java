@@ -92,7 +92,7 @@ public class ResidenceController extends PointEntityController {
         return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
     }
 
-    public void step(@NotNull Residence r, long interval, List<Human> humans) {
+    public void step(@NotNull Residence r, long interval) {
         r.step(interval);
         while (r.expires()) {
             List<Company> companies = cCon.findAll();
@@ -105,7 +105,7 @@ public class ResidenceController extends PointEntityController {
 
             if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
                 for (int i = 0; i < r.getCapacity(); i++) {
-                    humans.add(hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0)));
+                    hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
                 }
             } else {
                 LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",

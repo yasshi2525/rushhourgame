@@ -51,6 +51,9 @@ public class TrainController extends PointEntityController {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(TrainController.class.getName());
     
+    @Inject
+    HumanController hCon;
+    
     public Train create(@NotNull Player p) {
         return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)), 
                 Double.parseDouble(prop.get(GAME_DEF_TRAIN_SPEED)),
@@ -115,9 +118,9 @@ public class TrainController extends PointEntityController {
                 .setParameter("line", line).getResultList();
     }
 
-    public void step(Train t, long time, List<Human> humans) {
+    public void step(Train t, long time) {
         if (t.isDeployed()) {
-            t.step(humans, time);
+            t.step(hCon.findAll(), time);
         }
     }
 }

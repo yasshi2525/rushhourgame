@@ -77,9 +77,9 @@ public class DebugInitializerTest {
     protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
     protected final static HumanController HCON = ControllerFactory.createHumanController();
-    protected final static SimpleGameMaster GM = new SimpleGameMaster();
-    protected static RouteSearcher SEARCHER;
-    protected static ResidenceController RCON;
+    protected final static GameMaster GM = ControllerFactory.createGameMaster();
+    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
@@ -91,10 +91,6 @@ public class DebugInitializerTest {
     public static void setUpClass() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validatorForExecutables = validatorFactory.getValidator().forExecutables();
-        GM.init(EM, null, HCON, PROP, RCON, null, STCON, TRAINCON);
-        SEARCHER = ControllerFactory.createRouteSearcher(GM);
-        RCON = ControllerFactory.createResidenceController(SEARCHER);
-        GM.searcher = SEARCHER;
     }
     
     @Before

@@ -187,13 +187,13 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testStep() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        inst.step(train, 0, new ArrayList<>());
+        inst.step(train, 0);
     }
 
     @Test
     public void testStepUndeploy() throws RushHourException {
         Train train = spy(inst.create(player));
-        inst.step(train, 0, new ArrayList<>());
+        inst.step(train, 0);
         verify(train, times(0)).step(anyList(), anyLong());
     }
 }

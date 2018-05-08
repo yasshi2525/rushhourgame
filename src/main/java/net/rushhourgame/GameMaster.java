@@ -81,7 +81,7 @@ public class GameMaster implements Serializable, Runnable {
     @Resource
     protected ManagedScheduledExecutorService timerService;
     protected ScheduledFuture<?> timerFuture;
-    
+
     @Inject
     protected TrainController tCon;
     @Inject
@@ -102,17 +102,12 @@ public class GameMaster implements Serializable, Runnable {
     @Resource(lookup = "concurrent/RushHourGameRoute")
     protected ManagedExecutorService executorService;
 
-    /**
-     * 永続化すると経路情報が消えてしまう
-     */
-    protected List<Human> humans;
-    
     @PreDestroy
     public void preDestroy() {
         LOG.log(Level.INFO, "{0}#preDestroy stop game", new Object[]{GameMaster.class});
         stopGame();
     }
-    
+
     @Transactional
     public void constructTemplateWorld() throws RushHourException {
         LOG.log(Level.INFO, "{0}#constructTemplateWorld start", new Object[]{GameMaster.class});
@@ -120,31 +115,37 @@ public class GameMaster implements Serializable, Runnable {
         executorService.submit(searcher);
         LOG.log(Level.INFO, "{0}#constructTemplateWorld end", new Object[]{GameMaster.class});
     }
-    
+
     @Transactional
     public boolean startGame() {
         if (timerFuture != null && !timerFuture.isDone()) {
             LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
             return false;
         }
-        
-        humans = hCon.findAll();
+        hCon.synchronizeDatabase();
         timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
         return true;
     }
-    
+
+    @Transactional
     public boolean stopGame() {
         if (timerFuture == null) {
-            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was not started.", new Object[]{GameMaster.class});
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game is not started.", new Object[]{GameMaster.class});
             return false;
         }
         if (timerFuture.isDone()) {
-            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game was already stopped.", new Object[]{GameMaster.class});
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because game is already stopped.", new Object[]{GameMaster.class});
             return false;
         }
-        return timerFuture.cancel(false);
+        boolean res = timerFuture.cancel(false);
+        if (res) {
+            hCon.synchronizeDatabase();
+        } else {
+            LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because canceling timer is failed.", new Object[]{GameMaster.class});
+        }
+        return res;
     }
-    
+
     public boolean search() {
         try {
             return executorService.submit(searcher).get();
@@ -178,23 +179,21 @@ public class GameMaster implements Serializable, Runnable {
                 }
 
                 stCon.findAll().forEach(st -> {
+                    hCon.merge(st);
                     stCon.step(st, getInterval());
                 });
                 rCon.findAll().forEach(r -> {
-                    rCon.step(r, getInterval(), humans);
+                    hCon.merge(r);
+                    rCon.step(r, getInterval());
                 });
-
-                mergeHumans();
                 tCon.findAll().forEach(t -> {
-                    tCon.step(t, getInterval(), humans);
+                    hCon.merge(t);
+                    tCon.step(t, getInterval());
                 });
-                humans.forEach(h -> {
-                    if (h.getCurrent() == null) {
-                        h.searchCurrent(searcher);
-                    }
+                hCon.findAll().forEach(h -> {
                     hCon.step(h, getInterval(), getHumanSpeed());
                 });
-                hCon.killHuman(humans);
+                hCon.killHuman();
             } finally {
                 searcher.unlock();
             }
@@ -210,18 +209,5 @@ public class GameMaster implements Serializable, Runnable {
 
     protected double getHumanSpeed() {
         return Double.parseDouble(prop.get(GAME_DEF_HUMAN_SPEED));
-    }
-
-    /**
-     * Read Only
-     * @return humans
-     */
-    public List<Human> getHumans() {
-        mergeHumans();
-        return humans;
-    }
-
-    protected void mergeHumans() {
-        humans = humans.stream().map(h -> h.merge(em)).collect(Collectors.toList());
     }
 }

@@ -24,10 +24,18 @@
 package net.rushhourgame;
 
 import javax.persistence.EntityManager;
+import net.rushhourgame.DebugInitializer;
+import net.rushhourgame.GameMaster;
+import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.controller.TrainController;
 
 /**

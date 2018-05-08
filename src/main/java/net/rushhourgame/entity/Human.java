@@ -23,6 +23,8 @@
  */
 package net.rushhourgame.entity;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
@@ -54,6 +56,8 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
     )
 })
 public class Human extends AbstractEntity implements Pointable {
+
+    private static final Logger LOG = Logger.getLogger(Human.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -274,22 +278,32 @@ public class Human extends AbstractEntity implements Pointable {
         y += dist * Math.sin(theta);
     }
 
-    /**
-     * EntityManager#merge()はtransient属性をコピーしない
-     *
-     * @param em EntityManager
-     * @return attachしたオブジェクト
-     */
-    public Human merge(EntityManager em) {
-        Human newHuman = em.merge(this);
-
-        if (current != null) {
-            current.unreffer(this);
-            newHuman.current = current;
-            current.reffer(newHuman);
+    public void merge(Residence r) {
+        if (src.equalsId(r) && !src.equals(r)) {
+            src = r;
+            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, r, this});
         }
-
-        return newHuman;
+    }
+    
+    public void merge(Company cmp) {
+        if (dest.equalsId(cmp) && !dest.equals(cmp)) {
+            dest = cmp;
+            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, cmp, this});
+        }
+    }
+    
+    public void merge(Platform p) {
+        if (onPlatform != null && onPlatform.equalsId(p) && !onPlatform.equals(p)) {
+            onPlatform = p;
+            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, p, this});
+        }
+    }
+    
+    public void merge(TrainDeployed t) {
+        if (onTrain != null && onTrain.equalsId(t) && !onTrain.equals(t)) {
+            onTrain = t;
+            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, t, this});
+        }
     }
 
     /**
@@ -307,6 +321,10 @@ public class Human extends AbstractEntity implements Pointable {
         if (searcher.isReachable(src, dest)) {
             setCurrent(searcher.getStart(src, dest));
         }
+    }
+    
+    public boolean isAreaIn(Pointable center, double scale) {
+        return isAreaIn(this, center, scale);
     }
     
     @Override

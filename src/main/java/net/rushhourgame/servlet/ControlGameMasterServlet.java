@@ -34,6 +34,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.exception.RushHourException;
 
@@ -123,6 +124,7 @@ public class ControlGameMasterServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+    @Transactional
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);

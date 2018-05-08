@@ -69,14 +69,12 @@ public class RouteSearcherTest extends AbstractControllerTest {
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
     
-    @Mock
-    GameMaster gm;
-    
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createRouteSearcher(gm);
+        inst = ControllerFactory.createRouteSearcher();
+        inst.hCon = spy(inst.hCon);
         inst.init();
     }
     
@@ -105,7 +103,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     public void testIsReachableRsdCmp() throws RushHourException {
         Residence r = RCON.create(new SimplePoint(10, 10));
         Company c = CCON.create(new SimplePoint(10, 2));
-        doReturn(new ArrayList<>()).when(gm).getHumans();
+        doReturn(new ArrayList<>()).when(inst.hCon).findAll();
         assertTrue(inst.call());
         assertTrue(inst.isReachable(r, c));
     }
@@ -231,7 +229,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Residence r2 = RCON.create(new SimplePoint(100, 100));
         Company c2 = CCON.create(new SimplePoint(200, 200));
         
-        doReturn(new ArrayList<>()).when(gm).getHumans();
+        doReturn(new ArrayList<>()).when(inst.hCon).findAll();
         
         assertTrue(inst.call());
         
@@ -258,7 +256,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         Human h = HCON.create(TEST_POS, r, c);
         List<Human> list = new ArrayList<>();
         list.add(h);
-        doReturn(list).when(gm).getHumans();
+        doReturn(list).when(inst.hCon).findAll();
         
         assertTrue(inst.call());
         
@@ -275,8 +273,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         WorldPack world = createSmallWorld();
         List<Human> humans = new ArrayList<>();
         humans.add(world.h);
-        inst.gm = gm;
-        doReturn(humans).when(gm).getHumans();
+        doReturn(humans).when(inst.hCon).findAll();
         
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         

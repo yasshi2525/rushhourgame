@@ -23,14 +23,17 @@
  */
 package net.rushhourgame.controller;
 
+import net.rushhourgame.SimpleGameMaster;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.enterprise.concurrent.ManagedExecutorService;
+import net.rushhourgame.DebugInitializer;
 import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
+import net.rushhourgame.SimpleDebugInitializer;
 import net.rushhourgame.entity.EncryptConverter;
 import static org.mockito.Mockito.mock;
 
@@ -40,14 +43,22 @@ import static org.mockito.Mockito.mock;
  */
 public class ControllerFactory {
 
-    public static ResidenceController createResidenceController(RouteSearcher searcher) {
-        ResidenceController inst = new ResidenceController();
-        inst.sCon = createStepForHumanController();
-        inst.cCon = createCompanyController();
-        inst.hCon = createHumanController();
-        inst.searcher = searcher;
-        init(inst);
-        return inst;
+    protected final static RouteSearcher SEARCHER = new RouteSearcher();
+    protected final static HumanController HCON = new HumanController();
+    protected final static ResidenceController RCON = new ResidenceController();
+    
+    static {
+        SEARCHER.hCon = HCON;
+        HCON.searcher = SEARCHER;
+        RCON.hCon = HCON;
+        RCON.searcher = SEARCHER;
+    }
+    
+    public static ResidenceController createResidenceController() {
+        RCON.sCon = createStepForHumanController();
+        RCON.cCon = createCompanyController();
+        init(RCON);
+        return RCON;
     }
     
     public static CompanyController createCompanyController() {
@@ -120,16 +131,15 @@ public class ControllerFactory {
         return inst;
     } 
     
-    public static RouteSearcher createRouteSearcher(GameMaster gm) {
-        RouteSearcher inst = new RouteSearcher();
-        inst.gm = gm;
-        inst.cCon = createCompanyController();
-        inst.rCon = createResidenceController(inst);
-        inst.stCon = createStationController();
-        inst.sCon = createStepForHumanController();
-        inst.lock = new ReentrantReadWriteLock().writeLock();
-        init(inst);
-        return inst;
+    public static RouteSearcher createRouteSearcher() {
+        SEARCHER.cCon = createCompanyController();
+        SEARCHER.rCon = createResidenceController();
+        SEARCHER.stCon = createStationController();
+        SEARCHER.sCon = createStepForHumanController();
+        SEARCHER.lock = new ReentrantReadWriteLock().writeLock();
+        init(SEARCHER);
+        SEARCHER.init();
+        return SEARCHER;
     }
     
     public static LineRouteSearcher createLineRouteSearcher() {
@@ -152,13 +162,44 @@ public class ControllerFactory {
     
     public static TrainController createTrainController() {
         TrainController inst = new TrainController();
+        inst.hCon = createHumanController();
         init(inst);
         return inst;
     }
     
     public static HumanController createHumanController() {
-        HumanController inst = new HumanController();
-        init(inst);
+        init(HCON);
+        return HCON;
+    }
+    
+    public static GameMaster createGameMaster() {
+        SimpleGameMaster inst = new SimpleGameMaster();
+        inst.init(
+                LocalEntityManager.createEntityManager(), 
+                createDebugInitializer(), 
+                createHumanController(), 
+                RushHourProperties.getInstance(), 
+                createResidenceController(), 
+                createRouteSearcher(), 
+                createStationController(), 
+                createTrainController());
+        return inst;
+    }
+    
+    public static DebugInitializer createDebugInitializer() {
+        SimpleDebugInitializer inst = new SimpleDebugInitializer();
+        inst.initialize(
+                createAssistanceController(), 
+                createCompanyController(), 
+                LocalEntityManager.createEntityManager(), 
+                createHumanController(), 
+                createLineController(), 
+                createOAuthController(), 
+                createPlayController(), 
+                createResidenceController(), 
+                createRailController(), 
+                createStationController(), 
+                createTrainController());
         return inst;
     }
 

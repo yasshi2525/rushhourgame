@@ -91,7 +91,9 @@ public class GameMasterTest {
     protected static final AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected static final PlayerController PCON = ControllerFactory.createPlayController();
     protected static final StationController STCON = ControllerFactory.createStationController();
-
+    protected static final RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected static final ResidenceController RCON = ControllerFactory.createResidenceController();
+    
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
 
@@ -112,15 +114,15 @@ public class GameMasterTest {
         inst.debug = debug;
         inst.executorService = executorService;
         inst.timerService = timerService;
-        inst.searcher = spy(ControllerFactory.createRouteSearcher(inst));
+        inst.searcher = spy(SEARCHER);
         inst.searcher.init();
         inst.prop = RushHourProperties.getInstance();
         inst.stCon = spy(STCON);
         inst.tCon = spy(TCON);
         inst.hCon = spy(HCON);
-        inst.rCon = spy(ControllerFactory.createResidenceController(inst.searcher));
+        inst.rCon = spy(RCON);
         inst.em = spy(EM);
-        doNothing().when(inst.rCon).step(any(Residence.class), anyLong(), anyList());
+        doNothing().when(inst.rCon).step(any(Residence.class), anyLong());
         // 人を生成しないようにする
         doReturn(future).when(executorService).submit(any(RouteSearcher.class));
     }
@@ -151,7 +153,7 @@ public class GameMasterTest {
         assertTrue(inst.startGame());
 
         verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
-        verify(inst.hCon, times(1)).findAll();
+        verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
     @Test
@@ -160,7 +162,7 @@ public class GameMasterTest {
         doReturn(false).when(inst.timerFuture).isDone();
 
         assertFalse(inst.startGame());
-        verify(inst.hCon, never()).findAll();
+        verify(inst.hCon, never()).synchronizeDatabase();
         verify(timerService, never()).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
     }
 
@@ -171,7 +173,7 @@ public class GameMasterTest {
 
         assertTrue(inst.startGame());
         verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
-        verify(inst.hCon, times(1)).findAll();
+        verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
     @Test
@@ -181,7 +183,9 @@ public class GameMasterTest {
         doReturn(true).when(inst.timerFuture).cancel(eq(false));
 
         assertTrue(inst.stopGame());
+        
         verify(inst.timerFuture, times(1)).cancel(eq(false));
+        verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
     @Test
@@ -189,6 +193,8 @@ public class GameMasterTest {
         inst.timerFuture = null;
 
         assertFalse(inst.stopGame());
+        
+        verify(inst.hCon, never()).synchronizeDatabase();
     }
 
     @Test
@@ -197,7 +203,21 @@ public class GameMasterTest {
         doReturn(true).when(inst.timerFuture).isDone();
 
         assertFalse(inst.stopGame());
+        
         verify(inst.timerFuture, never()).cancel(anyBoolean());
+        verify(inst.hCon, never()).synchronizeDatabase();
+    }
+    
+    @Test
+    public void testStopGameCancellingFailed() {
+        inst.timerFuture = mock(ScheduledFuture.class);
+        doReturn(false).when(inst.timerFuture).isDone();
+        doReturn(false).when(inst.timerFuture).cancel(eq(false));
+
+        assertFalse(inst.stopGame());
+        
+        verify(inst.timerFuture, times(1)).cancel(eq(false));
+        verify(inst.hCon, never()).synchronizeDatabase();
     }
     
     @Test
@@ -217,8 +237,11 @@ public class GameMasterTest {
     @Test
     public void testRunException() throws InterruptedException, ExecutionException {
         doThrow(ExecutionException.class).when(future).get();
+        doReturn(false).when(inst.searcher).isAvailable();
 
         inst.run();
+        
+        verify(future, times(1)).get();
     }
 
     @Test
@@ -237,9 +260,9 @@ public class GameMasterTest {
     @Test
     public void testRunWhenInterrupted() throws RushHourException {
         WorldPack world = createSmallWorld();
-        inst.humans = HCON.findAll();
         doReturn(false).when(inst.searcher).isAvailable();
         inst.run();
+        verify(inst.executorService, times(1)).submit(any(RouteSearcher.class));
         verify(inst.stCon, never()).step(any(Station.class), anyLong());
     }
 
@@ -249,46 +272,27 @@ public class GameMasterTest {
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
-    public void testRunBeforeRouting() throws RushHourException {
+    public void testRun() throws RushHourException {
+        inst.hCon.synchronizeDatabase();
         WorldPack world = createSmallWorld();
-        inst.humans = HCON.findAll();
         doReturn(true).when(inst.searcher).isAvailable();
 
         inst.run();
 
+        verify(inst.hCon, times(2)).merge(any(Station.class));
         verify(inst.stCon, times(2)).step(any(Station.class), anyLong());
-        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
-        verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
+        
+        verify(inst.hCon, times(1)).merge(any(Residence.class));
+        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
+        
+        verify(inst.hCon, times(1)).merge(any(Train.class));
+        verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
+        
         verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
-        verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
-        verify(inst.searcher, never()).getStart(any(Residence.class), any(Company.class));
-        verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
-        verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
+        
+        verify(inst.hCon, times(1)).killHuman();
 
         assertNull(world.h.getCurrent());
-    }
-
-    @Test
-    public void testRunAfterRouting() throws RushHourException {
-        WorldPack world = createSmallWorld(false);
-        inst.humans = HCON.findAll();
-        inst.searcher.call();
-        doReturn(true).when(inst.searcher).isAvailable();
-
-        Human human = HCON.create(ORIGIN, world.rsd, world.cmp);
-        inst.humans = HCON.findAll();
-
-        inst.run();
-
-        verify(inst.rCon, times(1)).step(any(Residence.class), anyLong(), anyList());
-        verify(inst.tCon, times(1)).step(any(Train.class), anyLong(), anyList());
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
-        verify(inst.searcher, times(1)).isReachable(any(Residence.class), any(Company.class));
-        verify(inst.searcher, times(1)).getStart(any(Residence.class), any(Company.class));
-        verify(inst.searcher, never()).isReachable(any(Platform.class), any(Company.class));
-        verify(inst.searcher, never()).getStart(any(Platform.class), any(Company.class));
-
-        assertNotNull(human.getCurrent());
     }
 
     /**
@@ -315,7 +319,7 @@ public class GameMasterTest {
         pack.st2 = end.station;
 
         if (createsHuman) {
-            pack.h = HCON.create(ORIGIN, pack.rsd, pack.cmp);
+            pack.h = inst.hCon.create(ORIGIN, pack.rsd, pack.cmp);
         }
 
         pack.t = TCON.create(pack.owner);

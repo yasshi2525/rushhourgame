@@ -84,9 +84,9 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
 
     @Inject
     protected StationController stCon;
-
+    
     @Inject
-    protected GameMaster gm;
+    protected HumanController hCon;
 
     protected Map<Long, List<RouteNode>> routes;
 
@@ -252,7 +252,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
             ticketGates = stCon.findTicketGateAll();
             platforms = stCon.findPlatformAll();
             steps = sCon.findAll();
-            humans = gm.getHumans();
+            humans = hCon.findAll();
         }
 
         protected void categorizeHumans() {
