@@ -152,7 +152,7 @@ public class HumanController extends PointEntityController {
         humans.removeIf(h -> {
             boolean res = h.shouldDie();
             if (res) {
-                em.remove(h);
+                em.createNamedQuery("Human.deleteBy", Human.class).setParameter("h", h).executeUpdate();
                 if (h.getLifespan() <= 0) {
                     LOG.log(Level.FINE, "{0}#killFinishedHuman() deleted lifespan 0 {1} : {2})",
                             new Object[]{HumanController.class, h.toString(), h.getCurrent()});

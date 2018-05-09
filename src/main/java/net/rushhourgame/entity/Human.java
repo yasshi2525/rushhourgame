@@ -48,11 +48,14 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
     @NamedQuery(
             name = "Human.findAll",
             query = "SELECT obj FROM Human obj"
-    )
-    ,
+    ),
     @NamedQuery(
             name = "Human.findIn",
             query = "SELECT obj FROM Human obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
+    ),
+    @NamedQuery(
+            name = "Human.deleteBy",
+            query = "DELETE FROM Human obj WHERE obj = :h"
     )
 })
 public class Human extends AbstractEntity implements Pointable {

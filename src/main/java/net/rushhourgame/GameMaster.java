@@ -199,6 +199,7 @@ public class GameMaster implements Serializable, Runnable {
             }
         } catch (Throwable e) {
             LOG.log(Level.SEVERE, "{0}#run exception in run()", GameMaster.class);
+            LOG.log(Level.SEVERE, null, e);
             throw e;
         }
     }

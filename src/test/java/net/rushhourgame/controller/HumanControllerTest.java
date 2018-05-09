@@ -280,7 +280,7 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void killHumanTest() {
-        inst.em = mock(EntityManager.class);
+        inst.em = spy(EM);
 
         Human happy = spy(Human.class);
         Human tired = spy(Human.class); // lifespan = 0
