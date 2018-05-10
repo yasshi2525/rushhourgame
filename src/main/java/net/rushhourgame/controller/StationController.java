@@ -83,6 +83,7 @@ public class StationController extends PointEntityController {
         s.setPlatform(createPlatform(s, node, platformCapacity));
 
         em.persist(s);
+        em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {StationController.class, s});
         sCon.addStation(s);
 

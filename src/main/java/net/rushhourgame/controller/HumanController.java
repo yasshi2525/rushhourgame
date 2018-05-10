@@ -103,6 +103,7 @@ public class HumanController extends PointEntityController {
             LOG.log(Level.WARNING, "{0}#create controller never synchronize database", new Object[]{HumanController.class});
         }
         
+        em.flush();
         LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
         return human;
     }

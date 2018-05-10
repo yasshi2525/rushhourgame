@@ -70,6 +70,7 @@ public class AssistanceController extends AbstractController{
         Line line = lCon.create(player, getDefaultLineName(player, locale));
         lCon.start(line, player, station);
         Result result = new Result(startNode, station, line);
+        em.flush();
         LOG.log(Level.INFO, "{0}#startWithStation created {1}", new Object[] {AssistanceController.class, result});
         return result;
     } 
@@ -100,6 +101,7 @@ public class AssistanceController extends AbstractController{
             sCon.modifyCompletedLine(line);
         }
         Result result = new Result(extended, station, inserted.getParent());
+        em.flush();
         LOG.log(Level.INFO, "{0}#_extend created {1}", new Object[] {AssistanceController.class, result});
         return result;
     }

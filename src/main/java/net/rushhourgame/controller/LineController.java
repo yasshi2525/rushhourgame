@@ -69,6 +69,7 @@ public class LineController extends AbstractController {
         inst.setOwner(owner);
         em.persist(inst);
         
+        em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {LineController.class, inst.toStringAsRoute()});
         return inst;
     }
@@ -85,6 +86,7 @@ public class LineController extends AbstractController {
 
         em.persist(parent);
 
+        em.flush();
         LOG.log(Level.INFO, "{0}#start created {1}", new Object[] {LineController.class, parent});
         return parent;
     }
@@ -158,6 +160,7 @@ public class LineController extends AbstractController {
             base = createMoving(base, extend);
         }
 
+        em.flush();
         LOG.log(Level.INFO, "{0}#extend created {1}", new Object[] {LineController.class, base});
         return base;
     }
@@ -203,6 +206,7 @@ public class LineController extends AbstractController {
         
         insertedGoal.setNext(goal);
         
+        em.flush();
         LOG.log(Level.INFO, "{0}#insert created {1}", new Object[] {LineController.class, insertedGoal});
         return insertedGoal;
     }
@@ -345,6 +349,8 @@ public class LineController extends AbstractController {
             end(tail, player);
         }
         LOG.log(Level.INFO, "{0}#autocreate created {1}", new Object[] {LineController.class, line.toStringAsRoute()});
+        
+        em.flush();
         return line;
     }
 }

@@ -61,6 +61,7 @@ public class CompanyController extends PointEntityController {
         inst.setX(p.getX());
         inst.setY(p.getY());
         em.persist(inst);
+        em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {CompanyController.class, inst});
         sCon.addCompany(inst);
         return inst;

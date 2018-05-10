@@ -129,6 +129,8 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         RouteNode node = mock(RouteNode.class);
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();
+        inst.hCon.em = spy(inst.hCon.em);
+        doNothing().when(inst.hCon.em).flush();
         
         inst.step(src, TEST_INTERVAL);
         

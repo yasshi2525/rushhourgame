@@ -59,6 +59,7 @@ public class RailController extends PointEntityController {
         n.setX(p.getX());
         n.setY(p.getY());
         em.persist(n);
+        em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {RailController.class, n});
         return n;
     }
@@ -78,6 +79,7 @@ public class RailController extends PointEntityController {
 
         createEdge(owner, from, to);
 
+        em.flush();
         LOG.log(Level.INFO, "{0}#extend created {1}", new Object[] {RailController.class, to});
         return to;
     }
@@ -179,6 +181,7 @@ public class RailController extends PointEntityController {
         e1.setFrom(from);
         e1.setTo(to);
         em.persist(e1);
+        em.flush();
         LOG.log(Level.INFO, "{0}#createEdge created {1}", new Object[] {RailController.class, e1});
 
         RailEdge e2 = new RailEdge();
@@ -186,6 +189,7 @@ public class RailController extends PointEntityController {
         e2.setFrom(to);
         e2.setTo(from);
         em.persist(e2);
+        em.flush();
         LOG.log(Level.INFO, "{0}#createEdge created {1}", new Object[] {RailController.class, e2});
     }
 

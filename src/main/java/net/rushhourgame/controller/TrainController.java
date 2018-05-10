@@ -67,6 +67,7 @@ public class TrainController extends PointEntityController {
         train.setSpeed(speed);
         train.setCapacity(capacity);
         em.persist(train);
+        em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {TrainController.class, train});
         return train;
     }
@@ -83,6 +84,7 @@ public class TrainController extends PointEntityController {
         info.setTrain(train);
         info.setCurrent(lineStep);
         em.persist(info);
+        em.flush();
         LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[] {TrainController.class, info});
 
         train.setDeployed(info);

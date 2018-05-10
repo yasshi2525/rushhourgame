@@ -193,7 +193,7 @@ public class RailControllerTest extends AbstractControllerTest {
     public void testConnect() throws RushHourException {
         Player player = createPlayer();
         RailNode r1 = inst.create(player, TEST_POS);
-        RailNode r2 = inst.extend(player, r1, TEST_POS2);
+        RailNode r2 = inst.create(player, TEST_POS2);
 
         inst.connect(player, r1, r2);
     }
