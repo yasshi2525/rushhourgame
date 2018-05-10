@@ -119,7 +119,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
-        RouteNode goal = pPack.companyNodes.get(cmp);
+        RouteNode goal = pPack.companyNodes.get(cmp.getId());
         
         inst.search(pPack.allNodes, goal);
         
@@ -138,8 +138,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
-        RouteNode begin = pPack.companyNodes.get(cmp1);
-        RouteNode goal = pPack.companyNodes.get(cmp2);
+        RouteNode begin = pPack.companyNodes.get(cmp1.getId());
+        RouteNode goal = pPack.companyNodes.get(cmp2.getId());
         
         inst.search(pPack.allNodes, goal);
         
@@ -156,8 +156,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
               
-        RouteNode begin = pPack.residenceNodes.get(rsd);
-        RouteNode goal = pPack.companyNodes.get(cmp);
+        RouteNode begin = pPack.residenceNodes.get(rsd.getId());
+        RouteNode goal = pPack.companyNodes.get(cmp.getId());
         
         inst.search(pPack.allNodes, goal);
         
@@ -202,10 +202,10 @@ public class RouteSearcherTest extends AbstractControllerTest {
             System.out.println(edge);
         }
         
-        RouteNode goal = pPack.companyNodes.get(c);
+        RouteNode goal = pPack.companyNodes.get(c.getId());
         inst.search(pPack.allNodes, goal);
         
-        RouteNode start = pPack.residenceNodes.get(r);
+        RouteNode start = pPack.residenceNodes.get(r.getId());
         assertEquals(start.getOriginal(), r);
         assertEquals(start.getVia().getOriginal(), result.station.getTicketGate());
         assertEquals(start.getVia().getVia().getOriginal(), result.station.getPlatform());
@@ -294,32 +294,32 @@ public class RouteSearcherTest extends AbstractControllerTest {
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
         
-        RouteNode rN = pPack.residenceNodes.get(world.rsd);
+        RouteNode rN = pPack.residenceNodes.get(world.rsd.getId());
         assertNotNull(rN);
         assertEquals(0, rN.getInEdges().size());
         assertEquals(3, rN.getOutEdges().size());
         
-        RouteNode cN = pPack.companyNodes.get(world.cmp);
+        RouteNode cN = pPack.companyNodes.get(world.cmp.getId());
         assertNotNull(cN);
         assertEquals(3, cN.getInEdges().size());
         assertEquals(0, cN.getOutEdges().size());
         
-        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
+        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate().getId());
         assertNotNull(tg1N);
         assertEquals(3, tg1N.getInEdges().size());
         assertEquals(3, tg1N.getOutEdges().size());
         
-        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
+        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate().getId());
         assertNotNull(tg2N);
         assertEquals(3, tg2N.getInEdges().size());
         assertEquals(3, tg2N.getOutEdges().size());
         
-        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform());
+        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform().getId());
         assertNotNull(p1N);
         assertEquals(2, p1N.getInEdges().size());
         assertEquals(2, p1N.getOutEdges().size());
         
-        RouteNode p2N = pPack.platformNodes.get(world.st2.getPlatform());
+        RouteNode p2N = pPack.platformNodes.get(world.st2.getPlatform().getId());
         assertNotNull(p2N);
         assertEquals(2, p2N.getInEdges().size());
         assertEquals(2, p2N.getOutEdges().size());
@@ -357,17 +357,17 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(0, tPack.humanNodes.get(0).getInEdges().size());
         assertEquals(3, tPack.humanNodes.get(0).getOutEdges().size());
         
-        RouteNode cN = pPack.companyNodes.get(world.cmp);
+        RouteNode cN = pPack.companyNodes.get(world.cmp.getId());
         assertNotNull(cN);
         assertEquals(4, cN.getInEdges().size());
         assertEquals(0, cN.getOutEdges().size());
         
-        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate());
+        RouteNode tg1N = pPack.ticketGateNodes.get(world.st1.getTicketGate().getId());
         assertNotNull(tg1N);
         assertEquals(4, tg1N.getInEdges().size());
         assertEquals(3, tg1N.getOutEdges().size());
         
-        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate());
+        RouteNode tg2N = pPack.ticketGateNodes.get(world.st2.getTicketGate().getId());
         assertNotNull(tg2N);
         assertEquals(4, tg2N.getInEdges().size());
         assertEquals(3, tg2N.getOutEdges().size());
@@ -390,7 +390,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         assertEquals(0, tPack.humanNodes.get(0).getInEdges().size());
         assertEquals(1, tPack.humanNodes.get(0).getOutEdges().size());
         
-        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform());
+        RouteNode p1N = pPack.platformNodes.get(world.st1.getPlatform().getId());
         assertNotNull(p1N);
         assertEquals(3, p1N.getInEdges().size());
         assertEquals(2, p1N.getOutEdges().size());
@@ -437,6 +437,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
         pack.t = TRAINCON.create(pack.owner);
         TRAINCON.deploy(pack.t, pack.owner, pack.l.findTop());
         
+        EM.flush();
         return pack;
     }
     

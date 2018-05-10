@@ -163,7 +163,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 List<RouteNode> nodes = constructRouteNodes(pPack, tPack);
                 List<RouteEdge> edges = constructRouteEdges(pPack, tPack);
 
-                search(nodes, pPack.companyNodes.get(company));
+                search(nodes, pPack.companyNodes.get(company.getId()));
 
                 edges.forEach(edge -> {
                     LOG.log(Level.FINE, edge.toString());
@@ -269,10 +269,10 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
 
     protected final class PermanentObjPack {
 
-        protected Map<Residence, RouteNode> residenceNodes = new HashMap<>();
-        protected Map<Company, RouteNode> companyNodes = new HashMap<>();
-        protected Map<TicketGate, RouteNode> ticketGateNodes = new HashMap<>();
-        protected Map<Platform, RouteNode> platformNodes = new HashMap<>();
+        protected Map<Long, RouteNode> residenceNodes = new HashMap<>();
+        protected Map<Long, RouteNode> companyNodes = new HashMap<>();
+        protected Map<Long, RouteNode> ticketGateNodes = new HashMap<>();
+        protected Map<Long, RouteNode> platformNodes = new HashMap<>();
         protected List<RouteNode> allNodes;
 
         protected List<RouteEdge> allEdges;
@@ -283,10 +283,10 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         }
 
         protected void buildRouteNode(BaseObjPack base) {
-            base.residences.stream().forEach(o -> residenceNodes.put(o, new PermanentRouteNode(o)));
-            base.companies.stream().forEach(o -> companyNodes.put(o, new PermanentRouteNode(o)));
-            base.ticketGates.stream().forEach(o -> ticketGateNodes.put(o, new PermanentRouteNode(o)));
-            base.platforms.stream().forEach(o -> platformNodes.put(o, new PermanentRouteNode(o)));
+            base.residences.stream().forEach(o -> residenceNodes.put(o.getId(), new PermanentRouteNode(o)));
+            base.companies.stream().forEach(o -> companyNodes.put(o.getId(), new PermanentRouteNode(o)));
+            base.ticketGates.stream().forEach(o -> ticketGateNodes.put(o.getId(), new PermanentRouteNode(o)));
+            base.platforms.stream().forEach(o -> platformNodes.put(o.getId(), new PermanentRouteNode(o)));
 
             allNodes = new ArrayList<>();
             allNodes.addAll(residenceNodes.values());
@@ -347,7 +347,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                         break;
                     case PLATFORM:
                         // 人(プラットフォーム上) -> そのプラットフォーム
-                        addHumanEdges(humanN, pPack.platformNodes.get(humanN.getHuman().getOnPlatform()));
+                        addHumanEdges(humanN, pPack.platformNodes.get(humanN.getHuman().getOnPlatform().getId()));
                         break;
                     case TRAIN:
                         // 人(電車内) -> (何もしない)
