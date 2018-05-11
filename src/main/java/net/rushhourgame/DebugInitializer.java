@@ -94,24 +94,6 @@ public class DebugInitializer {
     @Transactional
     public void init() throws RushHourException {
         LOG.log(Level.INFO, "{0}#init start initialization", new Object[]{this.getClass().getSimpleName()});
-        Residence src = rCon.create(new SimplePoint(-50, -25));
-        Company dst = cCon.create(new SimplePoint(50, 25));
-
-        for (int i = 0; i < 4; i++) {
-            rCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
-            cCon.create(new SimplePoint(Math.random() * 500 - 250, Math.random() * 500 - 250));
-        }
-        Player owner = pCon.upsertPlayer(
-                "admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
-        
-        AssistanceController.Result startRes = aCon.startWithStation(owner, new SimplePoint(-50, 0), Locale.getDefault());
-        AssistanceController.Result goalRes = aCon.extendWithStation(owner, startRes.node, new SimplePoint(50, 0), Locale.getDefault());
-
-        hCon.create(src, src, dst);
-        
-        Train train = tCon.create(owner);
-        tCon.deploy(train, owner, startRes.line.findTop());
-        em.flush();
 
         LOG.log(Level.INFO, "{0}#init end initialization", new Object[]{this.getClass().getSimpleName()});
     }
