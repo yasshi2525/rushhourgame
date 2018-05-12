@@ -121,6 +121,7 @@ public class TicketGateTest extends AbstractEntityTest {
         assertTrue(1 == inst.occupied);
     }
     
+    @Test
     public void testAvailable() {
         inst.gateNum = 2;
         inst.occupied = 0;
@@ -128,6 +129,7 @@ public class TicketGateTest extends AbstractEntityTest {
         assertTrue(inst.isAvailable());
     }
     
+    @Test
     public void testAvailableBorder() {
         inst.gateNum = 2;
         inst.occupied = 1;
@@ -135,6 +137,7 @@ public class TicketGateTest extends AbstractEntityTest {
         assertTrue(inst.isAvailable());
     }
     
+    @Test
     public void testAvailableFull() {
         inst.gateNum = 2;
         inst.occupied = 2;

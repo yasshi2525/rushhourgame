@@ -69,6 +69,14 @@ public class LineStepTest extends AbstractEntityTest {
         super.setUp();
         inst = new LineStep();
     }
+    
+    @Test
+    public void testBean() {
+        Station st = mock(Station.class);
+        inst.setOnStation(st);
+        
+        assertEquals(st, inst.getOnStation());
+    }
 
     @Test
     public void testGetStartRailNodeDeparture() {

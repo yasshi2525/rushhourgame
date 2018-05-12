@@ -215,6 +215,7 @@ public class HumanTest extends AbstractEntityTest {
         verify(platform, times(1)).exit();
         assertNull(inst.onPlatform);
         assertEquals(train, inst.onTrain);
+        assertEquals(train, inst.getOnTrain());
         assertEquals(Human.StandingOn.TRAIN, inst.stand);
     }
 
@@ -509,7 +510,7 @@ public class HumanTest extends AbstractEntityTest {
         inst.onTrain = null;
 
         inst.merge(mock(TrainDeployed.class));
-
+        
         assertNull(inst.onTrain);
     }
 

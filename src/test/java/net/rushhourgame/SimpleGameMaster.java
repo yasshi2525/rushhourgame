@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import net.rushhourgame.DebugInitializer;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.RushHourProperties;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.ResidenceController;
@@ -54,7 +55,8 @@ public class SimpleGameMaster extends GameMaster {
             ResidenceController rCon,
             RouteSearcher searcher,
             StationController stCon,
-            TrainController tCon
+            TrainController tCon,
+            CompanyController cCon
     ) {
         this.debug = debug;
         this.em = em;
@@ -64,6 +66,7 @@ public class SimpleGameMaster extends GameMaster {
         this.searcher = searcher;
         this.stCon = stCon;
         this.tCon = tCon;
+        this.cCon = cCon;
     }
 
     public TrainController gettCon() {

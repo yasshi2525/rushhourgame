@@ -24,8 +24,11 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -54,12 +57,13 @@ import net.rushhourgame.entity.troute.LineStepType;
 public class LineStep extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(LineStep.class.getName());
 
     @NotNull
     @ManyToOne
     protected Line parent;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     protected LineStep next;
 
     @ManyToOne
@@ -298,5 +302,11 @@ public class LineStep extends AbstractEntity implements Ownable {
         }
         sb.append("}");
         return sb.toString();
+    }
+    
+    @Override
+    public void finalize() throws Throwable {
+        LOG.log(Level.FINE, "{0}#finalize {1}", new Object[]{LineStep.class, this});
+        super.finalize();
     }
 }

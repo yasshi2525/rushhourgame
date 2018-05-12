@@ -121,6 +121,7 @@ public class GameMasterTest {
         inst.tCon = spy(TCON);
         inst.hCon = spy(HCON);
         inst.rCon = spy(RCON);
+        inst.cCon = spy(CCON);
         inst.em = spy(EM);
         doNothing().when(inst.rCon).step(any(Residence.class), anyLong());
         // 人を生成しないようにする
@@ -218,6 +219,16 @@ public class GameMasterTest {
         
         verify(inst.timerFuture, times(1)).cancel(eq(false));
         verify(inst.hCon, never()).synchronizeDatabase();
+    }
+    
+    @Test
+    public void testCreateResidence() throws RushHourException {
+        inst.createResidence();
+    }
+    
+    @Test
+    public void testCreateCompany() throws RushHourException {
+        inst.createCompany();
     }
     
     @Test

@@ -96,4 +96,10 @@ public class StepForHumanOutOfStationTest extends AbstractEntityTest {
         
         assertFalse(inst.isFinished(human));
     }
+    
+    @Test
+    public void testIsFinishedNull() {
+        inst._from = platform;
+        assertTrue(inst.isFinished(human));
+    }
 }

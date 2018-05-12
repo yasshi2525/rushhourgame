@@ -182,7 +182,8 @@ public class ControllerFactory {
                 createResidenceController(), 
                 createRouteSearcher(), 
                 createStationController(), 
-                createTrainController());
+                createTrainController(),
+                createCompanyController());
         return inst;
     }
     

@@ -96,6 +96,24 @@ public class ControlGameMasterServlet extends HttpServlet {
                     case "search":
                         res = gm.search();
                         break;
+                    case "src":
+                        try {
+                            gm.createResidence();
+                            res = true;
+                        } catch (RushHourException ex) {
+                            Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                            res = false;
+                        }
+                        break;
+                    case "dst":
+                        try {
+                            gm.createCompany();
+                            res = true;
+                        } catch (RushHourException ex) {
+                            Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                            res = false;
+                        }
+                        break;
                     default:
                         res = false;
                         out.println("invalid GET parameter \"op\" : " + op);

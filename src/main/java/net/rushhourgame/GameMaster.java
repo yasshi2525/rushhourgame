@@ -59,12 +59,16 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
+import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Residence;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -96,6 +100,8 @@ public class GameMaster implements Serializable, Runnable {
     protected RouteSearcher searcher;
     @Inject
     protected DebugInitializer debug;
+    @Inject
+    protected CompanyController cCon;
     @PersistenceContext
     protected EntityManager em;
 
@@ -144,6 +150,16 @@ public class GameMaster implements Serializable, Runnable {
             LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because canceling timer is failed.", new Object[]{GameMaster.class});
         }
         return res;
+    }
+    
+    @Transactional
+    public void createResidence() throws RushHourException {
+        rCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
+    }
+    
+    @Transactional
+    public void createCompany() throws RushHourException {
+        cCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
     }
 
     public boolean search() {

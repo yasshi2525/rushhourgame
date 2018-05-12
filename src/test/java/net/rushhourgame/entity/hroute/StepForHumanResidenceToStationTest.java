@@ -26,30 +26,31 @@ package net.rushhourgame.entity.hroute;
 import net.rushhourgame.entity.AbstractEntityTest;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.TicketGate;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.Mockito.*;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class StepForHumanIntoStationTest extends AbstractEntityTest {
+public class StepForHumanResidenceToStationTest extends AbstractEntityTest{
     @Spy
-    StepForHumanIntoStation inst;
+    StepForHumanResidenceToStation inst;
     
     @Mock
-    TicketGate gate;
+    Residence _from;
     
     @Mock
-    Platform platform;
+    TicketGate _to;
     
     @Spy
     Human human;
@@ -58,34 +59,23 @@ public class StepForHumanIntoStationTest extends AbstractEntityTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst._from = gate;
-        inst._to = platform;
+        inst._from = _from;
+        inst._to = _to;
     }
     
     @Test
     public void testStep() {
-        doReturn(true).when(gate).canEnter();
         human.setLifespan(1000);
-        
-        assertEquals(0, inst.step(human, 1000, 1));
-        
-        assertEquals(1000L, human.getLifespan());
-        verify(human, times(1)).enterIntoPlatform(any(TicketGate.class), any(Platform.class));
-    }
-    
-    @Test
-    public void testStepFull() {
-        doReturn(false).when(gate).canEnter();
-        human.setLifespan(1000);
+        doReturn(10000d).when(human).distTo(eq(_to));
         
         assertEquals(1000, inst.step(human, 1000, 1));
         
-        assertEquals(0L, human.getLifespan());
-        verify(human, times(0)).enterIntoPlatform(any(TicketGate.class), any(Platform.class));
+        assertEquals(1000L, human.getLifespan());
     }
     
     @Test
     public void testIsFinished() {
+        doReturn(10000d).when(human).distTo(eq(_to));
         assertFalse(inst.isFinished(human));
     }
 }

@@ -82,6 +82,8 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
     }
 
     @Test
@@ -94,6 +96,8 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("success"));
     }
 
@@ -108,6 +112,8 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("failed. show log in detail."));
     }
 
@@ -122,6 +128,8 @@ public class ControlGameMasterServletTest {
         verify(gm, times(1)).startGame();
         verify(gm, never()).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("success"));
     }
 
@@ -136,6 +144,8 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, times(1)).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("success"));
     }
     
@@ -150,9 +160,57 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
         verify(gm, times(1)).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("success"));
     }
+    
+    @Test
+    public void testProcessCreateResidence() throws ServletException, IOException, RushHourException {
+        doReturn("src").when(req).getParameter(eq("op"));
+        
+        inst.doGet(req, res);
 
+        verify(gm, never()).constructTemplateWorld();
+        verify(gm, never()).startGame();
+        verify(gm, never()).stopGame();
+        verify(gm, never()).search();
+        verify(gm, times(1)).createResidence();
+        verify(gm, never()).createCompany();
+        verify(out, times(1)).println(eq("success"));
+    }
+    
+    @Test
+    public void testProcessCreateResidenceException() throws ServletException, IOException, RushHourException {
+        doReturn("src").when(req).getParameter(eq("op"));
+        doThrow(RushHourException.class).when(gm).createResidence();
+        
+        inst.doGet(req, res);verify(out, times(1)).println(eq("failed. show log in detail."));
+    }
+    
+    @Test
+    public void testProcessCreateCompany() throws ServletException, IOException, RushHourException {
+        doReturn("dst").when(req).getParameter(eq("op"));
+        
+        inst.doGet(req, res);
+
+        verify(gm, never()).constructTemplateWorld();
+        verify(gm, never()).startGame();
+        verify(gm, never()).stopGame();
+        verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, times(1)).createCompany();
+        verify(out, times(1)).println(eq("success"));
+    }
+    
+    @Test
+    public void testProcessCreateCompanyException() throws ServletException, IOException, RushHourException {
+        doReturn("dst").when(req).getParameter(eq("op"));
+        doThrow(RushHourException.class).when(gm).createCompany();
+        
+        inst.doGet(req, res);verify(out, times(1)).println(eq("failed. show log in detail."));
+    }
+    
     @Test
     public void testProcessInvalid() throws ServletException, IOException, RushHourException {
         doReturn("invalid").when(req).getParameter(eq("op"));
@@ -163,6 +221,8 @@ public class ControlGameMasterServletTest {
         verify(gm, never()).startGame();
         verify(gm, never()).stopGame();
         verify(gm, never()).search();
+        verify(gm, never()).createResidence();
+        verify(gm, never()).createCompany();
         verify(out, times(1)).println(eq("invalid GET parameter \"op\" : invalid"));
         verify(out, times(1)).println(eq("failed. show log in detail."));
     }
