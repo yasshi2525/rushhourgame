@@ -58,14 +58,12 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
             query = "DELETE FROM Human obj WHERE obj = :h"
     )
 })
-public class Human extends AbstractEntity implements Pointable {
+public class Human extends GeoEntity implements Pointable {
 
     private static final Logger LOG = Logger.getLogger(Human.class.getName());
 
     private static final long serialVersionUID = 1L;
 
-    protected double x;
-    protected double y;
     protected long lifespan;
 
     @NotNull
@@ -189,24 +187,6 @@ public class Human extends AbstractEntity implements Pointable {
         current = null;
     }
 
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
     public long getLifespan() {
         return lifespan;
     }
@@ -269,11 +249,6 @@ public class Human extends AbstractEntity implements Pointable {
         return current == null || platform.equalsId(current.getOriginal().getTo());
     }
 
-    @Override
-    public double distTo(Pointable p) {
-        return calcDist(x, y, p);
-    }
-
     public void moveTo(Pointable to, double dist) {
         double theta = Math.atan2(to.getY() - y, to.getX() - x);
 
@@ -324,10 +299,6 @@ public class Human extends AbstractEntity implements Pointable {
         if (searcher.isReachable(src, dest)) {
             setCurrent(searcher.getStart(src, dest));
         }
-    }
-    
-    public boolean isAreaIn(Pointable center, double scale) {
-        return isAreaIn(this, center, scale);
     }
     
     @Override

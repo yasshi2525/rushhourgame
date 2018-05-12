@@ -100,4 +100,9 @@ public class TemporaryHumanPoint implements RelayPointForHuman {
     public String toString() {
         return "tp{" + human + "}";
     }
+
+    @Override
+    public boolean isAreaIn(Pointable center, double scale) {
+        return point.isAreaIn(center, scale);
+    }
 }

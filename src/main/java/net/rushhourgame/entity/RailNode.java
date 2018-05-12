@@ -68,16 +68,13 @@ import net.rushhourgame.entity.troute.LineStepMoving;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "x", "y"}))
-public class RailNode extends AbstractEntity implements Pointable, Ownable {
+public class RailNode extends GeoEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;
 
     @NotNull
     @ManyToOne
     protected Player owner;
-    
-    protected double x;
-    protected double y;
 
     @OneToMany(mappedBy = "_from")
     protected List<RailEdge> outEdges;
@@ -88,29 +85,6 @@ public class RailNode extends AbstractEntity implements Pointable, Ownable {
     @OneToOne(mappedBy = "railNode")
     protected Platform platform;
     
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    @Override
-    public double distTo(Pointable other) {
-        return calcDist(x, y, other);
-    }
-
     @Override
     public Player getOwner() {
         return owner;

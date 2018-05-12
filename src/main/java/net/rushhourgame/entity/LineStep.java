@@ -63,7 +63,7 @@ public class LineStep extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Line parent;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     protected LineStep next;
 
     @ManyToOne
@@ -282,8 +282,8 @@ public class LineStep extends AbstractEntity implements Ownable {
     }
 
     public boolean isAreaIn(Pointable center, double scale) {
-        return isAreaIn(getStartRailNode(), center, scale)
-                || isAreaIn(getGoalRailNode(), center, scale);
+        return getStartRailNode().isAreaIn(center, scale)
+                || getGoalRailNode().isAreaIn(center, scale);
     }
 
     @Override
@@ -302,11 +302,5 @@ public class LineStep extends AbstractEntity implements Ownable {
         }
         sb.append("}");
         return sb.toString();
-    }
-    
-    @Override
-    public void finalize() throws Throwable {
-        LOG.log(Level.FINE, "{0}#finalize {1}", new Object[]{LineStep.class, this});
-        super.finalize();
     }
 }

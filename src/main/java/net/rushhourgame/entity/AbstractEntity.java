@@ -85,11 +85,6 @@ public abstract class AbstractEntity implements Identifiable, Serializable {
         return this.getClass().equals(other.getClass()) && this.id == other.getId();
     }
 
-    protected double calcDist(double x, double y, Pointable other) {
-        return Math.sqrt((other.getX() - x) * (other.getX() - x)
-                + (other.getY() - y) * (other.getY() - y));
-    }
-
     protected boolean hasPrivilege(@NotNull Player owner, Player other) {
         return isOwn(owner, other);
     }
@@ -99,28 +94,6 @@ public abstract class AbstractEntity implements Identifiable, Serializable {
             return false;
         }
         return owner.getId() == other.getId();
-    }
-
-    protected boolean isAreaIn(Pointable p, Pointable center, double scale) {
-        double width = Math.pow(2.0, scale);
-        double height = Math.pow(2.0, scale);
-        
-        return p.getX() > center.getX() - width / 2.0 
-                && p.getX() < center.getX() + width / 2.0
-                && p.getY() > center.getY() - height / 2.0
-                && p.getY() < center.getY() + height / 2.0;
-    }
-    
-    protected long walkTo(Human h, long interval, double speed, Pointable dst) {
-        if (interval * speed < h.distTo(dst)) {
-            h.moveTo(dst, interval * speed);
-            return interval;
-        } else {
-            long consumed = (long) (h.distTo(dst) / speed);
-            h.setX(dst.getX());
-            h.setY(dst.getY());
-            return consumed;
-        }
     }
     
     protected String _toString(StepForHuman step) {

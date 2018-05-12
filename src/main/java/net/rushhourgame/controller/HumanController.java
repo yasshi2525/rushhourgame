@@ -47,44 +47,22 @@ import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 
 /**
- * 当初 Human は他のEnttiyと同様、トランザクションごとにDBとマージしていたが、
- * メモリ上にしか存在しない経路情報のため、毎tickマージしていたところOOMが発生してしまった。
- * そのため、Humanはゲーム開始、終了時にのみDBに格納する仕様にした.
- * HumanControllerはシングルトンで、そのHumanController しか Human を CRUD しない前提で実装している.
- * 作成、削除はその都度DBに書き込み。更新はまとめて
- *
+ * 
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @ApplicationScoped
-public class HumanController extends PointEntityController {
+public class HumanController extends CachedController<Human> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(HumanController.class.getName());
 
-    protected List<Human> humans;
-
     @Inject
     RouteSearcher searcher;
-
-    @PostConstruct
-    public void init() {
-        LOG.log(Level.INFO, "{0}#init", new Object[]{HumanController.class});
-    }
-
-    @PreDestroy
-    public void destroy() {
-        LOG.log(Level.INFO, "{0}#destroy unsynchronized human for database will be loss ", new Object[]{HumanController.class});
-    }
-
+    
+    @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{HumanController.class});
-        if (humans == null) {
-            humans = em.createNamedQuery("Human.findAll", Human.class).getResultList();
-            LOG.log(Level.INFO, "{0}#fetchAll fetched {1} humans successfully.", new Object[]{HumanController.class, humans.size()});
-        } else {
-            humans.forEach((h) -> em.merge(h));
-            LOG.log(Level.INFO, "{0}#synchronizeDatabase merged {1} humans successfully.", new Object[]{HumanController.class, humans.size()});
-        }
+        synchronizeDatabase("Human.findAll", Human.class);
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{HumanController.class});
     }
 
@@ -96,33 +74,14 @@ public class HumanController extends PointEntityController {
         human.setDest(dst);
         human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
         human.setStandingOn(Human.StandingOn.GROUND);
-        em.persist(human);
-        if (humans != null) {
-            humans.add(human);
-        } else {
-            LOG.log(Level.WARNING, "{0}#create controller never synchronize database", new Object[]{HumanController.class});
-        }
+        persistEntity(human);
         
         em.flush();
         LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
         return human;
     }
 
-    public List<Human> findAll() {
-        if (humans == null) {
-            LOG.log(Level.WARNING, "{0}#findAll controller never synchronize database", new Object[]{HumanController.class});
-            return new ArrayList<>();
-        }
-        return humans;
-    }
-
-    public List<Human> findIn(@NotNull Pointable center, double scale) {
-        if (humans == null) {
-            LOG.log(Level.WARNING, "{0}#findAll controller never synchronize database", new Object[]{HumanController.class});
-            return new ArrayList<>();
-        }
-        return humans.stream().filter(h -> h.isAreaIn(center, scale)).collect(Collectors.toList());
-    }
+    
 
     public void step(Human h, long interval, double speed) {
         if (h.getCurrent() == null) {
@@ -132,25 +91,25 @@ public class HumanController extends PointEntityController {
     }
 
     public void merge(Residence obj) {
-        humans.forEach(h -> h.merge(obj));
+        entities.forEach(h -> h.merge(obj));
     }
 
     public void merge(Company obj) {
-        humans.forEach(h -> h.merge(obj));
+        entities.forEach(h -> h.merge(obj));
     }
 
     public void merge(Station obj) {
-        humans.forEach(h -> h.merge(obj.getPlatform()));
+        entities.forEach(h -> h.merge(obj.getPlatform()));
     }
 
     public void merge(Train obj) {
         if (obj.isDeployed()) {
-            humans.forEach(h -> h.merge(obj.getDeployed()));
+            entities.forEach(h -> h.merge(obj.getDeployed()));
         }
     }
 
     public void killHuman() {
-        humans.removeIf(h -> {
+        entities.removeIf(h -> {
             boolean res = h.shouldDie();
             if (res) {
                 em.createNamedQuery("Human.deleteBy", Human.class).setParameter("h", h).executeUpdate();

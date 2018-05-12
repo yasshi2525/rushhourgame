@@ -23,44 +23,32 @@
  */
 package net.rushhourgame.entity;
 
-import java.io.Serializable;
+import javax.persistence.MappedSuperclass;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class SimplePoint implements Pointable, Serializable {
+@MappedSuperclass
+public class GeoEntity extends AbstractEntity implements Pointable {
 
     private static final long serialVersionUID = 1L;
 
     protected double x;
     protected double y;
 
-    public SimplePoint() {
-
-    }
-
-    public SimplePoint(Pointable p) {
-        this(p.getX(), p.getY());
-    }
-
-    public SimplePoint(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
     @Override
     public double getX() {
         return x;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
     @Override
     public double getY() {
         return y;
-    }
-
-    public void setX(double x) {
-        this.x = x;
     }
 
     public void setY(double y) {
@@ -69,20 +57,12 @@ public class SimplePoint implements Pointable, Serializable {
 
     @Override
     public double distTo(Pointable p) {
-        return Math.sqrt((p.getX() - x) * (p.getX() - x)
-                + (p.getY() - y) * (p.getY() - y));
+        return calcDist(getX(), getY(), p);
     }
 
-    public Pointable makeNearPoint(double maxdist) {
-        double dist = Math.random() * maxdist;
-        double radian = Math.random() * Math.PI * 2;
-
-        return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
-    }
-
-    @Override
-    public String toString() {
-        return "(" + x + "," + y + ")";
+    protected double calcDist(double x, double y, Pointable other) {
+        return Math.sqrt((other.getX() - x) * (other.getX() - x)
+                + (other.getY() - y) * (other.getY() - y));
     }
 
     @Override
@@ -94,5 +74,17 @@ public class SimplePoint implements Pointable, Serializable {
                 && getX() < center.getX() + width / 2.0
                 && getY() > center.getY() - height / 2.0
                 && getY() < center.getY() + height / 2.0;
+    }
+
+    protected long walkTo(Human h, long interval, double speed, Pointable dst) {
+        if (interval * speed < h.distTo(dst)) {
+            h.moveTo(dst, interval * speed);
+            return interval;
+        } else {
+            long consumed = (long) (h.distTo(dst) / speed);
+            h.setX(dst.getX());
+            h.setY(dst.getY());
+            return consumed;
+        }
     }
 }

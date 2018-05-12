@@ -74,7 +74,7 @@ import org.mockito.junit.MockitoJUnitRunner;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class GameMasterTest {
 
     protected GameMaster inst;
@@ -283,6 +283,7 @@ public class GameMasterTest {
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
+    @Ignore
     public void testRun() throws RushHourException {
         inst.hCon.synchronizeDatabase();
         WorldPack world = createSmallWorld();

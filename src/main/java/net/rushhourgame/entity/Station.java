@@ -62,7 +62,7 @@ import javax.validation.constraints.NotNull;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
-public class Station extends AbstractEntity implements Pointable, Ownable, Nameable {
+public class Station extends GeoEntity implements Pointable, Ownable, Nameable {
 
     private static final long serialVersionUID = 1L;
 

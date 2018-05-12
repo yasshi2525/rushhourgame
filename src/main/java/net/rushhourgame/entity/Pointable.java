@@ -31,4 +31,5 @@ public interface Pointable {
     public double getX();
     public double getY();
     public double distTo(Pointable p);
+    public boolean isAreaIn(Pointable center, double scale);
 }

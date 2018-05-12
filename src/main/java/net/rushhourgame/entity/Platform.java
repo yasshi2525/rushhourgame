@@ -57,7 +57,7 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
                     + " WHERE step.parent = :line AND dpt.staying = obj)"
     )
 })
-public class Platform extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
+public class Platform extends GeoEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;
 

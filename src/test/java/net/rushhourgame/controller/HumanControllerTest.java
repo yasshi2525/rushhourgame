@@ -65,44 +65,42 @@ public class HumanControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = spy(ControllerFactory.createHumanController());
-        inst.init();
     }
 
     @After
     @Override
     public void tearDown() {
-        inst.destroy();
         super.tearDown();
     }
 
     @Test
     public void testSynchronizeDatabase() {
-        inst.humans = new ArrayList<>();
+        inst.entities = new ArrayList<>();
         Human human = mock(Human.class);
-        inst.humans.add(human);
+        inst.entities.add(human);
         inst.em = spy(EntityManager.class);
 
         inst.synchronizeDatabase();
 
         verify(inst.em, never()).createNamedQuery(anyString());
         verify(inst.em, times(1)).merge(eq(human));
-        assertNotNull(inst.humans);
+        assertNotNull(inst.entities);
     }
 
     @Test
     public void testSynchronizeDatabaseNull() {
-        inst.humans = null;
+        inst.entities = null;
         inst.em = spy(inst.em);
 
         inst.synchronizeDatabase();
 
         verify(inst.em, times(1)).createNamedQuery(anyString());
-        assertNotNull(inst.humans);
+        assertNotNull(inst.entities);
     }
 
     @Test
     public void testCreate() throws RushHourException {
-        inst.humans = new ArrayList<>();
+        inst.entities = new ArrayList<>();
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
 
@@ -117,38 +115,38 @@ public class HumanControllerTest extends AbstractControllerTest {
         assertEquals(Human.StandingOn.GROUND, h.getStandingOn());
         assertNull(h.getCurrent());
         assertFalse(h.isFinished());
-        assertEquals(1, inst.humans.size());
-        assertEquals(h, inst.humans.get(0));
+        assertEquals(1, inst.entities.size());
+        assertEquals(h, inst.entities.get(0));
     }
 
     @Test
     public void testCreateUnsynchronized() throws RushHourException {
-        inst.humans = null;
+        inst.entities = null;
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
 
         Human h = inst.create(TEST, src, dst);
 
         assertNotNull(h);
-        assertNull(inst.humans);
+        assertNull(inst.entities);
     }
 
     @Test
     public void testFindAll() {
-        inst.humans = new ArrayList<>();
+        inst.entities = new ArrayList<>();
         Human human = mock(Human.class);
-        inst.humans.add(human);
+        inst.entities.add(human);
 
         List<Human> actual = inst.findAll();
 
-        assertEquals(inst.humans, actual);
+        assertEquals(inst.entities, actual);
         assertEquals(1, actual.size());
         assertEquals(human, actual.get(0));
     }
 
     @Test
     public void testFindAllUnsynchronized() {
-        inst.humans = null;
+        inst.entities = null;
 
         List<Human> actual = inst.findAll();
 
@@ -158,15 +156,15 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testFindIn() {
-        inst.humans = new ArrayList<>();
+        inst.entities = new ArrayList<>();
 
         Human humanIn = mock(Human.class);
         doReturn(true).when(humanIn).isAreaIn(any(Pointable.class), anyDouble());
-        inst.humans.add(humanIn);
+        inst.entities.add(humanIn);
 
         Human humanOut = mock(Human.class);
         doReturn(false).when(humanOut).isAreaIn(any(Pointable.class), anyDouble());
-        inst.humans.add(humanOut);
+        inst.entities.add(humanOut);
 
         List<Human> actual = inst.findIn(origin, 0);
 
@@ -176,7 +174,7 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testFindInUnsynchronized() {
-        inst.humans = null;
+        inst.entities = null;
 
         List<Human> actual = inst.findIn(origin, 0);
 
@@ -218,8 +216,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testMergeResidence() {
         Human human = mock(Human.class);
-        inst.humans = new ArrayList<>();
-        inst.humans.add(human);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(human);
         
         inst.merge(mock(Residence.class));
         
@@ -229,8 +227,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testMergeCompany() {
         Human human = mock(Human.class);
-        inst.humans = new ArrayList<>();
-        inst.humans.add(human);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(human);
         
         inst.merge(mock(Company.class));
         
@@ -240,8 +238,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testMergeStation() {
         Human human = mock(Human.class);
-        inst.humans = new ArrayList<>();
-        inst.humans.add(human);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(human);
         Station station = mock(Station.class);
         Platform platform = mock(Platform.class);
         doReturn(platform).when(station).getPlatform();
@@ -254,8 +252,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testMergeUndeployedTrain() {
         Human human = mock(Human.class);
-        inst.humans = new ArrayList<>();
-        inst.humans.add(human);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(human);
         Train train = mock(Train.class);
         doReturn(false).when(train).isDeployed();
         
@@ -267,8 +265,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testMergeTrain() {
         Human human = mock(Human.class);
-        inst.humans = new ArrayList<>();
-        inst.humans.add(human);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(human);
         Train train = mock(Train.class);
         doReturn(true).when(train).isDeployed();
         doReturn(mock(TrainDeployed.class)).when(train).getDeployed();
@@ -297,7 +295,7 @@ public class HumanControllerTest extends AbstractControllerTest {
         humans.add(happy);
         humans.add(tired);
         humans.add(ended);
-        inst.humans = humans;
+        inst.entities = humans;
 
         inst.killHuman();
 

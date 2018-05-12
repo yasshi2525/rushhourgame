@@ -26,6 +26,7 @@ package net.rushhourgame.entity;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -39,7 +40,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-public class TrainDeployed extends AbstractEntity {
+public class TrainDeployed extends GeoEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,9 +55,6 @@ public class TrainDeployed extends AbstractEntity {
     @Min(0)
     @Max(1)
     protected double progress;
-
-    protected double x;
-    protected double y;
 
     protected int occupied;
 
@@ -159,14 +157,6 @@ public class TrainDeployed extends AbstractEntity {
                         h.setY(y);
                     });
         }
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 
     protected boolean shouldShiftStep() {

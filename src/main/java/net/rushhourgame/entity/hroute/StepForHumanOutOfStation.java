@@ -87,7 +87,7 @@ public class StepForHumanOutOfStation extends AbstractEntity implements StepForH
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
         // platform と ticketgate は同じ座標なので platformの座標で検査
-        return isAreaIn(_from, center, scale);
+        return _from.isAreaIn(center, scale);
     }
     
     @Override

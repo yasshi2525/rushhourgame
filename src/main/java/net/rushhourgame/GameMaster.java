@@ -189,6 +189,7 @@ public class GameMaster implements Serializable, Runnable {
         try {
             searcher.lock();
             try {
+                em.clear();
                 // 更新された場合、なにもしない
                 if (!searcher.isAvailable()) {
                     return;

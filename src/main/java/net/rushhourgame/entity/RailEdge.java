@@ -61,7 +61,7 @@ import net.rushhourgame.entity.troute.LineStepStopping;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"_from_id", "_to_id"}))
-public class RailEdge extends AbstractEntity implements Ownable, Pointable {
+public class RailEdge extends GeoEntity implements Ownable, Pointable {
 
     private static final long serialVersionUID = 1L;
 
@@ -134,12 +134,7 @@ public class RailEdge extends AbstractEntity implements Ownable, Pointable {
     public double getY() {
         return (_from.getY() + _to.getY()) / 2;
     }
-
-    @Override
-    public double distTo(Pointable p) {
-        return calcDist(getX(), getY(), p);
-    }
-
+    
     public List<LineStepMoving> getMovingSteps() {
         return movingSteps;
     }

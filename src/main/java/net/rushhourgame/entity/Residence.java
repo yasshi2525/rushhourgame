@@ -61,7 +61,7 @@ import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"x", "y"}))
-public class Residence extends AbstractEntity implements Pointable, RelayPointForHuman {
+public class Residence extends GeoEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,9 +70,6 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
     @Min(1)
     protected long _interval;
     protected long count;
-
-    protected double x;
-    protected double y;
 
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanDirectly> directlyList;
@@ -114,29 +111,6 @@ public class Residence extends AbstractEntity implements Pointable, RelayPointFo
 
     public boolean expires() {
         return count >= _interval;
-    }
-
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    @Override
-    public double distTo(Pointable p) {
-        return calcDist(x, y, p);
     }
 
     @Override

@@ -60,15 +60,12 @@ import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"x", "y"}))
-public class Company extends AbstractEntity implements Pointable, RelayPointForHuman {
+public class Company extends GeoEntity implements Pointable, RelayPointForHuman {
 
     private static final long serialVersionUID = 1L;
     
     @DecimalMin(value = "0.0", inclusive = false)
     protected double scale;
-
-    protected double x;
-    protected double y;
 
     @OneToMany(mappedBy = "_to")
     protected List<StepForHumanDirectly> directlyList;
@@ -82,29 +79,6 @@ public class Company extends AbstractEntity implements Pointable, RelayPointForH
 
     public void setScale(double scale) {
         this.scale = scale;
-    }
-
-    @Override
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    @Override
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    @Override
-    public double distTo(Pointable p) {
-        return calcDist(x, y, p);
     }
 
     @Override

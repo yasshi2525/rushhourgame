@@ -88,8 +88,8 @@ public class StepForHumanTransfer extends AbstractEntity implements StepForHuman
     
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
-        return isAreaIn(_from, center, scale)
-                ||  isAreaIn(_to, center, scale);
+        return _from.isAreaIn(center, scale)
+                ||  _to.isAreaIn(center, scale);
     }
 
     @Override

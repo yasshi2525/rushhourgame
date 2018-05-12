@@ -26,6 +26,7 @@ package net.rushhourgame.entity;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -109,7 +110,7 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
         if (deployed == null) {
             throw new IllegalStateException("Not deployed.");
         }
-        return calcDist(deployed.getX(), deployed.getY(), p);
+        return deployed.distTo(p);
     }
 
     public void step(List<Human> humans, long time) {
@@ -165,5 +166,13 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
     @Override
     public String toString() {
         return "t(" + id + "){" + deployed + "}";
+    }
+
+    @Override
+    public boolean isAreaIn(Pointable center, double scale) {
+        if (deployed == null) {
+            throw new IllegalStateException("Not deployed.");
+        }
+        return deployed.isAreaIn(center, scale);
     }
 }

@@ -52,7 +52,7 @@ import net.rushhourgame.entity.hroute.StepForHumanTransfer;
             query = "SELECT x FROM TicketGate x"
     )
 })
-public class TicketGate extends AbstractEntity implements Pointable, RelayPointForHuman, Ownable {
+public class TicketGate extends GeoEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;
 
