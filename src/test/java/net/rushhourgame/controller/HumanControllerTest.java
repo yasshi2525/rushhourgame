@@ -159,7 +159,6 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithSearching() throws RushHourException {
-        inst.synchronizeDatabase();
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
         inst.searcher.call();
@@ -177,7 +176,6 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithoutSearching() throws RushHourException {
-        inst.synchronizeDatabase();
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
 
@@ -195,17 +193,6 @@ public class HumanControllerTest extends AbstractControllerTest {
 
         verify(h, never()).searchCurrent(eq(inst.searcher));
         verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
-    }
-    
-    @Test
-    public void testMergeResidence() {
-        Human human = mock(Human.class);
-        inst.entities = new ArrayList<>();
-        inst.entities.add(human);
-        
-        inst.merge(mock(Residence.class));
-        
-        verify(human, times(1)).merge(any(Residence.class));
     }
     
     @Test

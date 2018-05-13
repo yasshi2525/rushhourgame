@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
 import net.rushhourgame.entity.AbstractEntity;
 import net.rushhourgame.entity.GeoEntity;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 
 /**
@@ -75,6 +76,22 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
             return new ArrayList<>();
         }
         return entities.stream().filter(e -> e.isAreaIn(center, scale)).collect(Collectors.toList());
+    }
+    
+    protected boolean exists(Pointable p) {
+        if (entities == null) {
+            LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
+            return false;
+        }
+        return entities.stream().anyMatch(e -> e.distTo(p) == 0d);
+    }
+    
+    protected boolean exists(Player owner, Pointable p) {
+        if (entities == null) {
+            LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
+            return false;
+        }
+        return entities.stream().filter(e -> e.isOwnedBy(owner)).anyMatch(e -> e.distTo(p) == 0d);
     }
 
     public abstract void synchronizeDatabase();

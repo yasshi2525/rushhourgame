@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.Min;
@@ -43,8 +44,8 @@ import net.rushhourgame.exception.RushHourException;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class ResidenceController extends PointEntityController {
+@ApplicationScoped
+public class ResidenceController extends CachedController<Residence> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ResidenceController.class.getName());
@@ -61,6 +62,13 @@ public class ResidenceController extends PointEntityController {
     @Inject
     protected RouteSearcher searcher;
 
+    @Override
+    public void synchronizeDatabase() {
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{ResidenceController.class});
+        synchronizeDatabase("Residence.findAll", Residence.class);
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{ResidenceController.class});
+    }
+
     public Residence create(@NotNull Pointable p) throws RushHourException {
         return create(p,
                 Integer.parseInt(prop.get(GAME_DEF_RSD_CAPACITY)),
@@ -68,7 +76,7 @@ public class ResidenceController extends PointEntityController {
     }
 
     public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval) throws RushHourException {
-        if (exists("Residence.exists", p)) {
+        if (exists(p)) {
             throw new RushHourException(errMsgBuilder.createResidenceDuplication(p));
         }
         Residence inst = new Residence();
@@ -77,43 +85,37 @@ public class ResidenceController extends PointEntityController {
         inst.setCount((long) (interval * Math.random()));
         inst.setX(p.getX());
         inst.setY(p.getY());
-        em.persist(inst);
+        persistEntity(inst);
         em.flush();
         LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{ResidenceController.class, inst});
         sCon.addResidence(inst);
         return inst;
     }
 
-    public List<Residence> findIn(@NotNull Pointable center, double scale) {
-        return super.findIn(em.createNamedQuery("Residence.findIn", Residence.class),
-                center, scale);
-    }
-
-    public List<Residence> findAll() {
-        return em.createNamedQuery("Residence.findAll", Residence.class).getResultList();
-    }
-
-    public void step(@NotNull Residence r, long interval) {
-        r.step(interval);
-        while (r.expires()) {
-            List<Company> companies = cCon.findAll();
-            if (companies.isEmpty()) {
-                LOG.log(Level.WARNING, "{0}#step() skip create human because there is no company.", ResidenceController.class);
-                return;
-            }
-            Collections.shuffle(companies);
-            double cost = searcher.getCost(r, companies.get(0));
-
-            if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
-                for (int i = 0; i < r.getCapacity(); i++) {
-                    hCon.create(makeNearPoint(r, Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+    public void step(long interval) {
+        findAll().forEach(r -> {
+            r.step(interval);
+            while (r.expires()) {
+                List<Company> companies = cCon.findAll();
+                if (companies.isEmpty()) {
+                    LOG.log(Level.WARNING, "{0}#step() skip create human because there is no company.", ResidenceController.class);
+                    return;
                 }
-            } else {
-                LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",
-                        new Object[]{ResidenceController.class, cost, r, companies.get(0)});
-            }
+                Collections.shuffle(companies);
+                double cost = searcher.getCost(r, companies.get(0));
 
-            r.consume();
-        }
+                if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
+                    for (int i = 0; i < r.getCapacity(); i++) {
+                        hCon.create(new SimplePoint(r).makeNearPoint(Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+                    }
+                } else {
+                    LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",
+                            new Object[]{ResidenceController.class, cost, r, companies.get(0)});
+                }
+
+                r.consume();
+            }
+        });
     }
+
 }

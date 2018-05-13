@@ -58,6 +58,7 @@ public class ControllerFactory {
         RCON.sCon = createStepForHumanController();
         RCON.cCon = createCompanyController();
         init(RCON);
+        RCON.init();
         return RCON;
     }
     

@@ -398,39 +398,6 @@ public class HumanTest extends AbstractEntityTest {
     }
 
     @Test
-    public void testMergeResidenceCopy() {
-        inst.src = mock(Residence.class);
-        Residence copy = mock(Residence.class);
-        doReturn(true).when(inst.src).equalsId(eq(copy));
-
-        inst.merge(copy);
-
-        assertEquals(inst.src, copy);
-    }
-
-    @Test
-    public void testMergeResidenceOther() {
-        inst.src = mock(Residence.class);
-        Residence other = mock(Residence.class);
-        doReturn(false).when(inst.src).equalsId(eq(other));
-
-        inst.merge(other);
-
-        assertNotEquals(inst.src, other);
-    }
-
-    @Test
-    public void testMergeResidenceSame() {
-        Residence src = mock(Residence.class);
-        inst.src = src;
-        doReturn(true).when(inst.src).equalsId(eq(src));
-
-        inst.merge(src);
-
-        assertEquals(inst.src, src);
-    }
-
-    @Test
     public void testMergeCompanyCopy() {
         inst.dest = mock(Company.class);
         Company copy = mock(Company.class);

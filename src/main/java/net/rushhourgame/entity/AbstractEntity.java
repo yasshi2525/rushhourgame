@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @MappedSuperclass
-public abstract class AbstractEntity implements Identifiable, Serializable {
+public abstract class AbstractEntity implements Identifiable, Ownable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -83,6 +83,21 @@ public abstract class AbstractEntity implements Identifiable, Serializable {
             return false;
         }
         return this.getClass().equals(other.getClass()) && this.id == other.getId();
+    }
+
+    @Override
+    public Player getOwner() {
+        return null;
+    }
+
+    @Override
+    public boolean isPrivilegedBy(Player owner) {
+        return false;
+    }
+
+    @Override
+    public boolean isOwnedBy(Player owner) {
+        return false;
     }
 
     protected boolean hasPrivilege(@NotNull Player owner, Player other) {

@@ -255,13 +255,6 @@ public class Human extends GeoEntity implements Pointable {
         x += dist * Math.cos(theta);
         y += dist * Math.sin(theta);
     }
-
-    public void merge(Residence r) {
-        if (src.equalsId(r) && !src.equals(r)) {
-            src = r;
-            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, r, this});
-        }
-    }
     
     public void merge(Company cmp) {
         if (dest.equalsId(cmp) && !dest.equals(cmp)) {

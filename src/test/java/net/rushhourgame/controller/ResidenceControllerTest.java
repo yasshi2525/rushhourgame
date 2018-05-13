@@ -109,7 +109,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepDoNothing() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
-        inst.step(created, 0L);
+        inst.step(0L);
         
         verify(inst.cCon, times(0)).findAll();
     }
@@ -117,7 +117,10 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepNoCmpWorld() throws RushHourException {
         Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
-        inst.step(created, TEST_INTERVAL);
+        inst.findAll().remove(0);
+        inst.findAll().add(created);
+        
+        inst.step(TEST_INTERVAL);
         
         verify(created, times(0)).getCapacity();
     }
@@ -125,6 +128,9 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepGenerating() throws RushHourException {
         Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        inst.findAll().remove(0);
+        inst.findAll().add(src);
+        
         Company dest = CCON.create(TEST_POS);
         RouteNode node = mock(RouteNode.class);
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
@@ -132,7 +138,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         inst.hCon.em = spy(inst.hCon.em);
         doNothing().when(inst.hCon.em).flush();
         
-        inst.step(src, TEST_INTERVAL);
+        inst.step(TEST_INTERVAL);
         
         verify(src, times(2)).expires();
         verify(inst.hCon, times(TEST_CAPACITY)).create(any(Pointable.class), any(Residence.class), any(Company.class));
@@ -142,15 +148,28 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testStepSkipGenerating() throws RushHourException {
         Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        inst.findAll().remove(0);
+        inst.findAll().add(src);
+        
         Company dest = CCON.create(new SimplePoint(10000, 10000));
         RouteNode node = mock(RouteNode.class);
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();
         
-        inst.step(src, TEST_INTERVAL);
+        inst.step(TEST_INTERVAL);
         
         verify(src, times(2)).expires();
         verify(inst.hCon, never()).create(any(Pointable.class), any(Residence.class), any(Company.class));
         assertTrue(src.getCount() < src.getInterval());
+    }
+    
+    @Test
+    public void testInheritInterval() throws RushHourException {
+        Residence src = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        src.setCount(3);
+        
+        inst.synchronizeDatabase();
+        
+        assertEquals(3, inst.findAll().get(0).getCount());
     }
 }

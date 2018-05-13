@@ -91,10 +91,6 @@ public class HumanController extends CachedController<Human> {
         killHuman();
     }
 
-    public void merge(Residence obj) {
-        entities.forEach(h -> h.merge(obj));
-    }
-
     public void merge(Company obj) {
         entities.forEach(h -> h.merge(obj));
     }

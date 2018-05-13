@@ -43,23 +43,10 @@ import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Residence.findAll",
-            query = "SELECT x FROM Residence x"
-    )
-    ,
-    @NamedQuery(
-            name = "Residence.findIn",
-            query = "SELECT obj FROM Residence obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
-    )
-    ,
-    @NamedQuery(
-            name = "Residence.exists",
-            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
-            + " FROM Residence obj WHERE obj.x = :x AND obj.y = :y"
-    )
-})
+@NamedQuery(
+        name = "Residence.findAll",
+        query = "SELECT x FROM Residence x"
+)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"x", "y"}))
 public class Residence extends GeoEntity implements Pointable, RelayPointForHuman {
 
@@ -122,7 +109,7 @@ public class Residence extends GeoEntity implements Pointable, RelayPointForHuma
     public List<StepForHuman> getOutEdges() {
         return Stream.concat(stList.stream(), directlyList.stream()).collect(Collectors.toList());
     }
-    
+
     @Override
     public String toString() {
         return "r(" + id + ")";

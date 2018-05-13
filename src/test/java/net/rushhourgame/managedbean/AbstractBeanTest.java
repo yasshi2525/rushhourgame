@@ -109,10 +109,16 @@ public class AbstractBeanTest {
     @Before
     public void setUp() {
         EM.getTransaction().begin();
+        RCON.synchronizeDatabase();
+        TRCON.synchronizeDatabase();
+        HCON.synchronizeDatabase();
     }
     
     @After
     public void tearDown() {
+        RCON.findAll().clear();
+        TRCON.findAll().clear();
+        HCON.findAll().clear();
         EM.getTransaction().rollback();
     }
     

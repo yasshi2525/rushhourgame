@@ -66,7 +66,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         try {
-            inst.synchronizeDatabase();
             player = createPlayer();
             AssistanceController.Result result = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
             ACON.extend(player, result.node, new SimplePoint(20.0, 25.0));
@@ -167,7 +166,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     
     @Test
     public void testUndeployWithPassenger() throws RushHourException {
-        HCON.synchronizeDatabase();
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         

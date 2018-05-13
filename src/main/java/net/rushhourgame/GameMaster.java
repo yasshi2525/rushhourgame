@@ -128,6 +128,7 @@ public class GameMaster implements Serializable, Runnable {
             LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
             return false;
         }
+        rCon.synchronizeDatabase();
         tCon.synchronizeDatabase();
         hCon.synchronizeDatabase();
         timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
@@ -146,6 +147,7 @@ public class GameMaster implements Serializable, Runnable {
         }
         boolean res = timerFuture.cancel(false);
         if (res) {
+            rCon.synchronizeDatabase();
             tCon.synchronizeDatabase();
             hCon.synchronizeDatabase();
         } else {
@@ -201,10 +203,7 @@ public class GameMaster implements Serializable, Runnable {
                     hCon.merge(st);
                     stCon.step(st, getInterval());
                 });
-                rCon.findAll().forEach(r -> {
-                    hCon.merge(r);
-                    rCon.step(r, getInterval());
-                });
+                rCon.step(getInterval());
                 tCon.step(getInterval());
                 hCon.step(getInterval(), getHumanSpeed());
             } finally {

@@ -77,56 +77,60 @@ public class AbstractControllerTest {
     protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
     protected final static GameMaster GM = ControllerFactory.createGameMaster();
-    
+
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
-    
+
     @BeforeClass
     public static void setUpClass() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validatorForExecutables = validatorFactory.getValidator().forExecutables();
     }
-    
+
     @Before
     public void setUp() {
         EM.getTransaction().begin();
+        RCON.synchronizeDatabase();
+        HCON.synchronizeDatabase();
+        TRAINCON.synchronizeDatabase();
     }
 
     @After
     public void tearDown() {
         HCON.findAll().clear();
         TRAINCON.findAll().clear();
+        RCON.findAll().clear();
         EM.getTransaction().rollback();
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
         validatorFactory.close();
     }
-    
-    protected static Player createPlayer() throws RushHourException{
+
+    protected static Player createPlayer() throws RushHourException {
         return PCON.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
-    
-    protected static Player createOther() throws RushHourException{
+
+    protected static Player createOther() throws RushHourException {
         return PCON.upsertPlayer("_other", "_other", "_other", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
-    
+
     protected static Station createStation() throws RushHourException {
         Player owner = createPlayer();
         RailNode ndoe = RAILCON.create(owner, new SimplePoint(0, 0));
         return STCON.create(owner, ndoe, "_test");
     }
-    
+
     protected static <U, T> void assertViolatedAnnotationTypeIs(Class<U> annotation, Set<ConstraintViolation<T>> violations) {
-        assertEquals(1, violations.size() );
-        assertEquals(annotation, 
+        assertEquals(1, violations.size());
+        assertEquals(annotation,
                 violations.iterator().next().getConstraintDescriptor().getAnnotation().annotationType());
     }
-    
+
     protected static <T> void assertViolatedValueIs(Object violatedValue, Set<ConstraintViolation<T>> violations) {
-        assertEquals(1, violations.size() );
+        assertEquals(1, violations.size());
         assertEquals(violatedValue, violations.iterator().next().getInvalidValue());
     }
-    
+
 }
