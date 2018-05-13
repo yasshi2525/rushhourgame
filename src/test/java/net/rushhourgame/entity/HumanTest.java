@@ -504,49 +504,7 @@ public class HumanTest extends AbstractEntityTest {
 
         assertEquals(inst.onPlatform, onPlatform);
     }
-
-    @Test
-    public void testMergeTrainNull() {
-        inst.onTrain = null;
-
-        inst.merge(mock(TrainDeployed.class));
-        
-        assertNull(inst.onTrain);
-    }
-
-    @Test
-    public void testMergeTrainCopy() {
-        inst.onTrain = mock(TrainDeployed.class);
-        TrainDeployed copy = mock(TrainDeployed.class);
-        doReturn(true).when(inst.onTrain).equalsId(eq(copy));
-
-        inst.merge(copy);
-
-        assertEquals(inst.onTrain, copy);
-    }
-
-    @Test
-    public void testMergeTrainOther() {
-        inst.onTrain = mock(TrainDeployed.class);
-        TrainDeployed other = mock(TrainDeployed.class);
-        doReturn(false).when(inst.onTrain).equalsId(eq(other));
-
-        inst.merge(other);
-
-        assertNotEquals(inst.onTrain, other);
-    }
-
-    @Test
-    public void testMergeTrainSame() {
-        TrainDeployed onTrain = mock(TrainDeployed.class);
-        inst.onTrain = onTrain;
-        doReturn(true).when(inst.onTrain).equalsId(eq(onTrain));
-
-        inst.merge(onTrain);
-
-        assertEquals(inst.onTrain, onTrain);
-    }
-
+    
     @Test
     public void testMergedCurrent() {
         inst.current = mock(TemporaryHumanRouteEdge.class);
@@ -624,5 +582,10 @@ public class HumanTest extends AbstractEntityTest {
     @Test
     public void testIsAreaIn() {
         assertTrue(inst.isAreaIn(new SimplePoint(), 10));
+    }
+    
+    @Test
+    public void testBean() {
+        assertFalse(inst.equalsId(null));
     }
 }

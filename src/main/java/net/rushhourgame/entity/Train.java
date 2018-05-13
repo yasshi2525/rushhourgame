@@ -61,7 +61,7 @@ import javax.validation.constraints.NotNull;
     )
 })
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
-public class Train extends AbstractEntity implements Pointable, Ownable {
+public class Train extends GeoEntity implements Pointable, Ownable {
 
     private static final long serialVersionUID = 1L;
 
@@ -111,13 +111,6 @@ public class Train extends AbstractEntity implements Pointable, Ownable {
             throw new IllegalStateException("Not deployed.");
         }
         return deployed.distTo(p);
-    }
-
-    public void step(List<Human> humans, long time) {
-        if (deployed == null) {
-            throw new IllegalStateException("Not deployed.");
-        }
-        deployed.consumeTime(humans, time);
     }
 
     @Override

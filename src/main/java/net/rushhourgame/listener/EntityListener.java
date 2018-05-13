@@ -43,10 +43,10 @@ public class EntityListener{
         if(obj instanceof AbstractEntity){
             AbstractEntity entity = (AbstractEntity) obj;
             if(entity.getCreated() != null){
-                throw new RushHourRuntimeException("\"created\" parameter is set even if before persist");
+                throw new RushHourRuntimeException("\"created\" parameter is set even if before persist : " + entity);
             }
             if(entity.getUpdated() != null){
-                throw new RushHourRuntimeException("\"updated\" parameter is set even if before persist");
+                throw new RushHourRuntimeException("\"updated\" parameter is set even if before persist : " + entity);
             }
             entity.setCreated(new Date());
             entity.setUpdated(new Date());
@@ -58,7 +58,7 @@ public class EntityListener{
         if(obj instanceof AbstractEntity){
             AbstractEntity entity = (AbstractEntity) obj;
             if(entity.getCreated() == null){
-                throw new RushHourRuntimeException("\"created\" is null even if state is preUpdate");
+                throw new RushHourRuntimeException("\"created\" is null even if state is preUpdate ; " + entity);
             }
             entity.setUpdated(new Date());
         }

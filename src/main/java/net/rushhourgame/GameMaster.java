@@ -128,6 +128,7 @@ public class GameMaster implements Serializable, Runnable {
             LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
             return false;
         }
+        tCon.synchronizeDatabase();
         hCon.synchronizeDatabase();
         timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
         return true;
@@ -145,18 +146,19 @@ public class GameMaster implements Serializable, Runnable {
         }
         boolean res = timerFuture.cancel(false);
         if (res) {
+            tCon.synchronizeDatabase();
             hCon.synchronizeDatabase();
         } else {
             LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because canceling timer is failed.", new Object[]{GameMaster.class});
         }
         return res;
     }
-    
+
     @Transactional
     public void createResidence() throws RushHourException {
         rCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
     }
-    
+
     @Transactional
     public void createCompany() throws RushHourException {
         cCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
@@ -203,14 +205,8 @@ public class GameMaster implements Serializable, Runnable {
                     hCon.merge(r);
                     rCon.step(r, getInterval());
                 });
-                tCon.findAll().forEach(t -> {
-                    hCon.merge(t);
-                    tCon.step(t, getInterval());
-                });
-                hCon.findAll().forEach(h -> {
-                    hCon.step(h, getInterval(), getHumanSpeed());
-                });
-                hCon.killHuman();
+                tCon.step(getInterval());
+                hCon.step(getInterval(), getHumanSpeed());
             } finally {
                 searcher.unlock();
             }

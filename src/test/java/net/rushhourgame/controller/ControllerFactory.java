@@ -162,12 +162,14 @@ public class ControllerFactory {
     
     public static TrainController createTrainController() {
         TrainController inst = new TrainController();
+        inst.init();
         inst.hCon = createHumanController();
         init(inst);
         return inst;
     }
     
     public static HumanController createHumanController() {
+        HCON.init();
         init(HCON);
         return HCON;
     }

@@ -23,26 +23,12 @@
  */
 package net.rushhourgame.entity;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class SimplePointTest {
-
-    @Test
-    public void testToString() {
-        assertEquals("(0.0,0.0)", new SimplePoint().toString());
-    }
+public class SimpleGeoEntity extends GeoEntity {
     
-    @Test
-    public void testIsAreaIn() {
-        SimplePoint inst = new SimplePoint();
-        assertTrue(inst.isAreaIn(new SimplePoint(0, 0), -1));
-        assertFalse(inst.isAreaIn(new SimplePoint(2, 0), -1));
-        assertFalse(inst.isAreaIn(new SimplePoint(2, -1), -1));
-        assertFalse(inst.isAreaIn(new SimplePoint(2, 1), -1));
-    }
+    private static final long serialVersionUID = 1L;
+    
 }

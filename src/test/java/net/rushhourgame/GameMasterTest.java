@@ -130,6 +130,8 @@ public class GameMasterTest {
 
     @After
     public void tearDown() {
+        HCON.findAll().clear();
+        TCON.findAll().clear();
         EM.getTransaction().rollback();
     }
 
@@ -154,6 +156,7 @@ public class GameMasterTest {
         assertTrue(inst.startGame());
 
         verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.tCon, times(1)).synchronizeDatabase();
         verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
@@ -163,6 +166,7 @@ public class GameMasterTest {
         doReturn(false).when(inst.timerFuture).isDone();
 
         assertFalse(inst.startGame());
+        verify(inst.tCon, never()).synchronizeDatabase();
         verify(inst.hCon, never()).synchronizeDatabase();
         verify(timerService, never()).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
     }
@@ -174,6 +178,7 @@ public class GameMasterTest {
 
         assertTrue(inst.startGame());
         verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.tCon, times(1)).synchronizeDatabase();
         verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
@@ -186,6 +191,7 @@ public class GameMasterTest {
         assertTrue(inst.stopGame());
         
         verify(inst.timerFuture, times(1)).cancel(eq(false));
+        verify(inst.tCon, times(1)).synchronizeDatabase();
         verify(inst.hCon, times(1)).synchronizeDatabase();
     }
 
@@ -195,6 +201,7 @@ public class GameMasterTest {
 
         assertFalse(inst.stopGame());
         
+        verify(inst.tCon, never()).synchronizeDatabase();
         verify(inst.hCon, never()).synchronizeDatabase();
     }
 
@@ -206,6 +213,7 @@ public class GameMasterTest {
         assertFalse(inst.stopGame());
         
         verify(inst.timerFuture, never()).cancel(anyBoolean());
+        verify(inst.tCon, never()).synchronizeDatabase();
         verify(inst.hCon, never()).synchronizeDatabase();
     }
     
@@ -218,6 +226,7 @@ public class GameMasterTest {
         assertFalse(inst.stopGame());
         
         verify(inst.timerFuture, times(1)).cancel(eq(false));
+        verify(inst.tCon, never()).synchronizeDatabase();
         verify(inst.hCon, never()).synchronizeDatabase();
     }
     
@@ -283,7 +292,6 @@ public class GameMasterTest {
      * @throws net.rushhourgame.exception.RushHourException
      */
     @Test
-    @Ignore
     public void testRun() throws RushHourException {
         inst.hCon.synchronizeDatabase();
         WorldPack world = createSmallWorld();
@@ -297,12 +305,8 @@ public class GameMasterTest {
         verify(inst.hCon, times(1)).merge(any(Residence.class));
         verify(inst.rCon, times(1)).step(any(Residence.class), anyLong());
         
-        verify(inst.hCon, times(1)).merge(any(Train.class));
-        verify(inst.tCon, times(1)).step(any(Train.class), anyLong());
-        
-        verify(inst.hCon, times(1)).step(any(Human.class), anyLong(), anyDouble());
-        
-        verify(inst.hCon, times(1)).killHuman();
+        verify(inst.tCon, times(1)).step(anyLong());
+        verify(inst.hCon, times(1)).step(anyLong(), anyDouble());
 
         assertNull(world.h.getCurrent());
     }

@@ -47,7 +47,7 @@ import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 
 /**
- * 
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @ApplicationScoped
@@ -58,7 +58,7 @@ public class HumanController extends CachedController<Human> {
 
     @Inject
     RouteSearcher searcher;
-    
+
     @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{HumanController.class});
@@ -75,19 +75,20 @@ public class HumanController extends CachedController<Human> {
         human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
         human.setStandingOn(Human.StandingOn.GROUND);
         persistEntity(human);
-        
+
         em.flush();
         LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
         return human;
     }
 
-    
-
-    public void step(Human h, long interval, double speed) {
-        if (h.getCurrent() == null) {
-            h.searchCurrent(searcher);
-        }
-        h.step(em, interval, speed);
+    public void step(long interval, double speed) {
+        findAll().forEach(h -> {
+            if (h.getCurrent() == null) {
+                h.searchCurrent(searcher);
+            }
+            h.step(em, interval, speed);
+        });
+        killHuman();
     }
 
     public void merge(Residence obj) {
@@ -102,13 +103,7 @@ public class HumanController extends CachedController<Human> {
         entities.forEach(h -> h.merge(obj.getPlatform()));
     }
 
-    public void merge(Train obj) {
-        if (obj.isDeployed()) {
-            entities.forEach(h -> h.merge(obj.getDeployed()));
-        }
-    }
-
-    public void killHuman() {
+    protected void killHuman() {
         entities.removeIf(h -> {
             boolean res = h.shouldDie();
             if (res) {

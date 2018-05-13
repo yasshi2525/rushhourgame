@@ -30,16 +30,21 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import static net.rushhourgame.RushHourResourceBundle.GAME_DATA_INCONSIST;
 import static net.rushhourgame.RushHourResourceBundle.GAME_NO_PRIVILEDGE_OTHER_OWNED;
+import net.rushhourgame.entity.Company;
+import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Train;
+import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
 import org.mockito.Spy;
@@ -61,6 +66,7 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         try {
+            inst.synchronizeDatabase();
             player = createPlayer();
             AssistanceController.Result result = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
             ACON.extend(player, result.node, new SimplePoint(20.0, 25.0));
@@ -100,7 +106,7 @@ public class TrainControllerTest extends AbstractControllerTest {
             assertEquals("Not deployed.", e.getMessage());
         }
         try {
-            created.step(new ArrayList<>(), 0);
+            created.isAreaIn(new SimplePoint(), 0);
             fail();
         } catch (IllegalStateException e) {
             assertEquals("Not deployed.", e.getMessage());
@@ -114,6 +120,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         assertTrue(10.0 == train.getX());
         assertTrue(15.0 == train.getY());
         assertTrue(0.0 == train.distTo(new SimplePoint(10.0, 15.0)));
+        assertTrue(train.isAreaIn(new SimplePoint(10, 15), 0));
     }
 
     @Test
@@ -143,14 +150,15 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testUndeploy() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        inst.undeploy(train, player);
+        inst.undeploy(train.getDeployed(), player);
     }
-    
+
     @Test
-    public void testUndeployOther() {
+    public void testUndeployOther() throws RushHourException {
         Train train = inst.create(player);
+        inst.deploy(train, player, lineStep);
         try {
-            inst.undeploy(train, createOther());
+            inst.undeploy(train.getDeployed(), createOther());
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
@@ -158,10 +166,18 @@ public class TrainControllerTest extends AbstractControllerTest {
     }
     
     @Test
-    public void testUndeployAlreadyUneployed() throws RushHourException {
+    public void testUndeployWithPassenger() throws RushHourException {
+        HCON.synchronizeDatabase();
         Train train = inst.create(player);
+        inst.deploy(train, player, lineStep);
+        
+        Residence src = RCON.create(new SimplePoint());
+        Company dst = CCON.create(new SimplePoint());
+        Human human = HCON.create(new SimplePoint(), src, dst);
+        human.setOnTrain(train.getDeployed());
+        
         try {
-            inst.undeploy(train, player);
+            inst.undeploy(train.getDeployed(), player);
             fail();
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
@@ -187,13 +203,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testStep() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        inst.step(train, 0);
-    }
-
-    @Test
-    public void testStepUndeploy() throws RushHourException {
-        Train train = spy(inst.create(player));
-        inst.step(train, 0);
-        verify(train, times(0)).step(anyList(), anyLong());
+        inst.step(0);
     }
 }

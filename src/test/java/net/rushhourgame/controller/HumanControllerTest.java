@@ -72,32 +72,7 @@ public class HumanControllerTest extends AbstractControllerTest {
     public void tearDown() {
         super.tearDown();
     }
-
-    @Test
-    public void testSynchronizeDatabase() {
-        inst.entities = new ArrayList<>();
-        Human human = mock(Human.class);
-        inst.entities.add(human);
-        inst.em = spy(EntityManager.class);
-
-        inst.synchronizeDatabase();
-
-        verify(inst.em, never()).createNamedQuery(anyString());
-        verify(inst.em, times(1)).merge(eq(human));
-        assertNotNull(inst.entities);
-    }
-
-    @Test
-    public void testSynchronizeDatabaseNull() {
-        inst.entities = null;
-        inst.em = spy(inst.em);
-
-        inst.synchronizeDatabase();
-
-        verify(inst.em, times(1)).createNamedQuery(anyString());
-        assertNotNull(inst.entities);
-    }
-
+    
     @Test
     public void testCreate() throws RushHourException {
         inst.entities = new ArrayList<>();
@@ -184,13 +159,17 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithSearching() throws RushHourException {
+        inst.synchronizeDatabase();
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
         inst.searcher.call();
         
-        Human h = spy(inst.create(origin, src, dst));
+        inst.create(origin, src, dst);
+        Human h = spy(inst.findAll().get(0));
+        inst.findAll().remove(0);
+        inst.findAll().add(h);
 
-        inst.step(h, 1000000, 0.00001);
+        inst.step(1000000, 0.00001);
 
         verify(h, times(1)).searchCurrent(eq(inst.searcher));
         verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
@@ -198,16 +177,21 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithoutSearching() throws RushHourException {
+        inst.synchronizeDatabase();
         Residence src = RCON.create(origin);
         Company dst = CCON.create(origin);
 
-        Human h = spy(inst.create(origin, src, dst));
+        inst.create(origin, src, dst);
+        Human h = spy(inst.findAll().get(0));
+        inst.findAll().remove(0);
+        inst.findAll().add(h);
+        
         RouteNode node = mock(RouteNode.class);
         doReturn(mock(RouteEdge.class)).when(node).getViaEdge();
         h.setCurrent(node);
         doNothing().when(h).step(eq(inst.em), anyLong(), anyDouble());
 
-        inst.step(h, 1000000, 0.00001);
+        inst.step(1000000, 0.00001);
 
         verify(h, never()).searchCurrent(eq(inst.searcher));
         verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
@@ -247,33 +231,6 @@ public class HumanControllerTest extends AbstractControllerTest {
         inst.merge(station);
         
         verify(human, times(1)).merge(eq(platform));
-    }
-    
-    @Test
-    public void testMergeUndeployedTrain() {
-        Human human = mock(Human.class);
-        inst.entities = new ArrayList<>();
-        inst.entities.add(human);
-        Train train = mock(Train.class);
-        doReturn(false).when(train).isDeployed();
-        
-        inst.merge(train);
-        
-        verify(human, never()).merge(any(TrainDeployed.class));
-    }
-    
-    @Test
-    public void testMergeTrain() {
-        Human human = mock(Human.class);
-        inst.entities = new ArrayList<>();
-        inst.entities.add(human);
-        Train train = mock(Train.class);
-        doReturn(true).when(train).isDeployed();
-        doReturn(mock(TrainDeployed.class)).when(train).getDeployed();
-        
-        inst.merge(train);
-        
-        verify(human, times(1)).merge(any(TrainDeployed.class));
     }
 
     @Test

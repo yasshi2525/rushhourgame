@@ -94,6 +94,8 @@ public class AbstractControllerTest {
 
     @After
     public void tearDown() {
+        HCON.findAll().clear();
+        TRAINCON.findAll().clear();
         EM.getTransaction().rollback();
     }
     

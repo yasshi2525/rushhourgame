@@ -26,8 +26,10 @@ package net.rushhourgame.entity;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
@@ -39,6 +41,10 @@ import javax.validation.constraints.NotNull;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@NamedQuery(
+        name = "TrainDeployed.deleteBy",
+        query = "DELETE FROM TrainDeployed obj WHERE obj = :obj"
+)
 @Entity
 public class TrainDeployed extends GeoEntity {
 
@@ -74,6 +80,10 @@ public class TrainDeployed extends GeoEntity {
         this.current = current;
         progress = 0.0;
         registerPoint(null);
+    }
+    
+    public void mergeCurrent(EntityManager em) {
+        current = em.merge(current);
     }
 
     public void consumeTime(List<Human> humans, @Min(0) long remainTime) {
@@ -198,7 +208,11 @@ public class TrainDeployed extends GeoEntity {
                     }
                 });
     }
-    
+
+    public void step(List<Human> humans, long time) {
+        consumeTime(humans, time);
+    }
+
     @Override
     public String toString() {
         return "td(" + id + ")";

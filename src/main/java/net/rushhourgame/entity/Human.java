@@ -276,13 +276,6 @@ public class Human extends GeoEntity implements Pointable {
             LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, p, this});
         }
     }
-    
-    public void merge(TrainDeployed t) {
-        if (onTrain != null && onTrain.equalsId(t) && !onTrain.equals(t)) {
-            onTrain = t;
-            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, t, this});
-        }
-    }
 
     /**
      * HumanControllerから RouteSearcherを呼ぶと循環してしまう

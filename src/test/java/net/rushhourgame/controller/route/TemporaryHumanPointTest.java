@@ -24,6 +24,7 @@
 package net.rushhourgame.controller.route;
 
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -63,6 +64,7 @@ public class TemporaryHumanPointTest {
         assertTrue(inst.getInEdges().isEmpty());
         assertTrue(human.getX() == inst.getX());
         assertTrue(human.getY() == inst.getY());
+        assertTrue(inst.isAreaIn(new SimplePoint(10, 20), 0));
     }
     
 }
