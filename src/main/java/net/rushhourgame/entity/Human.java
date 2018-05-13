@@ -44,20 +44,14 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Human.findAll",
-            query = "SELECT obj FROM Human obj"
-    ),
-    @NamedQuery(
-            name = "Human.findIn",
-            query = "SELECT obj FROM Human obj WHERE obj.x > :x1 AND obj.x < :x2 AND obj.y > :y1 AND obj.y < :y2"
-    ),
-    @NamedQuery(
-            name = "Human.deleteBy",
-            query = "DELETE FROM Human obj WHERE obj = :h"
-    )
-})
+@NamedQuery(
+        name = "Human.findAll",
+        query = "SELECT obj FROM Human obj"
+)
+@NamedQuery(
+        name = "Human.deleteBy",
+        query = "DELETE FROM Human obj WHERE obj = :h"
+)
 public class Human extends GeoEntity implements Pointable {
 
     private static final Logger LOG = Logger.getLogger(Human.class.getName());
@@ -255,18 +249,11 @@ public class Human extends GeoEntity implements Pointable {
         x += dist * Math.cos(theta);
         y += dist * Math.sin(theta);
     }
-    
+
     public void merge(Company cmp) {
         if (dest.equalsId(cmp) && !dest.equals(cmp)) {
             dest = cmp;
             LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, cmp, this});
-        }
-    }
-    
-    public void merge(Platform p) {
-        if (onPlatform != null && onPlatform.equalsId(p) && !onPlatform.equals(p)) {
-            onPlatform = p;
-            LOG.log(Level.FINE, "{0}#merge merged reference {1} of {2}", new Object[]{Human.class, p, this});
         }
     }
 
@@ -286,7 +273,7 @@ public class Human extends GeoEntity implements Pointable {
             setCurrent(searcher.getStart(src, dest));
         }
     }
-    
+
     @Override
     public String toString() {
         return "h(" + id + ")";

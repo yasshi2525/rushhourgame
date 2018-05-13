@@ -124,10 +124,6 @@ public class TrainController extends CachedController<Train> {
         LOG.log(Level.INFO, "{0}#undeploy removed {1}", new Object[]{TrainController.class, train});
     }
 
-    public List<Train> findAll(Player p) {
-        return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
-    }
-
     public List<Train> findBy(@NotNull Line line) {
         return findAll().stream()
                 .filter(t -> t.isDeployed())

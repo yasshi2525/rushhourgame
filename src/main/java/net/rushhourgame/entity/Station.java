@@ -39,28 +39,10 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Station.findIn",
-            query = "SELECT obj FROM Station obj JOIN RailNode n ON obj.platform = n.platform WHERE n.x > :x1 AND n.x < :x2 AND n.y > :y1 AND n.y < :y2"
-    )
-    ,
-    @NamedQuery(
-            name = "Station.findAll",
-            query = "SELECT obj FROM Station obj"
-    )
-    ,
-    @NamedQuery(
-            name = "Station.findMyStation",
-            query = "SELECT obj FROM Station obj WHERE obj.owner = :owner"
-    )
-    ,
-    @NamedQuery(
-            name = "Station.existsName",
-            query = "SELECT CASE WHEN count(x.id) > 0 THEN true ELSE false END"
-            + " FROM Station x WHERE x.owner = :owner AND x.name = :name"
-    )
-})
+@NamedQuery(
+        name = "Station.findAll",
+        query = "SELECT obj FROM Station obj"
+)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Station extends GeoEntity implements Pointable, Ownable, Nameable {
 

@@ -95,10 +95,6 @@ public class HumanController extends CachedController<Human> {
         entities.forEach(h -> h.merge(obj));
     }
 
-    public void merge(Station obj) {
-        entities.forEach(h -> h.merge(obj.getPlatform()));
-    }
-
     protected void killHuman() {
         entities.removeIf(h -> {
             boolean res = h.shouldDie();

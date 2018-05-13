@@ -26,6 +26,8 @@ package net.rushhourgame.controller;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.Min;
@@ -44,18 +46,30 @@ import net.rushhourgame.exception.RushHourException;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class StationController extends PointEntityController {
+@ApplicationScoped
+public class StationController extends CachedController<Station> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(StationController.class.getName());
 
     @Inject
     protected StepForHumanController sCon;
-    
-    public void step(Station st, long interval) {
-        // 専有されていた改札機を開放する
-        st.getTicketGate().step(interval);
+
+    @Override
+    public void synchronizeDatabase() {
+        synchronizeDatabase("Station.findAll", Station.class);
+    }
+
+    public void step(long interval) {
+        writeLock.lock();
+        try {
+            findAll().forEach(st -> {
+                // 専有されていた改札機を開放する
+                st.getTicketGate().step(interval);
+            });
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name) throws RushHourException {
@@ -71,7 +85,7 @@ public class StationController extends PointEntityController {
         if (!node.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        if (exists("Station.existsName", owner, "name", name)) {
+        if (existsName(owner, name)) {
             throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
         }
 
@@ -82,9 +96,9 @@ public class StationController extends PointEntityController {
         s.setTicketGate(createTicketGate(s, gatenum, gateMobility, prodist));
         s.setPlatform(createPlatform(s, node, platformCapacity));
 
-        em.persist(s);
+        persistEntity(s);
         em.flush();
-        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {StationController.class, s});
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{StationController.class, s});
         sCon.addStation(s);
 
         return s;
@@ -98,11 +112,11 @@ public class StationController extends PointEntityController {
         if (station.getName().equals(name)) {
             return;
         }
-        if (exists("Station.existsName", owner, "name", name)) {
+        if (existsName(owner, name)) {
             throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
         }
         station.setName(name);
-        LOG.log(Level.INFO, "{0}#editStationName edited {1}", new Object[] {StationController.class, station});
+        LOG.log(Level.INFO, "{0}#editStationName edited {1}", new Object[]{StationController.class, station});
     }
 
     public void editPlatformCapacity(@NotNull Station station, @NotNull Player owner, @Min(1) int capacity) throws RushHourException {
@@ -111,7 +125,7 @@ public class StationController extends PointEntityController {
         }
 
         station.getPlatform().setCapacity(capacity);
-        LOG.log(Level.INFO, "{0}#editPlatformCapacity edited {1}", new Object[] {StationController.class, station});
+        LOG.log(Level.INFO, "{0}#editPlatformCapacity edited {1}", new Object[]{StationController.class, station});
     }
 
     public void editTicketGateNum(@NotNull Station station, @NotNull Player owner, @Min(1) int num) throws RushHourException {
@@ -120,29 +134,15 @@ public class StationController extends PointEntityController {
         }
 
         station.getTicketGate().setGateNum(num);
-        LOG.log(Level.INFO, "{0}#editTicketGateNum edited {1}", new Object[] {StationController.class, station});
-    }
-    
-    public List<Station> findAll() {
-        return em.createNamedQuery("Station.findAll", Station.class).getResultList();
-    }
-    
-    public List<Station> findAll(Player owner) {
-        return em.createNamedQuery("Station.findMyStation", Station.class)
-                .setParameter("owner", owner).getResultList();
-    }
-    
-    public List<Station> findIn(@NotNull Pointable center, double scale){
-        return super.findIn(em.createNamedQuery("Station.findIn", Station.class), 
-                center, scale);
+        LOG.log(Level.INFO, "{0}#editTicketGateNum edited {1}", new Object[]{StationController.class, station});
     }
 
     public List<Platform> findPlatformAll() {
-        return em.createNamedQuery("Platform.findAll", Platform.class).getResultList();
+        return findAll().stream().map(st -> st.getPlatform()).collect(Collectors.toList());
     }
 
     public List<TicketGate> findTicketGateAll() {
-        return em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+        return findAll().stream().map(st -> st.getTicketGate()).collect(Collectors.toList());
     }
 
     protected Platform createPlatform(Station s, RailNode node, int capacity) {
@@ -162,5 +162,9 @@ public class StationController extends PointEntityController {
         gate.setProdist(prodist);
 
         return gate;
+    }
+
+    protected boolean existsName(Player owner, String name) {
+        return findAll().stream().filter(st -> st.isOwnedBy(owner)).anyMatch(st -> st.getName().equals(name));
     }
 }

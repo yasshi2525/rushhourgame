@@ -63,7 +63,7 @@ public class LineStep extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Line parent;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     protected LineStep next;
 
     @ManyToOne

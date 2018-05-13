@@ -110,6 +110,7 @@ public class AbstractBeanTest {
     public void setUp() {
         EM.getTransaction().begin();
         RCON.synchronizeDatabase();
+        STCON.synchronizeDatabase();
         TRCON.synchronizeDatabase();
         HCON.synchronizeDatabase();
     }
@@ -117,6 +118,7 @@ public class AbstractBeanTest {
     @After
     public void tearDown() {
         RCON.findAll().clear();
+        STCON.findAll().clear();
         TRCON.findAll().clear();
         HCON.findAll().clear();
         EM.getTransaction().rollback();

@@ -91,6 +91,7 @@ public class AbstractControllerTest {
     public void setUp() {
         EM.getTransaction().begin();
         RCON.synchronizeDatabase();
+        STCON.synchronizeDatabase();
         HCON.synchronizeDatabase();
         TRAINCON.synchronizeDatabase();
     }
@@ -98,6 +99,7 @@ public class AbstractControllerTest {
     @After
     public void tearDown() {
         HCON.findAll().clear();
+        STCON.findAll().clear();
         TRAINCON.findAll().clear();
         RCON.findAll().clear();
         EM.getTransaction().rollback();

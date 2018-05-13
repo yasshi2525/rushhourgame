@@ -67,6 +67,9 @@ public class StepForHumanController extends AbstractController {
 
     @Inject
     protected RouteSearcher searcher;
+    
+    @Inject
+    protected StationController stCon;
 
     @Resource(lookup = "concurrent/RushHourGameRoute")
     protected ManagedExecutorService executorService;
@@ -138,8 +141,7 @@ public class StepForHumanController extends AbstractController {
                 persistStepForHuman(createDirectly(r, newInst));
             }
 
-            List<TicketGate> gates
-                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+            List<TicketGate> gates = stCon.findTicketGateAll();
 
             for (TicketGate t : gates) {
                 persistStepForHuman(createStationToCompany(t, newInst));
@@ -162,8 +164,7 @@ public class StepForHumanController extends AbstractController {
                 persistStepForHuman(createDirectly(newInst, c));
             }
 
-            List<TicketGate> gates
-                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+            List<TicketGate> gates = stCon.findTicketGateAll();
 
             for (TicketGate t : gates) {
                 persistStepForHuman(createResidenceToStation(newInst, t));
@@ -196,8 +197,7 @@ public class StepForHumanController extends AbstractController {
             }
 
             // 改札口 -> 改札口
-            List<TicketGate> ticketGates
-                    = em.createNamedQuery("TicketGate.findAll", TicketGate.class).getResultList();
+            List<TicketGate> ticketGates = stCon.findTicketGateAll();
 
             for (TicketGate gate : ticketGates) {
                 if (!newInst.getTicketGate().equals(gate)) {

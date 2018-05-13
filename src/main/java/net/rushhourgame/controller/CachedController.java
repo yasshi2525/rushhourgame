@@ -69,6 +69,10 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         }
         return entities;
     }
+    
+    public List<T> findAll(Player p) {
+        return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
+    }
 
     public List<T> findIn(@NotNull Pointable center, double scale) {
         if (entities == null) {

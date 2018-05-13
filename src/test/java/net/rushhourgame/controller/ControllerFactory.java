@@ -46,6 +46,8 @@ public class ControllerFactory {
     protected final static RouteSearcher SEARCHER = new RouteSearcher();
     protected final static HumanController HCON = new HumanController();
     protected final static ResidenceController RCON = new ResidenceController();
+    protected final static TrainController TCON = new TrainController();
+    protected final static StationController STCON = new StationController();
     
     static {
         SEARCHER.hCon = HCON;
@@ -76,10 +78,10 @@ public class ControllerFactory {
     }
     
     public static StationController createStationController() {
-        StationController inst = new StationController();
-        inst.sCon = createStepForHumanController();
-        init(inst);
-        return inst;
+        STCON.sCon = createStepForHumanController();
+        init(STCON);
+        STCON.init();
+        return STCON;
     }
     
     public static LineController createLineController() {
@@ -128,6 +130,7 @@ public class ControllerFactory {
         RouteSearcher searcher = new RouteSearcher(); // 循環防止
         searcher.lock = new ReentrantReadWriteLock().writeLock();
         inst.searcher = searcher;
+        inst.stCon = STCON;
         init(inst);
         return inst;
     } 
@@ -162,11 +165,10 @@ public class ControllerFactory {
     }
     
     public static TrainController createTrainController() {
-        TrainController inst = new TrainController();
-        inst.init();
-        inst.hCon = createHumanController();
-        init(inst);
-        return inst;
+        TCON.init();
+        TCON.hCon = createHumanController();
+        init(TCON);
+        return TCON;
     }
     
     public static HumanController createHumanController() {

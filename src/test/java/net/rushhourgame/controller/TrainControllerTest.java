@@ -203,4 +203,15 @@ public class TrainControllerTest extends AbstractControllerTest {
         inst.deploy(train, player, lineStep);
         inst.step(0);
     }
+    
+    @Test
+    public void testInheritEntity() throws RushHourException {
+        Train train = inst.create(player);
+        inst.deploy(train, player, lineStep);
+        train.getDeployed().setX(1000);
+        
+        inst.synchronizeDatabase();
+        
+        assertTrue(1000 == inst.findAll().get(0).getDeployed().getX());
+    }
 }

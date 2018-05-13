@@ -42,24 +42,10 @@ import javax.validation.constraints.NotNull;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Train.findAll",
-            query = "SELECT obj FROM Train obj JOIN FETCH obj.deployed"
-    ),
-    @NamedQuery(
-            name = "Train.findIn",
-            query = "SELECT obj FROM Train obj WHERE obj.deployed.x > :x1 AND obj.deployed.x < :x2 AND obj.deployed.y > :y1 AND obj.deployed.y < :y2"
-    ),
-    @NamedQuery(
-            name = "Train.findMyAll",
-            query = "SELECT obj FROM Train obj WHERE obj.owner = :owner "
-    ),
-    @NamedQuery(
-            name = "Train.findByLine",
-            query = "SELECT t FROM Train t WHERE t.deployed.current.parent = :line"
-    )
-})
+@NamedQuery(
+        name = "Train.findAll",
+        query = "SELECT obj FROM Train obj JOIN FETCH obj.deployed"
+)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Train extends GeoEntity implements Pointable, Ownable {
 
@@ -76,7 +62,7 @@ public class Train extends GeoEntity implements Pointable, Ownable {
 
     @OneToOne(mappedBy = "train")
     protected TrainDeployed deployed;
-    
+
     public boolean isDeployed() {
         return deployed != null;
     }
@@ -155,7 +141,7 @@ public class Train extends GeoEntity implements Pointable, Ownable {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
-    
+
     @Override
     public String toString() {
         return "t(" + id + "){" + deployed + "}";

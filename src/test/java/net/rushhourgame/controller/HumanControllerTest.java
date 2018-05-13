@@ -207,20 +207,6 @@ public class HumanControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void testMergeStation() {
-        Human human = mock(Human.class);
-        inst.entities = new ArrayList<>();
-        inst.entities.add(human);
-        Station station = mock(Station.class);
-        Platform platform = mock(Platform.class);
-        doReturn(platform).when(station).getPlatform();
-        
-        inst.merge(station);
-        
-        verify(human, times(1)).merge(eq(platform));
-    }
-
-    @Test
     public void killHumanTest() {
         inst.em = spy(EM);
 

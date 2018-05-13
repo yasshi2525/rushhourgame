@@ -128,9 +128,7 @@ public class GameMaster implements Serializable, Runnable {
             LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
             return false;
         }
-        rCon.synchronizeDatabase();
-        tCon.synchronizeDatabase();
-        hCon.synchronizeDatabase();
+        synchronizeDatabase();
         timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
         return true;
     }
@@ -147,13 +145,18 @@ public class GameMaster implements Serializable, Runnable {
         }
         boolean res = timerFuture.cancel(false);
         if (res) {
-            rCon.synchronizeDatabase();
-            tCon.synchronizeDatabase();
-            hCon.synchronizeDatabase();
+            synchronizeDatabase();
         } else {
             LOG.log(Level.WARNING, "{0}#stopGame failed to stop game because canceling timer is failed.", new Object[]{GameMaster.class});
         }
         return res;
+    }
+
+    protected void synchronizeDatabase() {
+        stCon.synchronizeDatabase();
+        rCon.synchronizeDatabase();
+        tCon.synchronizeDatabase();
+        hCon.synchronizeDatabase();
     }
 
     @Transactional
@@ -199,10 +202,7 @@ public class GameMaster implements Serializable, Runnable {
                     return;
                 }
 
-                stCon.findAll().forEach(st -> {
-                    hCon.merge(st);
-                    stCon.step(st, getInterval());
-                });
+                stCon.step(getInterval());
                 rCon.step(getInterval());
                 tCon.step(getInterval());
                 hCon.step(getInterval(), getHumanSpeed());

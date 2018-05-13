@@ -44,19 +44,6 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Platform.findAll",
-            query = "SELECT x FROM Platform x"
-    ),
-    @NamedQuery(
-            name = "Platform.findInLine",
-            query = "SELECT obj FROM Platform obj WHERE EXISTS"
-                    + " (SELECT step FROM LineStep step"
-                    + " JOIN LineStepDeparture dpt ON step.departure = dpt"
-                    + " WHERE step.parent = :line AND dpt.staying = obj)"
-    )
-})
 public class Platform extends GeoEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;
@@ -83,10 +70,10 @@ public class Platform extends GeoEntity implements Pointable, RelayPointForHuman
 
     @Min(1)
     protected int capacity;
-    
+
     @Min(0)
     protected int occupied;
-    
+
     public Station getStation() {
         return station;
     }
@@ -110,22 +97,22 @@ public class Platform extends GeoEntity implements Pointable, RelayPointForHuman
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
-    
+
     public boolean canEnter() {
         return capacity - occupied >= 1;
     }
-    
+
     public void enter() {
         enter(false);
     }
-    
+
     public void enter(boolean force) {
         if (!force && !canEnter()) {
             throw new IllegalStateException("Tried to enter full platform.");
         }
         occupied++;
     }
-    
+
     public void exit() {
         occupied--;
     }
@@ -169,7 +156,7 @@ public class Platform extends GeoEntity implements Pointable, RelayPointForHuman
     public List<StepForHuman> getInEdges() {
         return Stream.concat(tToList.stream(), stToList.stream()).collect(Collectors.toList());
     }
-    
+
     @Override
     public String toString() {
         return "p(" + id + ")";

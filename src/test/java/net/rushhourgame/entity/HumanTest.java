@@ -429,48 +429,6 @@ public class HumanTest extends AbstractEntityTest {
 
         assertEquals(inst.dest, dest);
     }
-
-    @Test
-    public void testMergePlatformNull() {
-        inst.onPlatform = null;
-
-        inst.merge(mock(Platform.class));
-
-        assertNull(inst.onPlatform);
-    }
-
-    @Test
-    public void testMergePlatformCopy() {
-        inst.onPlatform = mock(Platform.class);
-        Platform copy = mock(Platform.class);
-        doReturn(true).when(inst.onPlatform).equalsId(eq(copy));
-
-        inst.merge(copy);
-
-        assertEquals(inst.onPlatform, copy);
-    }
-
-    @Test
-    public void testMergePlatformOther() {
-        inst.onPlatform = mock(Platform.class);
-        Platform other = mock(Platform.class);
-        doReturn(false).when(inst.onPlatform).equalsId(eq(other));
-
-        inst.merge(other);
-
-        assertNotEquals(inst.onPlatform, other);
-    }
-
-    @Test
-    public void testMergePlatformSame() {
-        Platform onPlatform = mock(Platform.class);
-        inst.onPlatform = onPlatform;
-        doReturn(true).when(inst.onPlatform).equalsId(eq(onPlatform));
-
-        inst.merge(onPlatform);
-
-        assertEquals(inst.onPlatform, onPlatform);
-    }
     
     @Test
     public void testMergedCurrent() {

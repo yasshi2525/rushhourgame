@@ -106,8 +106,11 @@ public class LineRouteSearcher extends AbstractController {
     }
 
     protected List<Platform> extractPlatform(Line line) {
-        return em.createNamedQuery("Platform.findInLine", Platform.class)
-                .setParameter("line", line).getResultList();
+        return line.getSteps().stream()
+                .filter(step -> step.getDeparture() != null)
+                .map(step -> step.getDeparture().getStaying())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     protected List<LineRouteNode> wrapNode(List<Platform> originalNodes) {

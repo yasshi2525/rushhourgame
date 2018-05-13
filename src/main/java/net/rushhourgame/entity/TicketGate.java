@@ -46,12 +46,6 @@ import net.rushhourgame.entity.hroute.StepForHumanTransfer;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "TicketGate.findAll",
-            query = "SELECT x FROM TicketGate x"
-    )
-})
 public class TicketGate extends GeoEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;
