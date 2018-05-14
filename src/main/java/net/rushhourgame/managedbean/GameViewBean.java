@@ -208,7 +208,7 @@ public class GameViewBean implements Serializable {
     }
 
     public List<LineStep> getSortedLineSteps(Line line) {
-        if (lCon.isCompleted(line)) {
+        if (line.isCompleted()) {
             List<LineStep> sorted = new ArrayList<>();
             LineStep top = line.findTop();
             LineStep step = top;

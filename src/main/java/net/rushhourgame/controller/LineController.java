@@ -24,10 +24,13 @@
 package net.rushhourgame.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -48,8 +51,8 @@ import net.rushhourgame.exception.RushHourException;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@Dependent
-public class LineController extends AbstractController {
+@ApplicationScoped
+public class LineController extends CachedController<Line> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(LineController.class.getName());
@@ -59,18 +62,36 @@ public class LineController extends AbstractController {
     @Inject
     protected RailController rCon;
 
+    @Override
+    public void synchronizeDatabase() {
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{LineController.class});
+        writeLock.lock();
+        try {
+            synchronizeDatabase("Line.findAll", Line.class);
+        } finally {
+            writeLock.unlock();
+        }
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{LineController.class});
+    }
+
+    @Override
+    protected Line mergeEntity(Line entity) {
+        entity.setSteps(entity.getSteps().stream().map(step -> em.merge(step)).collect(Collectors.toList()));
+        return em.merge(entity);
+    }
+    
     public Line create(@NotNull Player owner, @NotNull String name) throws RushHourException {
-        if (exists("Line.existsName", owner, "name", name)) {
+        if (existsName(owner, name)) {
             throw new RushHourException(errMsgBuilder.createLineNameDuplication(name));
         }
 
         Line inst = new Line();
         inst.setName(name);
         inst.setOwner(owner);
-        em.persist(inst);
-        
+        persistEntity(inst);
+
         em.flush();
-        LOG.log(Level.INFO, "{0}#create created {1}", new Object[] {LineController.class, inst.toStringAsRoute()});
+        LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{LineController.class, inst.toStringAsRoute()});
         return inst;
     }
 
@@ -79,15 +100,20 @@ public class LineController extends AbstractController {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
 
+        if (!line.getSteps().isEmpty()) {
+            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+        }
+
         // どのedgeからくるのかわからないため、stoppingは生成しない
         LineStep parent = new LineStep();
         parent.setParent(line);
         parent.registerDeparture(start.getPlatform());
+        line.getSteps().add(parent);
 
         em.persist(parent);
 
         em.flush();
-        LOG.log(Level.INFO, "{0}#start created {1}", new Object[] {LineController.class, parent});
+        LOG.log(Level.INFO, "{0}#start created {1}", new Object[]{LineController.class, parent});
         return parent;
     }
 
@@ -107,9 +133,7 @@ public class LineController extends AbstractController {
         // 線路ノードに隣接する線路エッジをロード
         em.refresh(startNode);
 
-        // 路線に属する全ステップをロード
         Line line = current.getParent();
-        em.refresh(line);
 
         try {
             // 隣接線路エッジの中から、未到達のものだけフィルタリング
@@ -137,7 +161,7 @@ public class LineController extends AbstractController {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         // startとnextがつながっていない
-        if (!base.getGoalRailNode().equals(extend.getFrom())) {
+        if (!base.getGoalRailNode().equalsId(extend.getFrom())) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
 
@@ -161,12 +185,14 @@ public class LineController extends AbstractController {
         }
 
         em.flush();
-        LOG.log(Level.INFO, "{0}#extend created {1}", new Object[] {LineController.class, base});
+        LOG.log(Level.INFO, "{0}#extend created {1}", new Object[]{LineController.class, base});
         return base;
     }
 
     /**
-     * start -&gt; goal を start -&gt; insertedStart -&gt; insertedGoal -&gt; goal にする
+     * start -&gt; goal を start -&gt; insertedStart -&gt; insertedGoal -&gt;
+     * goal にする
+     *
      * @param from 元々あった線路ノード
      * @param to 路線に加えたい線路ノード
      * @param owner Player
@@ -174,40 +200,40 @@ public class LineController extends AbstractController {
      * @throws RushHourException 例外
      */
     public LineStep insert(@NotNull RailNode from, @NotNull RailNode to, @NotNull Player owner) throws RushHourException {
-        
+
         if (!from.isOwnedBy(owner) || !to.isOwnedBy(owner)) {
             throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
         }
-        
+
         if (!rCon.existsEdge(from, to)) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        
+
         List<LineStep> bases = findByGoalRailNode(from);
         if (bases.isEmpty()) {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
-        
+
         LineStep start = bases.get(0);
         LineStep goal = start.getNext();
-        
+
         start.setNext(null);
-                
+
         RailEdge forward = rCon.findEdge(from, to);
         RailEdge back = rCon.findEdge(to, from);
-        
+
         LineStep insertedStart = extend(start, owner, forward);
         LineStep insertedGoal = extend(insertedStart, owner, back);
-        
+
         // 新規に停車をする場合、発車ステップを入れて後続との整合性をとる
         if (insertedGoal.getStopping() != null && goal != null) {
             insertedGoal = createDeparture(insertedGoal.getStopping());
         }
-        
+
         insertedGoal.setNext(goal);
-        
+
         em.flush();
-        LOG.log(Level.INFO, "{0}#insert created {1}", new Object[] {LineController.class, insertedGoal});
+        LOG.log(Level.INFO, "{0}#insert created {1}", new Object[]{LineController.class, insertedGoal});
         return insertedGoal;
     }
 
@@ -238,16 +264,12 @@ public class LineController extends AbstractController {
 
         if (tail.canConnect(top)) {
             tail.setNext(top);
+            // 更新であるが、保存しないと電車が走れなくなるため保存
+            mergeEntity(tail.getParent());
         } else {
             throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
         }
         sCon.addCompletedLine(tail.getParent());
-    }
-
-    public boolean isCompleted(@NotNull Line line) {
-        return em.createNamedQuery("Line.isImcompleted", Number.class)
-                .setParameter("line", line)
-                .getSingleResult().longValue() != 1L;
     }
 
     protected LineStep createDeparture(LineStepStopping base) {
@@ -257,6 +279,7 @@ public class LineController extends AbstractController {
         em.persist(newStep);
 
         base.getParent().setNext(newStep);
+        newStep.getParent().getSteps().add(newStep);
         return newStep;
     }
 
@@ -267,6 +290,7 @@ public class LineController extends AbstractController {
         em.persist(newStep);
 
         base.setNext(newStep);
+        newStep.getParent().getSteps().add(newStep);
         return newStep;
     }
 
@@ -277,6 +301,7 @@ public class LineController extends AbstractController {
         em.persist(newStep);
 
         base.setNext(newStep);
+        newStep.getParent().getSteps().add(newStep);
         return newStep;
     }
 
@@ -287,49 +312,41 @@ public class LineController extends AbstractController {
         em.persist(newStep);
 
         base.setNext(newStep);
+        newStep.getParent().getSteps().add(newStep);
         return newStep;
     }
 
-    public List<Line> findAll() {
-        return em.createNamedQuery("Line.findAll", Line.class).getResultList();
-    }
-
-    public List<Line> findAll(Player p) {
-        return em.createNamedQuery("Line.findMyAll", Line.class)
-                .setParameter("owner", p).getResultList();
-    }
-
-    public List<Line> findIn(@NotNull Pointable center, double scale) {
-        return em.createNamedQuery("Line.findAll", Line.class).getResultList()
-                .stream().filter(l -> {
-                    em.refresh(l);
-                    return l.isAreaIn(center, scale);
-                })
-                .collect(Collectors.toList());
-    }
-
     public List<LineStep> findByGoalRailNode(RailNode node) {
-        String[] queries = {
-            "LineStep.findByDepartingRailNode",
-            "LineStep.findByMovingGoalRailNode",
-            "LineStep.findByStoppingGoalRailNode",
-            "LineStep.findByPassingGoalRailNode"
-        };
-
         List<LineStep> result = new ArrayList<>();
 
-        for (String query : queries) {
-            result.addAll(em.createNamedQuery(query, LineStep.class)
-                    .setParameter("node", node)
-                    .getResultList());
-        }
+        findAll().stream()
+                .filter(l -> l.isOwnedBy(node.getOwner()))
+                .forEach(l -> result.addAll(
+                l.getSteps().stream()
+                        .filter(step -> step.getGoalRailNode().equalsId(node))
+                        .collect(Collectors.toList())));
         return result;
     }
-    
-    protected LineStep findTop(@NotNull Line line) {
-        return em.createNamedQuery("LineStep.findTop", LineStep.class)
-                .setParameter("line", line)
-                .getSingleResult();
+
+    /**
+     * 誰からも参照されていない LineStep を探す
+     *
+     * @param line line
+     * @return LineStep
+     * @throws net.rushhourgame.exception.RushHourException 例外
+     */
+    protected LineStep findTop(@NotNull Line line) throws RushHourException {
+        Map<LineStep, Boolean> referred = new HashMap<>();
+        line.getSteps().forEach(step -> referred.put(step, Boolean.FALSE));
+        line.getSteps().stream()
+                .filter(step -> step.getNext() != null)
+                .forEach(step -> referred.put(step.getNext(), Boolean.TRUE));
+        for (LineStep step : referred.keySet()) {
+            if (!referred.get(step)) {
+                return step;
+            }
+        }
+        throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
     }
 
     public Line autocreate(Player player, Station start, String name) throws RushHourException {
@@ -348,9 +365,24 @@ public class LineController extends AbstractController {
         if (canEnd(tail, player)) {
             end(tail, player);
         }
-        LOG.log(Level.INFO, "{0}#autocreate created {1}", new Object[] {LineController.class, line.toStringAsRoute()});
-        
+        LOG.log(Level.INFO, "{0}#autocreate created {1}", new Object[]{LineController.class, line.toStringAsRoute()});
+
         em.flush();
         return line;
+    }
+
+    protected boolean existsName(Player owner, String name) {
+        return findAll().stream().filter(l -> l.isOwnedBy(owner)).anyMatch(l -> l.getName().equals(name));
+    }
+
+    public LineStep find(LineStep old) {
+        if (old == null) {
+            return null;
+        }
+        return findAll().stream()
+                .filter(l -> l.equalsId(old.getParent()))
+                .findFirst().get().getSteps().stream()
+                .filter(step -> step.equalsId(old))
+                .findFirst().get();
     }
 }

@@ -40,12 +40,6 @@ import net.rushhourgame.entity.RailEdge;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "LineStep.findByStoppingGoalRailNode",
-            query = "SELECT obj.parent FROM LineStepStopping obj WHERE obj.running._to = :node"
-    )
-})
 public class LineStepStopping extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

@@ -32,7 +32,9 @@ import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Platform;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
@@ -207,7 +209,7 @@ public class HumanControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void killHumanTest() {
+    public void testKillHuman() {
         inst.em = spy(EM);
 
         Human happy = spy(Human.class);
@@ -232,5 +234,25 @@ public class HumanControllerTest extends AbstractControllerTest {
         assertTrue(humans.contains(happy));
         assertFalse(humans.contains(tired));
         assertFalse(humans.contains(ended));
+    }
+    
+    @Test
+    public void testInheritEntity() throws RushHourException {
+        Player player = createPlayer();
+        Residence src = RCON.create(origin);
+        Company dst = CCON.create(origin);
+        RailNode node = RAILCON.create(player, origin);
+        Station station = STCON.create(player, node, "hoge");
+        
+        Human human = inst.create(TEST, src, dst);
+        human.enterIntoPlatform(station.getTicketGate(), station.getPlatform());
+        
+        assertEquals(station.getPlatform(), human.getOnPlatform());
+        
+        inst.synchronizeDatabase();
+        inst.entities = null;
+        inst.synchronizeDatabase();
+        
+        assertEquals(station.getPlatform(), inst.findAll().get(0).getOnPlatform());
     }
 }

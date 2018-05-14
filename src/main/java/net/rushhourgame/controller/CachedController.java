@@ -103,11 +103,20 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
     protected void synchronizeDatabase(String query, Class<T> entityClass) {
         if (entities == null) {
             entities = em.createNamedQuery(query, entityClass).getResultList();
+            entities.forEach(e -> refreshEntity(e));
             LOG.log(Level.INFO, "{0}#synchronizeDatabase fetched {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
         } else {
-            entities.forEach((e) -> em.merge(e));
+            entities = entities.stream().map((e) -> mergeEntity(e)).collect(Collectors.toList());
             LOG.log(Level.INFO, "{0}#synchronizeDatabase merged {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
         }
+    }
+    
+    protected void refreshEntity(T entity) {
+        em.refresh(entity);
+    }
+    
+    protected T mergeEntity(T entity) {
+        return em.merge(entity);
     }
 
     protected void persistEntity(T newEntity) {

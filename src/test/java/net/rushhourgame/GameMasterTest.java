@@ -41,6 +41,7 @@ import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.HumanController;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
@@ -93,6 +94,7 @@ public class GameMasterTest {
     protected static final StationController STCON = ControllerFactory.createStationController();
     protected static final RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
     protected static final ResidenceController RCON = ControllerFactory.createResidenceController();
+    protected static final LineController LCON = ControllerFactory.createLineController();
     
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
@@ -104,7 +106,7 @@ public class GameMasterTest {
     protected ManagedScheduledExecutorService timerService;
     
     @Mock
-    protected Future future;
+    protected Future<Boolean> future;
 
     @Before
     public void setUp() {
@@ -122,6 +124,7 @@ public class GameMasterTest {
         inst.hCon = spy(HCON);
         inst.rCon = spy(RCON);
         inst.cCon = spy(CCON);
+        inst.lCon = spy(LCON);
         inst.em = spy(EM);
         doNothing().when(inst.rCon).step(anyLong());
         // 人を生成しないようにする
@@ -130,6 +133,7 @@ public class GameMasterTest {
 
     @After
     public void tearDown() {
+        LCON.findAll().clear();
         HCON.findAll().clear();
         STCON.findAll().clear();
         TCON.findAll().clear();

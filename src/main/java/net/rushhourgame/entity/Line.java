@@ -36,40 +36,26 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 路線
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "Line.findAll",
-            query = "SELECT x FROM Line x"
-    ),
-    @NamedQuery(
-            name = "Line.findMyAll",
-            query = "SELECT x FROM Line x WHERE x.owner = :owner"
-    ),
-    @NamedQuery(
-            name = "Line.existsName",
-            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
-                    + " FROM Line obj WHERE obj.owner = :owner AND obj.name = :name"
-    ),    
-    @NamedQuery(
-            name = "Line.isImcompleted",
-            query = "SELECT CASE WHEN count(obj.id) > 0 THEN true ELSE false END"
-            + " FROM LineStep obj WHERE obj.parent = :line AND obj.next IS NULL"
-    )
-})
+@NamedQuery(
+        name = "Line.findAll",
+        query = "SELECT x FROM Line x"
+)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
-public class Line extends AbstractEntity implements Ownable, Nameable {
+public class Line extends GeoEntity implements Ownable, Nameable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @NotNull
     @ManyToOne
     protected Player owner;
-    
+
     @NotNull
     protected String name;
-    
+
     @OneToMany(mappedBy = "parent")
     List<LineStep> steps;
 
@@ -82,8 +68,12 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
         this.name = name;
     }
 
+    public void setSteps(List<LineStep> steps) {
+        this.steps = steps;
+    }
+
     public List<LineStep> getSteps() {
-            return steps;
+        return steps;
     }
 
     @Override
@@ -104,28 +94,33 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
     public boolean isOwnedBy(Player owner) {
         return isOwn(this.owner, owner);
     }
-    
+
     public boolean hasVisited(RailEdge edge) {
         return steps.stream().anyMatch(step -> {
             return edge.equals(step.getOnRailEdge());
         });
     }
-    
+
+    @Override
     public boolean isAreaIn(Pointable center, double scale) {
         return steps.stream().anyMatch(s -> s.isAreaIn(center, scale));
     }
-    
+
     public LineStep findTop() {
         return steps.stream()
                 .filter(step -> step.getDeparture() != null)
                 .min((s1, s2) -> (int) (s1.getId() - s2.getId())).orElse(null);
     }
     
+    public boolean isCompleted() {
+        return steps.stream().allMatch(step -> step.getNext() != null);
+    }
+
     @Override
     public String toString() {
         return "l(" + id + ")";
     }
-    
+
     public String toStringAsRoute() {
         StringBuilder sb = new StringBuilder(this.toString());
         sb.append("{");
@@ -134,7 +129,7 @@ public class Line extends AbstractEntity implements Ownable, Nameable {
             if (top != null) {
                 sb.append(top);
                 LineStep next = top.getNext();
-                while(next != null) {
+                while (next != null) {
                     sb.append("_->_");
                     sb.append(next);
                     if (next.equals(top)) {

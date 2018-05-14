@@ -47,13 +47,6 @@ import net.rushhourgame.entity.troute.LineStepType;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "LineStep.findTop",
-            query = "SELECT obj FROM LineStep obj WHERE"
-            + " obj.parent = :line"
-            + " AND NOT EXISTS (SELECT x FROM LineStep x WHERE obj = x.next)"
-    )})
 public class LineStep extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +56,7 @@ public class LineStep extends AbstractEntity implements Ownable {
     @ManyToOne
     protected Line parent;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     protected LineStep next;
 
     @ManyToOne
@@ -240,7 +233,7 @@ public class LineStep extends AbstractEntity implements Ownable {
         if (stopping != null) {
             // 停車の次は発車でなければならない
             return target.departure != null
-                    && stopping.getGoal().equals(target.departure.getStaying());
+                    && stopping.getGoal().equalsId(target.departure.getStaying());
 
         } else if (departure != null || moving != null || passing != null) {
             // 移動の次は発車以外でなければならない

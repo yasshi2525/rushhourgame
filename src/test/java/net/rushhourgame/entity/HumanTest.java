@@ -512,5 +512,8 @@ public class HumanTest extends AbstractEntityTest {
     @Test
     public void testBean() {
         assertFalse(inst.equalsId(null));
+        assertNull(inst.getOwner());
+        assertFalse(inst.isOwnedBy(mock(Player.class)));
+        assertFalse(inst.isPrivilegedBy(mock(Player.class)));
     }
 }

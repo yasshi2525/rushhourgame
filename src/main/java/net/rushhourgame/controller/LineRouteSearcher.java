@@ -59,8 +59,6 @@ public class LineRouteSearcher extends AbstractController {
     private static final Logger LOG = Logger.getLogger(LineRouteSearcher.class.getName());
 
     public void persist(@NotNull Line completedLine) {
-        em.refresh(completedLine);
-
         double costrate = Double.parseDouble(prop.get(RushHourProperties.GAME_DEF_TRAIN_COSTRATE));
         List<Platform> originalNodes = extractPlatform(completedLine);
         List<PlatformEdge> originalEdges = new ArrayList<>();

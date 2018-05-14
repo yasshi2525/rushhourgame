@@ -220,9 +220,7 @@ public class StepForHumanController extends AbstractController {
     public void addCompletedLine(@NotNull Line line) throws RushHourException {
         searcher.lock();
         try {
-            if (em.createNamedQuery("Line.isImcompleted", Number.class)
-                    .setParameter("line", line)
-                    .getSingleResult().longValue() == 1L) {
+            if (!line.isCompleted()) {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
 
@@ -238,9 +236,7 @@ public class StepForHumanController extends AbstractController {
     public void modifyCompletedLine(@NotNull Line line) throws RushHourException {
         searcher.lock();
         try {
-            if (em.createNamedQuery("Line.isImcompleted", Number.class)
-                    .setParameter("line", line)
-                    .getSingleResult().longValue() == 1L) {
+            if (!line.isCompleted()) {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
 

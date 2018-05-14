@@ -77,8 +77,4 @@ public class PointEntityController extends AbstractController{
                 .setParameter("y2", center.getY() + height / 2.0)
                 .getResultList();
     }
-    
-    protected Pointable makeNearPoint(Pointable base, double dist) {
-        return new SimplePoint(base).makeNearPoint(dist);
-    }
 }

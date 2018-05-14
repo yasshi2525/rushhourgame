@@ -127,7 +127,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result goal = inst.extend(player, start.node, EXTENDED);
 
         Line line = start.line;
-        assertTrue(LCON.isCompleted(line));
+        assertTrue(line.isCompleted());
 
         EM.refresh(line);
 
@@ -153,7 +153,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result n2 = inst.extend(player, start.node, EXTENDED2);
 
         Line line = start.line;
-        assertTrue(LCON.isCompleted(line));
+        assertTrue(line.isCompleted());
 
         EM.refresh(line);
 
@@ -194,7 +194,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
         assertEquals(1, LCON.findAll(player).size());
         Line line = LCON.findAll(player).get(0);
-        assertTrue(LCON.isCompleted(line));
+        assertTrue(line.isCompleted());
 
         EM.refresh(line);
 
@@ -232,7 +232,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result n3 = inst.extend(player, n1.node, EXTENDED3);
 
         Line line = start.line;
-        assertTrue(LCON.isCompleted(line));
+        assertTrue(line.isCompleted());
 
         EM.refresh(line);
         // start -> n1 -> n3 -> n1 -> n2 -> n1 -> start
@@ -260,7 +260,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result n3 = inst.extend(player, start.node, EXTENDED3);
 
         Line line = start.line;
-        assertTrue(LCON.isCompleted(line));
+        assertTrue(line.isCompleted());
 
         EM.refresh(line);
 

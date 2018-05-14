@@ -36,6 +36,7 @@ import net.rushhourgame.DebugInitializer;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
+import static net.rushhourgame.controller.ControllerFactory.LCON;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SignInType;
@@ -90,6 +91,7 @@ public class AbstractControllerTest {
     @Before
     public void setUp() {
         EM.getTransaction().begin();
+        LCON.synchronizeDatabase();
         RCON.synchronizeDatabase();
         STCON.synchronizeDatabase();
         HCON.synchronizeDatabase();
@@ -98,6 +100,7 @@ public class AbstractControllerTest {
 
     @After
     public void tearDown() {
+        LCON.findAll().clear();
         HCON.findAll().clear();
         STCON.findAll().clear();
         TRAINCON.findAll().clear();

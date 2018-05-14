@@ -57,7 +57,9 @@ public class StationController extends CachedController<Station> {
 
     @Override
     public void synchronizeDatabase() {
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{StationController.class});
         synchronizeDatabase("Station.findAll", Station.class);
+        LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{StationController.class});
     }
 
     public void step(long interval) {

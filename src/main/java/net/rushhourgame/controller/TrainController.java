@@ -55,11 +55,17 @@ public class TrainController extends CachedController<Train> {
 
     @Inject
     protected HumanController hCon;
+    @Inject
+    protected LineController lCon;
 
     @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{TrainController.class});
         synchronizeDatabase("Train.findAll", Train.class);
+        findAll().stream()
+                .filter(t -> t.isDeployed())
+                .map(t -> t.getDeployed())
+                .forEach(t -> t.mergeCurrent(lCon.find(t.getCurrent())));
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{TrainController.class});
     }
 
@@ -135,10 +141,7 @@ public class TrainController extends CachedController<Train> {
         writeLock.lock();
         try {
             findAll().stream().filter(t -> t.isDeployed())
-                    .forEach(t -> {
-                        t.getDeployed().mergeCurrent(em);
-                        t.getDeployed().step(hCon.findAll(), time);
-                    });
+                    .forEach(t -> t.getDeployed().step(hCon.findAll(), time));
         } finally {
             writeLock.unlock();
         }

@@ -48,6 +48,7 @@ public class ControllerFactory {
     protected final static ResidenceController RCON = new ResidenceController();
     protected final static TrainController TCON = new TrainController();
     protected final static StationController STCON = new StationController();
+    protected final static LineController LCON = new LineController();
     
     static {
         SEARCHER.hCon = HCON;
@@ -85,11 +86,11 @@ public class ControllerFactory {
     }
     
     public static LineController createLineController() {
-        LineController inst = new LineController();
-        inst.rCon = createRailController();
-        inst.sCon = createStepForHumanController();
-        init(inst);
-        return inst;
+        LCON.rCon = createRailController();
+        LCON.sCon = createStepForHumanController();
+        init(LCON);
+        LCON.init();
+        return LCON;
     }
 
     public static OAuthController createOAuthController() {
@@ -167,6 +168,7 @@ public class ControllerFactory {
     public static TrainController createTrainController() {
         TCON.init();
         TCON.hCon = createHumanController();
+        TCON.lCon = createLineController();
         init(TCON);
         return TCON;
     }

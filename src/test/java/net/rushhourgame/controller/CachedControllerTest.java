@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import net.rushhourgame.entity.Human;
+import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.SimpleGeoEntity;
+import net.rushhourgame.entity.SimplePoint;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -64,6 +66,27 @@ public class CachedControllerTest {
         doReturn(0).when(query).executeUpdate();
         doReturn(new ArrayList<>()).when(query).getResultList();
         inst.init();
+    }
+    
+    @Test
+    public void testExistsEntitiesNull() {
+        assertFalse(inst.exists(new SimplePoint()));
+    }
+    
+    @Test
+    public void testExistsPlayerArgEntitiesNull() {
+        assertFalse(inst.exists(mock(Player.class), new SimplePoint()));
+    }
+    
+    @Test
+    public void testExistsPlayerArg() {
+        Player owner = mock(Player.class);
+        inst.entities = new ArrayList<>();
+        inst.entities.add(e);
+        doReturn(true).when(e).isOwnedBy(owner);
+        doReturn(0d).when(e).distTo(any(SimplePoint.class));
+        
+        assertTrue(inst.exists(owner, new SimplePoint()));
     }
     
     @Test

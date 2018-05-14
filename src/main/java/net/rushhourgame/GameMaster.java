@@ -61,6 +61,7 @@ import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.HumanController;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
@@ -94,6 +95,8 @@ public class GameMaster implements Serializable, Runnable {
     protected StationController stCon;
     @Inject
     protected HumanController hCon;
+    @Inject
+    protected LineController lCon;
     @Inject
     protected RushHourProperties prop;
     @Inject
@@ -153,8 +156,9 @@ public class GameMaster implements Serializable, Runnable {
     }
 
     protected void synchronizeDatabase() {
-        stCon.synchronizeDatabase();
         rCon.synchronizeDatabase();
+        stCon.synchronizeDatabase();
+        lCon.synchronizeDatabase();
         tCon.synchronizeDatabase();
         hCon.synchronizeDatabase();
     }

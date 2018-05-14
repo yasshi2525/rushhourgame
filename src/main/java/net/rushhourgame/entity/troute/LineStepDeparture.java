@@ -40,12 +40,6 @@ import net.rushhourgame.entity.Platform;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(
-            name = "LineStep.findByDepartingRailNode",
-            query = "SELECT obj.parent FROM LineStepDeparture obj WHERE obj.staying.railNode = :node"
-    )
-})
 public class LineStepDeparture extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

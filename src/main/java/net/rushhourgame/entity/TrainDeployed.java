@@ -82,8 +82,9 @@ public class TrainDeployed extends GeoEntity {
         registerPoint(null);
     }
     
-    public void mergeCurrent(EntityManager em) {
-        current = em.merge(current);
+    public void mergeCurrent(LineStep current) {
+        this.current = current;
+        registerPoint(null);
     }
 
     public void consumeTime(List<Human> humans, @Min(0) long remainTime) {
