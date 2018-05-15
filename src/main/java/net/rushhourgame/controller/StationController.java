@@ -62,6 +62,17 @@ public class StationController extends CachedController<Station> {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{StationController.class});
     }
 
+    public Platform find(Platform old) {
+        if (old == null) {
+            return null;
+        }
+        if (entities == null) {
+            LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{StationController.class});
+            return null;
+        }
+        return entities.stream().filter(e -> e.getPlatform().equalsId(old)).findFirst().get().getPlatform();
+    }
+
     public void step(long interval) {
         writeLock.lock();
         try {

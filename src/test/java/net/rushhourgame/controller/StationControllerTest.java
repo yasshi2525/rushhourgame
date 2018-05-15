@@ -66,6 +66,13 @@ public class StationControllerTest extends AbstractControllerTest {
         super.setUp();
         inst = ControllerFactory.createStationController();
     }
+    
+    @Test
+    public void testFindNull() throws RushHourException {
+        Station st = createStation();
+        inst.entities = null;
+        assertNull(inst.find(st.getPlatform()));
+    }
 
     @Test
     public void testStep() throws RushHourException {

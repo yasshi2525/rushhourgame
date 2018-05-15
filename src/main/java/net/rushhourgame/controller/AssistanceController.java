@@ -97,7 +97,6 @@ public class AssistanceController extends AbstractController{
         } else {
             // 完成済みの路線でも、経路が変わるためルートを再計算させる
             Line line = inserted.getParent();
-            em.refresh(line);
             sCon.modifyCompletedLine(line);
         }
         Result result = new Result(extended, station, inserted.getParent());

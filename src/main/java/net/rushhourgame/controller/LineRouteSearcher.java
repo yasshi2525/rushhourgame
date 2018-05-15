@@ -62,8 +62,7 @@ public class LineRouteSearcher extends AbstractController {
         double costrate = Double.parseDouble(prop.get(RushHourProperties.GAME_DEF_TRAIN_COSTRATE));
         List<Platform> originalNodes = extractPlatform(completedLine);
         List<PlatformEdge> originalEdges = new ArrayList<>();
-        
-        
+
         // LineStep から、路線中の駅間同士の距離を求める
         completedLine.getSteps().stream()
                 .filter(step -> step.getDeparture() != null)
@@ -82,7 +81,7 @@ public class LineRouteSearcher extends AbstractController {
             List<LineRouteEdge> edges = wrapEdge(originalEdges, nodes);
 
             search(nodes, goal);
-            
+
             edges.forEach(edge -> {
                 LOG.log(Level.FINE, "{0}#persist {1}", new Object[]{LineRouteSearcher.class, edge.toString()});
             });

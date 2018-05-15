@@ -88,6 +88,7 @@ public class ControllerFactory {
     public static LineController createLineController() {
         LCON.rCon = createRailController();
         LCON.sCon = createStepForHumanController();
+        LCON.stCon = createStationController();
         init(LCON);
         LCON.init();
         return LCON;

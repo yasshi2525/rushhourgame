@@ -61,6 +61,8 @@ public class LineController extends CachedController<Line> {
     protected StepForHumanController sCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected StationController stCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -172,13 +174,14 @@ public class LineController extends CachedController<Line> {
 
         RailNode to = extend.getTo();
         em.refresh(to);
+        Platform toPlatform = stCon.find(to.getPlatform());
 
-        if (to.getPlatform() != null) {
+        if (toPlatform != null) {
             // 駅につく
             if (!passing) {
-                base = createStopping(base, extend, to.getPlatform());
+                base = createStopping(base, extend, toPlatform);
             } else {
-                base = createPassing(base, extend, to.getPlatform());
+                base = createPassing(base, extend, toPlatform);
             }
         } else {
             base = createMoving(base, extend);

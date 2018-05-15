@@ -923,7 +923,7 @@ public class LineControllerTest extends AbstractControllerTest {
     
     @Test
     public void testFindNull() {
-        assertNull(inst.find(null));
+        assertNull(inst.find((LineStep)null));
     }
 
     @Test
