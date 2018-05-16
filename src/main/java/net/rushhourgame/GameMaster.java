@@ -31,6 +31,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -108,8 +111,15 @@ public class GameMaster implements Serializable, Runnable {
     @PersistenceContext
     protected EntityManager em;
 
+    protected Lock writeLock;
+
     @Resource(lookup = "concurrent/RushHourGameRoute")
     protected ManagedExecutorService executorService;
+
+    @PostConstruct
+    public void init() {
+        writeLock = new ReentrantReadWriteLock().writeLock();
+    }
 
     @PreDestroy
     public void preDestroy() {
@@ -127,13 +137,21 @@ public class GameMaster implements Serializable, Runnable {
 
     @Transactional
     public boolean startGame() {
-        if (timerFuture != null && !timerFuture.isDone()) {
-            LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
-            return false;
+        // 2回連続でstart叩けないようにする
+        writeLock.lock();
+        try {
+            LOG.log(Level.INFO, "{0}#startGame start", new Object[]{GameMaster.class});
+            if (timerFuture != null && !timerFuture.isDone()) {
+                LOG.log(Level.WARNING, "{0}#startGame failed to start game because game is already running.", new Object[]{GameMaster.class});
+                return false;
+            }
+            synchronizeDatabase();
+            timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
+            LOG.log(Level.INFO, "{0}#startGame end", new Object[]{GameMaster.class});
+            return true;
+        } finally {
+            writeLock.unlock();
         }
-        synchronizeDatabase();
-        timerFuture = timerService.scheduleWithFixedDelay(this, 0L, getInterval(), TimeUnit.MILLISECONDS);
-        return true;
     }
 
     @Transactional

@@ -69,7 +69,7 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         }
         return entities;
     }
-    
+
     public List<T> findAll(Player p) {
         return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
     }
@@ -81,7 +81,7 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         }
         return entities.stream().filter(e -> e.isAreaIn(center, scale)).collect(Collectors.toList());
     }
-    
+
     protected boolean exists(Pointable p) {
         if (entities == null) {
             LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
@@ -89,7 +89,7 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         }
         return entities.stream().anyMatch(e -> e.distTo(p) == 0d);
     }
-    
+
     protected boolean exists(Player owner, Pointable p) {
         if (entities == null) {
             LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
@@ -101,20 +101,25 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
     public abstract void synchronizeDatabase();
 
     protected void synchronizeDatabase(String query, Class<T> entityClass) {
-        if (entities == null) {
-            entities = em.createNamedQuery(query, entityClass).getResultList();
-            entities.forEach(e -> refreshEntity(e));
-            LOG.log(Level.INFO, "{0}#synchronizeDatabase fetched {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
-        } else {
-            entities = entities.stream().map((e) -> mergeEntity(e)).collect(Collectors.toList());
-            LOG.log(Level.INFO, "{0}#synchronizeDatabase merged {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
+        writeLock.lock();
+        try {
+            if (entities == null) {
+                entities = em.createNamedQuery(query, entityClass).getResultList();
+                entities.forEach(e -> refreshEntity(e));
+                LOG.log(Level.INFO, "{0}#synchronizeDatabase fetched {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
+            } else {
+                entities = entities.stream().map((e) -> mergeEntity(e)).collect(Collectors.toList());
+                LOG.log(Level.INFO, "{0}#synchronizeDatabase merged {1} entities successfully.", new Object[]{CachedController.class, entities.size()});
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
-    
+
     protected void refreshEntity(T entity) {
         em.refresh(entity);
     }
-    
+
     protected T mergeEntity(T entity) {
         return em.merge(entity);
     }

@@ -126,6 +126,7 @@ public class GameMasterTest {
         inst.cCon = spy(CCON);
         inst.lCon = spy(LCON);
         inst.em = spy(EM);
+        inst.writeLock = mock(Lock.class);
         doNothing().when(inst.rCon).step(anyLong());
         // 人を生成しないようにする
         doReturn(future).when(executorService).submit(any(RouteSearcher.class));
