@@ -25,8 +25,11 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.PersistenceUnit;
@@ -45,14 +48,15 @@ import net.rushhourgame.exception.RushHourException;
 
 /**
  * 線路の設置と路線の設定を一緒に行うコントローラ
+ *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Dependent
-public class AssistanceController extends AbstractController{
-    
+public class AssistanceController extends AbstractController {
+
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(AssistanceController.class.getName());
-    
+
     @Inject
     RailController rCon;
     @Inject
@@ -63,67 +67,87 @@ public class AssistanceController extends AbstractController{
     RushHourResourceBundle msg;
     @Inject
     StepForHumanController sCon;
-    
+
+    protected Lock writeLock;
+    protected Lock readLock;
+
+    @PostConstruct
+    public void init() {
+        writeLock = new ReentrantReadWriteLock().writeLock();
+        readLock = new ReentrantReadWriteLock().readLock();
+    }
+
     public Result startWithStation(@NotNull Player player, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
-        RailNode startNode = rCon.create(player, p);
-        Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
-        Line line = lCon.create(player, getDefaultLineName(player, locale));
-        lCon.start(line, player, station);
-        Result result = new Result(startNode, station, line);
-        em.flush();
-        LOG.log(Level.INFO, "{0}#startWithStation created {1}", new Object[] {AssistanceController.class, result});
-        return result;
-    } 
-    
+        writeLock.lock();
+        try {
+            RailNode startNode = rCon.create(player, p);
+            Station station = stCon.create(player, startNode, getDefaultStationName(player, locale));
+            Line line = lCon.create(player, getDefaultLineName(player, locale));
+            lCon.start(line, player, station);
+            Result result = new Result(startNode, station, line);
+            em.flush();
+            LOG.log(Level.INFO, "{0}#startWithStation created {1}", new Object[]{AssistanceController.class, result});
+            return result;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
     public Result extend(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p) throws RushHourException {
         return _extend(player, tailNode, p, null, false);
     }
-    
+
     public Result extendWithStation(@NotNull Player player, @NotNull RailNode tailNode, @NotNull Pointable p, @NotNull Locale locale) throws RushHourException {
         return _extend(player, tailNode, p, locale, true);
     }
-    
+
     protected Result _extend(Player player, RailNode tailNode, Pointable p, Locale locale, boolean isWithStation) throws RushHourException {
-        RailNode extended = rCon.extend(player, tailNode, p);
-        Station station = null;
-        if (isWithStation) {
-            station = stCon.create(player, extended, getDefaultStationName(player, locale));
-        }
-        LineStep inserted = lCon.insert(tailNode, extended, player);
-        if (inserted.getNext() == null) {
-            if (lCon.canEnd(inserted, player)) {
-                lCon.end(inserted, player);
+        writeLock.lock();
+        try {
+            RailNode extended = rCon.extend(player, tailNode, p);
+            Station station = null;
+            if (isWithStation) {
+                station = stCon.create(player, extended, getDefaultStationName(player, locale));
             }
-        } else {
-            // 完成済みの路線でも、経路が変わるためルートを再計算させる
-            Line line = inserted.getParent();
-            sCon.modifyCompletedLine(line);
+            LineStep inserted = lCon.insert(tailNode, extended, player);
+            if (inserted.getNext() == null) {
+                if (lCon.canEnd(inserted, player)) {
+                    lCon.end(inserted, player);
+                }
+            } else {
+                // 完成済みの路線でも、経路が変わるためルートを再計算させる
+                Line line = inserted.getParent();
+                sCon.modifyCompletedLine(line);
+            }
+            Result result = new Result(extended, station, inserted.getParent());
+            em.flush();
+            LOG.log(Level.INFO, "{0}#_extend created {1}", new Object[]{AssistanceController.class, result});
+            return result;
+        } finally {
+            writeLock.unlock();
         }
-        Result result = new Result(extended, station, inserted.getParent());
-        em.flush();
-        LOG.log(Level.INFO, "{0}#_extend created {1}", new Object[] {AssistanceController.class, result});
-        return result;
     }
-    
+
     protected String getDefaultStationName(Player player, Locale locale) {
         return getDefaultName(stCon.findAll(player), msg.get(LABEL_STATION, locale));
     }
-    
+
     protected String getDefaultLineName(Player player, Locale locale) {
         return getDefaultName(lCon.findAll(player), msg.get(LABEL_LINE, locale));
     }
-    
+
     protected String getDefaultName(List<? extends Nameable> list, String prefix) {
         for (long suffix = 1; true; suffix++) {
             final String name = prefix + suffix;
-            if(!list.stream().filter(obj -> obj.getName().equals(name))
+            if (!list.stream().filter(obj -> obj.getName().equals(name))
                     .findAny().isPresent()) {
                 return name;
             }
         }
     }
-    
+
     public static class Result {
+
         public RailNode node;
         public Station station;
         public Line line;
@@ -133,7 +157,7 @@ public class AssistanceController extends AbstractController{
             this.station = station;
             this.line = line;
         }
-        
+
         @Override
         public String toString() {
             return "{" + node + ",_" + station + ",_" + line.toStringAsRoute() + "}";

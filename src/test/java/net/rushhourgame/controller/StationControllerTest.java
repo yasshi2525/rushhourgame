@@ -40,11 +40,15 @@ import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TicketGate;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class StationControllerTest extends AbstractControllerTest {
 
     protected StationController inst;
@@ -64,7 +68,9 @@ public class StationControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createStationController();
+        inst = spy(ControllerFactory.createStationController());
+        inst.writeLock = spy(inst.writeLock);
+        inst.readLock = spy(inst.readLock);
     }
     
     @Test
@@ -85,6 +91,9 @@ public class StationControllerTest extends AbstractControllerTest {
         
         inst.step(1000);
         
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
+        
         assertTrue(st.getTicketGate().canEnter());
     }
 
@@ -92,8 +101,12 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testCreate() throws RushHourException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_POS);
+        
         Station created = inst.create(player, node, TEST_NAME);
 
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
+        
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
                 created.getTicketGate().getGateNum());
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_GATE_MOBILITY))
@@ -202,6 +215,10 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editStationName(created, created.getOwner(), "changed");
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
+        
         assertEquals("changed", created.getName());
     }
 
@@ -210,6 +227,9 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editStationName(created, created.getOwner(), created.getName());
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
     }
 
     @Test
@@ -265,6 +285,10 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editPlatformCapacity(created, created.getOwner(), 1000);
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
+        
         assertEquals(1000, created.getPlatform().getCapacity());
     }
 
@@ -308,6 +332,9 @@ public class StationControllerTest extends AbstractControllerTest {
 
         assertEquals(1, inst.findIn(new SimplePoint(0, 0), 1).size());
         assertEquals(0, inst.findIn(new SimplePoint(10, 10), 1).size());
+    
+        verify(inst.readLock, times(2)).lock();
+        verify(inst.readLock, times(2)).unlock();
     }
 
     @Test

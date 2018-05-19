@@ -58,19 +58,29 @@ public class StationController extends CachedController<Station> {
     @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{StationController.class});
-        synchronizeDatabase("Station.findAll", Station.class);
+        writeLock.lock();
+        try {
+            synchronizeDatabase("Station.findAll", Station.class);
+        } finally {
+            writeLock.unlock();
+        }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{StationController.class});
     }
 
     public Platform find(Platform old) {
-        if (old == null) {
-            return null;
+        readLock.lock();
+        try {
+            if (old == null) {
+                return null;
+            }
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{StationController.class});
+                return null;
+            }
+            return entities.stream().filter(e -> e.getPlatform().equalsId(old)).findFirst().get().getPlatform();
+        } finally {
+            readLock.unlock();
         }
-        if (entities == null) {
-            LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{StationController.class});
-            return null;
-        }
-        return entities.stream().filter(e -> e.getPlatform().equalsId(old)).findFirst().get().getPlatform();
     }
 
     public void step(long interval) {
@@ -95,67 +105,97 @@ public class StationController extends CachedController<Station> {
 
     public Station create(@NotNull Player owner, @NotNull RailNode node, @NotNull String name,
             @Min(1) int gatenum, @Min(1) int platformCapacity, @Min(0) double gateMobility, @Min(0) double prodist) throws RushHourException {
-        if (!node.isOwnedBy(owner)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        writeLock.lock();
+        try {
+            if (!node.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            if (existsName(owner, name)) {
+                throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
+            }
+
+            Station s = new Station();
+            s.setOwner(owner);
+            s.setName(name);
+
+            s.setTicketGate(createTicketGate(s, gatenum, gateMobility, prodist));
+            s.setPlatform(createPlatform(s, node, platformCapacity));
+
+            persistEntity(s);
+            em.flush();
+            LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{StationController.class, s});
+            sCon.addStation(s);
+
+            return s;
+        } finally {
+            writeLock.unlock();
         }
-        if (existsName(owner, name)) {
-            throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
-        }
-
-        Station s = new Station();
-        s.setOwner(owner);
-        s.setName(name);
-
-        s.setTicketGate(createTicketGate(s, gatenum, gateMobility, prodist));
-        s.setPlatform(createPlatform(s, node, platformCapacity));
-
-        persistEntity(s);
-        em.flush();
-        LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{StationController.class, s});
-        sCon.addStation(s);
-
-        return s;
     }
 
     public void editStationName(@NotNull Station station, @NotNull Player owner, @NotNull String name) throws RushHourException {
-        if (!station.isOwnedBy(owner)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+        writeLock.lock();
+        try {
+            if (!station.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            // 変更なしのときは何もしない
+            if (station.getName().equals(name)) {
+                return;
+            }
+            if (existsName(owner, name)) {
+                throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
+            }
+            station.setName(name);
+            LOG.log(Level.INFO, "{0}#editStationName edited {1}", new Object[]{StationController.class, station});
+        } finally {
+            writeLock.unlock();
         }
-        // 変更なしのときは何もしない
-        if (station.getName().equals(name)) {
-            return;
-        }
-        if (existsName(owner, name)) {
-            throw new RushHourException(errMsgBuilder.createStationNameDuplication(name));
-        }
-        station.setName(name);
-        LOG.log(Level.INFO, "{0}#editStationName edited {1}", new Object[]{StationController.class, station});
     }
 
     public void editPlatformCapacity(@NotNull Station station, @NotNull Player owner, @Min(1) int capacity) throws RushHourException {
-        if (!station.isOwnedBy(owner)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
-        }
+        writeLock.lock();
+        try {
+            if (!station.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
 
-        station.getPlatform().setCapacity(capacity);
-        LOG.log(Level.INFO, "{0}#editPlatformCapacity edited {1}", new Object[]{StationController.class, station});
+            station.getPlatform().setCapacity(capacity);
+            LOG.log(Level.INFO, "{0}#editPlatformCapacity edited {1}", new Object[]{StationController.class, station});
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public void editTicketGateNum(@NotNull Station station, @NotNull Player owner, @Min(1) int num) throws RushHourException {
-        if (!station.isOwnedBy(owner)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
-        }
+        writeLock.lock();
+        try {
+            if (!station.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
 
-        station.getTicketGate().setGateNum(num);
-        LOG.log(Level.INFO, "{0}#editTicketGateNum edited {1}", new Object[]{StationController.class, station});
+            station.getTicketGate().setGateNum(num);
+            LOG.log(Level.INFO, "{0}#editTicketGateNum edited {1}", new Object[]{StationController.class, station});
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public List<Platform> findPlatformAll() {
-        return findAll().stream().map(st -> st.getPlatform()).collect(Collectors.toList());
+        readLock.lock();
+        try {
+            return findAll().stream().map(st -> st.getPlatform()).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public List<TicketGate> findTicketGateAll() {
-        return findAll().stream().map(st -> st.getTicketGate()).collect(Collectors.toList());
+        readLock.lock();
+        try {
+            return findAll().stream().map(st -> st.getTicketGate()).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     protected Platform createPlatform(Station s, RailNode node, int capacity) {

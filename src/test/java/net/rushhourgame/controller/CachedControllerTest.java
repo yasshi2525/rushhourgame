@@ -43,7 +43,7 @@ import org.mockito.Spy;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class CachedControllerTest {
 
     @Spy
@@ -66,16 +66,25 @@ public class CachedControllerTest {
         doReturn(0).when(query).executeUpdate();
         doReturn(new ArrayList<>()).when(query).getResultList();
         inst.init();
+        
+        inst.readLock = spy(inst.readLock);
+        inst.writeLock = spy(inst.writeLock);
     }
     
     @Test
     public void testExistsEntitiesNull() {
         assertFalse(inst.exists(new SimplePoint()));
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
     
     @Test
     public void testExistsPlayerArgEntitiesNull() {
         assertFalse(inst.exists(mock(Player.class), new SimplePoint()));
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
     
     @Test
@@ -87,6 +96,9 @@ public class CachedControllerTest {
         doReturn(0d).when(e).distTo(any(SimplePoint.class));
         
         assertTrue(inst.exists(owner, new SimplePoint()));
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
     
     @Test
@@ -99,6 +111,9 @@ public class CachedControllerTest {
         verify(inst.em, never()).createNamedQuery(anyString());
         verify(inst.em, times(1)).merge(eq(e));
         assertNotNull(inst.entities);
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
     }
 
     @Test
@@ -109,6 +124,9 @@ public class CachedControllerTest {
 
         verify(inst.em, times(1)).createNamedQuery(anyString(), eq(SimpleGeoEntity.class));
         assertNotNull(inst.entities);
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
     }
     
     @Test
@@ -119,6 +137,9 @@ public class CachedControllerTest {
         inst.removeEntity("hoge", SimpleGeoEntity.class, e);
         
         assertTrue(inst.entities.isEmpty());
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
     }
     
     @Test

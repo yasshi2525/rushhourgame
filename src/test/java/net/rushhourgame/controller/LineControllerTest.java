@@ -43,12 +43,15 @@ import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class LineControllerTest extends AbstractControllerTest {
 
     protected static final String TEST_NAME = "_test";
@@ -62,13 +65,18 @@ public class LineControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createLineController();
-        inst.sCon = SCON;
+        inst.writeLock = spy(inst.writeLock);
+        inst.readLock = spy(inst.readLock);
     }
 
     @Test
     public void testCreate() throws RushHourException {
         Player owner = createPlayer();
         Line created = inst.create(owner, TEST_NAME);
+        
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
+        
         assertNotNull(created);
         assertEquals(owner, created.getOwner());
         assertTrue(created.isOwnedBy(owner));
@@ -100,6 +108,9 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.refresh(parent);
         LineStepDeparture child = parent.getDeparture();
 
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
+        
         assertEquals(owner, parent.getOwner());
         assertEquals(line, parent.getParent());
         assertTrue(0 == parent.getDist());
@@ -167,6 +178,11 @@ public class LineControllerTest extends AbstractControllerTest {
         EM.refresh(extend);
 
         assertEquals(extend.getInEdges().get(0), inst.findNext(current, owner).get(0));
+        
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
 
     @Test
@@ -245,6 +261,9 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep start = inst.start(line, owner, st);
 
         LineStep extended = inst.extend(start, owner, edge);
+        
+        verify(inst.writeLock, times(4)).lock();
+        verify(inst.writeLock, times(4)).unlock();
 
         EM.flush();
         EM.refresh(line);
@@ -530,6 +549,9 @@ public class LineControllerTest extends AbstractControllerTest {
         } catch (RushHourException e) {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
+        
+        verify(inst.writeLock, times(1)).lock();
+        verify(inst.writeLock, times(1)).unlock();
     }
 
     /**
@@ -546,6 +568,11 @@ public class LineControllerTest extends AbstractControllerTest {
 
         assertNotNull(start.getDeparture());
         assertFalse(inst.canEnd(start, owner));
+        
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
 
     /**
@@ -698,6 +725,9 @@ public class LineControllerTest extends AbstractControllerTest {
 
         assertEquals(start, tail.getNext());
         assertTrue(line.isCompleted());
+        
+        verify(inst.writeLock, times(6)).lock();
+        verify(inst.writeLock, times(6)).unlock();
     }
 
     @Test
@@ -918,12 +948,19 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testAutocreateNotEnd() throws RushHourException {
         Station st1 = createStation();
         Line line = inst.autocreate(st1.getOwner(), st1, TEST_NAME);
+        
+        verify(inst.writeLock, times(4)).lock();
+        verify(inst.writeLock, times(4)).unlock();
+        
         assertFalse(line.isCompleted());
     }
     
     @Test
     public void testFindNull() {
         assertNull(inst.find((LineStep)null));
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
 
     @Test

@@ -80,7 +80,13 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStartWithStation() throws Exception {
+        inst.writeLock = spy(inst.writeLock);
+        
         Result res = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
+        
+        verify(inst.writeLock,times(1)).lock();
+        verify(inst.writeLock,times(1)).unlock();
+        
         EM.flush();
         EM.refresh(res.node);
 
@@ -122,9 +128,14 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testExtend() throws RushHourException {
+        inst.writeLock = spy(inst.writeLock);
+        
         // start -- goal        
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
         Result goal = inst.extend(player, start.node, EXTENDED);
+        
+        verify(inst.writeLock,times(2)).lock();
+        verify(inst.writeLock,times(2)).unlock();
 
         Line line = start.line;
         assertTrue(line.isCompleted());

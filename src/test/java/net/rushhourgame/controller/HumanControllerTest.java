@@ -67,6 +67,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = spy(ControllerFactory.createHumanController());
+        inst.writeLock = spy(inst.writeLock);
+        inst.readLock = spy(inst.readLock);
     }
 
     @After
@@ -82,6 +84,9 @@ public class HumanControllerTest extends AbstractControllerTest {
         Company dst = CCON.create(origin);
 
         Human h = inst.create(TEST, src, dst);
+        
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
 
         assertNotNull(h);
         assertTrue(TEST_X == h.getX());
@@ -144,6 +149,9 @@ public class HumanControllerTest extends AbstractControllerTest {
         inst.entities.add(humanOut);
 
         List<Human> actual = inst.findIn(origin, 0);
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
 
         assertEquals(1, actual.size());
         assertEquals(humanIn, actual.get(0));
@@ -171,6 +179,9 @@ public class HumanControllerTest extends AbstractControllerTest {
         inst.findAll().add(h);
 
         inst.step(1000000, 0.00001);
+        
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
 
         verify(h, times(1)).searchCurrent(eq(inst.searcher));
         verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
@@ -195,17 +206,6 @@ public class HumanControllerTest extends AbstractControllerTest {
 
         verify(h, never()).searchCurrent(eq(inst.searcher));
         verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
-    }
-    
-    @Test
-    public void testMergeCompany() {
-        Human human = mock(Human.class);
-        inst.entities = new ArrayList<>();
-        inst.entities.add(human);
-        
-        inst.merge(mock(Company.class));
-        
-        verify(human, times(1)).merge(any(Company.class));
     }
 
     @Test

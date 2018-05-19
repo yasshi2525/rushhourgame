@@ -161,6 +161,7 @@ public class ControllerFactory {
         inst.rCon = createRailController();
         inst.stCon = createStationController();
         inst.sCon = createStepForHumanController();
+        inst.init();
         init(inst);
         
         return inst;

@@ -62,37 +62,48 @@ public class HumanController extends CachedController<Human> {
     @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{HumanController.class});
-        synchronizeDatabase("Human.findAll", Human.class);
+        writeLock.lock();
+        try {
+            synchronizeDatabase("Human.findAll", Human.class);
+        } finally {
+            writeLock.unlock();
+        }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{HumanController.class});
     }
 
     public Human create(@NotNull Pointable point, @NotNull Residence src, @NotNull Company dst) {
-        Human human = new Human();
-        human.setX(point.getX());
-        human.setY(point.getY());
-        human.setSrc(src);
-        human.setDest(dst);
-        human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
-        human.setStandingOn(Human.StandingOn.GROUND);
-        persistEntity(human);
+        writeLock.lock();
+        try {
+            Human human = new Human();
+            human.setX(point.getX());
+            human.setY(point.getY());
+            human.setSrc(src);
+            human.setDest(dst);
+            human.setLifespan(Long.parseLong(prop.get(GAME_DEF_HUMAN_LIFESPAN)));
+            human.setStandingOn(Human.StandingOn.GROUND);
+            persistEntity(human);
 
-        em.flush();
-        LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
-        return human;
+            em.flush();
+            LOG.log(Level.FINE, "{0}#create created {1}", new Object[]{HumanController.class, human.toString()});
+            return human;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public void step(long interval, double speed) {
-        findAll().forEach(h -> {
-            if (h.getCurrent() == null) {
-                h.searchCurrent(searcher);
-            }
-            h.step(em, interval, speed);
-        });
-        killHuman();
-    }
-
-    public void merge(Company obj) {
-        entities.forEach(h -> h.merge(obj));
+        writeLock.lock();
+        try {
+            findAll().forEach(h -> {
+                if (h.getCurrent() == null) {
+                    h.searchCurrent(searcher);
+                }
+                h.step(em, interval, speed);
+            });
+            killHuman();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     protected void killHuman() {

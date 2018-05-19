@@ -61,11 +61,16 @@ public class TrainController extends CachedController<Train> {
     @Override
     public void synchronizeDatabase() {
         LOG.log(Level.INFO, "{0}#synchronizeDatabase start", new Object[]{TrainController.class});
-        synchronizeDatabase("Train.findAll", Train.class);
-        findAll().stream()
-                .filter(t -> t.isDeployed())
-                .map(t -> t.getDeployed())
-                .forEach(t -> t.mergeCurrent(lCon.find(t.getCurrent())));
+        writeLock.lock();
+        try {
+            synchronizeDatabase("Train.findAll", Train.class);
+            findAll().stream()
+                    .filter(t -> t.isDeployed())
+                    .map(t -> t.getDeployed())
+                    .forEach(t -> t.mergeCurrent(lCon.find(t.getCurrent())));
+        } finally {
+            writeLock.unlock();
+        }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{TrainController.class});
     }
 
@@ -76,65 +81,78 @@ public class TrainController extends CachedController<Train> {
     }
 
     public Train create(@NotNull Player p, long mobility, double speed, int capacity) {
-        Train train = new Train();
-        train.setOwner(p);
-        train.setMobility(mobility);
-        train.setSpeed(speed);
-        train.setCapacity(capacity);
-        persistEntity(train);
-        em.flush();
-        LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{TrainController.class, train});
-        return train;
+        writeLock.lock();
+        try {
+            Train train = new Train();
+            train.setOwner(p);
+            train.setMobility(mobility);
+            train.setSpeed(speed);
+            train.setCapacity(capacity);
+            persistEntity(train);
+            em.flush();
+            LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{TrainController.class, train});
+            return train;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public void deploy(@NotNull Train train, @NotNull Player p, @NotNull LineStep lineStep) throws RushHourException {
-        if (!train.isOwnedBy(p)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
-        }
-        if (train.isDeployed()) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
-
-        TrainDeployed info = new TrainDeployed();
-        info.setTrain(train);
-        info.setCurrent(lineStep);
         writeLock.lock();
         try {
+            if (!train.isOwnedBy(p)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            if (train.isDeployed()) {
+                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+            }
+
+            TrainDeployed info = new TrainDeployed();
+            info.setTrain(train);
+            info.setCurrent(lineStep);
+
             train.setDeployed(info);
             em.persist(info);
+
+            em.flush();
+            LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[]{TrainController.class, info});
+
+            train.setDeployed(info);
         } finally {
             writeLock.unlock();
         }
-        em.flush();
-        LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[]{TrainController.class, info});
-
-        train.setDeployed(info);
     }
 
     public void undeploy(@NotNull TrainDeployed train, @NotNull Player p) throws RushHourException {
-        if (!train.getTrain().isOwnedBy(p)) {
-            throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
-        }
-        // TODO : 人の削除処理実装
-        if (hCon.findAll().stream().anyMatch(h -> train.equals(h.getOnTrain()))) {
-            throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-        }
         writeLock.lock();
         try {
+            if (!train.getTrain().isOwnedBy(p)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            // TODO : 人の削除処理実装
+            if (hCon.findAll().stream().anyMatch(h -> train.equals(h.getOnTrain()))) {
+                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
+            }
             train.getTrain().setDeployed(null);
             em.createNamedQuery("TrainDeployed.deleteBy", TrainDeployed.class)
                     .setParameter("obj", train).executeUpdate();
+
+            LOG.log(Level.INFO, "{0}#undeploy removed {1}", new Object[]{TrainController.class, train});
         } finally {
             writeLock.unlock();
         }
-        LOG.log(Level.INFO, "{0}#undeploy removed {1}", new Object[]{TrainController.class, train});
     }
 
     public List<Train> findBy(@NotNull Line line) {
-        return findAll().stream()
-                .filter(t -> t.isDeployed())
-                .filter(t -> t.getDeployed().getCurrent().getParent().equalsId(line))
-                .collect(Collectors.toList());
+        readLock.lock();
+        try {
+            return findAll().stream()
+                    .filter(t -> t.isDeployed())
+                    .filter(t -> t.getDeployed().getCurrent().getParent().equalsId(line))
+                    .collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public void step(long time) {

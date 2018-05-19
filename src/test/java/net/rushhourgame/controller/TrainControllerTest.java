@@ -57,7 +57,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class TrainControllerTest extends AbstractControllerTest {
 
-    protected TrainController inst = ControllerFactory.createTrainController();
+    protected TrainController inst = spy(ControllerFactory.createTrainController());
     protected Player player;
     protected LineStep lineStep;
 
@@ -65,6 +65,8 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
+        inst.writeLock = spy(inst.writeLock);
+        inst.readLock = spy(inst.readLock);
         try {
             player = createPlayer();
             AssistanceController.Result result = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
@@ -80,6 +82,10 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         Train created = inst.create(player);
+        
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
+        
         assertEquals(100, created.getMobility());
         assertTrue(0.2 == created.getSpeed());
         assertEquals(20, created.getCapacity());
@@ -116,6 +122,10 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testDeploy() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
+        
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
+        
         assertTrue(10.0 == train.getX());
         assertTrue(15.0 == train.getY());
         assertTrue(0.0 == train.distTo(new SimplePoint(10.0, 15.0)));
@@ -150,6 +160,9 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         inst.undeploy(train.getDeployed(), player);
+        
+        verify(inst.writeLock, times(4)).lock();
+        verify(inst.writeLock, times(4)).unlock();
     }
 
     @Test
@@ -190,11 +203,17 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Test
     public void testFindIn() {
         inst.findIn(new SimplePoint(), 0);
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
 
     @Test
     public void testFindAll_Player() {
         inst.findAll(player);
+        
+        verify(inst.readLock, times(1)).lock();
+        verify(inst.readLock, times(1)).unlock();
     }
 
     @Test
@@ -202,6 +221,9 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         inst.step(0);
+        
+        verify(inst.writeLock, times(4)).lock();
+        verify(inst.writeLock, times(4)).unlock();
     }
     
     @Test

@@ -71,31 +71,51 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
     }
 
     public List<T> findAll(Player p) {
-        return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
+        readLock.lock();
+        try {
+            return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public List<T> findIn(@NotNull Pointable center, double scale) {
-        if (entities == null) {
-            LOG.log(Level.WARNING, "{0}#findIn controller never synchronize database", new Object[]{CachedController.class});
-            return new ArrayList<>();
+        readLock.lock();
+        try {
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#findIn controller never synchronize database", new Object[]{CachedController.class});
+                return new ArrayList<>();
+            }
+            return entities.stream().filter(e -> e.isAreaIn(center, scale)).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
         }
-        return entities.stream().filter(e -> e.isAreaIn(center, scale)).collect(Collectors.toList());
     }
 
     protected boolean exists(Pointable p) {
-        if (entities == null) {
-            LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
-            return false;
+        readLock.lock();
+        try {
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
+                return false;
+            }
+            return entities.stream().anyMatch(e -> e.distTo(p) == 0d);
+        } finally {
+            readLock.unlock();
         }
-        return entities.stream().anyMatch(e -> e.distTo(p) == 0d);
     }
 
     protected boolean exists(Player owner, Pointable p) {
-        if (entities == null) {
-            LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
-            return false;
+        readLock.lock();
+        try {
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#exists controller never synchronize database", new Object[]{CachedController.class});
+                return false;
+            }
+            return entities.stream().filter(e -> e.isOwnedBy(owner)).anyMatch(e -> e.distTo(p) == 0d);
+        } finally {
+            readLock.unlock();
         }
-        return entities.stream().filter(e -> e.isOwnedBy(owner)).anyMatch(e -> e.distTo(p) == 0d);
     }
 
     public abstract void synchronizeDatabase();

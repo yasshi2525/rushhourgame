@@ -40,12 +40,15 @@ import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class ResidenceControllerTest extends AbstractControllerTest {
 
     protected ResidenceController inst;
@@ -59,15 +62,21 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createResidenceController();
+        inst = spy(ControllerFactory.createResidenceController());
         inst.searcher = spy(inst.searcher);
         inst.cCon = spy(ControllerFactory.createCompanyController());
         inst.hCon = spy(ControllerFactory.createHumanController());
+        inst.writeLock = spy(inst.writeLock);
+        inst.readLock = spy(inst.readLock);
     }
 
     @Test
     public void testCreate() throws RushHourException {
         Residence created = inst.create(TEST_POS);
+        
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
+        
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -80,6 +89,10 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate4arg() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        
+        verify(inst.writeLock, times(2)).lock();
+        verify(inst.writeLock, times(2)).unlock();
+        
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
@@ -110,6 +123,9 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     public void testStepDoNothing() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
         inst.step(0L);
+        
+        verify(inst.writeLock, times(3)).lock();
+        verify(inst.writeLock, times(3)).unlock();
         
         verify(inst.cCon, times(0)).findAll();
     }
