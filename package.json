@@ -6,9 +6,9 @@
   "license": "MIT",
   "repository": "https://yasshi2525@github.com/yasshi2525/rushhourgame.git",
   "dependencies": {
-    "browserify": "16.2.0",
+    "browserify": "16.2.2",
     "gulp": "3.9.1",
-    "gulp-rename": "1.2.2",
+    "gulp-rename": "1.2.3",
     "gulp-streamify": "1.0.2",
     "gulp-uglify": "3.0.0",
     "jquery": "3.3.1",
