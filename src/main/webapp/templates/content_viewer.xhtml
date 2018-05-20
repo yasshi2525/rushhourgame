@@ -20,6 +20,18 @@
                              process="@this" update="controllpanel"
                              actionListener="#{game.finishesOperation}"
                              style="width: 100%"/>
+            
+            <p:toolbar>
+                <f:facet name="left">
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="railCreation toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="stationCreation toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="trainCreation toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="deletion toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="zoomin toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel="" styleClass="zoomout toolbarButton"/>
+                    <p:selectBooleanButton onLabel="" offLabel=""  styleClass="toolbarButton"/>
+                </f:facet>
+            </p:toolbar>
 
             <!-- 画面クリック操作用 -->
             <!-- ここでリスナを呼んでも、Dialog Framworkは使えない -->

@@ -74,3 +74,32 @@ div.footer {
 div.footer a {
     color: aquamarine;
 }
+
+.railCreation {
+    background-image: url("#{resource['image/rail_creation.png']}") !important;
+}
+
+.stationCreation {
+    background-image: url("#{resource['image/station_creation.png']}") !important;
+}
+
+.trainCreation {
+    background-image: url("#{resource['image/train_creation.png']}") !important;
+}
+
+.deletion {
+    background-image: url("#{resource['image/deletion.png']}") !important;
+}
+
+.zoomin {
+    background-image: url("#{resource['image/zoom-in.png']}") !important;
+}
+
+.zoomout {
+    background-image: url("#{resource['image/zoom-out.png']}") !important;
+}
+
+.toolbarButton {
+    width: 50px !important;
+    height: 50px;
+}
