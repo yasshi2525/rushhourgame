@@ -57,6 +57,9 @@ public class LineRouteSearcher extends AbstractController {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(LineRouteSearcher.class.getName());
+    
+    @Inject
+    protected StationController stCon;
 
     public void persist(@NotNull Line completedLine) {
         double costrate = Double.parseDouble(prop.get(RushHourProperties.GAME_DEF_TRAIN_COSTRATE));
@@ -92,20 +95,19 @@ public class LineRouteSearcher extends AbstractController {
             // goal から goal は同じ地点なので、永続化しない。
             nodes.stream().filter(
                     n -> !n.equals(goal) && n.getCost() != Double.MAX_VALUE
-            ).forEach(n -> {
-                persistStepForHuman(createThroughTrain(
+            ).forEach(n -> createThroughTrain(
                         completedLine,
                         n.getOriginal(),
                         goal.getOriginal(),
-                        n.getCost() * costrate));
-            });
+                        n.getCost() * costrate)
+            );
         });
     }
 
     protected List<Platform> extractPlatform(Line line) {
         return line.getSteps().stream()
                 .filter(step -> step.getDeparture() != null)
-                .map(step -> step.getDeparture().getStaying())
+                .map(step -> stCon.find(step.getDeparture().getStaying()))
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -167,22 +169,19 @@ public class LineRouteSearcher extends AbstractController {
         inst.setFrom(from);
         inst.setTo(to);
         inst.setCost(cost);
+        em.persist(inst);
+        em.flush();
         LOG.log(Level.INFO, "{0}#createThroughTrain created {1}", new Object[]{LineRouteSearcher.class, inst});
         return inst;
     }
-
-    protected void persistStepForHuman(StepForHumanThroughTrain step) {
-        em.persist(step);
-    }
-
-    protected static class PlatformEdge {
+    protected class PlatformEdge {
 
         final protected Platform from;
         final protected Platform to;
         protected double cost;
 
         public PlatformEdge(LineStepDeparture dpt) {
-            from = dpt.getStaying();
+            from = stCon.find(dpt.getStaying());
 
             LineStep step = dpt.getParent().getNext();
 
@@ -191,7 +190,7 @@ public class LineRouteSearcher extends AbstractController {
                 step = step.getNext();
             }
 
-            to = step.getDeparture().getStaying();
+            to = stCon.find(step.getDeparture().getStaying());
         }
 
         public Platform getFrom() {

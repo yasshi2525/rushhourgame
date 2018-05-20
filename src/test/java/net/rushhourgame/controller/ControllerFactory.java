@@ -150,6 +150,7 @@ public class ControllerFactory {
     
     public static LineRouteSearcher createLineRouteSearcher() {
         LineRouteSearcher inst = new LineRouteSearcher();
+        inst.stCon = STCON;
         init(inst);
         return inst;
     }
