@@ -141,6 +141,13 @@ public class GameMasterTest {
         RCON.findAll().clear();
         EM.getTransaction().rollback();
     }
+    
+    @Test
+    public void testInit() {
+        inst.init();
+        
+        assertNotNull(inst.writeLock);
+    }
 
     @Test
     public void testPreDestroy() {

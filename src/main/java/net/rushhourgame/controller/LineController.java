@@ -82,6 +82,15 @@ public class LineController extends CachedController<Line> {
         return em.merge(entity);
     }
 
+    protected Line mergeEntitySingle(Line entity) {
+        entity.setSteps(entity.getSteps().stream().map(step -> em.merge(step)).collect(Collectors.toList()));
+        // LineStepのparentも更新されるためLine自体も更新
+        entities.remove(entity);
+        Line newEntity = em.merge(entity);
+        entities.add(newEntity);
+        return newEntity;
+    }
+
     public Line create(@NotNull Player owner, @NotNull String name) throws RushHourException {
         writeLock.lock();
         try {
@@ -299,7 +308,7 @@ public class LineController extends CachedController<Line> {
             if (tail.canConnect(top)) {
                 tail.setNext(top);
                 // 更新であるが、保存しないと電車が走れなくなるため保存
-                mergeEntity(tail.getParent());
+                mergeEntitySingle(tail.getParent());
             } else {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
