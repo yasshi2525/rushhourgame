@@ -73,6 +73,24 @@
             <type>war</type>
         </dependency>
         <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <scope>test</scope>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <scope>test</scope>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <scope>test</scope>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>8.0</version>
@@ -177,6 +195,38 @@
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <skipTests>${ut.skip}</skipTests>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <skipTests>${it.skip}</skipTests>
+                    <systemPropertyVariables>
+                        <test.headless>${test.headless}</test.headless>
+                        <test.targetUrl>${test.targetUrl}/</test.targetUrl>
+                        <test.twitter.mailaddress>${test.twitter.mailaddress}/</test.twitter.mailaddress>
+                        <test.twitter.password>${test.twitter.password}/</test.twitter.password>
+                    </systemPropertyVariables>
+                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
                         </goals>
                     </execution>
                 </executions>
