@@ -128,4 +128,14 @@
                 <test.twitter.password>${test.twitter.password}</test.twitter.password>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-install</actionName>
+            <displayName>install</displayName>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <it.skip>true</it.skip>
+            </properties>
+        </action>
     </actions>
