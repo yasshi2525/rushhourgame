@@ -65,7 +65,7 @@ public class LoginIT {
 
         // ページを開く
         driver.get(TARGET_URL);
-        new WebDriverWait(driver, 10).until(ExpectedConditions.titleContains("RushHour"));
+        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.titleContains("RushHour"));
 
         // Twitterでサインイン要素まで移動
         WebElement body = driver.findElement(By.tagName("body"));
@@ -77,7 +77,7 @@ public class LoginIT {
         signin.sendKeys(Keys.ENTER);
 
         // Twitterサインイン画面が表示されるまで待機
-        new WebDriverWait(driver, 60).until(
+        new WebDriverWait(driver, TIMEOUT).until(
                 ExpectedConditions.presenceOfAllElementsLocatedBy(By.id("username_or_email")));
 
         // 名前とパスワードを入力
@@ -91,7 +91,7 @@ public class LoginIT {
         allow.click();
 
         // ゲーム画面に戻るまで待機
-        new WebDriverWait(driver, 10).until(ExpectedConditions.titleContains("RushHour"));
+        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.titleContains("RushHour"));
 
         driver.quit();
     }

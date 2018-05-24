@@ -53,6 +53,7 @@
             <displayName>integration-test</displayName>
             <goals>
                 <goal>integration-test</goal>
+                <goal>verify</goal>
             </goals>
             <properties>
                 <ut.skip>true</ut.skip>

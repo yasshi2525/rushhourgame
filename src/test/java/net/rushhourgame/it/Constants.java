@@ -32,7 +32,18 @@ import java.util.Properties;
 public class Constants {
     protected static final Properties CONFIG = new Properties();
     protected static final Boolean HEADLESS = Boolean.getBoolean("test.headless");
-    protected static final String TARGET_URL = System.getProperty("test.targetUrl");
-    protected static final String TWITTER_USER_NAME = System.getProperty("test.twitter.mailaddress");
-    protected static final String TWITTER_PASSWORD = System.getProperty("test.twitter.password");
+    protected static final String TARGET_URL = getProperty("test.targetUrl");
+    protected static final String TWITTER_USER_NAME = getProperty("test.twitter.mailaddress");
+    protected static final String TWITTER_PASSWORD = getProperty("test.twitter.password");
+    protected static final long TIMEOUT = 10; // sec
+    
+    /**
+     * linuxで maven 経由でシステムプロパティを設定すると末尾に /　が入る。謎。
+     * @param name プロパティ名
+     * @return トリミングした文字列
+     */
+    protected static String getProperty(String name) {
+        return System.getProperty(name).replace("/$", "");
+    }
+    
 }
