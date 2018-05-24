@@ -49,11 +49,8 @@ public class BuildRailIT extends AbstractIT{
         driver.findElement(By.tagName("canvas")).click();
         
         // ダイアログに移動
-        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.presenceOfElementLocated(By.tagName("iframe")));
         WebElement iframe = driver.findElement(By.tagName("iframe"));
         driver.switchTo().frame(iframe);
-        
-        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.presenceOfElementLocated(By.id("clickmenu-create-rail")));
         
         // クリックメニューから建築開始を選択
         driver.findElement(By.id("clickmenu-create-rail")).click();

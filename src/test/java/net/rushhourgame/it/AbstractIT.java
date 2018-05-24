@@ -24,7 +24,8 @@
 package net.rushhourgame.it;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import static net.rushhourgame.it.Constants.HEADLESS;
+import java.util.concurrent.TimeUnit;
+import static net.rushhourgame.it.Constants.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,6 +50,7 @@ public abstract class AbstractIT {
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(HEADLESS);
         driver = new ChromeDriver(options);
+        driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
     }
     
     @After

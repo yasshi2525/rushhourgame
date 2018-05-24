@@ -40,8 +40,7 @@ public class CommonAction {
     public static void login(WebDriver driver) {
         // ページを開く
         driver.get(TARGET_URL);
-        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.titleContains("RushHour"));
-
+        
         // Twitterでサインイン要素まで移動
         WebElement body = driver.findElement(By.tagName("body"));
         body.sendKeys(Keys.TAB);
@@ -50,10 +49,6 @@ public class CommonAction {
 
         // サインインボタンの押下
         signin.sendKeys(Keys.ENTER);
-
-        // Twitterサインイン画面が表示されるまで待機
-        new WebDriverWait(driver, TIMEOUT).until(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(By.id("username_or_email")));
 
         // 名前とパスワードを入力
         WebElement name = driver.findElement(By.id("username_or_email"));
@@ -64,8 +59,5 @@ public class CommonAction {
         // ログインボタンを押下
         WebElement allow = driver.findElement(By.id("allow"));
         allow.click();
-
-        // ゲーム画面に戻るまで待機
-        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.titleContains("RushHour"));
     }
 }
