@@ -7,13 +7,13 @@
         <title>Menu</title>
     </h:head>
     <h:body>
-        <h:form>
+        <h:form prependId="false">
             <p:menu>
-                <p:menuitem rendered="#{menu.displayCreateRail}" value="#{msg.createRail}"
+                <p:menuitem rendered="#{menu.displayCreateRail}" id="clickmenu-create-rail" value="#{msg.createRail}"
                             icon="fa fa-plus" actionListener="#{menu.createRail()}"/>
-                <p:menuitem rendered="#{menu.displayExtendRail}" value="#{msg.extendRail}"
+                <p:menuitem rendered="#{menu.displayExtendRail}" id="clickmenu-extend-rail" value="#{msg.extendRail}"
                             icon="fa fa-pencil" actionListener="#{menu.extendRail()}"/>
-                <p:menuitem rendered="#{menu.displayRemoveRail}" value="#{msg.removeRail}"
+                <p:menuitem rendered="#{menu.displayRemoveRail}" id="clickmenu-remove-rail" value="#{msg.removeRail}"
                             disabled="#{!menu.enableRemoveRail}"
                             icon="fa fa-times" actionListener="#{menu.removeRail()}"/>
             </p:menu>
