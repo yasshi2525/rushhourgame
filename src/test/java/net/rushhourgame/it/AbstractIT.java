@@ -23,16 +23,38 @@
  */
 package net.rushhourgame.it;
 
-import org.junit.Test;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import static net.rushhourgame.it.Constants.HEADLESS;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class LoginIT extends AbstractIT {
-    @Test
-    public void testLogin() throws Exception {
-        CommonAction.login(driver);
+public abstract class AbstractIT {
+    protected WebDriver driver;
+    
+    @BeforeClass
+    public static void setUpClass() {
+        WebDriverManager.chromedriver().setup();
     }
-
+    
+    @Before
+    public void setUp() {
+        ChromeOptions options = new ChromeOptions();
+        options.setHeadless(HEADLESS);
+        driver = new ChromeDriver(options);
+    }
+    
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
 }
