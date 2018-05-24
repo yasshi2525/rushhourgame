@@ -43,7 +43,7 @@ public class Constants {
      * @return トリミングした文字列
      */
     protected static String getProperty(String name) {
-        return System.getProperty(name).replace("/$", "");
+        return System.getProperty(name).replaceAll("/$", "");
     }
     
 }
