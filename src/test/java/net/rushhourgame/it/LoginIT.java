@@ -54,10 +54,6 @@ public class LoginIT {
 
     @Test
     public void testLogin() throws Exception {
-        System.out.println(TARGET_URL);
-        System.out.println(TWITTER_USER_NAME);
-        System.out.println(TWITTER_PASSWORD);
-        
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(HEADLESS);
