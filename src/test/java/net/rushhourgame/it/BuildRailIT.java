@@ -26,40 +26,35 @@ package net.rushhourgame.it;
 import org.junit.Test;
 import static net.rushhourgame.it.CommonAction.*;
 import static net.rushhourgame.it.Constants.*;
+import org.openqa.selenium.Dimension;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class BuildRailIT extends AbstractIT{
-    protected static final int ONE_X = -100;
-    protected static final int ONE_Y = -100;
-    protected static final int LINE_X1 = 100;
-    protected static final int LINE_Y1 = 100;
-    protected static final int LINE_X2 = 400;
-    protected static final int LINE_Y2 = 100;
+    protected static final Dimension ONE = new Dimension(-100, -100);
+    protected static final Dimension LINE1_1 = new Dimension(100, 100);
+    protected static final Dimension LINE1_2 = new Dimension(150, 150);
     
     @Test
     public void testBuildOnePoint() {
         login(driver);
-        scrollMap(driver, ONE_X, ONE_Y);
+        scrollMap(driver, ONE);
         clickCanvas(driver);
         selectClickMenu(driver, Constants.ID_MENU_CREATE_RAIL);
         endAction(driver);
-        scrollMap(driver, -ONE_X, -ONE_Y);
     }
     
     @Test
     public void testBuildLine() {
         login(driver);
-        scrollMap(driver, LINE_X1, LINE_Y1);
+        scrollMap(driver, LINE1_1);
         clickCanvas(driver);
         selectClickMenu(driver, ID_MENU_CREATE_RAIL);
         
-        scrollMap(driver, -LINE_X1, -LINE_Y1);
-        scrollMap(driver, LINE_X2, LINE_Y2);
+        scrollMap(driver, LINE1_2);
         clickCanvas(driver);
         endAction(driver);
-        scrollMap(driver, -LINE_X2, -LINE_Y2);
     }
 }

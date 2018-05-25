@@ -23,8 +23,10 @@
  */
 package net.rushhourgame.it;
 
+import java.util.Stack;
 import static net.rushhourgame.it.Constants.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,6 +37,8 @@ import org.openqa.selenium.interactions.Actions;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class CommonAction {
+    
+    protected static Stack<Dimension> histories = new Stack<>();
     
     public static void login(WebDriver driver) {
         // ページを開く
@@ -77,7 +81,23 @@ public class CommonAction {
         driver.findElement(By.id(ID_MENU_CREATE_RAIL)).click();
     }
     
-    public static void scrollMap(WebDriver driver, int offsetX, int offsetY) {
+    public static void scrollMap(WebDriver driver, Dimension offset) {
+        histories.push(offset);
+        _scrollMap(driver, offset.getWidth(), offset.getHeight());
+    }
+    
+    public static void unscrollMap(WebDriver driver) {
+        Dimension offset = histories.pop();
+        _scrollMap(driver, -offset.getWidth(), -offset.getHeight());
+    }
+    
+    public static void unscrollMapAll(WebDriver driver) {
+        while(!histories.empty()) {
+            unscrollMap(driver);
+        }
+    }
+    
+    protected static void _scrollMap(WebDriver driver, int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
         new Actions(driver).moveToElement(canvas)
                 .clickAndHold()

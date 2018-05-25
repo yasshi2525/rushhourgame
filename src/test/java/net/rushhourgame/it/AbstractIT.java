@@ -26,6 +26,7 @@ package net.rushhourgame.it;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.util.concurrent.TimeUnit;
 import static net.rushhourgame.it.Constants.*;
+import static net.rushhourgame.it.CommonAction.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -58,6 +59,7 @@ public abstract class AbstractIT {
     @After
     public void tearDown() {
         if (driver != null) {
+            unscrollMapAll(driver);
             driver.quit();
         }
     }

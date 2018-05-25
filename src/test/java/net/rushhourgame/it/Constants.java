@@ -37,7 +37,7 @@ public class Constants {
     protected static final String TWITTER_USER_NAME = getProperty("test.twitter.mailaddress");
     protected static final String TWITTER_PASSWORD = getProperty("test.twitter.password");
     protected static final long TIMEOUT = 10; // sec
-    protected static final Dimension WINDOW_SIZE = new Dimension(1920, 1280);
+    protected static final Dimension WINDOW_SIZE = new Dimension(1024, 1024);
     
     protected static final String ID_MENU_CREATE_RAIL = "clickmenu-create-rail";
     protected static final String ID_MENU_EXTEND_RAIL = "clickmenu-extend-rail";
