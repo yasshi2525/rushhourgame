@@ -53,14 +53,14 @@
             <displayName>integration-test</displayName>
             <goals>
                 <goal>integration-test</goal>
-                <goal>verify</goal>
+                
             </goals>
             <properties>
                 <ut.skip>true</ut.skip>
                 <maven.war.skip>true</maven.war.skip>
-                <test.targetUrl>${test.targetUrl}</test.targetUrl>
-                <test.twitter.mailaddress>${test.twitter.mailaddress}</test.twitter.mailaddress>
-                <test.twitter.password>${test.twitter.password}</test.twitter.password>
+                
+                
+                
             </properties>
         </action>
         <action>

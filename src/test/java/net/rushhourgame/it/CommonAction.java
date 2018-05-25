@@ -28,6 +28,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -59,5 +60,18 @@ public class CommonAction {
         // ログインボタンを押下
         WebElement allow = driver.findElement(By.id("allow"));
         allow.click();
+    }
+    
+    public static void buildStartPoint(WebDriver driver, int offsetX, int offsetY) {
+        WebElement canvas = driver.findElement(By.tagName("canvas"));
+        new Actions(driver).moveToElement(canvas, offsetX, offsetY).perform();
+        new Actions(driver).click().perform();
+        
+        // ダイアログに移動
+        WebElement iframe = driver.findElement(By.tagName("iframe"));
+        driver.switchTo().frame(iframe);
+        
+        // クリックメニューから建築開始を選択
+        driver.findElement(By.id(ID_MENU_CREATE_RAIL)).click();
     }
 }

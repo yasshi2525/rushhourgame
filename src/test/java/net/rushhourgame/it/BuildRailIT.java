@@ -25,34 +25,29 @@ package net.rushhourgame.it;
 
 import org.junit.Test;
 import static net.rushhourgame.it.CommonAction.*;
-import static net.rushhourgame.it.Constants.TIMEOUT;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class BuildRailIT extends AbstractIT{
-    protected static final int START_X = -50;
-    protected static final int START_Y = -50;
+    protected static final int START_X1 = 100;
+    protected static final int START_Y1 = 400;
+    protected static final int START_X2 = 200;
+    protected static final int START_Y2 = 400;
+    protected static final int START_X3 = 300;
+    protected static final int START_Y3 = 400;
     
     @Test
-    public void testBuildOne() {
+    public void testBuildOnePoint() {
         login(driver);
+        buildStartPoint(driver, START_X1, START_Y1);
+    }
+    
+    @Test
+    public void testBuildLine() {
+        login(driver);
+        buildStartPoint(driver, START_X2, START_Y2);
         
-        new WebDriverWait(driver, TIMEOUT).until(ExpectedConditions.presenceOfElementLocated(By.tagName("canvas")));
-        
-        // 画面をクリック
-        driver.findElement(By.tagName("canvas")).click();
-        
-        // ダイアログに移動
-        WebElement iframe = driver.findElement(By.tagName("iframe"));
-        driver.switchTo().frame(iframe);
-        
-        // クリックメニューから建築開始を選択
-        driver.findElement(By.id("clickmenu-create-rail")).click();
     }
 }
