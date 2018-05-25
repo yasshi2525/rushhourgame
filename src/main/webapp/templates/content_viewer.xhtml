@@ -14,7 +14,7 @@
             #{game.initGuide()}
             <p:messages for="guide"  showDetail="true"/>
 
-            <p:commandButton id="test" value="#{msg.goBack}"
+            <p:commandButton id="end-action" value="#{msg.goBack}"
                              rendered="#{game.underOperation}"
                              onclick="finishOperation()"
                              process="@this" update="controllpanel"

@@ -29,8 +29,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -62,16 +60,31 @@ public class CommonAction {
         allow.click();
     }
     
-    public static void buildStartPoint(WebDriver driver, int offsetX, int offsetY) {
+    public static void endAction(WebDriver driver) {
+        driver.findElement(By.id(ID_END_ACTION)).click();
+    }
+    
+    public static void clickCanvas(WebDriver driver, int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
         new Actions(driver).moveToElement(canvas, offsetX, offsetY).perform();
         new Actions(driver).click().perform();
-        
+    }
+    
+    public static void selectClickMenu(WebDriver driver, String id) {
         // ダイアログに移動
         WebElement iframe = driver.findElement(By.tagName("iframe"));
         driver.switchTo().frame(iframe);
         
         // クリックメニューから建築開始を選択
         driver.findElement(By.id(ID_MENU_CREATE_RAIL)).click();
+    }
+    
+    public static void scrollMap(WebDriver driver, int offsetX, int offsetY) {
+        WebElement canvas = driver.findElement(By.tagName("canvas"));
+        new Actions(driver).moveToElement(canvas)
+                .clickAndHold()
+                .moveByOffset(offsetX, offsetY)
+                .release()
+                .perform();
     }
 }
