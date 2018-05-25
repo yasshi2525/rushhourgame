@@ -51,7 +51,7 @@ public class BuildRailIT extends AbstractIT{
         clickCanvas(driver, START_X2, START_Y2);
         selectClickMenu(driver, ID_MENU_CREATE_RAIL);
         
-        scrollMap(driver, 100, 0);
+        scrollMap(driver, 300, 0);
         
         clickCanvas(driver, START_X2, START_Y2);
         endAction(driver);
