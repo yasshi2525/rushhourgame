@@ -66,13 +66,16 @@ public class CommonAction {
     
     public static void clickCanvas(WebDriver driver, int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
+                
+        System.out.println("canvas size = " + canvas.getSize());
+        
         new Actions(driver).moveToElement(canvas, offsetX, offsetY).perform();
         new Actions(driver).click().perform();
     }
     
     public static void selectClickMenu(WebDriver driver, String id) {
         // ダイアログに移動
-        WebElement iframe = driver.findElement(By.tagName("iframe"));
+        WebElement iframe = driver.findElement(By.tagName("iframe"));        
         driver.switchTo().frame(iframe);
         
         // クリックメニューから建築開始を選択
