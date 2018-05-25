@@ -36,8 +36,6 @@ public class BuildRailIT extends AbstractIT{
     protected static final int START_Y1 = 400;
     protected static final int START_X2 = 300;
     protected static final int START_Y2 = 300;
-    protected static final int START_X3 = 300;
-    protected static final int START_Y3 = 400;
     
     @Test
     public void testBuildOnePoint() {
@@ -53,9 +51,9 @@ public class BuildRailIT extends AbstractIT{
         clickCanvas(driver, START_X2, START_Y2);
         selectClickMenu(driver, ID_MENU_CREATE_RAIL);
         
-        scrollMap(driver, 300, 300);
+        scrollMap(driver, 100, 0);
         
-        clickCanvas(driver, START_X3, START_Y3);
+        clickCanvas(driver, START_X2, START_Y2);
         endAction(driver);
     }
 }

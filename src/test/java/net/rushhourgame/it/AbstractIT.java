@@ -29,6 +29,7 @@ import static net.rushhourgame.it.Constants.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -51,6 +52,7 @@ public abstract class AbstractIT {
         options.setHeadless(HEADLESS);
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
+        driver.manage().window().setSize(WINDOW_SIZE);
     }
     
     @After
