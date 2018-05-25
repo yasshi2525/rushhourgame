@@ -32,28 +32,34 @@ import static net.rushhourgame.it.Constants.*;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class BuildRailIT extends AbstractIT{
-    protected static final int START_X1 = 100;
-    protected static final int START_Y1 = 400;
-    protected static final int START_X2 = 300;
-    protected static final int START_Y2 = 300;
+    protected static final int ONE_X = -100;
+    protected static final int ONE_Y = -100;
+    protected static final int LINE_X1 = 100;
+    protected static final int LINE_Y1 = 100;
+    protected static final int LINE_X2 = 400;
+    protected static final int LINE_Y2 = 100;
     
     @Test
     public void testBuildOnePoint() {
         login(driver);
-        clickCanvas(driver, START_X1, START_Y1);
+        scrollMap(driver, ONE_X, ONE_Y);
+        clickCanvas(driver);
         selectClickMenu(driver, Constants.ID_MENU_CREATE_RAIL);
         endAction(driver);
+        scrollMap(driver, -ONE_X, -ONE_Y);
     }
     
     @Test
     public void testBuildLine() {
         login(driver);
-        clickCanvas(driver, START_X2, START_Y2);
+        scrollMap(driver, LINE_X1, LINE_Y1);
+        clickCanvas(driver);
         selectClickMenu(driver, ID_MENU_CREATE_RAIL);
         
-        scrollMap(driver, 300, 0);
-        
-        clickCanvas(driver, START_X2, START_Y2);
+        scrollMap(driver, -LINE_X1, -LINE_Y1);
+        scrollMap(driver, LINE_X2, LINE_Y2);
+        clickCanvas(driver);
         endAction(driver);
+        scrollMap(driver, -LINE_X2, -LINE_Y2);
     }
 }
