@@ -24,7 +24,6 @@
 package net.rushhourgame.it;
 
 import org.junit.Test;
-import static net.rushhourgame.it.CommonAction.*;
 
 /**
  *
@@ -33,7 +32,7 @@ import static net.rushhourgame.it.CommonAction.*;
 public class LoginIT extends AbstractIT {
     @Test
     public void testLogin() throws Exception {
-        login(driver);
+        behave.login();
     }
 
 }

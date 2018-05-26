@@ -25,11 +25,8 @@ package net.rushhourgame.it;
 
 import static net.rushhourgame.RushHourResourceBundle.*;
 import org.junit.Test;
-import static net.rushhourgame.it.CommonAction.*;
 import static net.rushhourgame.it.Constants.*;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -44,44 +41,39 @@ public class BuildRailIT extends AbstractIT{
     
     @Test
     public void testBuildOnePoint() {
-        login(driver);
-        scrollMap(driver, ONE);
-        clickCanvas(driver);
-        selectClickMenu(driver, Constants.ID_MENU_CREATE_RAIL);
-        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_CREATE);
+        behave.login();
+        behave.scrollMap(ONE);
+        behave.clickCanvas();
+        behave.selectClickMenu(Constants.ID_MENU_CREATE_RAIL);
+        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_CREATE);
         
-        endAction(driver);
+        behave.endAction();
     }
     
     @Test
     public void testBuildLine() {
-        login(driver);
-        scrollMap(driver, LINE1_1);
-        clickCanvas(driver);
-        selectClickMenu(driver, ID_MENU_CREATE_RAIL);
-        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_CREATE);
-        waitForInvisiblingAnnouncement(driver);
+        behave.login();
+        behave.scrollMap(LINE1_1);
+        behave.clickCanvas();
+        behave.selectClickMenu(ID_MENU_CREATE_RAIL);
+        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_CREATE);
         
-        scrollMap(driver, LINE1_2);
-        clickCanvas(driver);
-        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
-        waitForInvisiblingAnnouncement(driver);
+        behave.scrollMap(LINE1_2);
+        behave.clickCanvas();
+        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
         
-        scrollMap(driver, LINE1_3);
-        clickCanvas(driver);
-        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
-        waitForInvisiblingAnnouncement(driver);
-        endAction(driver);
+        behave.scrollMap(LINE1_3);
+        behave.clickCanvas();
+        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
+        behave.endAction();
         
-        unscrollMap(driver);
-        clickCanvas(driver);
-        selectClickMenu(driver, ID_MENU_EXTEND_RAIL);
+        behave.unscrollMap();
+        behave.clickCanvas();
+        behave.selectClickMenu(ID_MENU_EXTEND_RAIL);
         
-        scrollMap(driver, LINE1_4);
-        clickCanvas(driver);
-        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
-        waitForInvisiblingAnnouncement(driver);
-                
-        endAction(driver);
+        behave.scrollMap(LINE1_4);
+        behave.clickCanvas();
+        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
+        behave.endAction();
     }
 }

@@ -35,7 +35,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -44,10 +43,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class CommonAction {
     
-    protected static Stack<Dimension> histories = new Stack<>();
-    protected static RushHourResourceBundle msg = RushHourResourceBundle.getInstance();
+    protected Stack<Dimension> histories = new Stack<>();
+    protected RushHourResourceBundle msg = RushHourResourceBundle.getInstance();
+    protected WebDriver driver;
+    protected WebDriverWait waitForAnnouncement;
     
-    public static void login(WebDriver driver) {
+    public CommonAction(WebDriver driver) {
+        this.driver = driver;
+        waitForAnnouncement = new WebDriverWait(driver, TIMEOUT_ANNOUNCEMENT);
+    }
+    
+    public void login() {
         // ページを開く
         driver.get(TARGET_URL);
         
@@ -71,15 +77,15 @@ public class CommonAction {
         allow.click();
     }
     
-    public static void endAction(WebDriver driver) {
+    public void endAction() {
         driver.findElement(By.id(ID_END_ACTION)).click();
     }
     
-    public static void clickCanvas(WebDriver driver) {
+    public void clickCanvas() {
         driver.findElement(By.tagName("canvas")).click();
     }
     
-    public static void selectClickMenu(WebDriver driver, String id) {
+    public void selectClickMenu(String id) {
         // ダイアログに移動
         WebElement iframe = driver.findElement(By.tagName("iframe"));        
         driver.switchTo().frame(iframe);
@@ -88,36 +94,36 @@ public class CommonAction {
         driver.findElement(By.id(id)).click();
     }
     
-    public static void scrollMap(WebDriver driver, Dimension offset) {
+    public void scrollMap(Dimension offset) {
         histories.push(offset);
-        _scrollMap(driver, offset.getWidth(), offset.getHeight());
+        _scrollMap(offset.getWidth(), offset.getHeight());
     }
     
-    public static void unscrollMap(WebDriver driver) {
+    public void unscrollMap() {
         Dimension offset = histories.pop();
-        _scrollMap(driver, -offset.getWidth(), -offset.getHeight());
+        _scrollMap(-offset.getWidth(), -offset.getHeight());
     }
     
-    public static void unscrollMapAll(WebDriver driver) {
+    public void unscrollMapAll() {
         while(!histories.empty()) {
-            unscrollMap(driver);
+            unscrollMap();
         }
     }
     
-    public static void assertAnnouncement(WebDriver driver, String msgId) {
+    public void assertAnnouncement(String msgId) {
         String expected = msg.get(msgId, Locale.JAPAN);
         
-        String actual = findAnnouncement(driver).getText();
+        String actual = findAnnouncement().getText();
         
         assertEquals(expected, actual);
+        waitForFadeOutAnnouncement();
     }
     
-    public static void waitForInvisiblingAnnouncement(WebDriver driver) {
-        new WebDriverWait(driver, TIMEOUT * 10).until(
-                ExpectedConditions.invisibilityOf(findAnnouncement(driver)));
+    public void waitForFadeOutAnnouncement() {
+        waitForAnnouncement.until(ExpectedConditions.invisibilityOf(findAnnouncement()));
     }
     
-    protected static void _scrollMap(WebDriver driver, int offsetX, int offsetY) {
+    protected void _scrollMap(int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
         new Actions(driver).moveToElement(canvas)
                 .clickAndHold()
@@ -126,7 +132,7 @@ public class CommonAction {
                 .perform();
     }
     
-    protected static WebElement findAnnouncement(WebDriver driver) {
+    protected WebElement findAnnouncement() {
         return  driver.findElement(By.id(ID_ANNOUNCEMENT))
                 .findElement(By.className("ui-growl-title"));
     }

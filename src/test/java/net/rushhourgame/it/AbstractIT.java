@@ -26,12 +26,10 @@ package net.rushhourgame.it;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.util.concurrent.TimeUnit;
 import static net.rushhourgame.it.Constants.*;
-import static net.rushhourgame.it.CommonAction.*;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -43,6 +41,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public abstract class AbstractIT {
 
     protected WebDriver driver;
+    protected CommonAction behave;
 
     @BeforeClass
     public static void setUpClass() {
@@ -57,6 +56,8 @@ public abstract class AbstractIT {
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
         driver.manage().window().setSize(WINDOW_SIZE);
+        
+        behave = new CommonAction(driver);
     }
 
     @After
@@ -66,7 +67,7 @@ public abstract class AbstractIT {
                 if (driver.getCurrentUrl().endsWith("error.xhtml")) {
                     fail("end with error page.");
                 }
-                unscrollMapAll(driver);
+                behave.unscrollMapAll();
             } finally {
                 driver.quit();
             }
