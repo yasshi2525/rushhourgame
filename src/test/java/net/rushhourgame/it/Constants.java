@@ -42,6 +42,7 @@ public class Constants {
     protected static final String ID_MENU_CREATE_RAIL = "clickmenu-create-rail";
     protected static final String ID_MENU_EXTEND_RAIL = "clickmenu-extend-rail";
     protected static final String ID_END_ACTION = "end-action";
+    protected static final String ID_ANNOUNCEMENT = "announcementPanel_container";
     
     /**
      * linuxで maven 経由でシステムプロパティを設定すると末尾に /　が入る。謎。

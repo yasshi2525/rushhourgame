@@ -23,10 +23,13 @@
  */
 package net.rushhourgame.it;
 
+import static net.rushhourgame.RushHourResourceBundle.*;
 import org.junit.Test;
 import static net.rushhourgame.it.CommonAction.*;
 import static net.rushhourgame.it.Constants.*;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -36,6 +39,8 @@ public class BuildRailIT extends AbstractIT{
     protected static final Dimension ONE = new Dimension(-100, -100);
     protected static final Dimension LINE1_1 = new Dimension(100, 100);
     protected static final Dimension LINE1_2 = new Dimension(150, 150);
+    protected static final Dimension LINE1_3 = new Dimension(150, 0);
+    protected static final Dimension LINE1_4 = new Dimension(0, 100);
     
     @Test
     public void testBuildOnePoint() {
@@ -43,6 +48,8 @@ public class BuildRailIT extends AbstractIT{
         scrollMap(driver, ONE);
         clickCanvas(driver);
         selectClickMenu(driver, Constants.ID_MENU_CREATE_RAIL);
+        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_CREATE);
+        
         endAction(driver);
     }
     
@@ -52,9 +59,29 @@ public class BuildRailIT extends AbstractIT{
         scrollMap(driver, LINE1_1);
         clickCanvas(driver);
         selectClickMenu(driver, ID_MENU_CREATE_RAIL);
+        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_CREATE);
+        waitForInvisiblingAnnouncement(driver);
         
         scrollMap(driver, LINE1_2);
         clickCanvas(driver);
+        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
+        waitForInvisiblingAnnouncement(driver);
+        
+        scrollMap(driver, LINE1_3);
+        clickCanvas(driver);
+        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
+        waitForInvisiblingAnnouncement(driver);
+        endAction(driver);
+        
+        unscrollMap(driver);
+        clickCanvas(driver);
+        selectClickMenu(driver, ID_MENU_EXTEND_RAIL);
+        
+        scrollMap(driver, LINE1_4);
+        clickCanvas(driver);
+        assertAnnouncement(driver, ANNOUNCEMENT_RAIL_EXTEND);
+        waitForInvisiblingAnnouncement(driver);
+                
         endAction(driver);
     }
 }

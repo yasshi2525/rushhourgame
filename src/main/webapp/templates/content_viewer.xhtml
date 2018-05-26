@@ -8,7 +8,7 @@
         xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:panelGrid id="gameview" columns="1">
         <h:panelGroup id="controllpanel" rendered="#{player.signIn}">
-            <p:growl for="announcement" life="3000">
+            <p:growl id="announcementPanel" keepAlive="true" for="announcement" life="3000">
                 <p:autoUpdate />
             </p:growl>
             #{game.initGuide()}

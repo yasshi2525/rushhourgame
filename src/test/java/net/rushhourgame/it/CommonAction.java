@@ -23,14 +23,20 @@
  */
 package net.rushhourgame.it;
 
+import java.util.Locale;
 import java.util.Stack;
+import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.it.Constants.*;
+import static org.junit.Assert.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -39,6 +45,7 @@ import org.openqa.selenium.interactions.Actions;
 public class CommonAction {
     
     protected static Stack<Dimension> histories = new Stack<>();
+    protected static RushHourResourceBundle msg = RushHourResourceBundle.getInstance();
     
     public static void login(WebDriver driver) {
         // ページを開く
@@ -78,7 +85,7 @@ public class CommonAction {
         driver.switchTo().frame(iframe);
         
         // クリックメニューから建築開始を選択
-        driver.findElement(By.id(ID_MENU_CREATE_RAIL)).click();
+        driver.findElement(By.id(id)).click();
     }
     
     public static void scrollMap(WebDriver driver, Dimension offset) {
@@ -97,6 +104,19 @@ public class CommonAction {
         }
     }
     
+    public static void assertAnnouncement(WebDriver driver, String msgId) {
+        String expected = msg.get(msgId, Locale.JAPAN);
+        
+        String actual = findAnnouncement(driver).getText();
+        
+        assertEquals(expected, actual);
+    }
+    
+    public static void waitForInvisiblingAnnouncement(WebDriver driver) {
+        new WebDriverWait(driver, TIMEOUT * 10).until(
+                ExpectedConditions.invisibilityOf(findAnnouncement(driver)));
+    }
+    
     protected static void _scrollMap(WebDriver driver, int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
         new Actions(driver).moveToElement(canvas)
@@ -104,5 +124,10 @@ public class CommonAction {
                 .moveByOffset(offsetX, offsetY)
                 .release()
                 .perform();
+    }
+    
+    protected static WebElement findAnnouncement(WebDriver driver) {
+        return  driver.findElement(By.id(ID_ANNOUNCEMENT))
+                .findElement(By.className("ui-growl-title"));
     }
 }

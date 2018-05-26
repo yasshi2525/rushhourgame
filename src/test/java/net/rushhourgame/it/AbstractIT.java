@@ -51,6 +51,7 @@ public abstract class AbstractIT {
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(HEADLESS);
+        options.addArguments("--lang=ja");
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
         driver.manage().window().setSize(WINDOW_SIZE);
