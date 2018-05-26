@@ -24,42 +24,22 @@
 package net.rushhourgame;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerConfig;
-import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
-import javax.enterprise.inject.spi.EventMetadata;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.controller.CompanyController;
@@ -69,10 +49,7 @@ import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Human;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -182,13 +159,13 @@ public class GameMaster implements Serializable, Runnable {
     }
 
     @Transactional
-    public void createResidence() throws RushHourException {
-        rCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
+    public void createResidence(Pointable p) throws RushHourException {
+        rCon.create(p);
     }
 
     @Transactional
-    public void createCompany() throws RushHourException {
-        cCon.create(new SimplePoint(Math.random() * 400 - 200, Math.random() * 400 - 200));
+    public void createCompany(Pointable p) throws RushHourException {
+        cCon.create(p);
     }
 
     public boolean search() {

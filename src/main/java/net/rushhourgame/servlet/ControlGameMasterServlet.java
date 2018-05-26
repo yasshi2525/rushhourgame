@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import net.rushhourgame.GameMaster;
+import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.exception.RushHourException;
 
 /**
@@ -47,6 +49,7 @@ import net.rushhourgame.exception.RushHourException;
 public class ControlGameMasterServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ControlGameMasterServlet.class.getName());
 
     @Inject
     GameMaster gm;
@@ -98,7 +101,7 @@ public class ControlGameMasterServlet extends HttpServlet {
                         break;
                     case "src":
                         try {
-                            gm.createResidence();
+                            gm.createResidence(getPoint(request, 200));
                             res = true;
                         } catch (RushHourException ex) {
                             Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,7 +110,7 @@ public class ControlGameMasterServlet extends HttpServlet {
                         break;
                     case "dst":
                         try {
-                            gm.createCompany();
+                            gm.createCompany(getPoint(request, 200));
                             res = true;
                         } catch (RushHourException ex) {
                             Logger.getLogger(ControlGameMasterServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,5 +149,25 @@ public class ControlGameMasterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+    }
+
+    protected Pointable getPoint(HttpServletRequest request, double defRange) {
+        String xStr = request.getParameter("x");
+        String yStr = request.getParameter("y");
+        double x = Math.random() * defRange * 2 - defRange;
+        double y = Math.random() * defRange * 2 - defRange;
+
+        try {
+            if (xStr != null) {
+                x = Double.parseDouble(xStr);
+            }
+            if (yStr != null) {
+                y = Double.parseDouble(yStr);
+            }
+        } catch (NumberFormatException e) {
+            LOG.log(Level.WARNING, null, e);
+        }
+
+        return new SimplePoint(x, y);
     }
 }

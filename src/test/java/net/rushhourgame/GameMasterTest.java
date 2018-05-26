@@ -249,12 +249,12 @@ public class GameMasterTest {
     
     @Test
     public void testCreateResidence() throws RushHourException {
-        inst.createResidence();
+        inst.createResidence(new SimplePoint());
     }
     
     @Test
     public void testCreateCompany() throws RushHourException {
-        inst.createCompany();
+        inst.createCompany(new SimplePoint());
     }
     
     @Test
