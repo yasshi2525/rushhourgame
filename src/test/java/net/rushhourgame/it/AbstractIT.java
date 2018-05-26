@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import static net.rushhourgame.it.Constants.*;
 import static net.rushhourgame.it.CommonAction.*;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openqa.selenium.Dimension;
@@ -40,13 +41,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public abstract class AbstractIT {
+
     protected WebDriver driver;
-    
+
     @BeforeClass
     public static void setUpClass() {
         WebDriverManager.chromedriver().setup();
     }
-    
+
     @Before
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
@@ -56,12 +58,18 @@ public abstract class AbstractIT {
         driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
         driver.manage().window().setSize(WINDOW_SIZE);
     }
-    
+
     @After
     public void tearDown() {
         if (driver != null) {
-            unscrollMapAll(driver);
-            driver.quit();
+            try {
+                if (driver.getCurrentUrl().endsWith("error.xhtml")) {
+                    fail("end with error page.");
+                }
+                unscrollMapAll(driver);
+            } finally {
+                driver.quit();
+            }
         }
     }
 }
