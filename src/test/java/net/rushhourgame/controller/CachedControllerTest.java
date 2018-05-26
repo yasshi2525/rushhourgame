@@ -72,6 +72,16 @@ public class CachedControllerTest {
     }
     
     @Test
+    public void testFindInNull() {
+        assertTrue(inst.findIn(mock(Player.class), new SimplePoint(), 0).isEmpty());
+    }
+    
+    @Test
+    public void testFindNull() {
+        assertEquals(e, inst.find(e));
+    }
+    
+    @Test
     public void testExistsEntitiesNull() {
         assertFalse(inst.exists(new SimplePoint()));
         

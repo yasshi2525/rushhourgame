@@ -123,6 +123,12 @@ public class Human extends GeoEntity implements Pointable {
         onTrain = t;
         stand = StandingOn.TRAIN;
     }
+    
+    public void getOffTrainForce() {
+        onTrain = null;
+        stand = StandingOn.GROUND;
+        current = null;
+    }
 
     public void getOffTrain(Platform platform) {
         onTrain = null;

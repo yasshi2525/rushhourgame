@@ -57,6 +57,8 @@ public class TrainController extends CachedController<Train> {
     protected HumanController hCon;
     @Inject
     protected LineController lCon;
+    @Inject
+    protected RouteSearcher searcher;
 
     @Override
     public void synchronizeDatabase() {
@@ -97,9 +99,10 @@ public class TrainController extends CachedController<Train> {
         }
     }
 
-    public void deploy(@NotNull Train train, @NotNull Player p, @NotNull LineStep lineStep) throws RushHourException {
+    public TrainDeployed deploy(@NotNull Train train, @NotNull Player p, @NotNull LineStep lineStep) throws RushHourException {
         writeLock.lock();
         try {
+            train = find(train);
             if (!train.isOwnedBy(p)) {
                 throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
             }
@@ -118,6 +121,8 @@ public class TrainController extends CachedController<Train> {
             LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[]{TrainController.class, info});
 
             train.setDeployed(info);
+            
+            return info;
         } finally {
             writeLock.unlock();
         }
@@ -126,13 +131,11 @@ public class TrainController extends CachedController<Train> {
     public void undeploy(@NotNull TrainDeployed train, @NotNull Player p) throws RushHourException {
         writeLock.lock();
         try {
+            train = find(train.getTrain()).getDeployed();
             if (!train.getTrain().isOwnedBy(p)) {
                 throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
             }
-            // TODO : 人の削除処理実装
-            if (hCon.findAll().stream().anyMatch(h -> train.equals(h.getOnTrain()))) {
-                throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
-            }
+            getOffPassenger(train);
             train.getTrain().setDeployed(null);
             em.createNamedQuery("TrainDeployed.deleteBy", TrainDeployed.class)
                     .setParameter("obj", train).executeUpdate();
@@ -163,5 +166,22 @@ public class TrainController extends CachedController<Train> {
         } finally {
             writeLock.unlock();
         }
+    }
+    
+    /**
+     * 電車を撤去する際、乗客を強制的にその場に降ろす。
+     * 乗客は経路が変わるため、再計算する
+     * @param train 撤去対象
+     */
+    protected void getOffPassenger(TrainDeployed train) {
+        hCon.getWriteLock().lock();
+        try {
+            hCon.findAll().stream()
+                    .filter(h -> train.equalsId(h.getOnTrain()))
+                    .forEach(h -> h.getOffTrainForce());
+            searcher.notifyUpdate();
+        } finally {
+            hCon.getWriteLock().unlock();
+        } 
     }
 }

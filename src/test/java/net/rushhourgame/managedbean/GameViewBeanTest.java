@@ -41,6 +41,7 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Train;
+import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
 import org.junit.Before;
@@ -72,6 +73,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
     protected static final int CLICK_X = 50;
     protected static final int CLICK_Y = 60;
     protected static final Pointable CLICK_POS = new SimplePoint(CLICK_X, CLICK_Y);
+    protected static final Pointable CLICK_POS2 = new SimplePoint(120, 150);
 
     @Mock
     protected SelectEvent event;
@@ -295,6 +297,13 @@ public class GameViewBeanTest extends AbstractBeanTest {
         doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
     }
+    
+    @Test
+    public void testHandleReturnTrainRemove() {
+        doReturn(new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY)).when(event).getObject();
+        doReturn(primeface).when(inst).getPrimeface();
+        inst.handleReturn(event);
+    }
 
     @Test
     public void testExtendRailLoop() throws RushHourException {
@@ -477,11 +486,29 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.clickedRailEdge = new ArrayList<>();
         inst.clickedRailEdge.add(n1.getOutEdges().get(0));
         inst.clickedRailEdge.add(n1.getInEdges().get(0));
+        inst.op = new OperationBean(OperationBean.Type.RAIL_REMOVE);
 
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
-
-        inst.removeRail();
+        
+        inst.remove();
+    }
+    
+    @Test
+    public void testRemoveTrain() throws RushHourException {
+        inst.player = player;
+        Result start = ACON.startWithStation(player, CLICK_POS, Locale.JAPANESE);
+        Result end = ACON.extendWithStation(player, start.node, CLICK_POS2, Locale.JAPANESE);
+        TrainDeployed train = TRCON.deploy(TRCON.create(player), player, end.line.findTop());
+        
+        inst.op = new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY, train);
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(primeface).when(inst).getPrimeface();
+        
+        inst.remove();
+        
+        assertFalse(train.getTrain().isDeployed());
     }
 
     @Test

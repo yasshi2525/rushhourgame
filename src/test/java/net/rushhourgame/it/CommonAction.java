@@ -42,21 +42,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class CommonAction {
-    
+
     protected Stack<Dimension> histories = new Stack<>();
     protected RushHourResourceBundle msg = RushHourResourceBundle.getInstance();
     protected WebDriver driver;
     protected WebDriverWait waitForAnnouncement;
-    
+
     public CommonAction(WebDriver driver) {
         this.driver = driver;
         waitForAnnouncement = new WebDriverWait(driver, TIMEOUT_ANNOUNCEMENT);
     }
-    
+
     public void login() {
         // ページを開く
         driver.get(TARGET_URL);
-        
+
         // Twitterでサインイン要素まで移動
         WebElement body = driver.findElement(By.tagName("body"));
         body.sendKeys(Keys.TAB);
@@ -76,53 +76,71 @@ public class CommonAction {
         WebElement allow = driver.findElement(By.id("allow"));
         allow.click();
     }
-    
+
     public void endAction() {
         driver.findElement(By.id(ID_END_ACTION)).click();
     }
-    
+
     public void clickCanvas() {
         driver.findElement(By.tagName("canvas")).click();
     }
-    
+
     public void selectClickMenu(String id) {
-        // ダイアログに移動
-        WebElement iframe = driver.findElement(By.tagName("iframe"));        
-        driver.switchTo().frame(iframe);
-        
-        // クリックメニューから建築開始を選択
+        moveClickMenu();
         driver.findElement(By.id(id)).click();
     }
-    
+
+    /**
+     * 要素が登場するまで定期的にクリックメニューを開き続ける.、
+     * @param id id
+     * @param timeout timeout 
+     */
+    public void selectClickMenu(String id, long timeout) {
+        new WebDriverWait(driver, timeout).until((d) -> {
+            try {
+                clickCanvas();
+                moveClickMenu();
+                return d.findElement(By.id(id));
+            } finally {
+                d.findElement(By.className("ui-icon-closethick")).click();
+            }
+        });
+    }
+
     public void scrollMap(Dimension offset) {
         histories.push(offset);
         _scrollMap(offset.getWidth(), offset.getHeight());
     }
-    
+
     public void unscrollMap() {
         Dimension offset = histories.pop();
         _scrollMap(-offset.getWidth(), -offset.getHeight());
     }
-    
+
     public void unscrollMapAll() {
-        while(!histories.empty()) {
+        while (!histories.empty()) {
             unscrollMap();
         }
     }
-    
+
     public void assertAnnouncement(String msgId) {
         String expected = msg.get(msgId, Locale.JAPAN);
-        
+
         String actual = findAnnouncement().getText();
-        
+
         assertEquals(expected, actual);
         waitForFadeOutAnnouncement();
     }
-    
+
     public void waitForFadeOutAnnouncement() {
         waitForAnnouncement.until(ExpectedConditions.invisibilityOf(findAnnouncement()));
     }
-    
+
+    protected void moveClickMenu() {
+        WebElement iframe = driver.findElement(By.tagName("iframe"));
+        driver.switchTo().frame(iframe);
+    }
+
     protected void _scrollMap(int offsetX, int offsetY) {
         WebElement canvas = driver.findElement(By.tagName("canvas"));
         new Actions(driver).moveToElement(canvas)
@@ -131,9 +149,9 @@ public class CommonAction {
                 .release()
                 .perform();
     }
-    
+
     protected WebElement findAnnouncement() {
-        return  driver.findElement(By.id(ID_ANNOUNCEMENT))
+        return driver.findElement(By.id(ID_ANNOUNCEMENT))
                 .findElement(By.className("ui-growl-title"));
     }
 }

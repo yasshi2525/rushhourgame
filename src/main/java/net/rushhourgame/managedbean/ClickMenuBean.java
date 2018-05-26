@@ -45,11 +45,14 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
+import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Train;
+import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
@@ -63,6 +66,7 @@ import org.primefaces.context.RequestContext;
 public class ClickMenuBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ClickMenuBean.class.getName());
     
     @PersistenceContext
     EntityManager em;
@@ -71,11 +75,14 @@ public class ClickMenuBean implements Serializable {
     protected RushHourSession session;
     protected Player player;
     protected List<RailEdge> clickedEdges;
+    protected TrainDeployed clickedTrain;
 
     @Inject
     protected PlayerController pCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected TrainController tCon;
     @Inject
     protected AssistanceController aCon;
     @Inject
@@ -87,6 +94,7 @@ public class ClickMenuBean implements Serializable {
     
     @PostConstruct
     public void init() {
+        LOG.log(Level.FINE, "{0}#init", ClickMenuBean.class);
         player = pCon.findByToken(session.getToken());
 
         click = new SimplePoint(
@@ -105,6 +113,10 @@ public class ClickMenuBean implements Serializable {
                 Logger.getLogger(ClickMenuBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        List<Train> nearTrains = tCon.findIn(player, click, scale - 3);
+        clickedTrain = nearTrains.isEmpty() ? null : nearTrains.get(0).getDeployed();
+        
     }
 
     public boolean isDisplayCreateRail() {
@@ -155,6 +167,15 @@ public class ClickMenuBean implements Serializable {
     public void removeRail() {
         getDialog().closeDynamic(
                 new OperationBean(OperationBean.Type.RAIL_REMOVE));
+    }
+    
+    public boolean isDisplayUndeployTrain() {
+        return clickedTrain != null;
+    }
+    
+    public void undeployTrain() {
+        getDialog().closeDynamic(
+                new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY, clickedTrain));
     }
 
     protected FacesContext getFacesContext() {

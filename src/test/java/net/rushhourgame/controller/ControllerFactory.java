@@ -172,6 +172,7 @@ public class ControllerFactory {
         TCON.init();
         TCON.hCon = createHumanController();
         TCON.lCon = createLineController();
+        TCON.searcher = createRouteSearcher();
         init(TCON);
         return TCON;
     }

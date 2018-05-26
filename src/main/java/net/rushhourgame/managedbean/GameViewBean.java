@@ -124,6 +124,8 @@ public class GameViewBean implements Serializable {
 
     protected boolean underOperation;
 
+    protected OperationBean op;
+
     protected static final String GUIDE_ID = "guide";
     protected static final String ANNOUNCEMENT_ID = "announcement";
 
@@ -197,7 +199,7 @@ public class GameViewBean implements Serializable {
     public List<Station> getStations() {
         return stCon.findIn(center, getLoadScale());
     }
-    
+
     public List<Human> getHumans() {
         return hCon.findIn(center, getLoadScale());
     }
@@ -226,7 +228,7 @@ public class GameViewBean implements Serializable {
     public List<StepForHuman> getStepForHuman() {
         return sCon.findIn(center, getLoadScale());
     }
-    
+
     public List<Train> getTrains() {
         return tCon.findIn(center, getLoadScale());
     }
@@ -300,7 +302,7 @@ public class GameViewBean implements Serializable {
     }
 
     public void handleReturn(SelectEvent event) {
-        OperationBean op = (OperationBean) event.getObject();
+        op = (OperationBean) event.getObject();
 
         switch (op.getType()) {
             case RAIL_CREATE:
@@ -321,6 +323,10 @@ public class GameViewBean implements Serializable {
                 break;
 
             case RAIL_REMOVE:
+                getPrimeface().executeScript("PF('confirmDialog').show();");
+                break;
+
+            case TRAIN_UNDEPLOY:
                 getPrimeface().executeScript("PF('confirmDialog').show();");
                 break;
         }
@@ -451,15 +457,30 @@ public class GameViewBean implements Serializable {
     }
 
     @Transactional
-    public void removeRail() throws RushHourException {
-        clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
-        railCon.remove(player, clickedRailEdge);
-        getPrimeface().executeScript("PF('confirmDialog').hide();");
-        showRemovedRailAnnouncement();
+    public void remove() throws RushHourException {
+        switch (op.getType()) {
+            case RAIL_REMOVE:
+                clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
+                railCon.remove(player, clickedRailEdge);
+                getPrimeface().executeScript("PF('confirmDialog').hide();");
+                showRemovedRailAnnouncement();
+                break;
+                
+            case TRAIN_UNDEPLOY:
+                tCon.undeploy(op.getTrain(), player);
+                getPrimeface().executeScript("PF('confirmDialog').hide();");
+                showRemovedTrainAnnouncement();
+                break;
+        }
     }
 
     protected void showRemovedRailAnnouncement() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_REMOVE, session.getLocale())));
+    }
+    
+    protected void showRemovedTrainAnnouncement() {
+        getFacesContext().addMessage(ANNOUNCEMENT_ID,
+                new FacesMessage(msg.get(ANNOUNCEMENT_TRAIN_REMOVE, session.getLocale())));
     }
 }

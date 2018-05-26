@@ -110,12 +110,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         } catch (IllegalStateException e) {
             assertEquals("Not deployed.", e.getMessage());
         }
-        try {
-            created.isAreaIn(new SimplePoint(), 0);
-            fail();
-        } catch (IllegalStateException e) {
-            assertEquals("Not deployed.", e.getMessage());
-        }
+        assertFalse(created.isAreaIn(new SimplePoint(), 0));
     }
 
     @Test
@@ -187,12 +182,9 @@ public class TrainControllerTest extends AbstractControllerTest {
         Human human = HCON.create(new SimplePoint(), src, dst);
         human.setOnTrain(train.getDeployed());
         
-        try {
-            inst.undeploy(train.getDeployed(), player);
-            fail();
-        } catch (RushHourException e) {
-            assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
-        }
+        inst.undeploy(train.getDeployed(), player);
+        assertNull(human.getOnTrain());
+        assertNull(human.getCurrent());
     }
 
     @Test

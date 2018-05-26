@@ -150,7 +150,7 @@ public class Train extends GeoEntity implements Pointable, Ownable {
     @Override
     public boolean isAreaIn(Pointable center, double scale) {
         if (deployed == null) {
-            throw new IllegalStateException("Not deployed.");
+            return false;
         }
         return deployed.isAreaIn(center, scale);
     }

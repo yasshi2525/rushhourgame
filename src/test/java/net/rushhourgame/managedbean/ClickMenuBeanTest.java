@@ -34,6 +34,7 @@ import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -67,6 +68,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.session = session;
         inst.rCon = RAILCON;
         inst.pCon = PCON;
+        inst.tCon = TRCON;
         inst.aCon = ACON;
         inst.em = EM;
         
@@ -316,6 +318,22 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     @Test
     public void testRemoveRail() {
         inst.removeRail();
+    }
+    
+    @Test
+    public void testIsDisplayUndeployTrain() {
+        assertFalse(inst.isDisplayUndeployTrain());
+    }
+    
+    @Test
+    public void testIsDisplayUndeployTrain2() {
+        inst.clickedTrain = mock(TrainDeployed.class);
+        assertTrue(inst.isDisplayUndeployTrain());
+    }
+    
+    @Test
+    public void testUndeployTrain() {
+        inst.undeployTrain();
     }
 
     @Test

@@ -27,6 +27,7 @@ import java.io.Serializable;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.TrainDeployed;
 
 /**
  *
@@ -38,6 +39,7 @@ public class OperationBean implements Serializable{
     protected Type type;
     protected RailNode tailNode;
     protected Line line;
+    protected TrainDeployed train;
     
     public OperationBean(Type type) {
         this.type = type;
@@ -53,6 +55,11 @@ public class OperationBean implements Serializable{
         this.tailNode = result.node;
         this.line = result.line;
     }
+    
+    public OperationBean(Type type, TrainDeployed train) {
+        this.type = type;
+        this.train = train;
+    }
 
     public Type getType() {
         return type;
@@ -61,10 +68,15 @@ public class OperationBean implements Serializable{
     public RailNode getTailNode() {
         return tailNode;
     }
+
+    public TrainDeployed getTrain() {
+        return train;
+    }
     
     public enum Type {
         RAIL_CREATE,
         RAIL_EXTEND,
-        RAIL_REMOVE
+        RAIL_REMOVE,
+        TRAIN_UNDEPLOY
     }
 }

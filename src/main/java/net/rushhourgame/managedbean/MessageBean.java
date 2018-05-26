@@ -148,6 +148,10 @@ public class MessageBean implements Serializable {
         return res.get(LABEL_RAIL_REMOVE, session.getLocale());
     }
     
+    public String getRemoveTrain() {
+        return res.get(LABEL_TRAIN_UNDEPLOY, session.getLocale());
+    }
+    
     public String getConfirmation() {
         return res.get(LABEL_CONFIRM, session.getLocale());
     }

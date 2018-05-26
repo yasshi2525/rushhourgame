@@ -70,10 +70,10 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         return entities;
     }
 
-    public List<T> findAll(Player p) {
+    public List<T> findAll(@NotNull Player p) {
         readLock.lock();
         try {
-            return findAll().stream().filter(t -> t.isOwnedBy(p)).collect(Collectors.toList());
+            return findAll().stream().filter(e -> e.isOwnedBy(p)).collect(Collectors.toList());
         } finally {
             readLock.unlock();
         }
@@ -90,6 +90,29 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         } finally {
             readLock.unlock();
         }
+    }
+    
+    public List<T> findIn(@NotNull Player p, @NotNull Pointable center, double scale) {
+        readLock.lock();
+        try {
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#findIn controller never synchronize database", new Object[]{CachedController.class});
+                return new ArrayList<>();
+            }
+            return entities.stream()
+                    .filter(e -> e.isOwnedBy(p))
+                    .filter(e -> e.isAreaIn(center, scale)).collect(Collectors.toList());
+        } finally {
+            readLock.unlock();
+        }
+    }
+    
+    public T find(T old) {
+        if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{CachedController.class});
+                return old;
+            }
+        return entities.stream().filter(e -> e.equalsId(old)).findFirst().get();
     }
 
     protected boolean exists(Pointable p) {
@@ -170,5 +193,9 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
 
     public Lock getReadLock() {
         return readLock;
+    }
+
+    public Lock getWriteLock() {
+        return writeLock;
     }
 }
