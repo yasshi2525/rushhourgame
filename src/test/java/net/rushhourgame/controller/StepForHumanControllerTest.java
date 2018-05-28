@@ -34,6 +34,7 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
@@ -41,6 +42,7 @@ import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -49,11 +51,15 @@ import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class StepForHumanControllerTest extends AbstractControllerTest {
 
     protected StepForHumanController inst;

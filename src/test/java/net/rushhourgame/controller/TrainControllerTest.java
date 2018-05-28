@@ -80,6 +80,26 @@ public class TrainControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testFindNull() {
+        inst.entities = null;
+        
+        assertNull(inst.find((TrainDeployed)null));
+        assertNull(inst.find(mock(TrainDeployed.class)));
+    }
+    
+    @Test
+    public void testFind() {
+        inst.entities = new ArrayList<>();
+        Train train = spy(Train.class);
+        TrainDeployed deployed = spy(TrainDeployed.class);
+        train.setDeployed(deployed);
+        
+        inst.entities.add(train);
+        
+        assertEquals(deployed, inst.find(deployed));
+    }
+    
+    @Test
     public void testCreate() throws RushHourException {
         Train created = inst.create(player);
         

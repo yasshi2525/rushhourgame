@@ -48,6 +48,7 @@ import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
@@ -200,6 +201,8 @@ public class GameMaster implements Serializable, Runnable {
                 if (!searcher.isAvailable()) {
                     return;
                 }
+                
+                searcher.refresh();
 
                 stCon.step(getInterval());
                 rCon.step(getInterval());

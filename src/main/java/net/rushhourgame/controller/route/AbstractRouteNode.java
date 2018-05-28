@@ -37,7 +37,7 @@ import net.rushhourgame.entity.TicketGate;
  */
 public abstract class AbstractRouteNode implements RouteNode {
 
-    protected final RelayPointForHuman original;
+    protected RelayPointForHuman original;
     protected double cost;
     protected RouteNode via;
     protected List<RouteEdge> inEdges = new ArrayList<>();
@@ -54,6 +54,11 @@ public abstract class AbstractRouteNode implements RouteNode {
         return original;
     }
 
+    @Override
+    public void setOriginal(RelayPointForHuman newInst) {
+        this.original = newInst;
+    }
+    
     @Override
     public double getCost() {
         return cost;

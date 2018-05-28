@@ -21,52 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame;
+package net.rushhourgame.controller;
 
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.persistence.EntityManager;
-import net.rushhourgame.DebugInitializer;
-import net.rushhourgame.GameMaster;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.controller.CompanyController;
-import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.ResidenceController;
-import net.rushhourgame.controller.ResidenceController;
-import net.rushhourgame.controller.RouteSearcher;
-import net.rushhourgame.controller.RouteSearcher;
-import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StepForHumanController;
-import net.rushhourgame.controller.TrainController;
-import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.RushHourResourceBundle;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class SimpleGameMaster extends GameMaster {
-    
+public class SimpleStepForHumanController extends StepForHumanController {
+
     private static final long serialVersionUID = 1L;
-    
+
     public void init(
             EntityManager em,
-            DebugInitializer debug,
-            HumanController hCon,
+            ErrorMessageBuilder builder,
+            ManagedExecutorService service,
+            LineRouteSearcher lSearcher,
+            RouteSearcher searcher,
             RushHourProperties prop,
             ResidenceController rCon,
-            RouteSearcher searcher,
-            StationController stCon,
-            TrainController tCon,
-            CompanyController cCon
+            StationController stCon
     ) {
-        this.debug = debug;
         this.em = em;
-        this.hCon = hCon;
+        this.errMsgBuilder = builder;
+        this.executorService = service;
+        this.lSearcher = lSearcher;
+        this.searcher = searcher;
         this.prop = prop;
         this.rCon = rCon;
-        this.searcher = searcher;
         this.stCon = stCon;
-        this.tCon = tCon;
-        this.cCon = cCon;
     }
 }

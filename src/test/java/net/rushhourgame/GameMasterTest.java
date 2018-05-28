@@ -42,10 +42,16 @@ import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
+import net.rushhourgame.controller.LineRouteSearcher;
 import net.rushhourgame.controller.PlayerController;
+import net.rushhourgame.controller.RailController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
+import net.rushhourgame.controller.SimpleAssistanceController;
+import net.rushhourgame.controller.SimpleHumanController;
+import net.rushhourgame.controller.SimpleStepForHumanController;
 import net.rushhourgame.controller.StationController;
+import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
@@ -87,14 +93,17 @@ public class GameMasterTest {
 
     protected static final EntityManager EM = LocalEntityManager.createEntityManager();
     protected static final TrainController TCON = ControllerFactory.createTrainController();
-    protected static final HumanController HCON = ControllerFactory.createHumanController();
     protected static final CompanyController CCON = ControllerFactory.createCompanyController();
-    protected static final AssistanceController ACON = ControllerFactory.createAssistanceController();
     protected static final PlayerController PCON = ControllerFactory.createPlayController();
     protected static final StationController STCON = ControllerFactory.createStationController();
     protected static final RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
+    protected static final LineRouteSearcher LSEARCHER = ControllerFactory.createLineRouteSearcher();
     protected static final ResidenceController RCON = ControllerFactory.createResidenceController();
     protected static final LineController LCON = ControllerFactory.createLineController();
+    protected static final RailController RAILCON = ControllerFactory.createRailController();
+    protected static final StepForHumanController SCON = ControllerFactory.createStepForHumanController();
+    protected SimpleAssistanceController aCon;
+    protected SimpleHumanController hCon;
     
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
@@ -121,11 +130,29 @@ public class GameMasterTest {
         inst.prop = RushHourProperties.getInstance();
         inst.stCon = spy(STCON);
         inst.tCon = spy(TCON);
-        inst.hCon = spy(HCON);
         inst.rCon = spy(RCON);
         inst.cCon = spy(CCON);
         inst.lCon = spy(LCON);
+        
+        hCon = spy(new SimpleHumanController());
+        hCon.init();
+        hCon.init(EM, ErrorMessageBuilder.instance, RushHourProperties.INSTANCE, 
+                inst.rCon, inst.searcher, inst.stCon, inst.tCon);
+        inst.hCon = hCon;
+        
+        inst.tCon.findAll().clear();
+        inst.lCon.findAll().clear();
+        inst.stCon.findAll().clear();
+        inst.hCon.findAll().clear();
+        inst.rCon.findAll().clear();
+        
         inst.em = spy(EM);
+        
+        aCon = new SimpleAssistanceController();
+        aCon.init();
+        aCon.init(EM, ErrorMessageBuilder.instance, inst.lCon, RushHourResourceBundle.getInstance(), 
+                RushHourProperties.INSTANCE, RAILCON, SCON, inst.stCon);
+        
         inst.writeLock = mock(Lock.class);
         doNothing().when(inst.rCon).step(anyLong());
         // 人を生成しないようにする
@@ -134,11 +161,11 @@ public class GameMasterTest {
 
     @After
     public void tearDown() {
-        LCON.findAll().clear();
-        HCON.findAll().clear();
-        STCON.findAll().clear();
-        TCON.findAll().clear();
-        RCON.findAll().clear();
+        inst.lCon.findAll().clear();
+        inst.hCon.findAll().clear();
+        inst.stCon.findAll().clear();
+        inst.tCon.findAll().clear();
+        inst.rCon.findAll().clear();
         EM.getTransaction().rollback();
     }
     
@@ -296,6 +323,7 @@ public class GameMasterTest {
 
     @Test
     public void testRunWhenInterrupted() throws RushHourException {
+        inst.synchronizeDatabase();
         WorldPack world = createSmallWorld();
         doReturn(false).when(inst.searcher).isAvailable();
         inst.run();
@@ -342,11 +370,11 @@ public class GameMasterTest {
         pack.cmp = CCON.create(FAR);
         pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 
-        AssistanceController.Result start = ACON.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
+        AssistanceController.Result start = aCon.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
         pack.st1 = start.station;
         pack.l = start.line;
 
-        AssistanceController.Result end = ACON.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
+        AssistanceController.Result end = aCon.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
         pack.st2 = end.station;
 
         if (createsHuman) {

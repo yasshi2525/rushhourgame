@@ -60,6 +60,13 @@ import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
+import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 
 /**
  * 経路計算機. 経路探索処理中は経路にしたがった移動動作をしないこと (HashMapを使っているため). これを使う ExecutorService
@@ -84,7 +91,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
 
     @Inject
     protected StationController stCon;
-    
+
     @Inject
     protected HumanController hCon;
 
@@ -118,6 +125,82 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
         routes.clear();
     }
 
+    public void refresh() {
+        routes.keySet().forEach(key -> {
+            routes.get(key).forEach(node -> {
+                node.setOriginal(refresh(node.getOriginal()));
+                if (node.getViaEdge() != null) {
+                    refresh(node.getViaEdge().getOriginal());
+                }
+            });
+        });
+    }
+
+    protected RelayPointForHuman refresh(RelayPointForHuman old) {
+        if (old instanceof Residence) {
+            return rCon.find((Residence) old);
+        } else if (old instanceof Platform) {
+            return stCon.find((Platform) old);
+        } else if (old instanceof TicketGate) {
+            return stCon.find((TicketGate) old);
+        } else {
+            return old;
+        }
+    }
+
+    protected void refresh(StepForHuman inst) {
+        if (inst instanceof StepForHumanDirectly) {
+            refresh((StepForHumanDirectly) inst);
+        } else if (inst instanceof StepForHumanIntoStation) {
+            refresh((StepForHumanIntoStation) inst);
+        } else if (inst instanceof StepForHumanOutOfStation) {
+            refresh((StepForHumanOutOfStation) inst);
+        } else if (inst instanceof StepForHumanResidenceToStation) {
+            refresh((StepForHumanResidenceToStation) inst);
+        } else if (inst instanceof StepForHumanStationToCompany) {
+            refresh((StepForHumanStationToCompany) inst);
+        } else if (inst instanceof StepForHumanThroughTrain) {
+            refresh((StepForHumanThroughTrain) inst);
+        } else if (inst instanceof StepForHumanTransfer) {
+            refresh((StepForHumanTransfer) inst);
+        } else {
+            // do-nothing
+        }
+    }
+
+    protected void refresh(StepForHumanDirectly inst) {
+        inst.setFrom(rCon.find((Residence) inst.getFrom()));
+    }
+
+    protected void refresh(StepForHumanIntoStation inst) {
+        inst.setFrom(stCon.find((TicketGate) inst.getFrom()));
+        inst.setTo(stCon.find((Platform) inst.getTo()));
+    }
+
+    protected void refresh(StepForHumanOutOfStation inst) {
+        inst.setFrom(stCon.find((Platform) inst.getFrom()));
+        inst.setTo(stCon.find((TicketGate) inst.getTo()));
+    }
+
+    protected void refresh(StepForHumanResidenceToStation inst) {
+        inst.setFrom(rCon.find((Residence) inst.getFrom()));
+        inst.setTo(stCon.find((TicketGate) inst.getTo()));
+    }
+
+    protected void refresh(StepForHumanStationToCompany inst) {
+        inst.setFrom(stCon.find((TicketGate) inst.getFrom()));
+    }
+
+    protected void refresh(StepForHumanThroughTrain inst) {
+        inst.setFrom(stCon.find((Platform) inst.getFrom()));
+        inst.setTo(stCon.find((Platform) inst.getTo()));
+    }
+
+    protected void refresh(StepForHumanTransfer inst) {
+        inst.setFrom(stCon.find((TicketGate) inst.getFrom()));
+        inst.setTo(stCon.find((TicketGate) inst.getTo()));
+    }
+
     public boolean isAvailable() {
         return isAvailble;
     }
@@ -136,7 +219,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 .filter(node -> node.getOriginal().equalsId(start))
                 .findFirst().get();
     }
-    
+
     public double getCost(@NotNull Identifiable start, @NotNull Company c) {
         return getStart(start, c).getCost();
     }
@@ -171,7 +254,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 nodes.forEach((node) -> {
                     LOG.log(Level.FINE, node.toStringAsRoute());
                 });
-                
+
                 // 経路探索結果を登録
                 routes.put(company.getId(), nodes);
 
@@ -225,7 +308,7 @@ public class RouteSearcher extends AbstractController implements Callable<Boolea
                 }
             });
         }
-        
+
         nodes.forEach(node -> node.fix());
     }
 

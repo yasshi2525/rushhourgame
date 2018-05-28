@@ -184,7 +184,7 @@ public class HumanControllerTest extends AbstractControllerTest {
         verify(inst.writeLock, times(3)).unlock();
 
         verify(h, times(1)).searchCurrent(eq(inst.searcher));
-        verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
+        verify(h, times(1)).step(eq(1000000L), eq(0.00001d));
     }
 
     @Test
@@ -200,12 +200,12 @@ public class HumanControllerTest extends AbstractControllerTest {
         RouteNode node = mock(RouteNode.class);
         doReturn(mock(RouteEdge.class)).when(node).getViaEdge();
         h.setCurrent(node);
-        doNothing().when(h).step(eq(inst.em), anyLong(), anyDouble());
+        doNothing().when(h).step(anyLong(), anyDouble());
 
         inst.step(1000000, 0.00001);
 
         verify(h, never()).searchCurrent(eq(inst.searcher));
-        verify(h, times(1)).step(eq(inst.em), eq(1000000L), eq(0.00001d));
+        verify(h, times(1)).step(eq(1000000L), eq(0.00001d));
     }
 
     @Test
@@ -234,6 +234,36 @@ public class HumanControllerTest extends AbstractControllerTest {
         assertTrue(humans.contains(happy));
         assertFalse(humans.contains(tired));
         assertFalse(humans.contains(ended));
+    }
+    
+    @Test
+    public void testMerge() {
+        Human h = spy(Human.class);
+        
+        Residence oldR = mock(Residence.class);
+        Residence newR = mock(Residence.class);
+        Platform oldP = mock(Platform.class);
+        Platform newP = mock(Platform.class);
+        TrainDeployed oldT = mock(TrainDeployed.class);
+        TrainDeployed newT = mock(TrainDeployed.class);
+        
+        h.setSrc(oldR);
+        h.setOnPlatform(oldP);
+        h.setOnTrain(oldT);
+        
+        inst.rCon = mock(ResidenceController.class);
+        inst.stCon = mock(StationController.class);
+        inst.tCon = mock(TrainController.class);
+        
+        doReturn(newR).when(inst.rCon).find(any(Residence.class));
+        doReturn(newP).when(inst.stCon).find(any(Platform.class));
+        doReturn(newT).when(inst.tCon).find(any(TrainDeployed.class));
+        
+        inst.merge(h);
+        
+        assertEquals(newR, h.getSrc());
+        assertEquals(newP, h.getOnPlatform());
+        assertEquals(newT, h.getOnTrain());
     }
     
     @Test

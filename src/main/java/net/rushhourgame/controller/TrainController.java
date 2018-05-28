@@ -75,6 +75,22 @@ public class TrainController extends CachedController<Train> {
         }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{TrainController.class});
     }
+    
+    public TrainDeployed find(TrainDeployed old) {
+        readLock.lock();
+        try {
+            if (old == null) {
+                return null;
+            }
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{TrainController.class});
+                return null;
+            }
+            return entities.stream().filter(e -> e.getDeployed().equalsId(old)).findFirst().get().getDeployed();
+        } finally {
+            readLock.unlock();
+        }
+    }
 
     public Train create(@NotNull Player p) {
         return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)),

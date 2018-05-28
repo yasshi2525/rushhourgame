@@ -81,13 +81,13 @@ public class Human extends GeoEntity implements Pointable {
 
     protected boolean isFinished;
 
-    public void step(EntityManager em, long interval, double speed) {
+    public void step(long interval, double speed) {
         if (isFinished || current == null) {
             return;
         }
 
         while (interval > 0) {
-            StepForHuman currentStep = getMergedCurrent(em);
+            StepForHuman currentStep = current.getOriginal();
             interval -= currentStep.step(this, interval, speed);
             if (currentStep.isFinished(this)) {
                 // 目的地に到着した
@@ -100,15 +100,6 @@ public class Human extends GeoEntity implements Pointable {
         }
     }
 
-    protected StepForHuman getMergedCurrent(EntityManager em) {
-        if (current instanceof TemporaryHumanRouteEdge) {
-            return current.getOriginal();
-        }
-
-        // currentはメモリ上にキャッシュされるため、Entityの情報が古い
-        return em.merge(current.getOriginal());
-    }
-
     public long walkTo(long interval, double speed, Pointable goal) {
         return walkTo(this, interval, speed, goal);
     }
@@ -119,6 +110,8 @@ public class Human extends GeoEntity implements Pointable {
 
     public void getInTrain(TrainDeployed t) {
         onPlatform.exit();
+        LOG.log(Level.FINER, "{0}#getInTraiin {1} exitted from {2} ({3})", 
+                new Object[]{Human.class, this, onPlatform, onPlatform.occupied});
         onPlatform = null;
         onTrain = t;
         stand = StandingOn.TRAIN;
@@ -134,6 +127,8 @@ public class Human extends GeoEntity implements Pointable {
         onTrain = null;
         onPlatform = platform;
         onPlatform.enter(true);
+        LOG.log(Level.FINER, "{0}#getOffTrain {1} entered to {2} ({3})", 
+                new Object[]{Human.class, this, onPlatform, onPlatform.occupied});
         shiftEdge(); // 乗車タスクの完了
         stand = StandingOn.PLATFORM;
     }
@@ -150,6 +145,10 @@ public class Human extends GeoEntity implements Pointable {
         return onPlatform;
     }
 
+    public void setOnPlatform(Platform onPlatform) {
+        this.onPlatform = onPlatform;
+    }
+
     public TrainDeployed getOnTrain() {
         return onTrain;
     }
@@ -158,12 +157,16 @@ public class Human extends GeoEntity implements Pointable {
         from.pass();
         to.enter();
         this.onPlatform = to;
+        LOG.log(Level.FINER, "{0}#enterIntoPlatform {1} entered to {2} ({3})", 
+                new Object[]{Human.class, this, onPlatform, onPlatform.occupied});
         stand = StandingOn.PLATFORM;
     }
 
     public void exitFromPlatform(Platform from, TicketGate to) {
         from.exit();
         to.pass();
+        LOG.log(Level.FINER, "{0}#exitFromPlatform {1} exitted from {2} ({3})", 
+                new Object[]{Human.class, this, from, from.occupied});
         this.onPlatform = null;
 
         Pointable newPoint = new SimplePoint(x, y).makeNearPoint(to.getProdist());

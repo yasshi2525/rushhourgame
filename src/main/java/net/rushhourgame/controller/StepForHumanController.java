@@ -67,9 +67,12 @@ public class StepForHumanController extends AbstractController {
 
     @Inject
     protected RouteSearcher searcher;
-    
+
     @Inject
     protected StationController stCon;
+
+    @Inject
+    protected ResidenceController rCon;
 
     @Resource(lookup = "concurrent/RushHourGameRoute")
     protected ManagedExecutorService executorService;

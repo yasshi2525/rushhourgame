@@ -96,12 +96,11 @@ public class HumanTest extends AbstractEntityTest {
 
     @Test
     public void testStep() {
-        doReturn(onetimeTask).when(inst).getMergedCurrent(any(EntityManager.class));
+        doReturn(onetimeTask).when(currentEdge).getOriginal();
         doReturn(true).when(currentGoal).isEnd();
 
-        inst.step(em, VALID_INTERVAL, VALID_SPEED);
+        inst.step(VALID_INTERVAL, VALID_SPEED);
 
-        verify(inst, times(1)).getMergedCurrent(any(EntityManager.class));
         verify(onetimeTask, times(1)).isFinished(any(Human.class));
         verify(currentEdge, times(1)).getTo();
         verify(currentGoal, times(1)).isEnd();
@@ -114,34 +113,32 @@ public class HumanTest extends AbstractEntityTest {
     public void testStepNoActionWhenFinished() {
         inst.isFinished = true;
 
-        inst.step(em, VALID_INTERVAL, VALID_SPEED);
+        inst.step(VALID_INTERVAL, VALID_SPEED);
 
-        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
+        verify(inst.current, never()).getOriginal();
     }
 
     @Test
     public void testStepNoActionWhenNoRoute() {
         inst.current = null;
 
-        inst.step(em, VALID_INTERVAL, VALID_SPEED);
+        inst.step(VALID_INTERVAL, VALID_SPEED);
 
-        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
+        verify(currentEdge, never()).getOriginal();
     }
 
     @Test
     public void testStepNothingWhenNoInterval() {
-        inst.step(em, NO_INTERVAL, VALID_SPEED);
-
-        verify(inst, times(0)).getMergedCurrent(any(EntityManager.class));
+        inst.step(NO_INTERVAL, VALID_SPEED);
     }
 
     @Test
     public void testStepProceededButNotEnded() {
-        doReturn(neverEndTask).when(inst).getMergedCurrent(any(EntityManager.class));
+        doReturn(neverEndTask).when(currentEdge).getOriginal();
 
-        inst.step(em, VALID_INTERVAL, VALID_SPEED);
+        inst.step(VALID_INTERVAL, VALID_SPEED);
 
-        verify(inst, times(1)).getMergedCurrent(any(EntityManager.class));
+        verify(currentEdge, times(1)).getOriginal();
         verify(neverEndTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(neverEndTask, times(1)).isFinished(any(Human.class));
         verify(currentEdge, times(0)).getTo();
@@ -155,12 +152,10 @@ public class HumanTest extends AbstractEntityTest {
         doReturn(onetimeTask).when(currentEdge).getOriginal();
         doReturn(neverEndTask).when(nextEdge).getOriginal();
 
-        doReturn(onetimeTask).when(em).merge(eq(onetimeTask));
-        doReturn(neverEndTask).when(em).merge(eq(neverEndTask));
+        inst.step(VALID_INTERVAL, VALID_SPEED);
 
-        inst.step(em, VALID_INTERVAL, VALID_SPEED);
-
-        verify(inst, times(2)).getMergedCurrent(any(EntityManager.class));
+        verify(currentEdge, times(1)).getOriginal();
+        verify(nextEdge, times(1)).getOriginal();
 
         verify(onetimeTask, times(1)).step(any(Human.class), anyLong(), anyDouble());
         verify(onetimeTask, times(1)).isFinished(any(Human.class));
@@ -196,6 +191,7 @@ public class HumanTest extends AbstractEntityTest {
     public void testExitFromPlatform() {
         Platform p = mock(Platform.class);
         TicketGate tg = mock(TicketGate.class);
+        inst.onPlatform = p;
 
         inst.exitFromPlatform(p, tg);
 
@@ -430,15 +426,6 @@ public class HumanTest extends AbstractEntityTest {
         assertEquals(inst.dest, dest);
     }
     
-    @Test
-    public void testMergedCurrent() {
-        inst.current = mock(TemporaryHumanRouteEdge.class);
-        StepForHuman step = mock(StepForHuman.class);
-        doReturn(step).when(inst.current).getOriginal();
-
-        assertEquals(step, inst.getMergedCurrent(em));
-    }
-
     @Test
     public void testWalkToLong() {
         assertEquals(VALID_INTERVAL,

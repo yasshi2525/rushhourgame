@@ -53,8 +53,11 @@ public class ControllerFactory {
     static {
         SEARCHER.hCon = HCON;
         HCON.searcher = SEARCHER;
-        RCON.hCon = HCON;
         RCON.searcher = SEARCHER;
+        HCON.rCon = RCON;
+        RCON.hCon = HCON;
+        HCON.tCon = TCON;
+        TCON.hCon = HCON;
     }
     
     public static ResidenceController createResidenceController() {
@@ -133,6 +136,8 @@ public class ControllerFactory {
         searcher.lock = new ReentrantReadWriteLock().writeLock();
         inst.searcher = searcher;
         inst.stCon = STCON;
+        inst.rCon = RCON;
+        RCON.sCon = inst;
         init(inst);
         return inst;
     } 
@@ -179,6 +184,7 @@ public class ControllerFactory {
     
     public static HumanController createHumanController() {
         HCON.init();
+        HCON.stCon = createStationController();
         init(HCON);
         return HCON;
     }

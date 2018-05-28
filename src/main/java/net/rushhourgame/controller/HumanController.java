@@ -58,6 +58,15 @@ public class HumanController extends CachedController<Human> {
 
     @Inject
     RouteSearcher searcher;
+    
+    @Inject
+    ResidenceController rCon;
+    
+    @Inject
+    StationController stCon;
+    
+    @Inject
+    TrainController tCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -95,10 +104,11 @@ public class HumanController extends CachedController<Human> {
         writeLock.lock();
         try {
             findAll().forEach(h -> {
+                merge(h);
                 if (h.getCurrent() == null) {
                     h.searchCurrent(searcher);
                 }
-                h.step(em, interval, speed);
+                h.step(interval, speed);
             });
             killHuman();
         } finally {
@@ -118,5 +128,15 @@ public class HumanController extends CachedController<Human> {
             }
             return res;
         });
+    }
+    
+    protected void merge(Human h) {
+        h.setSrc(rCon.find(h.getSrc()));
+        if (h.getOnPlatform() != null) {
+            h.setOnPlatform(stCon.find(h.getOnPlatform()));
+        }
+        if (h.getOnTrain() != null) {
+            h.setOnTrain(tCon.find(h.getOnTrain()));
+        }
     }
 }

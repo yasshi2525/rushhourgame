@@ -38,6 +38,8 @@ import net.rushhourgame.entity.TicketGate;
 public interface RouteNode extends Comparable<RouteNode> {
 
     public RelayPointForHuman getOriginal();
+    
+    public void setOriginal(RelayPointForHuman newInst);
 
     public double getCost();
 

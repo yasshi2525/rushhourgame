@@ -24,6 +24,8 @@
 package net.rushhourgame.entity;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.Entity;
@@ -47,6 +49,7 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 public class Platform extends GeoEntity implements Pointable, RelayPointForHuman, Ownable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(Platform.class.getName());
 
     @NotNull
     @OneToOne
@@ -111,10 +114,12 @@ public class Platform extends GeoEntity implements Pointable, RelayPointForHuman
             throw new IllegalStateException("Tried to enter full platform.");
         }
         occupied++;
+        LOG.log(Level.FINER, "{0}#enter occupied = {1}", new Object[]{Platform.class, occupied});
     }
 
     public void exit() {
         occupied--;
+        LOG.log(Level.FINER, "{0}#exit occupied = {1}", new Object[]{Platform.class, occupied});
     }
 
     @Override

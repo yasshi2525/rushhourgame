@@ -23,6 +23,7 @@
  */
 package net.rushhourgame.controller;
 
+import java.util.ArrayList;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.Min;
@@ -72,12 +73,32 @@ public class StationControllerTest extends AbstractControllerTest {
         inst.writeLock = spy(inst.writeLock);
         inst.readLock = spy(inst.readLock);
     }
-    
+
     @Test
     public void testFindNull() throws RushHourException {
         Station st = createStation();
         inst.entities = null;
+
+        assertNull(inst.find((Platform) null));
+        assertNull(inst.find((TicketGate) null));
+
         assertNull(inst.find(st.getPlatform()));
+        assertNull(inst.find(st.getTicketGate()));
+    }
+
+    @Test
+    public void testFind() throws RushHourException {
+        inst.entities = new ArrayList<>();
+        
+        Station st = spy(Station.class);
+        Platform p = spy(Platform.class);
+        TicketGate tg = spy(TicketGate.class);
+        st.setPlatform(p);
+        st.setTicketGate(tg);
+        inst.entities.add(st);
+
+        assertEquals(st.getPlatform(), inst.find(st.getPlatform()));
+        assertEquals(st.getTicketGate(), inst.find(st.getTicketGate()));
     }
 
     @Test
@@ -86,14 +107,14 @@ public class StationControllerTest extends AbstractControllerTest {
         for (int i = 0; i < st.getTicketGate().getGateNum(); i++) {
             st.getTicketGate().pass();
         }
-        
+
         assertFalse(st.getTicketGate().canEnter());
-        
+
         inst.step(1000);
-        
+
         verify(inst.writeLock, times(1)).lock();
         verify(inst.writeLock, times(1)).unlock();
-        
+
         assertTrue(st.getTicketGate().canEnter());
     }
 
@@ -101,12 +122,12 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testCreate() throws RushHourException {
         Player player = createPlayer();
         RailNode node = RAILCON.create(player, TEST_POS);
-        
+
         Station created = inst.create(player, node, TEST_NAME);
 
         verify(inst.writeLock, times(2)).lock();
         verify(inst.writeLock, times(2)).unlock();
-        
+
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
                 created.getTicketGate().getGateNum());
         assertTrue(Double.parseDouble(PROP.get(GAME_DEF_GATE_MOBILITY))
@@ -215,10 +236,10 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editStationName(created, created.getOwner(), "changed");
-        
+
         verify(inst.writeLock, times(1)).lock();
         verify(inst.writeLock, times(1)).unlock();
-        
+
         assertEquals("changed", created.getName());
     }
 
@@ -227,7 +248,7 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editStationName(created, created.getOwner(), created.getName());
-        
+
         verify(inst.writeLock, times(1)).lock();
         verify(inst.writeLock, times(1)).unlock();
     }
@@ -285,10 +306,10 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editPlatformCapacity(created, created.getOwner(), 1000);
-        
+
         verify(inst.writeLock, times(1)).lock();
         verify(inst.writeLock, times(1)).unlock();
-        
+
         assertEquals(1000, created.getPlatform().getCapacity());
     }
 
@@ -332,7 +353,7 @@ public class StationControllerTest extends AbstractControllerTest {
 
         assertEquals(1, inst.findIn(new SimplePoint(0, 0), 1).size());
         assertEquals(0, inst.findIn(new SimplePoint(10, 10), 1).size());
-    
+
         verify(inst.readLock, times(2)).lock();
         verify(inst.readLock, times(2)).unlock();
     }

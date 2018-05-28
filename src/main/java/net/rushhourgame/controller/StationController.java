@@ -82,6 +82,22 @@ public class StationController extends CachedController<Station> {
             readLock.unlock();
         }
     }
+    
+    public TicketGate find(TicketGate old) {
+        readLock.lock();
+        try {
+            if (old == null) {
+                return null;
+            }
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{StationController.class});
+                return null;
+            }
+            return entities.stream().filter(e -> e.getTicketGate().equalsId(old)).findFirst().get().getTicketGate();
+        } finally {
+            readLock.unlock();
+        }
+    }
 
     public void step(long interval) {
         writeLock.lock();

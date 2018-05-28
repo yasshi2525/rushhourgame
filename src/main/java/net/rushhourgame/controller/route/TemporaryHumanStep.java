@@ -55,7 +55,7 @@ public class TemporaryHumanStep implements StepForHuman {
     public RelayPointForHuman getTo() {
         return to;
     }
-
+    
     @Override
     public double getCost() {
         return from.distTo(to);

@@ -39,6 +39,7 @@ import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
+import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
@@ -49,7 +50,15 @@ import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.Train;
+import net.rushhourgame.entity.hroute.StepForHumanDirectly;
+import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
+import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
+import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
+import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
+import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
+import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -93,6 +102,102 @@ public class RouteSearcherTest extends AbstractControllerTest {
         inst.flush(humans);
         
         assertNull(human.getCurrent());
+    }
+    
+    @Test
+    public void testRefreshNode() {
+        List<RouteNode> nodes = new ArrayList<>();
+        
+        Residence oldR = mock(Residence.class);
+        Platform oldP = mock(Platform.class);
+        TicketGate oldTg = mock(TicketGate.class);
+        
+        RouteNode r = new PermanentRouteNode(oldR);
+        RouteNode p = new PermanentRouteNode(oldP);
+        RouteNode tg = new PermanentRouteNode(oldTg);
+        
+        nodes.add(r);
+        nodes.add(p);
+        nodes.add(tg);
+        
+        inst.routes.put(1L, nodes);
+        
+        Residence newR = mock(Residence.class);
+        Platform newP = mock(Platform.class);
+        TicketGate newTg = mock(TicketGate.class);
+        
+        inst.rCon = mock(ResidenceController.class);
+        inst.stCon = mock(StationController.class);
+        
+        doReturn(newR).when(inst.rCon).find(any(Residence.class));
+        doReturn(newP).when(inst.stCon).find(any(Platform.class));
+        doReturn(newTg).when(inst.stCon).find(any(TicketGate.class));
+        
+        inst.refresh();
+        
+        assertEquals(newR, r.getOriginal());
+        assertEquals(newP, p.getOriginal());
+        assertEquals(newTg, tg.getOriginal());
+    }
+    
+    @Test
+    public void testRefreshEdge() {
+        inst.rCon = mock(ResidenceController.class);
+        inst.stCon = mock(StationController.class);
+        
+        Residence oldR = mock(Residence.class);
+        Platform oldP = mock(Platform.class);
+        TicketGate oldTg = mock(TicketGate.class);
+        
+        StepForHumanDirectly directly = new StepForHumanDirectly();
+        StepForHumanIntoStation into = new StepForHumanIntoStation();
+        StepForHumanOutOfStation out = new StepForHumanOutOfStation();
+        StepForHumanResidenceToStation from = new StepForHumanResidenceToStation();
+        StepForHumanStationToCompany to = new StepForHumanStationToCompany();
+        StepForHumanThroughTrain train = new StepForHumanThroughTrain();
+        StepForHumanTransfer transfer = new StepForHumanTransfer();
+        
+        directly.setFrom(oldR);
+        into.setFrom(oldTg);
+        into.setTo(oldP);
+        out.setFrom(oldP);
+        out.setTo(oldTg);
+        from.setFrom(oldR);
+        from.setTo(oldTg);
+        to.setFrom(oldTg);
+        train.setFrom(oldP);
+        train.setTo(oldP);
+        transfer.setFrom(oldTg);
+        transfer.setTo(oldTg);
+        
+        Residence newR = mock(Residence.class);
+        Platform newP = mock(Platform.class);
+        TicketGate newTg = mock(TicketGate.class);
+        doReturn(newR).when(inst.rCon).find(any(Residence.class));
+        doReturn(newP).when(inst.stCon).find(any(Platform.class));
+        doReturn(newTg).when(inst.stCon).find(any(TicketGate.class));
+        
+        inst.refresh(directly);
+        inst.refresh(into);
+        inst.refresh(out);
+        inst.refresh(from);
+        inst.refresh(to);
+        inst.refresh(train);
+        inst.refresh(transfer);
+        
+        assertNotEquals(oldR, directly.getFrom());
+        assertNotEquals(oldTg, into.getFrom());
+        assertNotEquals(oldP, into.getTo());
+        assertNotEquals(oldP, out.getFrom());
+        assertNotEquals(oldTg, out.getTo());
+        assertNotEquals(oldR, from.getFrom());
+        assertNotEquals(oldTg, from.getTo());
+        assertNotEquals(oldTg, to.getFrom());
+        assertNotEquals(oldP, train.getFrom());
+        assertNotEquals(oldP, train.getTo());
+        assertNotEquals(oldTg, transfer.getFrom());
+        assertNotEquals(oldTg, transfer.getTo());
+        
     }
     
     public void testIsReachableEmptyWorld() {
