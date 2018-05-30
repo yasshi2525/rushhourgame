@@ -23,57 +23,61 @@
  */
 package net.rushhourgame.it;
 
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import org.junit.Test;
 import static net.rushhourgame.it.Constants.*;
+import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class BuildRailIT extends AbstractIT{
+public class BuildRailIT extends AbstractIT {
+
+    private static final Logger LOG = Logger.getLogger(BuildRailIT.class.getName());
+
     protected static final Dimension ONE = new Dimension(-100, -100);
-    protected static final Dimension LINE1_1 = new Dimension(100, 100);
-    protected static final Dimension LINE1_2 = new Dimension(150, 150);
-    protected static final Dimension LINE1_3 = new Dimension(150, 0);
-    protected static final Dimension LINE1_4 = new Dimension(0, 100);
-    
+    protected static final Dimension LINE1 = new Dimension(100, 100);
+    protected static final Dimension LINE1_D1 = new Dimension(150, 150);
+    protected static final Dimension LINE1_D2 = new Dimension(150, 0);
+    protected static final Dimension LINE1_D3 = new Dimension(-150, 0);
+    protected static final Dimension LINE1_D4 = new Dimension(0, 100);
+    protected static String MSG_RAIL_CREATED;
+    protected static String MSG_RAIL_STARTING_EXTENTION;
+    protected static String MSG_RAIL_EXTENDED;
+
+    @BeforeClass
+    public static void setUpClass() {
+        MSG_RAIL_CREATED = msg.get(ANNOUNCEMENT_RAIL_CREATE, Locale.JAPAN);
+        MSG_RAIL_STARTING_EXTENTION = msg.get(GUIDE_RAIL_EXTEND, Locale.JAPAN);
+        MSG_RAIL_EXTENDED = msg.get(ANNOUNCEMENT_RAIL_EXTEND, Locale.JAPAN);
+    }
+
     @Test
     public void testBuildOnePoint() {
         behave.login();
-        behave.scrollMap(ONE);
-        behave.clickCanvas();
-        behave.selectClickMenu(Constants.ID_MENU_CREATE_RAIL);
-        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_CREATE);
-        
+
+        assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(ONE));
         behave.endAction();
     }
-    
+
     @Test
     public void testBuildLine() {
         behave.login();
-        behave.scrollMap(LINE1_1);
-        behave.clickCanvas();
-        behave.selectClickMenu(ID_MENU_CREATE_RAIL);
-        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_CREATE);
-        
-        behave.scrollMap(LINE1_2);
-        behave.clickCanvas();
-        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
-        
-        behave.scrollMap(LINE1_3);
-        behave.clickCanvas();
-        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
+
+        assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(LINE1));
+        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D1));
+        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D2));
         behave.endAction();
-        
-        behave.unscrollMap();
-        behave.clickCanvas();
-        behave.selectClickMenu(ID_MENU_EXTEND_RAIL);
-        
-        behave.scrollMap(LINE1_4);
-        behave.clickCanvas();
-        behave.assertAnnouncement(ANNOUNCEMENT_RAIL_EXTEND);
+
+        assertEquals(MSG_RAIL_STARTING_EXTENTION, behave.startRailExtension(LINE1_D3));
+        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D4));
         behave.endAction();
     }
 }

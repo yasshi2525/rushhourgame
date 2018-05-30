@@ -23,17 +23,78 @@
  */
 package net.rushhourgame.it;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.it.Constants.*;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Dimension;
 
 /**
+ * 人を移動させながら操作しても問題ないことを確認する.
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class RunningIT extends AbstractIT {
+
+    private static final Logger LOG = Logger.getLogger(RunningIT.class.getName());
+
+    // 1m = 4dot
+    protected static final Dimension LINE1 = new Dimension(-500 * 8, -500 * 8);
+    protected static final Dimension LINE1R = new Dimension(500 * 8, 500 * 8);
+    protected static final Dimension LINE1_D1 = new Dimension(100 * 8, 0 * 8);
+    protected static final Dimension LINE1_D2 = new Dimension(100 * 8, 0 * 8);
+    protected static final Dimension LINE1_D3 = new Dimension(100 * 8, 0 * 8);
+    protected static final Dimension LINE1_D4 = new Dimension(-100 * 8, 0 * 8);
+    protected static final Dimension LINE1_D5 = new Dimension(0 * 8, 100 * 8);
+
+    protected static final long RUNNING_INTERVAL = 10;
+    protected static final long TRAIN_TIMEOUT = 60;
+
     @Before
-    @Override
     public void setUp() {
-        super.setUp();
-        
+        behave.startGame();
+        setupInitialBuildings();
+        setupInitialLine();
+        behave.sleep(RUNNING_INTERVAL);
+    }
+
+    @After
+    public void tearDown() {
+        behave.sleep(RUNNING_INTERVAL);
+    }
+
+    @Test
+    public void testRunning() {
+
+    }
+
+    protected void setupInitialBuildings() {
+        behave.createResidence(-550, -500);
+        behave.createResidence(-300, -350);
+        behave.createCompany(-300, -550);
+        behave.createCompany(-150, -500);
+    }
+
+    protected void setupInitialLine() {
+        behave.login();
+        try {
+            behave.startRailCreation(LINE1);
+            behave.extendRail(LINE1_D1);
+            behave.extendRail(LINE1_D2);
+            behave.extendRail(LINE1_D3);
+            behave.endAction();
+
+            behave.startRailExtension(LINE1_D4);
+            behave.extendRail(LINE1_D5);
+            behave.endAction();
+
+            behave.unscrollMapAll();
+        } catch (RuntimeException e) {
+            LOG.log(Level.SEVERE, "exception in setupInitialLine", e);
+            throw e;
+        }
     }
 }

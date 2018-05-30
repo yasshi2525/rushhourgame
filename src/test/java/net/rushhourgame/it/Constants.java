@@ -38,13 +38,17 @@ public class Constants {
     protected static final String TWITTER_PASSWORD = getProperty("test.twitter.password");
     protected static final long TIMEOUT = 10; // sec
     protected static final long TIMEOUT_ANNOUNCEMENT = 10; // sec
+    protected static final long TIMEOUT_POLLING = 1; // sec
+    protected static final long SLEEP_POLLING = 5; //sec
     protected static final Dimension WINDOW_SIZE = new Dimension(1024, 1024);
+    protected static final Dimension MOVABLE = new Dimension(500, 100);
     
     protected static final String ID_MENU_CREATE_RAIL = "clickmenu-create-rail";
     protected static final String ID_MENU_EXTEND_RAIL = "clickmenu-extend-rail";
     protected static final String ID_MENU_UNDEPLOY_TRAIN = "clickmenu-undeploy_train";
     protected static final String ID_END_ACTION = "end-action";
-    protected static final String ID_ANNOUNCEMENT = "announcementPanel_container";
+    protected static final String ID_ANNOUNCEMENT = "announcement_container";
+    protected static final String ID_GUIDE = "guide";
     
     /**
      * linuxで maven 経由でシステムプロパティを設定すると末尾に /　が入る。謎。

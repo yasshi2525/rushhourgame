@@ -25,6 +25,9 @@ package net.rushhourgame.it;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.it.Constants.*;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -32,7 +35,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.logging.LogType;
 
 /**
  *
@@ -40,16 +45,19 @@ import org.openqa.selenium.chrome.ChromeOptions;
  */
 public abstract class AbstractIT {
 
+    private static final Logger LOG = Logger.getLogger(AbstractIT.class.getName());
+    protected static RushHourResourceBundle msg;
     protected WebDriver driver;
     protected CommonAction behave;
 
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpCommonClass() {
+        msg = RushHourResourceBundle.getInstance();
         WebDriverManager.chromedriver().setup();
     }
 
     @Before
-    public void setUp() {
+    public void setUpCommon() {
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(HEADLESS);
         options.addArguments("--lang=ja");
@@ -61,7 +69,7 @@ public abstract class AbstractIT {
     }
 
     @After
-    public void tearDown() {
+    public void tearDownCommon() {
         if (driver != null) {
             try {
                 if (driver.getCurrentUrl().endsWith("error.xhtml")) {
