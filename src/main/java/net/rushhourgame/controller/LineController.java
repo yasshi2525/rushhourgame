@@ -356,13 +356,13 @@ public class LineController extends CachedController<Line> {
 
     /**
      * <pre>
-     * Before : A -(1)-> B -(2) -> 削除Platform -(4)-> C
-     * After  : A -(1)-> B -(5) ->      D       -(4)-> C
+     * Before : A -(1)-&gt; B -(2) -&gt; 削除Platform -(4)-&gt; C
+     * After  : A -(1)-&gt; B -(5) -&gt;      D       -(4)-&gt; C
      * </pre>
      *
      * <pre>
-     * Before : any(1) -> stop(2) -> dpt(3) -> any(4)
-     * After  : any(1)       -> move(5)     -> any(4)
+     * Before : any(1) -&gt; stop(2) -&gt; dpt(3) -&gt; any(4)
+     * After  : any(1)       -&gt; move(5)     -&gt; any(4)
      * </pre>
      *
      * @param oldStop (2)
@@ -391,13 +391,13 @@ public class LineController extends CachedController<Line> {
 
     /**
      * <pre>
-     * Before : A -(1)-> B -(2) -> 削除Platform -(3)-> C
-     * After  : A -(1)-> B -(4) ->      D       -(3)-> C
+     * Before : A -(1)-&gt; B -(2) -&gt; 削除Platform -(3)-&gt; C
+     * After  : A -(1)-&gt; B -(4) -&gt;      D       -(3)-&gt; C
      * </pre>
      *
      * <pre>
-     * Before : any(1) -> pass(2) -> any(3)
-     * After  : any(1) -> move(4) -> any(3)
+     * Before : any(1) -&gt; pass(2) -&gt; any(3)
+     * After  : any(1) -&gt; move(4) -&gt; any(3)
      * </pre> . 実は replaceStopping とほぼ同じだけど、混乱するので書き分けた
      *
      * @param oldPass (2)
