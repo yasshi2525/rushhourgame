@@ -57,22 +57,25 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class TrainControllerTest extends AbstractControllerTest {
 
-    protected TrainController inst = spy(ControllerFactory.createTrainController());
+    protected TrainController inst;
     protected Player player;
     protected LineStep lineStep;
+    protected AssistanceController.Result res1;
+    protected AssistanceController.Result res2;
 
     @Before
     @Override
     public void setUp() {
         super.setUp();
+        inst = spy(TRAINCON);
         inst.writeLock = spy(inst.writeLock);
         inst.readLock = spy(inst.readLock);
         try {
             player = createPlayer();
-            AssistanceController.Result result = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
-            ACON.extend(player, result.node, new SimplePoint(20.0, 25.0));
+            res1 = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
+            res2 = ACON.extendWithStation(player, res1.node, new SimplePoint(20.0, 25.0), Locale.JAPANESE);
             EM.flush();
-            lineStep = result.line.findTop();
+            lineStep = res1.line.findTopDeparture();
         } catch (RushHourException ex) {
             Logger.getLogger(TrainControllerTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -237,6 +240,41 @@ public class TrainControllerTest extends AbstractControllerTest {
         verify(inst.writeLock, times(4)).lock();
         verify(inst.writeLock, times(4)).unlock();
     }
+    
+    @Test
+    public void testReplaceWaitForDeparture() throws RushHourException {
+        STCON.lCon.tCon = inst;
+        
+        LineStep dep = res1.line.getSteps().stream()
+                .filter(step -> step.getDeparture() != null)
+                .filter(step -> step.getDeparture().getStaying().equalsId(res1.station.getPlatform()))
+                .findFirst().get();
+        
+        TrainDeployed deploy = inst.deploy(inst.create(player), player, dep);
+        deploy.step(new ArrayList<>(), 10);
+        
+        STCON.remove(res1.station, player);
+        
+        assertTrue(deploy.getCurrent().getStopping()!= null);
+        assertTrue(deploy.getProgress() == 0d);
+    }
+    
+    @Test
+    public void testReplaceWhileStopping() throws RushHourException {
+        STCON.lCon.tCon = inst;
+        LineStep stop = res1.line.getSteps().stream()
+                .filter(step -> step.getStopping()!= null)
+                .filter(step -> step.getStopping().getGoal().equalsId(res2.station.getPlatform()))
+                .findFirst().get();
+        
+        TrainDeployed deploy = inst.deploy(inst.create(player), player, stop);
+        deploy.step(new ArrayList<>(), 10);
+        
+        STCON.remove(res2.station, player);
+        
+        assertTrue(deploy.getCurrent().getMoving() != null);
+        assertTrue(deploy.getProgress() > 0d);
+    }  
     
     @Test
     public void testInheritEntity() throws RushHourException {

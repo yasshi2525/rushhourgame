@@ -73,6 +73,12 @@ public class StationControllerTest extends AbstractControllerTest {
         inst.writeLock = spy(inst.writeLock);
         inst.readLock = spy(inst.readLock);
     }
+    
+    @Test
+    public void testFindOnNull() throws RushHourException {
+        inst.entities = null;
+        assertNull(inst.findOn(RAILCON.create(createPlayer(), TEST_POS)));
+    }
 
     @Test
     public void testFindNull() throws RushHourException {
@@ -178,11 +184,7 @@ public class StationControllerTest extends AbstractControllerTest {
         assertEquals(TEST_CAPACITY, platform.getCapacity());
         assertTrue(platform.isOwnedBy(player));
         assertTrue(platform.isPrivilegedBy(player));
-
-        EM.flush();
-        EM.refresh(node);
-
-        assertEquals(platform, node.getPlatform());
+        assertEquals(platform.getRailNode(), node);
     }
 
     @Test
@@ -229,6 +231,26 @@ public class StationControllerTest extends AbstractControllerTest {
         inst.create(owner, node1, "Station1");
 
         inst.create(other, node2, "Station1");
+    }
+    
+    @Test
+    public void testRemove() throws RushHourException {
+        Station st = createStation();
+        inst.remove(st, st.getOwner());
+        
+        assertTrue(inst.entities.isEmpty());
+        assertTrue(RAILCON.findNodeIn(new SimplePoint(), 16).isEmpty());
+    }
+    
+    @Test
+    public void testRemoveOtherOwner() throws RushHourException {
+        Station st = createStation();
+        try {
+            inst.remove(st, createOther());
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
     }
 
     @Test

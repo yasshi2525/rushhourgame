@@ -32,14 +32,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.event.ActionEvent;
+import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.AssistanceController.Result;
+import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
@@ -275,7 +278,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
 
     @Test
     public void testHandleReturnRailCreate() {
-        doReturn(new OperationBean(OperationBean.Type.RAIL_CREATE, mock(RailNode.class))).when(event).getObject();
+        doReturn(OperationBean.newRailCreate(new Result(mock(RailNode.class), mock(Station.class),mock(Line.class)))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
@@ -284,7 +287,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
 
     @Test
     public void testHandleReturnRailExtend() {
-        doReturn(new OperationBean(OperationBean.Type.RAIL_EXTEND, mock(RailNode.class))).when(event).getObject();
+        doReturn(OperationBean.newRailExtend(mock(RailNode.class))).when(event).getObject();
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
@@ -293,14 +296,14 @@ public class GameViewBeanTest extends AbstractBeanTest {
 
     @Test
     public void testHandleReturnRailRemove() {
-        doReturn(new OperationBean(OperationBean.Type.RAIL_REMOVE, mock(RailNode.class))).when(event).getObject();
+        doReturn(OperationBean.newRailRemove()).when(event).getObject();
         doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
     }
     
     @Test
     public void testHandleReturnTrainRemove() {
-        doReturn(new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY)).when(event).getObject();
+        doReturn(OperationBean.newTrainUndeploy(mock(TrainDeployed.class))).when(event).getObject();
         doReturn(primeface).when(inst).getPrimeface();
         inst.handleReturn(event);
     }
@@ -396,7 +399,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         Train t = TRCON.create(player);
         EM.flush();
         EM.refresh(result.line);
-        TRCON.deploy(t, player, result.line.findTop());
+        TRCON.deploy(t, player, result.line.findTopDeparture());
         
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
@@ -486,12 +489,29 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.clickedRailEdge = new ArrayList<>();
         inst.clickedRailEdge.add(n1.getOutEdges().get(0));
         inst.clickedRailEdge.add(n1.getInEdges().get(0));
-        inst.op = new OperationBean(OperationBean.Type.RAIL_REMOVE);
+        inst.op = OperationBean.newRailRemove();
 
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
         
         inst.remove();
+        
+        verify(inst, times(1)).showAnnouncement(eq(ANNOUNCEMENT_RAIL_REMOVE));
+    }
+    
+    @Test
+    public void testRemoveStation() throws RushHourException {
+        inst.player = player;
+        Result res = ACON.startWithStation(player, CLICK_POS, Locale.JAPANESE);
+        
+        inst.op = OperationBean.newStationRemove(res.station);
+        
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(primeface).when(inst).getPrimeface();
+        
+        inst.remove();
+        
+        verify(inst, times(1)).showAnnouncement(eq(ANNOUNCEMENT_STAION_REMOVE));
     }
     
     @Test
@@ -499,9 +519,9 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.player = player;
         Result start = ACON.startWithStation(player, CLICK_POS, Locale.JAPANESE);
         Result end = ACON.extendWithStation(player, start.node, CLICK_POS2, Locale.JAPANESE);
-        TrainDeployed train = TRCON.deploy(TRCON.create(player), player, end.line.findTop());
+        TrainDeployed train = TRCON.deploy(TRCON.create(player), player, end.line.findTopDeparture());
         
-        inst.op = new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY, train);
+        inst.op = OperationBean.newTrainUndeploy(train);
         
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(primeface).when(inst).getPrimeface();
@@ -509,6 +529,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.remove();
         
         assertFalse(train.getTrain().isDeployed());
+        verify(inst, times(1)).showAnnouncement(eq(ANNOUNCEMENT_TRAIN_REMOVE));
     }
 
     @Test

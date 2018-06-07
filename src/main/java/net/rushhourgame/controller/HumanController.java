@@ -58,13 +58,13 @@ public class HumanController extends CachedController<Human> {
 
     @Inject
     RouteSearcher searcher;
-    
+
     @Inject
     ResidenceController rCon;
-    
+
     @Inject
     StationController stCon;
-    
+
     @Inject
     TrainController tCon;
 
@@ -120,7 +120,7 @@ public class HumanController extends CachedController<Human> {
         entities.removeIf(h -> {
             boolean res = h.shouldDie();
             if (res) {
-                em.createNamedQuery("Human.deleteBy", Human.class).setParameter("h", h).executeUpdate();
+                em.createNamedQuery("Human.deleteBy", Human.class).setParameter("obj", h).executeUpdate();
                 if (h.getLifespan() <= 0) {
                     LOG.log(Level.FINE, "{0}#killFinishedHuman() deleted lifespan 0 {1} : {2})",
                             new Object[]{HumanController.class, h.toString(), h.getCurrent()});
@@ -129,7 +129,7 @@ public class HumanController extends CachedController<Human> {
             return res;
         });
     }
-    
+
     protected void merge(Human h) {
         h.setSrc(rCon.find(h.getSrc()));
         if (h.getOnPlatform() != null) {

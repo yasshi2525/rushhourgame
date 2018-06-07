@@ -42,6 +42,7 @@ import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
@@ -50,6 +51,7 @@ import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.hroute.StepForHumanTransfer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -75,6 +77,9 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         inst = ControllerFactory.createStepForHumanController();
+        RCON.sCon = inst;
+        CCON.sCon = inst;
+        STCON.sCon = inst;
     }
     
     @Test
@@ -314,6 +319,28 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertEquals(2, st.getTicketGate().getOutEdges().size());
         assertEquals(1, st.getPlatform().getInEdges().size());
         assertEquals(1, st.getPlatform().getOutEdges().size());
+    }
+    
+    @Test
+    public void testRemoveStation() throws RushHourException {
+        Player other = createOther();
+        
+        RCON.create(TEST_POS);
+        CCON.create(TEST_POS);
+        Station st1 = createStation();
+        
+        RailNode r1 = RAILCON.create(other, TEST_POS);
+        STCON.create(other, r1, "test2");
+        
+        inst.removeStation(st1);
+        
+        assertDirectlyNumEquals(1);
+        assertIntoStationNumEquals(1);
+        assertOutOfStationNumEquals(1);
+        assertFromResidenceNumEquals(1);
+        assertToCompanyNumEquals(1);
+        assertThroughTrainNumEquals(0);
+        assertTransferNumEquals(0);
     }
     
     @Test

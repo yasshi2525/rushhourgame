@@ -44,6 +44,8 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.troute.LineStepDeparture;
+import net.rushhourgame.entity.troute.LineStepMoving;
+import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.entity.troute.LineStepStopping;
 import net.rushhourgame.exception.RushHourException;
 
@@ -63,6 +65,8 @@ public class LineController extends CachedController<Line> {
     protected RailController rCon;
     @Inject
     protected StationController stCon;
+    @Inject
+    protected TrainController tCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -82,7 +86,7 @@ public class LineController extends CachedController<Line> {
         return em.merge(entity);
     }
 
-    protected Line mergeEntitySingle(Line entity) {
+    protected Line replaceEntity(Line entity) {
         entity.setSteps(entity.getSteps().stream().map(step -> em.merge(step)).collect(Collectors.toList()));
         // LineStepのparentも更新されるためLine自体も更新
         entities.remove(entity);
@@ -200,7 +204,7 @@ public class LineController extends CachedController<Line> {
 
             RailNode to = extend.getTo();
             em.refresh(to);
-            Platform toPlatform = stCon.find(to.getPlatform());
+            Platform toPlatform = stCon.findOn(to);
 
             if (toPlatform != null) {
                 // 駅につく
@@ -259,7 +263,7 @@ public class LineController extends CachedController<Line> {
             LineStep insertedGoal = extend(insertedStart, owner, back);
 
             // 新規に停車をする場合、発車ステップを入れて後続との整合性をとる
-            if (insertedGoal.getStopping() != null && goal != null) {
+            if (insertedGoal.getStopping() != null && goal != null && goal.getDeparture() == null) {
                 insertedGoal = createDeparture(insertedGoal.getStopping());
             }
 
@@ -308,7 +312,7 @@ public class LineController extends CachedController<Line> {
             if (tail.canConnect(top)) {
                 tail.setNext(top);
                 // 更新であるが、保存しないと電車が走れなくなるため保存
-                mergeEntitySingle(tail.getParent());
+                replaceEntity(tail.getParent());
             } else {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
@@ -318,11 +322,108 @@ public class LineController extends CachedController<Line> {
         }
     }
 
+    public void remove(Platform p, Player owner) throws RushHourException {
+        writeLock.lock();
+        try {
+            if (!p.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+
+            List<LineStep> intoSteps = findByGoalRailNode(p.getRailNode());
+
+            // 該当する路線を最新のものにする。最新にしないと古い値で書き換えられるため
+            intoSteps.stream().map(step -> step.getParent()).distinct().forEach(line -> replaceEntity(line));
+            intoSteps = intoSteps.stream().map(step -> find(step)).collect(Collectors.toList());
+            
+            LOG.log(Level.FINE, "{0}#remove removing target = {1}",
+                    new Object[]{LineController.class, intoSteps});
+
+            intoSteps.stream()
+                    .filter(step -> step.getStopping() != null)
+                    .forEach(step -> replaceStopping(step));
+
+            intoSteps.stream()
+                    .filter(step -> step.getPassing() != null)
+                    .forEach(step -> replacePassing(step));
+
+            intoSteps.forEach(step -> tCon.refresh(step));
+            intoSteps.forEach(step -> remove(step));
+            em.flush();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * <pre>
+     * Before : A -(1)-> B -(2) -> 削除Platform -(4)-> C
+     * After  : A -(1)-> B -(5) ->      D       -(4)-> C
+     * </pre>
+     *
+     * <pre>
+     * Before : any(1) -> stop(2) -> dpt(3) -> any(4)
+     * After  : any(1)       -> move(5)     -> any(4)
+     * </pre>
+     *
+     * @param oldStop (2)
+     */
+    protected void replaceStopping(LineStep oldStop) {
+        // 発車タスク (3) を削除する。
+        LineStep oldDep = oldStop.getNext();
+        tCon.replaceCurrentToNext(oldDep);
+        LOG.log(Level.FINE, "{0}#replaceStopping released {1} before = {2}",
+                new Object[]{LineController.class, oldDep, oldStop});
+
+        findBefore(oldStop).stream().forEach(from -> { // 各(1)について
+
+            LineStep newMovingStep = createMoving(from, oldStop.getOnRailEdge()); // (1) から (5) に結び
+            newMovingStep.setNext(oldDep.getNext()); // (5) から (4) に結び
+
+            LOG.log(Level.FINE, "{0}#replaceStopping replaced from {1} to {2} (next = {3})",
+                    new Object[]{LineController.class, oldStop, newMovingStep, newMovingStep.getNext()});
+
+            tCon.replaceCurrent(oldStop, newMovingStep); // (2) から (5) に電車を移動させる
+        });
+        
+        oldDep.setNext(null);
+        oldStop.setNext(null);
+    }
+
+    /**
+     * <pre>
+     * Before : A -(1)-> B -(2) -> 削除Platform -(3)-> C
+     * After  : A -(1)-> B -(4) ->      D       -(3)-> C
+     * </pre>
+     *
+     * <pre>
+     * Before : any(1) -> pass(2) -> any(3)
+     * After  : any(1) -> move(4) -> any(3)
+     * </pre> . 実は replaceStopping とほぼ同じだけど、混乱するので書き分けた
+     *
+     * @param oldPass (2)
+     */
+    protected void replacePassing(LineStep oldPass) {
+        findBefore(oldPass).stream().forEach(from -> { // 各(1)について
+
+            LineStep newMovingStep = createMoving(from, oldPass.getOnRailEdge()); // (1) から (4) に結び
+            newMovingStep.setNext(oldPass.getNext()); // (4) から (3) に結び
+
+            LOG.log(Level.FINE, "{0}#replacePassing replaced from {1} to  {2}",
+                    new Object[]{LineController.class, oldPass, newMovingStep});
+
+            tCon.replaceCurrent(oldPass, newMovingStep); // (2) から (4) に電車を移動させる
+        });
+        oldPass.setNext(null);
+    }
+
     protected LineStep createDeparture(LineStepStopping base) {
         LineStep newStep = new LineStep();
         newStep.setParent(base.getParent().getParent());
         newStep.registerDeparture(base.getGoal());
         em.persist(newStep);
+        em.flush();
+        LOG.log(Level.FINE, "{0}#createDeparture created {1} before = {2}",
+                new Object[]{LineController.class, newStep, base.getParent()});
 
         base.getParent().setNext(newStep);
         newStep.getParent().getSteps().add(newStep);
@@ -334,6 +435,9 @@ public class LineController extends CachedController<Line> {
         newStep.setParent(base.getParent());
         newStep.registerStopping(extend, goal);
         em.persist(newStep);
+        em.flush();
+        LOG.log(Level.FINE, "{0}#createStopping created {1} before = {2}",
+                new Object[]{LineController.class, newStep, base});
 
         base.setNext(newStep);
         newStep.getParent().getSteps().add(newStep);
@@ -345,6 +449,9 @@ public class LineController extends CachedController<Line> {
         newStep.setParent(base.getParent());
         newStep.registerMoving(extend);
         em.persist(newStep);
+        em.flush();
+        LOG.log(Level.FINE, "{0}#createMoving created {1} before = {2}",
+                new Object[]{LineController.class, newStep, base});
 
         base.setNext(newStep);
         newStep.getParent().getSteps().add(newStep);
@@ -356,6 +463,9 @@ public class LineController extends CachedController<Line> {
         newStep.setParent(base.getParent());
         newStep.registerPassing(extend, goal);
         em.persist(newStep);
+        em.flush();
+        LOG.log(Level.FINE, "{0}#createPassing created {1} before {2}",
+                new Object[]{LineController.class, newStep, base});
 
         base.setNext(newStep);
         newStep.getParent().getSteps().add(newStep);
@@ -372,6 +482,12 @@ public class LineController extends CachedController<Line> {
                         .filter(step -> step.getGoalRailNode().equalsId(node))
                         .collect(Collectors.toList())));
         return result;
+    }
+
+    protected List<LineStep> findBefore(LineStep base) {
+        return base.getParent().getSteps().stream()
+                .filter(from -> base.equalsId(from.getNext()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -439,6 +555,19 @@ public class LineController extends CachedController<Line> {
                     .findFirst().get();
         } finally {
             readLock.unlock();
+        }
+    }
+
+    protected void remove(LineStep step) {
+        Line line = step.getParent();
+        em.remove(step);
+        line.getSteps().remove(step);
+
+        LOG.log(Level.FINE, "{0}#remove removed {1}", new Object[]{LineController.class, step});
+
+        if (line.getSteps().isEmpty()) {
+            removeEntity("Line.deleteBy", line);
+            LOG.log(Level.FINE, "{0}#remove removed {1}", new Object[]{LineController.class, line});
         }
     }
 }

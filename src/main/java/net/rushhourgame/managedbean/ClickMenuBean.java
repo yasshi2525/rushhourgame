@@ -45,12 +45,14 @@ import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.controller.RailController;
+import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
@@ -67,7 +69,7 @@ public class ClickMenuBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ClickMenuBean.class.getName());
-    
+
     @PersistenceContext
     EntityManager em;
 
@@ -75,12 +77,15 @@ public class ClickMenuBean implements Serializable {
     protected RushHourSession session;
     protected Player player;
     protected List<RailEdge> clickedEdges;
+    protected Station clickedStation;
     protected TrainDeployed clickedTrain;
 
     @Inject
     protected PlayerController pCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected StationController stCon;
     @Inject
     protected TrainController tCon;
     @Inject
@@ -91,7 +96,7 @@ public class ClickMenuBean implements Serializable {
     protected Pointable click;
 
     protected double scale;
-    
+
     @PostConstruct
     public void init() {
         LOG.log(Level.FINE, "{0}#init", ClickMenuBean.class);
@@ -102,10 +107,10 @@ public class ClickMenuBean implements Serializable {
                 Double.parseDouble(getRequestMap().get("clickY"))
         );
         scale = Double.parseDouble(getRequestMap().get("scale"));
-        
+
         String e1id = getRequestMap().get("clickedEdge1");
         String e2id = getRequestMap().get("clickedEdge2");
-        
+
         if (e1id != null && e2id != null) {
             try {
                 clickedEdges = rCon.findEdge(player, Long.parseLong(e1id), Long.parseLong(e2id));
@@ -114,9 +119,12 @@ public class ClickMenuBean implements Serializable {
             }
         }
         
+        List<Station> nearStations = stCon.findIn(player, click, scale - 3);
+        clickedStation = nearStations.isEmpty() ? null : nearStations.get(0);
+
         List<Train> nearTrains = tCon.findIn(player, click, scale - 3);
         clickedTrain = nearTrains.isEmpty() ? null : nearTrains.get(0).getDeployed();
-        
+
     }
 
     public boolean isDisplayCreateRail() {
@@ -125,10 +133,7 @@ public class ClickMenuBean implements Serializable {
 
     @Transactional
     public void createRail() throws RushHourException {
-        getDialog().closeDynamic(
-                new OperationBean(
-                        OperationBean.Type.RAIL_CREATE,
-                        aCon.startWithStation(player, click, session.getLocale())));
+        getDialog().closeDynamic(OperationBean.newRailCreate(aCon.startWithStation(player, click, session.getLocale())));
     }
 
     public boolean isDisplayExtendRail() {
@@ -137,8 +142,7 @@ public class ClickMenuBean implements Serializable {
 
     public void extendRail() {
         getDialog().closeDynamic(
-                new OperationBean(
-                        OperationBean.Type.RAIL_EXTEND,
+                OperationBean.newRailExtend(
                         rCon.findNodeIn(player, click, scale - 3).stream()
                                 .min((n1, n2) -> {
                                     if (n1.distTo(click) > n2.distTo(click)) {
@@ -149,11 +153,11 @@ public class ClickMenuBean implements Serializable {
                                     return 0;
                                 }).get()));
     }
-    
+
     public boolean isDisplayRemoveRail() {
         return clickedEdges != null;
     }
-    
+
     @Transactional
     public boolean isEnableRemoveRail() throws RushHourException {
         if (clickedEdges == null) {
@@ -163,19 +167,25 @@ public class ClickMenuBean implements Serializable {
             return rCon.canRemove(player, clickedEdges);
         }
     }
-    
+
     public void removeRail() {
-        getDialog().closeDynamic(
-                new OperationBean(OperationBean.Type.RAIL_REMOVE));
+        getDialog().closeDynamic(OperationBean.newRailRemove());
     }
     
+    public boolean isDisplayRemoveStation() {
+        return clickedStation != null;
+    }
+    
+    public void removeStation() {
+        getDialog().closeDynamic(OperationBean.newStationRemove(clickedStation));
+    }
+
     public boolean isDisplayUndeployTrain() {
         return clickedTrain != null;
     }
-    
+
     public void undeployTrain() {
-        getDialog().closeDynamic(
-                new OperationBean(OperationBean.Type.TRAIN_UNDEPLOY, clickedTrain));
+        getDialog().closeDynamic(OperationBean.newTrainUndeploy(clickedTrain));
     }
 
     protected FacesContext getFacesContext() {

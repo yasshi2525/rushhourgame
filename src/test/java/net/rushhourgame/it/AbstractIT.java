@@ -33,6 +33,7 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -80,5 +81,9 @@ public abstract class AbstractIT {
                 driver.quit();
             }
         }
+    }
+    
+    protected Dimension reverse(Dimension point) {
+        return new Dimension(-point.width, -point.height);
     }
 }

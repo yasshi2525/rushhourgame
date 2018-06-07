@@ -74,4 +74,9 @@ public class StepForHumanStationToCompanyTest extends AbstractEntityTest {
         assertTrue(inst.isFinished(human));
         assertEquals(1000L, human.getLifespan());
     }
+    
+    @Test
+    public void testToString() {
+        assertTrue(inst.toString().startsWith(inst.getUid()));
+    }
 }

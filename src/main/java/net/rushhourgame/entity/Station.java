@@ -55,10 +55,10 @@ public class Station extends GeoEntity implements Pointable, Ownable, Nameable {
     @NotNull
     protected String name;
 
-    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST, orphanRemoval = true)
     protected Platform platform;
 
-    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "station", cascade = CascadeType.PERSIST, orphanRemoval = true)
     protected TicketGate ticketGate;
 
     public Platform getPlatform() {

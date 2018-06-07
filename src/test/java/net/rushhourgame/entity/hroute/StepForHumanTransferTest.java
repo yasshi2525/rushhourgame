@@ -93,4 +93,9 @@ public class StepForHumanTransferTest extends AbstractEntityTest {
         
         assertFalse(inst.isFinished(human));
     }
+    
+    @Test
+    public void testToString() {
+        assertTrue(inst.toString().startsWith(inst.getUid()));
+    }
 }

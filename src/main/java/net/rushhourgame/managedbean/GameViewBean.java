@@ -323,9 +323,7 @@ public class GameViewBean implements Serializable {
                 break;
 
             case RAIL_REMOVE:
-                getPrimeface().executeScript("PF('confirmDialog').show();");
-                break;
-
+            case STATION_REMOVE:
             case TRAIN_UNDEPLOY:
                 getPrimeface().executeScript("PF('confirmDialog').show();");
                 break;
@@ -357,7 +355,7 @@ public class GameViewBean implements Serializable {
             AssistanceController.Result result = aCon.extendWithStation(player, tailNode, click, session.getLocale());
             tailNode = result.node;
             if (tCon.findBy(result.line).isEmpty()) {
-                tCon.deploy(tCon.create(player), player, result.line.findTop());
+                tCon.deploy(tCon.create(player), player, result.line.findTopDeparture());
             }
             showExtendedRailAnnouncement();
             getPrimeface().executeScript("nextExtendingMode("
@@ -463,24 +461,23 @@ public class GameViewBean implements Serializable {
                 clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
                 railCon.remove(player, clickedRailEdge);
                 getPrimeface().executeScript("PF('confirmDialog').hide();");
-                showRemovedRailAnnouncement();
+                showAnnouncement(ANNOUNCEMENT_RAIL_REMOVE);
                 break;
-                
+            case STATION_REMOVE:
+                stCon.remove(op.getStation(), player);
+                getPrimeface().executeScript("PF('confirmDialog').hide();");
+                showAnnouncement(ANNOUNCEMENT_STAION_REMOVE);
+                break;
             case TRAIN_UNDEPLOY:
                 tCon.undeploy(op.getTrain(), player);
                 getPrimeface().executeScript("PF('confirmDialog').hide();");
-                showRemovedTrainAnnouncement();
+                showAnnouncement(ANNOUNCEMENT_TRAIN_REMOVE);
                 break;
         }
     }
 
-    protected void showRemovedRailAnnouncement() {
+    protected void showAnnouncement(String msgId) {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
-                new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_REMOVE, session.getLocale())));
-    }
-    
-    protected void showRemovedTrainAnnouncement() {
-        getFacesContext().addMessage(ANNOUNCEMENT_ID,
-                new FacesMessage(msg.get(ANNOUNCEMENT_TRAIN_REMOVE, session.getLocale())));
+                new FacesMessage(msg.get(msgId, session.getLocale())));
     }
 }

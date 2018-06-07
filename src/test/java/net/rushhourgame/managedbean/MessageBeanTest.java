@@ -80,6 +80,7 @@ public class MessageBeanTest extends AbstractBeanTest{
         assertNotNull(inst.getCreateRail());
         assertNotNull(inst.getExtendRail());
         assertNotNull(inst.getRemoveRail());
+        assertNotNull(inst.getRemoveStation());
         assertNotNull(inst.getRemoveTrain());
         assertNotNull(inst.getConfirmation());
         assertNotNull(inst.getConfirmationMessage());

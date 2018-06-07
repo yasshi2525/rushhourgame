@@ -27,6 +27,7 @@ import java.io.Serializable;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.RailNode;
+import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TrainDeployed;
 
 /**
@@ -40,25 +41,51 @@ public class OperationBean implements Serializable{
     protected RailNode tailNode;
     protected Line line;
     protected TrainDeployed train;
+    protected Station station;
     
-    public OperationBean(Type type) {
+    private OperationBean(Type type) {
         this.type = type;
     }
     
-    public OperationBean(Type type, RailNode tailNode) {
+    private OperationBean(Type type, RailNode tailNode) {
         this.type = type;
         this.tailNode = tailNode;
     }
     
-    public OperationBean(Type type, AssistanceController.Result result) {
+    private OperationBean(Type type, AssistanceController.Result result) {
         this.type = type;
         this.tailNode = result.node;
         this.line = result.line;
     }
     
-    public OperationBean(Type type, TrainDeployed train) {
+    private OperationBean(Type type, Station station) {
+        this.type = type;
+        this.station = station;
+    }
+    
+    private OperationBean(Type type, TrainDeployed train) {
         this.type = type;
         this.train = train;
+    }
+    
+    public static OperationBean newRailCreate(AssistanceController.Result result) {
+        return new OperationBean(Type.RAIL_CREATE, result);
+    }
+    
+    public static OperationBean newRailExtend(RailNode tailNode) {
+        return new OperationBean(Type.RAIL_EXTEND, tailNode);
+    }
+    
+    public static OperationBean newRailRemove() {
+        return new OperationBean(Type.RAIL_REMOVE);
+    }
+    
+    public static OperationBean newStationRemove(Station station) {
+        return new OperationBean(Type.STATION_REMOVE, station);
+    }
+    
+    public static OperationBean newTrainUndeploy(TrainDeployed train) {
+        return new OperationBean(Type.TRAIN_UNDEPLOY, train);
     }
 
     public Type getType() {
@@ -72,11 +99,16 @@ public class OperationBean implements Serializable{
     public TrainDeployed getTrain() {
         return train;
     }
+
+    public Station getStation() {
+        return station;
+    }
     
     public enum Type {
         RAIL_CREATE,
         RAIL_EXTEND,
         RAIL_REMOVE,
+        STATION_REMOVE,
         TRAIN_UNDEPLOY
     }
 }

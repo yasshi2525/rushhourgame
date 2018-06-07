@@ -65,6 +65,9 @@ public class BuildRailIT extends AbstractIT {
 
         assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(ONE));
         behave.endAction();
+        
+        behave.unscrollMapAll();
+        behave.removeStation(ONE);
     }
 
     @Test
@@ -79,5 +82,12 @@ public class BuildRailIT extends AbstractIT {
         assertEquals(MSG_RAIL_STARTING_EXTENTION, behave.startRailExtension(LINE1_D3));
         assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D4));
         behave.endAction();
+        
+        behave.unscrollMapAll();
+        behave.removeStation(LINE1);
+        behave.removeStation(LINE1_D1);
+        behave.removeStation(LINE1_D2);
+        behave.scrollMap(reverse(LINE1_D3));
+        behave.removeStation(LINE1_D4);
     }
 }

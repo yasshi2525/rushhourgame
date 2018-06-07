@@ -50,7 +50,7 @@ import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 )
 @NamedQuery(
         name = "Human.deleteBy",
-        query = "DELETE FROM Human obj WHERE obj = :h"
+        query = "DELETE FROM Human obj WHERE obj = :obj"
 )
 public class Human extends GeoEntity implements Pointable {
 

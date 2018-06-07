@@ -81,9 +81,6 @@ public class RailNode extends GeoEntity implements Pointable, Ownable {
 
     @OneToMany(mappedBy = "_to")
     protected List<RailEdge> inEdges;
-
-    @OneToOne(mappedBy = "railNode")
-    protected Platform platform;
     
     @Override
     public Player getOwner() {
@@ -112,10 +109,6 @@ public class RailNode extends GeoEntity implements Pointable, Ownable {
         return inEdges;
     }
 
-    public Platform getPlatform() {
-        return platform;
-    }
-    
     @Override
     public String toString() {
         return "rn(" + id + ")";

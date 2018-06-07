@@ -54,6 +54,10 @@ public class StationController extends CachedController<Station> {
 
     @Inject
     protected StepForHumanController sCon;
+    @Inject
+    protected LineController lCon;
+    @Inject
+    protected RailController rCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -65,6 +69,21 @@ public class StationController extends CachedController<Station> {
             writeLock.unlock();
         }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{StationController.class});
+    }
+    
+    public Platform findOn(RailNode node) {
+        readLock.lock();
+        try {
+            if (entities == null) {
+                LOG.log(Level.WARNING, "{0}#findOn controller never synchronize database", new Object[]{StationController.class});
+                return null;
+            }
+            return entities.stream()
+                    .map(e -> e.getPlatform())
+                    .filter(p -> p.getRailNode().equalsId(node)).findFirst().orElse(null);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     public Platform find(Platform old) {
@@ -82,7 +101,7 @@ public class StationController extends CachedController<Station> {
             readLock.unlock();
         }
     }
-    
+
     public TicketGate find(TicketGate old) {
         readLock.lock();
         try {
@@ -211,6 +230,27 @@ public class StationController extends CachedController<Station> {
             return findAll().stream().map(st -> st.getTicketGate()).collect(Collectors.toList());
         } finally {
             readLock.unlock();
+        }
+    }
+
+    public void remove(@NotNull Station st, @NotNull Player owner) throws RushHourException {
+        writeLock.lock();
+        try {
+            if (!st.isOwnedBy(owner)) {
+                throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
+            }
+            
+            lCon.remove(st.getPlatform(), owner);
+            sCon.removeStation(st);
+            
+            em.remove(em.merge(st));
+            entities.remove(st);
+            
+            rCon.removeIfIsolatedRailNode(em.merge(st.getPlatform().getRailNode()));
+            
+            LOG.log(Level.INFO, "{0}#remove removed {1}", new Object[]{StationController.class, st});
+        } finally {
+            writeLock.unlock();
         }
     }
 

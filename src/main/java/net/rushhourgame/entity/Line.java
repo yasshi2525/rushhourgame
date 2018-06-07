@@ -44,6 +44,10 @@ import javax.validation.constraints.NotNull;
         name = "Line.findAll",
         query = "SELECT x FROM Line x"
 )
+@NamedQuery(
+        name = "Line.deleteBy",
+        query = "DELETE FROM Line obj WHERE obj = :obj"
+)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"owner_id", "name"}))
 public class Line extends GeoEntity implements Ownable, Nameable {
 
@@ -107,6 +111,11 @@ public class Line extends GeoEntity implements Ownable, Nameable {
     }
 
     public LineStep findTop() {
+        return steps.stream()
+                .min((s1, s2) -> (int) (s1.getId() - s2.getId())).orElse(null);
+    }
+    
+    public LineStep findTopDeparture() {
         return steps.stream()
                 .filter(step -> step.getDeparture() != null)
                 .min((s1, s2) -> (int) (s1.getId() - s2.getId())).orElse(null);

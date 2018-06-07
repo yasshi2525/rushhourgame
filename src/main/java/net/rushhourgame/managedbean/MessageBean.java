@@ -131,31 +131,35 @@ public class MessageBean implements Serializable {
     public String getGoBack() {
         return res.get(LABEL_GO_BACK, session.getLocale());
     }
-    
+
     public String getCancel() {
         return res.get(LABEL_CANCEL, session.getLocale());
     }
-    
+
     public String getCreateRail() {
         return res.get(LABEL_RAIL_CREATE, session.getLocale());
     }
-    
-    public String getExtendRail () {
+
+    public String getExtendRail() {
         return res.get(LABEL_RAIL_EXTEND, session.getLocale());
     }
-    
-    public String getRemoveRail () {
+
+    public String getRemoveRail() {
         return res.get(LABEL_RAIL_REMOVE, session.getLocale());
     }
-    
+
+    public String getRemoveStation() {
+        return res.get(LABEL_STAITON_REMOVE, session.getLocale());
+    }
+
     public String getRemoveTrain() {
         return res.get(LABEL_TRAIN_UNDEPLOY, session.getLocale());
     }
-    
+
     public String getConfirmation() {
         return res.get(LABEL_CONFIRM, session.getLocale());
     }
-    
+
     public String getConfirmationMessage() {
         return res.get(LABEL_CONFIRM_MESSAGE, session.getLocale());
     }

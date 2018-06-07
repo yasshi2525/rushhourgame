@@ -194,9 +194,9 @@ public class GameMaster implements Serializable, Runnable {
         }
 
         try {
+            stCon.step(getInterval()); // デットロック対策
             searcher.lock();
             try {
-                em.clear();
                 // 更新された場合、なにもしない
                 if (!searcher.isAvailable()) {
                     return;
@@ -204,7 +204,6 @@ public class GameMaster implements Serializable, Runnable {
                 
                 searcher.refresh();
 
-                stCon.step(getInterval());
                 rCon.step(getInterval());
                 tCon.step(getInterval());
                 hCon.step(getInterval(), getHumanSpeed());

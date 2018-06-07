@@ -21,62 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package net.rushhourgame.entity.hroute;
+package net.rushhourgame.it;
 
-import net.rushhourgame.entity.AbstractEntityTest;
-import net.rushhourgame.entity.Company;
-import net.rushhourgame.entity.Human;
-import net.rushhourgame.entity.Platform;
-import net.rushhourgame.entity.Residence;
-import net.rushhourgame.entity.TicketGate;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import static org.mockito.Mockito.*;
-import org.mockito.Spy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import static net.rushhourgame.RushHourResourceBundle.*;
+import static net.rushhourgame.it.Constants.*;
+import org.junit.Ignore;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class StepForHumanDirectlyTest extends AbstractEntityTest {
-
-    @Spy
-    StepForHumanDirectly inst;
-
-    @Mock
-    Residence rsd;
-
-    @Spy
-    Company cmp;
-
-    @Spy
-    Human human;
-
-    @Before
-    @Override
-    public void setUp() {
-        super.setUp();
-        inst._from = rsd;
-        inst._to = cmp;
-    }
-
-    @Test
-    public void testStep() {
-        cmp.setX(1000);
-        human.setLifespan(1000);
-        
-        assertEquals(1000L, inst.step(human, 1000, 1));
-        assertTrue(inst.isFinished(human));
-        assertEquals(1000L, human.getLifespan());
-    }
-    
-    @Test
-    public void testToString() {
-        assertTrue(inst.toString().startsWith(inst.getUid()));
+public class ClickMenuIT extends AbstractIT {
+    @Ignore
+    public void testOpenAndClose() {
+        behave.login();
+        behave.selectClickMenu(ID_MENU_EXTEND_RAIL, 100);
     }
 }

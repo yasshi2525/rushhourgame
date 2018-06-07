@@ -89,7 +89,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
         LineStep step = mock(LineStep.class);
         doNothing().when(inst).registerPoint(null);
         
-        inst.setCurrent(step);
+        inst.registerCurrent(step);
         
         assertEquals(step, inst.getCurrent());
         assertTrue(0.0 == inst.progress);
@@ -344,7 +344,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
         verify(inst, never()).freeHuman(anyList(), nullable(Platform.class));
         verify(inst, times(1)).collectHuman(anyList(), nullable(Platform.class));
         verify(_dep, times(1)).getStaying();
-        verify(dep, times(1)).getNext();
+        verify(dep, times(2)).getNext();
         assertTrue(0.0 == inst.progress);
     }
     
@@ -359,7 +359,7 @@ public class TrainDeployedTest extends AbstractEntityTest {
         verify(inst, times(1)).freeHuman(anyList(), nullable(Platform.class));
         verify(inst, never()).collectHuman(anyList(), nullable(Platform.class));
         verify(_stop, times(1)).getGoal();
-        verify(stop, times(1)).getNext();
+        verify(stop, times(2)).getNext();
         assertTrue(0.0 == inst.progress);
     }
     

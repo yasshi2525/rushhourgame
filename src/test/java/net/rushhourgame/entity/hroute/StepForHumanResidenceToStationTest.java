@@ -78,4 +78,9 @@ public class StepForHumanResidenceToStationTest extends AbstractEntityTest{
         doReturn(10000d).when(human).distTo(eq(_to));
         assertFalse(inst.isFinished(human));
     }
+    
+    @Test
+    public void testToString() {
+        assertTrue(inst.toString().startsWith(inst.getUid()));
+    }
 }

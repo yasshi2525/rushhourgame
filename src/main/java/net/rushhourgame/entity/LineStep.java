@@ -47,6 +47,14 @@ import net.rushhourgame.entity.troute.LineStepType;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 @Entity
+@NamedQuery(
+        name = "LineStep.deleteBy",
+        query = "DELETE FROM LineStep obj WHERE obj = :obj"
+)
+@NamedQuery(
+        name = "LineStep.updateNextNull",
+        query = "UPDATE LineStep obj SET obj.next = NULL WHERE obj = :obj"
+)
 public class LineStep extends AbstractEntity implements Ownable {
 
     private static final long serialVersionUID = 1L;

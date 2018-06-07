@@ -29,6 +29,12 @@
                     icon="fa fa-times"
                     actionListener="#{menu.removeRail()}"/>
                 <p:menuitem
+                    rendered="#{menu.displayRemoveStation}"
+                    id="clickmenu-remove-station"
+                    value="#{msg.removeStation}"
+                    icon="fa fa-times"
+                    actionListener="#{menu.removeStation()}"/>
+                <p:menuitem
                     rendered="#{menu.displayUndeployTrain}"
                     id="clickmenu-undeploy-train"
                     value="#{msg.removeTrain}"

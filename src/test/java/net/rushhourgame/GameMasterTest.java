@@ -382,7 +382,7 @@ public class GameMasterTest {
         }
 
         pack.t = TCON.create(pack.owner);
-        TCON.deploy(pack.t, pack.owner, pack.l.findTop());
+        TCON.deploy(pack.t, pack.owner, pack.l.findTopDeparture());
 
         return pack;
     }

@@ -75,7 +75,7 @@ public class TrainController extends CachedController<Train> {
         }
         LOG.log(Level.INFO, "{0}#synchronizeDatabase end", new Object[]{TrainController.class});
     }
-    
+
     public TrainDeployed find(TrainDeployed old) {
         readLock.lock();
         try {
@@ -86,7 +86,10 @@ public class TrainController extends CachedController<Train> {
                 LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{TrainController.class});
                 return null;
             }
-            return entities.stream().filter(e -> e.getDeployed().equalsId(old)).findFirst().get().getDeployed();
+            return entities.stream()
+                    .filter(e -> e.isDeployed())
+                    .filter(e -> e.getDeployed().equalsId(old))
+                    .findFirst().get().getDeployed();
         } finally {
             readLock.unlock();
         }
@@ -128,7 +131,7 @@ public class TrainController extends CachedController<Train> {
 
             TrainDeployed info = new TrainDeployed();
             info.setTrain(train);
-            info.setCurrent(lineStep);
+            info.registerCurrent(lineStep);
 
             train.setDeployed(info);
             em.persist(info);
@@ -137,7 +140,7 @@ public class TrainController extends CachedController<Train> {
             LOG.log(Level.INFO, "{0}#deploy created {1}", new Object[]{TrainController.class, info});
 
             train.setDeployed(info);
-            
+
             return info;
         } finally {
             writeLock.unlock();
@@ -177,16 +180,56 @@ public class TrainController extends CachedController<Train> {
     public void step(long time) {
         writeLock.lock();
         try {
-            findAll().stream().filter(t -> t.isDeployed())
-                    .forEach(t -> t.getDeployed().step(hCon.findAll(), time));
+            lCon.getReadLock().lock();
+            try {
+                findAll().stream().filter(t -> t.isDeployed())
+                        .forEach(t -> t.getDeployed().step(hCon.findAll(), time));
+            } finally {
+                lCon.getReadLock().unlock();
+            }
         } finally {
             writeLock.unlock();
         }
     }
-    
+
+    public void replaceCurrent(LineStep oldStopOrPass, LineStep newMoving) {
+        writeLock.lock();
+        try {
+            entities.stream()
+                    .filter(t -> t.isDeployed())
+                    .filter(t -> oldStopOrPass.equalsId(t.getDeployed().getCurrent()))
+                    .forEach(t -> {
+                        t.getDeployed().replaceCurrent(newMoving);
+                        LOG.log(Level.FINE, "{0}#replaceCurrent {2} -> {3} for {1}",
+                                new Object[]{TrainController.class, t, oldStopOrPass, newMoving});
+                    });
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public void replaceCurrentToNext(LineStep oldDep) {
+        writeLock.lock();
+        //発車準備中の電車を移動中にさせる
+        try {
+            entities.stream()
+                    .filter(t -> t.isDeployed())
+                    .filter(t -> oldDep.equalsId(t.getDeployed().getCurrent()))
+                    .forEach(t -> {
+                        LineStep next = lCon.find(oldDep.getNext());
+                        t.getDeployed().registerCurrent(next);
+                        LOG.log(Level.FINE, "{0}#replaceCurrentToNext {1} changed {2} -> {3}",
+                                new Object[]{TrainController.class, t, oldDep, next});
+                    });
+            em.flush();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
     /**
-     * 電車を撤去する際、乗客を強制的にその場に降ろす。
-     * 乗客は経路が変わるため、再計算する
+     * 電車を撤去する際、乗客を強制的にその場に降ろす。 乗客は経路が変わるため、再計算する
+     *
      * @param train 撤去対象
      */
     protected void getOffPassenger(TrainDeployed train) {
@@ -198,6 +241,31 @@ public class TrainController extends CachedController<Train> {
             searcher.notifyUpdate();
         } finally {
             hCon.getWriteLock().unlock();
-        } 
+        }
+    }
+
+    /**
+     * 削除したいLineStepがTrainDeployed.currentに参照されていると削除できない.
+     * 該当するTrainDeployedだけレコードを更新する
+     * @param removing 削除予定のLineStep
+     */
+    public void refresh(LineStep removing) {
+        List<TrainDeployed> refs = em.createNamedQuery("TrainDeployed.findByCurrent", TrainDeployed.class)
+                .setParameter("current", removing)
+                .getResultList();
+        LOG.log(Level.FINE, "{0}#refresh refreshing {1}", 
+                new Object[]{TrainController.class, refs});
+        refs.stream().map(ref -> find(ref)).forEach(td -> merge(td));
+    }
+    
+    protected TrainDeployed merge(TrainDeployed oldInst) {
+        Train train = oldInst.getTrain();
+        LOG.log(Level.FINE, "{0}#merge updating {1} current = {2}", 
+                new Object[]{TrainController.class, train, oldInst.getCurrent()});
+        TrainDeployed newInst = em.merge(oldInst);
+        train.setDeployed(newInst);
+        LOG.log(Level.FINE, "{0}#merge updated {1} current = {2}", 
+                new Object[]{TrainController.class, train, newInst.getCurrent()});
+        return newInst;
     }
 }

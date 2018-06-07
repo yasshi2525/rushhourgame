@@ -91,7 +91,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         EM.refresh(res.node);
 
         assertTrue(res.node.distTo(ORGIN) == 0);
-        assertEquals("駅1", res.node.getPlatform().getStation().getName());
+        assertEquals("駅1", res.station.getName());
         Line line = res.line;
         EM.refresh(line);
         assertEquals("路線1", line.getName());
@@ -329,7 +329,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
 
     protected static void assertDeparture(LineStep step, RailNode on) {
         assertNotNull(step.getDeparture());
-        assertEquals(on.getPlatform(), step.getDeparture().getStaying());
+        assertEquals(on, step.getDeparture().getStaying().getRailNode());
     }
 
     protected static void assertMoving(LineStep step, RailNode from, RailNode to) {
@@ -348,6 +348,6 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         assertNotNull(step.getStopping());
         assertEquals(from, edge.getFrom());
         assertEquals(to, edge.getTo());
-        assertEquals(to.getPlatform(), step.getStopping().getGoal());
+        assertEquals(to, step.getStopping().getGoal().getRailNode());
     }
 }

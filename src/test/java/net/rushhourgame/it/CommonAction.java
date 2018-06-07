@@ -145,6 +145,32 @@ public class CommonAction {
         LOG.log(Level.INFO, "extended rain sucessfully msg " + msg);
         return msg;
     }
+    
+    /**
+     * 駅を削除する.
+     * @param point 削除する座標
+     */
+    public String removeStation(Dimension point) {
+        LOG.log(Level.INFO, "deleting station  " + point);
+
+        scrollMap(new Dimension(-point.width, -point.height));
+        clickCanvas();
+        selectClickMenu(ID_MENU_REMOVE_STATION);
+        
+        sleep(1);
+        new Actions(driver)
+                .sendKeys(Keys.ENTER)
+                .build()
+                .perform();
+        
+        WebElement announcement = findAnnouncement();
+        String msg = announcement.getText();
+
+        waitForAnnouncement.until(invisibilityOf(announcement));
+
+        LOG.log(Level.INFO, "deleted station sucessfully msg " + msg);
+        return msg;
+    }
 
     public void endAction() {
         LOG.log(Level.INFO, "ending action");

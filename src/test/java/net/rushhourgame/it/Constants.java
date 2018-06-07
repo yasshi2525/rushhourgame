@@ -45,7 +45,8 @@ public class Constants {
     
     protected static final String ID_MENU_CREATE_RAIL = "clickmenu-create-rail";
     protected static final String ID_MENU_EXTEND_RAIL = "clickmenu-extend-rail";
-    protected static final String ID_MENU_UNDEPLOY_TRAIN = "clickmenu-undeploy_train";
+    protected static final String ID_MENU_UNDEPLOY_TRAIN = "clickmenu-undeploy-train";
+    protected static final String ID_MENU_REMOVE_STATION = "clickmenu-remove-station";
     protected static final String ID_END_ACTION = "end-action";
     protected static final String ID_ANNOUNCEMENT = "announcement_container";
     protected static final String ID_GUIDE = "guide";

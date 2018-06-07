@@ -24,6 +24,7 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotNull;
@@ -37,11 +38,14 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
+import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.troute.LineStepDeparture;
+import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -863,6 +867,78 @@ public class LineControllerTest extends AbstractControllerTest {
             assertEquals(GAME_DATA_INCONSIST, e.getErrMsg().getTitleId());
         }
     }
+    
+    @Test
+    public void testRemovePlatformOtherOwner() throws RushHourException {
+        Station st = createStation();
+        Player other = createOther();
+        
+        try {
+            inst.remove(st.getPlatform(), other);
+            fail();
+        } catch (RushHourException e) {
+            assertEquals(GAME_NO_PRIVILEDGE_OTHER_OWNED, e.getErrMsg().getDetailId());
+        }
+    }
+    
+    @Test
+    public void testRemovePlatformStopped() throws RushHourException {
+        Player owner = createPlayer();
+        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        ACON.extendWithStation(owner, res.node, TEST_POS2, Locale.JAPANESE);
+        
+        inst.remove(res.station.getPlatform(), owner);
+        
+        assertEquals(3, res.line.getSteps().size());
+    }
+    
+    @Test
+    public void testRemovePlatformPassed() throws RushHourException {
+        Player owner = createPlayer();
+        
+        RailNode r1 = RAILCON.create(owner, TEST_POS);
+
+        RailNode r2 = RAILCON.extend(owner, r1, TEST_POS2);
+        EM.refresh(r1);
+        RailEdge e1 = r1.getOutEdges().get(0);
+        RailEdge e2 = r1.getInEdges().get(0);
+        
+        Station st1 = STCON.create(owner, r1, TEST_NAME);
+        Station st2 = STCON.create(owner, r2, TEST_NAME + "2");
+        
+        Line line = inst.create(owner, TEST_NAME);
+        LineStep dpt = inst.start(line, owner, st1);
+        LineStep pass = inst.extend(dpt, owner, e1, true);
+        LineStep tail = inst.extend(pass, owner, e2);
+        
+        inst.end(tail, owner);
+        
+        inst.remove(st2.getPlatform(), owner);
+        
+        assertEquals(3, line.getSteps().size());
+    }
+    
+    @Test
+    public void testRemoveLonelyPlatform() throws RushHourException {
+        Player owner = createPlayer();
+        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        
+        inst.remove(res.station.getPlatform(), owner);
+        
+        assertTrue(res.line.getSteps().isEmpty());
+    }
+    
+    @Test
+    public void testRemovePlatformWithOnlyOneStationLine() throws RushHourException {
+        Player owner = createPlayer();
+        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        ACON.extend(owner, res.node, TEST_POS2);
+        
+        inst.remove(res.station.getPlatform(), owner);
+        
+        assertEquals(2, res.line.getSteps().size());
+    }
+    
 
     @Test
     public void testIsAreaIn() throws RushHourException {

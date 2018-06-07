@@ -102,4 +102,9 @@ public class StepForHumanOutOfStationTest extends AbstractEntityTest {
         inst._from = platform;
         assertTrue(inst.isFinished(human));
     }
+    
+    @Test
+    public void testToString() {
+        assertTrue(inst.toString().startsWith(inst.getUid()));
+    }
 }

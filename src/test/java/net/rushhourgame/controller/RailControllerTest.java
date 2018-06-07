@@ -69,6 +69,7 @@ public class RailControllerTest extends AbstractControllerTest {
     public void setUp() {
         super.setUp();
         ControllerFactory.init(inst);
+        inst.stCon = STCON;
     }
 
     @Test
@@ -85,7 +86,6 @@ public class RailControllerTest extends AbstractControllerTest {
         EM.flush();
         EM.refresh(created);
 
-        assertNull(created.getPlatform());
         assertEquals(0, created.getInEdges().size());
         assertEquals(0, created.getOutEdges().size());
     }
@@ -517,15 +517,15 @@ public class RailControllerTest extends AbstractControllerTest {
         edge.setTo(r2);
         EM.persist(edge);
         EM.flush();
-        inst.removeIsolatedRailNode(r1);
-        inst.removeIsolatedRailNode(r2);
+        inst.removeIfIsolatedRailNode(r1);
+        inst.removeIfIsolatedRailNode(r2);
     }
     
     @Test
     public void testRemoveIsolatedRailNodeStationNode() throws RushHourException {
         Station st = createStation();
         
-        inst.removeIsolatedRailNode(st.getPlatform().getRailNode());
+        inst.removeIfIsolatedRailNode(st.getPlatform().getRailNode());
     }
     
     @Test

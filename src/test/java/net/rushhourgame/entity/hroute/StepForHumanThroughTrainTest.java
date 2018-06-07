@@ -78,4 +78,9 @@ public class StepForHumanThroughTrainTest extends AbstractEntityTest{
     public void testIsFinished() {
         assertFalse(inst.isFinished(human));
     }
+    
+    @Test
+    public void testToString() {
+        assertTrue(inst.toString().startsWith(inst.getUid()));
+    }
 }

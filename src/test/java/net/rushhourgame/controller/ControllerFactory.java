@@ -58,6 +58,10 @@ public class ControllerFactory {
         RCON.hCon = HCON;
         HCON.tCon = TCON;
         TCON.hCon = HCON;
+        LCON.tCon = TCON;
+        TCON.lCon = LCON;
+        STCON.lCon = LCON;
+        LCON.stCon = STCON;
     }
     
     public static ResidenceController createResidenceController() {
@@ -77,12 +81,14 @@ public class ControllerFactory {
     
     public static RailController createRailController() {
         RailController inst = new RailController();
+        inst.stCon = STCON;
         init(inst);
         return inst;
     }
     
     public static StationController createStationController() {
         STCON.sCon = createStepForHumanController();
+        STCON.rCon = createRailController();
         init(STCON);
         STCON.init();
         return STCON;
@@ -91,7 +97,6 @@ public class ControllerFactory {
     public static LineController createLineController() {
         LCON.rCon = createRailController();
         LCON.sCon = createStepForHumanController();
-        LCON.stCon = createStationController();
         init(LCON);
         LCON.init();
         return LCON;
@@ -176,7 +181,6 @@ public class ControllerFactory {
     public static TrainController createTrainController() {
         TCON.init();
         TCON.hCon = createHumanController();
-        TCON.lCon = createLineController();
         TCON.searcher = createRouteSearcher();
         init(TCON);
         return TCON;

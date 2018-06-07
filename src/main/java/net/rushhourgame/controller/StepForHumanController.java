@@ -150,6 +150,7 @@ public class StepForHumanController extends AbstractController {
                 persistStepForHuman(createStationToCompany(t, newInst));
             }
 
+            LOG.log(Level.INFO, "{0}#addCompany created for {1}", new Object[]{StepForHumanController.class, newInst});
             // ここで submit すると EntityManager が close して JSF でエラーになる
             searcher.notifyUpdate();
         } finally {
@@ -173,6 +174,7 @@ public class StepForHumanController extends AbstractController {
                 persistStepForHuman(createResidenceToStation(newInst, t));
             }
 
+            LOG.log(Level.INFO, "{0}#addResidence created for {1}", new Object[]{StepForHumanController.class, newInst});
             // ここで submit すると EntityManager が close して JSF でエラーになる
             searcher.notifyUpdate();
         } finally {
@@ -213,7 +215,43 @@ public class StepForHumanController extends AbstractController {
             persistStepForHuman(createIntoStation(newInst.getTicketGate(), newInst.getPlatform()));
             persistStepForHuman(createOutOfStation(newInst.getPlatform(), newInst.getTicketGate()));
 
+            LOG.log(Level.INFO, "{0}#addStation created for {1}", new Object[]{StepForHumanController.class, newInst});
             // ここで submit すると EntityManager が close して JSF でエラーになる
+            searcher.notifyUpdate();
+        } finally {
+            searcher.unlock();
+        }
+    }
+
+    public void removeStation(Station st) {
+        searcher.lock();
+        try {
+            // 家     -> 改札口
+            findFromResidenceAll().stream()
+                    .filter(step -> step.getTo().equalsId(st.getTicketGate()))
+                    .forEach(step -> em.remove(step));
+            // 改札口 -> 会社
+            findToCompanyAll().stream()
+                    .filter(step -> step.getFrom().equalsId(st.getTicketGate()))
+                    .forEach(step -> em.remove(step));
+            // 改札口 <-> 改札口
+            findTransfer().stream()
+                    .filter(step -> step.getFrom().equalsId(st.getTicketGate()) || step.getTo().equalsId(st.getTicketGate()))
+                    .forEach(step -> em.remove(step));
+            // 改札口 <-> プラットフォーム
+            findIntoStationAll().stream()
+                    .filter(step -> step.getTo().equalsId(st.getPlatform()))
+                    .forEach(step -> em.remove(step));
+            findOutOfStationAll().stream()
+                    .filter(step -> step.getFrom().equalsId(st.getPlatform()))
+                    .forEach(step -> em.remove(step));
+            // 電車
+            findThroughTrainAll().stream()
+                    .filter(step -> step.getFrom().equalsId(st.getPlatform()) || step.getTo().equalsId(st.getPlatform()))
+                    .forEach(step -> em.remove(step));
+
+            LOG.log(Level.INFO, "{0}#removeStation remvoed for {1}", new Object[]{StepForHumanController.class, st});
+
             searcher.notifyUpdate();
         } finally {
             searcher.unlock();
@@ -229,6 +267,7 @@ public class StepForHumanController extends AbstractController {
 
             lSearcher.persist(line);
 
+            LOG.log(Level.INFO, "{0}#addCompletedLine created for {1}", new Object[]{StepForHumanController.class, line});
             // ここで submit すると EntityManager が close して JSF でエラーになる
             searcher.notifyUpdate();
         } finally {
@@ -243,10 +282,12 @@ public class StepForHumanController extends AbstractController {
                 throw new RushHourException(errMsgBuilder.createDataInconsitency(null));
             }
 
-            removeAllStepForHuman(line);
+            int num = removeAllStepForHuman(line);
+            LOG.log(Level.FINE, "{0}#modifyCOmpletedLine removed {1} steps", new Object[]{StepForHumanController.class, num});
 
             lSearcher.persist(line);
 
+            LOG.log(Level.INFO, "{0}#modifyCOmpletedLine updated for {1}", new Object[]{StepForHumanController.class, line});
             // ここで submit すると EntityManager が close して JSF でエラーになる
             searcher.notifyUpdate();
         } finally {
@@ -264,7 +305,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanDirectly inst = new StepForHumanDirectly();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createDirectly created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createDirectly created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -272,7 +313,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanResidenceToStation inst = new StepForHumanResidenceToStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createResidenceToStation created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createResidenceToStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -280,7 +321,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanStationToCompany inst = new StepForHumanStationToCompany();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createStationToCompany created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createStationToCompany created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -288,7 +329,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanIntoStation inst = new StepForHumanIntoStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createIntoStation created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createIntoStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -296,7 +337,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanOutOfStation inst = new StepForHumanOutOfStation();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createOutOfStation created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createOutOfStation created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 
@@ -304,7 +345,7 @@ public class StepForHumanController extends AbstractController {
         StepForHumanTransfer inst = new StepForHumanTransfer();
         inst.setFrom(from);
         inst.setTo(to);
-        LOG.log(Level.INFO, "{0}#createTransfer created {1}", new Object[]{StepForHumanController.class, inst});
+        LOG.log(Level.FINE, "{0}#createTransfer created {1}", new Object[]{StepForHumanController.class, inst});
         return inst;
     }
 

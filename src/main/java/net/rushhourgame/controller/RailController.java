@@ -46,6 +46,9 @@ import net.rushhourgame.exception.RushHourException;
  */
 @Dependent
 public class RailController extends PointEntityController {
+    
+    @Inject
+    protected StationController stCon;
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(RailController.class.getName());
@@ -114,8 +117,8 @@ public class RailController extends PointEntityController {
         }
 
         em.flush();
-        removeIsolatedRailNode(n1);
-        removeIsolatedRailNode(n2);
+        removeIfIsolatedRailNode(n1);
+        removeIfIsolatedRailNode(n2);
     }
 
     public boolean canRemove(Player player, List<RailEdge> edges) throws RushHourException {
@@ -239,9 +242,9 @@ public class RailController extends PointEntityController {
         return !e.getMovingSteps().isEmpty() || !e.getPassingSteps().isEmpty() || !e.getStoppingSteps().isEmpty();
     }
 
-    protected void removeIsolatedRailNode(RailNode node) {
+    public void removeIfIsolatedRailNode(RailNode node) {
         em.refresh(node);
-        if (node.getInEdges().isEmpty() && node.getOutEdges().isEmpty() && node.getPlatform() == null) {
+        if (node.getInEdges().isEmpty() && node.getOutEdges().isEmpty() && stCon.findOn(node) == null) {
             em.remove(node);
             LOG.log(Level.INFO, "{0}#remove removed {1}", new Object[] {RailController.class, node});
         }

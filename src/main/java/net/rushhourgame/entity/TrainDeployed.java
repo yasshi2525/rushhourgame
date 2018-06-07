@@ -25,6 +25,8 @@ package net.rushhourgame.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
@@ -45,10 +47,15 @@ import javax.validation.constraints.NotNull;
         name = "TrainDeployed.deleteBy",
         query = "DELETE FROM TrainDeployed obj WHERE obj = :obj"
 )
+@NamedQuery(
+        name = "TrainDeployed.findByCurrent",
+        query = "SELECT obj FROM TrainDeployed obj WHERE obj.current = :current"
+)
 @Entity
 public class TrainDeployed extends GeoEntity {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(TrainDeployed.class.getName());
 
     @NotNull
     @OneToOne
@@ -75,11 +82,23 @@ public class TrainDeployed extends GeoEntity {
     public LineStep getCurrent() {
         return current;
     }
-
-    public void setCurrent(LineStep current) {
-        this.current = current;
+    
+    /**
+     * 進捗0で新規登録する. 乗客は移動させない
+     * @param current LineStep
+     */
+    public void registerCurrent(LineStep current) {
         progress = 0.0;
+        replaceCurrent(current);
         registerPoint(null);
+    }
+    
+    /**
+     * 進捗を維持して登録する. 座標や乗客は移動させない
+     * @param current LineStep
+     */
+    public void replaceCurrent(LineStep current) {
+        this.current = current;
     }
     
     public void mergeCurrent(LineStep current) {
@@ -184,6 +203,12 @@ public class TrainDeployed extends GeoEntity {
             collectHuman(humans, current.getDeparture().getStaying());
         }
 
+        if (current.getNext() == null) {
+            LOG.log(Level.WARNING, "{0}#shiftStep {1} next is null : current = {2}",
+                    new Object[]{TrainDeployed.class, this, current});
+        }
+        LOG.log(Level.FINE, "{0}#shiftStep {1} shift from {2} to {3}",
+                    new Object[]{TrainDeployed.class, this, current, current.next});
         current = current.getNext();
         progress = 0.0;
     }
@@ -212,6 +237,10 @@ public class TrainDeployed extends GeoEntity {
 
     public void step(List<Human> humans, long time) {
         consumeTime(humans, time);
+    }
+
+    public double getProgress() {
+        return progress;
     }
 
     @Override

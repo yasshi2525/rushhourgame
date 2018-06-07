@@ -61,7 +61,7 @@ public class CachedControllerTest {
     @Before
     public void setUp() {
         inst.em = em;
-        doReturn(query).when(em).createNamedQuery(anyString(), eq(SimpleGeoEntity.class));
+        doReturn(query).when(em).createNamedQuery(anyString(), any());
         doReturn(query).when(query).setParameter(anyString(), any(SimpleGeoEntity.class));
         doReturn(0).when(query).executeUpdate();
         doReturn(new ArrayList<>()).when(query).getResultList();
@@ -144,7 +144,7 @@ public class CachedControllerTest {
         inst.entities = new ArrayList<>();
         inst.entities.add(e);
         
-        inst.removeEntity("hoge", SimpleGeoEntity.class, e);
+        inst.removeEntity("hoge", e);
         
         assertTrue(inst.entities.isEmpty());
         

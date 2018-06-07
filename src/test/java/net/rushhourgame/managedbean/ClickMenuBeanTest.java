@@ -70,6 +70,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         inst.pCon = PCON;
         inst.tCon = TRCON;
         inst.aCon = ACON;
+        inst.stCon = STCON;
         inst.em = EM;
         
         try {
@@ -319,15 +320,27 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     public void testRemoveRail() {
         inst.removeRail();
     }
+        
+    @Test
+    public void testIsDisplayRemoveStation() {
+        assertFalse(inst.isDisplayRemoveStation());
+        
+        inst.clickedStation = mock(Station.class);
+        
+        assertTrue(inst.isDisplayRemoveStation());
+    }
+    
+    @Test
+    public void testRemoveStation() {
+        inst.removeStation();
+    }
     
     @Test
     public void testIsDisplayUndeployTrain() {
         assertFalse(inst.isDisplayUndeployTrain());
-    }
-    
-    @Test
-    public void testIsDisplayUndeployTrain2() {
+        
         inst.clickedTrain = mock(TrainDeployed.class);
+        
         assertTrue(inst.isDisplayUndeployTrain());
     }
     

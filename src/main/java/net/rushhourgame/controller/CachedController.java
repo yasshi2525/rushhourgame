@@ -181,10 +181,10 @@ public abstract class CachedController<T extends GeoEntity> extends AbstractCont
         }
     }
 
-    protected void removeEntity(String query, Class<T> entityClass, T oldEntity) {
+    protected void removeEntity(String query, T oldEntity) {
         writeLock.lock();
         try {
-            em.createNamedQuery(query, entityClass).setParameter("obj", oldEntity).executeUpdate();
+            em.createNamedQuery(query, oldEntity.getClass()).setParameter("obj", oldEntity).executeUpdate();
             entities.remove(oldEntity);
         } finally {
             writeLock.unlock();
