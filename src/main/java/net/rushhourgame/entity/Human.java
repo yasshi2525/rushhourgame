@@ -181,9 +181,7 @@ public class Human extends GeoEntity implements Pointable {
     }
 
     protected void shiftEdge() {
-        current.unreffer(this);
         current = current.getTo().getViaEdge();
-        current.reffer(this);
     }
 
     public void flushCurrent() {
@@ -227,11 +225,7 @@ public class Human extends GeoEntity implements Pointable {
     }
 
     public void setCurrent(RouteNode current) {
-        if (this.current != null) {
-            this.current.unreffer(this);
-        }
         this.current = current.getViaEdge();
-        this.current.reffer(this);
     }
 
     public boolean shouldRide(Platform platform, TrainDeployed train) {

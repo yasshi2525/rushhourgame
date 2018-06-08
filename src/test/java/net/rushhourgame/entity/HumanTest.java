@@ -166,8 +166,6 @@ public class HumanTest extends AbstractEntityTest {
         verify(neverEndTask, times(0)).getTo();
 
         verify(inst, times(1)).shiftEdge();
-        verify(currentEdge, times(1)).unreffer(any(Human.class));
-        verify(nextEdge, times(1)).reffer(any(Human.class));
 
         assertFalse(inst.isFinished());
         assertEquals(nextEdge, inst.current);

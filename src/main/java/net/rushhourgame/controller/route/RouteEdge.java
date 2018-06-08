@@ -45,8 +45,4 @@ public interface RouteEdge {
     public RouteNode getFrom();
 
     public RouteNode getTo();
-    
-    public void reffer(Human h);
-    
-    public void unreffer(Human h);
 }

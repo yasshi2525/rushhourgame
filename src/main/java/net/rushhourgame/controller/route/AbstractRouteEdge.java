@@ -34,8 +34,6 @@ import net.rushhourgame.entity.StepForHuman;
  */
 public abstract class AbstractRouteEdge {
 
-    protected Set<Human> referredHumans = new HashSet<>();
-
     final protected StepForHuman original;
     final protected RouteNode from;
     final protected RouteNode to;
@@ -60,13 +58,5 @@ public abstract class AbstractRouteEdge {
 
     public RouteNode getTo() {
         return to;
-    }
-
-    public void reffer(Human h) {
-        referredHumans.add(h);
-    }
-
-    public void unreffer(Human h) {
-        referredHumans.remove(h);
     }
 }
