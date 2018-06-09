@@ -66,12 +66,12 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         super.setUp();
 
         inst.session = session;
-        inst.rCon = RAILCON;
-        inst.pCon = PCON;
-        inst.tCon = TRCON;
-        inst.aCon = ACON;
-        inst.stCon = STCON;
-        inst.em = EM;
+        inst.rCon = railCon;
+        inst.pCon = pCon;
+        inst.tCon = tCon;
+        inst.aCon = aCon;
+        inst.stCon = stCon;
+        inst.em = em;
         
         try {
             player = createPlayer();
@@ -95,10 +95,10 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testInitWithEdges() throws RushHourException {
-        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
-        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
-        EM.flush();
-        EM.refresh(n1);
+        RailNode n1 = railCon.create(player, new SimplePoint(100, 100));
+        RailNode n2 = railCon.extend(player, n1, new SimplePoint(100, 200));
+        em.flush();
+        em.refresh(n1);
         
         inst.player = player;
         map.put("clickX", "11.0");
@@ -116,10 +116,10 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testInitWithInvalidEdge() throws RushHourException {
-        RailNode n1 = RAILCON.create(player, new SimplePoint(100, 100));
-        RailNode n2 = RAILCON.extend(player, n1, new SimplePoint(100, 200));
-        EM.flush();
-        EM.refresh(n1);
+        RailNode n1 = railCon.create(player, new SimplePoint(100, 100));
+        RailNode n2 = railCon.extend(player, n1, new SimplePoint(100, 200));
+        em.flush();
+        em.refresh(n1);
         
         inst.player = player;
         map.put("clickX", "11.0");
@@ -157,7 +157,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarRight() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
         
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -170,7 +170,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarLeft() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -183,7 +183,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarTop() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -196,7 +196,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailFarBottom() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -209,8 +209,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearRight() throws RushHourException {
-        RAILCON.create(player, p);
-        System.out.println(TCON.findAll("RailNode", RailNode.class));
+        railCon.create(player, p);
+        System.out.println(tableCon.findAll("RailNode", RailNode.class));
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -223,7 +223,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearLeft() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -236,7 +236,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearTop() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -249,7 +249,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
 
     @Test
     public void testCanCreateRailNearBottom() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         // scale 4 (幅16)のとき、±1を近いと判定
         map.put("scale", "4.0");
@@ -267,10 +267,10 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickY", "12.0");
         inst.init();
         inst.createRail();
-        assertEquals(1, TCON.findAll("Station", RailNode.class).size());
-        assertEquals(1, TCON.findAll("Station", Station.class).size());
-        assertEquals(1, TCON.findAll("Line", Line.class).size());
-        assertEquals(1, TCON.findAll("LineStep", LineStep.class).size());
+        assertEquals(1, tableCon.findAll("Station", RailNode.class).size());
+        assertEquals(1, tableCon.findAll("Station", Station.class).size());
+        assertEquals(1, tableCon.findAll("Line", Line.class).size());
+        assertEquals(1, tableCon.findAll("LineStep", LineStep.class).size());
     }
     
     @Test
@@ -280,7 +280,7 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
     
     @Test
     public void testCanExtendRail() throws RushHourException {
-        RAILCON.create(player, p);
+        railCon.create(player, p);
 
         map.put("scale", "3.0");
         map.put("clickX", "0.0");
@@ -295,8 +295,8 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickX", "1.0");
         map.put("clickY", "1.0");
         
-        RAILCON.create(player, new SimplePoint(1.0, 0.0));
-        RAILCON.create(player, new SimplePoint(1.0, 2.0));
+        railCon.create(player, new SimplePoint(1.0, 0.0));
+        railCon.create(player, new SimplePoint(1.0, 2.0));
 
         inst.init();
         inst.extendRail();
@@ -308,9 +308,9 @@ public class ClickMenuBeanTest extends AbstractBeanTest {
         map.put("clickX", "1.0");
         map.put("clickY", "1.0");
         
-        RAILCON.create(player, new SimplePoint(0.0, 2.5));
-        RAILCON.create(player, new SimplePoint(0.0, 0.0));
-        RAILCON.create(player, new SimplePoint(0.0, 0.5));
+        railCon.create(player, new SimplePoint(0.0, 2.5));
+        railCon.create(player, new SimplePoint(0.0, 0.0));
+        railCon.create(player, new SimplePoint(0.0, 0.5));
 
         inst.init();
         inst.extendRail();

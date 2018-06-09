@@ -25,10 +25,6 @@ package net.rushhourgame.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -53,7 +49,6 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class RailControllerTest extends AbstractControllerTest {
-    @Spy
     protected RailController inst;
     private static final double TEST_X = 10;
     private static final double TEST_Y = 10;
@@ -68,8 +63,7 @@ public class RailControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        ControllerFactory.init(inst);
-        inst.stCon = STCON;
+        inst = railCon;
     }
 
     @Test
@@ -83,8 +77,8 @@ public class RailControllerTest extends AbstractControllerTest {
         assertTrue(created.isOwnedBy(player));
         assertTrue(created.isPrivilegedBy(player));
 
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
 
         assertEquals(0, created.getInEdges().size());
         assertEquals(0, created.getOutEdges().size());
@@ -116,9 +110,9 @@ public class RailControllerTest extends AbstractControllerTest {
         RailNode created1 = inst.create(player, TEST_POS);
         RailNode created2 = inst.extend(player, created1, TEST_POS2);
 
-        EM.flush();
-        EM.refresh(created1);
-        EM.refresh(created2);
+        em.flush();
+        em.refresh(created1);
+        em.refresh(created2);
 
         // 1 --> 2
         RailEdge edge1 = created1.getOutEdges().get(0);
@@ -260,9 +254,9 @@ public class RailControllerTest extends AbstractControllerTest {
         RailNode created2 = inst.create(player, new SimplePoint(1000, 1000));
         inst.extend(player, created2, new SimplePoint(2000, 1000));
         
-        EM.flush();
-        EM.refresh(created1);
-        EM.refresh(created2);
+        em.flush();
+        em.refresh(created1);
+        em.refresh(created2);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created1.getOutEdges().get(0));
@@ -282,8 +276,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player other = createOther();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created.getOutEdges().get(0));
@@ -303,14 +297,14 @@ public class RailControllerTest extends AbstractControllerTest {
         Station station = createStation();
         Player player = station.getOwner();
         RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
-        STCON.create(player, goal, "hoge");
-        EM.flush();
-        EM.refresh(goal);
+        stCon.create(player, goal, "hoge");
+        em.flush();
+        em.refresh(goal);
 
-        Line line = LCON.create(player, "hoge");
-        LineStep s1 = LCON.start(line, player, station);
-        LCON.extend(s1, player, goal.getInEdges().get(0));
-        EM.flush();
+        Line line = lCon.create(player, "hoge");
+        LineStep s1 = lCon.start(line, player, station);
+        lCon.extend(s1, player, goal.getInEdges().get(0));
+        em.flush();
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(goal.getOutEdges().get(0));
@@ -330,14 +324,14 @@ public class RailControllerTest extends AbstractControllerTest {
         Station station = createStation();
         Player player = station.getOwner();
         RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
-        STCON.create(player, goal, "hoge");
-        EM.flush();
-        EM.refresh(goal);
+        stCon.create(player, goal, "hoge");
+        em.flush();
+        em.refresh(goal);
 
-        Line line = LCON.create(player, "hoge");
-        LineStep s1 = LCON.start(line, player, station);
-        LCON.extend(s1, player, goal.getInEdges().get(0), true);
-        EM.flush();
+        Line line = lCon.create(player, "hoge");
+        LineStep s1 = lCon.start(line, player, station);
+        lCon.extend(s1, player, goal.getInEdges().get(0), true);
+        em.flush();
 
         List<RailEdge> edges = new ArrayList<>();
         edges.add(goal.getOutEdges().get(0));
@@ -358,13 +352,13 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = station.getOwner();
         RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
  
-        EM.flush();
-        EM.refresh(goal);
+        em.flush();
+        em.refresh(goal);
 
-        Line line = LCON.create(player, "hoge");
-        LineStep s1 = LCON.start(line, player, station);
-        LCON.extend(s1, player, goal.getInEdges().get(0), true);
-        EM.flush();
+        Line line = lCon.create(player, "hoge");
+        LineStep s1 = lCon.start(line, player, station);
+        lCon.extend(s1, player, goal.getInEdges().get(0), true);
+        em.flush();
 
         List<RailEdge> edges = new ArrayList<>();
         edges.add(goal.getOutEdges().get(0));
@@ -384,8 +378,8 @@ public class RailControllerTest extends AbstractControllerTest {
         RailNode start = inst.create(player, TEST_POS);
         inst.extend(player, start, TEST_POS2);
         
-        EM.flush();
-        EM.refresh(start);
+        em.flush();
+        em.refresh(start);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(start.getOutEdges().get(0));
@@ -393,8 +387,8 @@ public class RailControllerTest extends AbstractControllerTest {
         
         inst.remove(player, edges);
         
-        assertTrue(TCON.findAll("RailNode", RailNode.class).isEmpty());
-        assertTrue(TCON.findAll("RailEdge", RailEdge.class).isEmpty());
+        assertTrue(tableCon.findAll("RailNode", RailNode.class).isEmpty());
+        assertTrue(tableCon.findAll("RailEdge", RailEdge.class).isEmpty());
     }
     
     @Test
@@ -404,8 +398,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = station.getOwner();
         RailNode goal = inst.extend(player, station.getPlatform().getRailNode(), TEST_POS);
         
-        EM.flush();
-        EM.refresh(goal);
+        em.flush();
+        em.refresh(goal);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(goal.getOutEdges().get(0));
@@ -413,8 +407,8 @@ public class RailControllerTest extends AbstractControllerTest {
         
         inst.remove(player, edges);
         
-        assertEquals(1, TCON.findAll("RailNode", RailNode.class).size());
-        assertTrue(TCON.findAll("RailEdge", RailEdge.class).isEmpty());
+        assertEquals(1, tableCon.findAll("RailNode", RailNode.class).size());
+        assertTrue(tableCon.findAll("RailEdge", RailEdge.class).isEmpty());
     }
     
     @Test
@@ -436,9 +430,9 @@ public class RailControllerTest extends AbstractControllerTest {
         RailNode created2 = inst.create(player, new SimplePoint(1000, 1000));
         inst.extend(player, created2, new SimplePoint(2000, 1000));
         
-        EM.flush();
-        EM.refresh(created1);
-        EM.refresh(created2);
+        em.flush();
+        em.refresh(created1);
+        em.refresh(created2);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created1.getOutEdges().get(0));
@@ -458,8 +452,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player other = createOther();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created.getOutEdges().get(0));
@@ -473,8 +467,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created.getOutEdges().get(0));
@@ -492,8 +486,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         List<RailEdge> edges = new ArrayList<>();
         edges.add(created.getOutEdges().get(0));
@@ -515,8 +509,8 @@ public class RailControllerTest extends AbstractControllerTest {
         edge.setOwner(player);
         edge.setFrom(r1);
         edge.setTo(r2);
-        EM.persist(edge);
-        EM.flush();
+        em.persist(edge);
+        em.flush();
         inst.removeIfIsolatedRailNode(r1);
         inst.removeIfIsolatedRailNode(r2);
     }
@@ -533,8 +527,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         try {
             inst.findEdge(createOther(), 
@@ -555,9 +549,9 @@ public class RailControllerTest extends AbstractControllerTest {
         Player other = createOther();
         RailNode createdOther = inst.create(other, TEST_POS);
         inst.extend(other, createdOther, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
-        EM.refresh(createdOther);
+        em.flush();
+        em.refresh(created);
+        em.refresh(createdOther);
         
         try {
             inst.findEdge(createOther(), 
@@ -582,8 +576,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         
         try {
             inst.findEdge(player, 
@@ -600,8 +594,8 @@ public class RailControllerTest extends AbstractControllerTest {
         Player player = createPlayer();
         RailNode created = inst.create(player, TEST_POS);
         inst.extend(player, created, TEST_POS2);
-        EM.flush();
-        EM.refresh(created);
+        em.flush();
+        em.refresh(created);
         try {
             inst.findEdge(player, 
                     created.getInEdges().get(0).getId(),

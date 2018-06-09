@@ -23,10 +23,6 @@
  */
 package net.rushhourgame.controller;
 
-import java.lang.reflect.Method;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.DecimalMin;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -53,7 +49,7 @@ public class CompanyControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createCompanyController();
+        inst = cCon;
     }
 
     @Test

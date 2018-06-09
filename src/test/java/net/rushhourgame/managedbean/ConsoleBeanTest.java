@@ -25,8 +25,6 @@ package net.rushhourgame.managedbean;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.rushhourgame.RushHourSession;
-import net.rushhourgame.controller.PlayerController;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.SimplePoint;
@@ -34,11 +32,8 @@ import net.rushhourgame.exception.RushHourException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -68,14 +63,14 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         }
         
         inst = new ConsoleBean();
-        inst.pCon = PCON;
-        inst.cCon = CCON;
-        inst.rCon = RCON;
-        inst.railCon = RAILCON;
-        inst.stCon = STCON;
-        inst.lCon = LCON;
+        inst.pCon = pCon;
+        inst.cCon = cCon;
+        inst.rCon = rCon;
+        inst.railCon = railCon;
+        inst.stCon = stCon;
+        inst.lCon = lCon;
         inst.player = player;
-        inst.em = EM;
+        inst.em = em;
         inst.p = new SimplePoint();
         
         inst.session = session;
@@ -96,7 +91,7 @@ public class ConsoleBeanTest extends AbstractBeanTest{
         
         inst.createCompany();
         
-        assertEquals(1, CCON.findIn(TEST_POS, 2).size());
+        assertEquals(1, cCon.findIn(TEST_POS, 2).size());
         
         assertTrue(TEST_X == inst.getX());
         assertTrue(TEST_Y == inst.getY());
@@ -111,15 +106,15 @@ public class ConsoleBeanTest extends AbstractBeanTest{
     public void testRail() throws RushHourException {
         assertFalse(inst.hasTailRail());
         inst.createRail();
-        EM.flush();
+        em.flush();
         assertTrue(inst.hasTailRail());
         assertFalse(inst.canSplit());
         
         inst.setX(20);
         inst.setY(20);
         inst.extendRail();
-        EM.flush();
-        EM.refresh(inst.tailRail);
+        em.flush();
+        em.refresh(inst.tailRail);
         assertTrue(inst.canSplit());
         
         inst.setX(30);

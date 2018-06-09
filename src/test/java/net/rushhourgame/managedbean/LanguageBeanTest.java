@@ -24,7 +24,6 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
-import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -49,7 +48,7 @@ public class LanguageBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         inst.rushHourSession = session;
-        inst.pCon = PCON;
+        inst.pCon = pCon;
     }
 
     @Test

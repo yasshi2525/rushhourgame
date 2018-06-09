@@ -23,40 +23,21 @@
  */
 package net.rushhourgame;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import net.rushhourgame.controller.AssistanceController;
-import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
-import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.LineController;
-import net.rushhourgame.controller.LineRouteSearcher;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.controller.RailController;
-import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
-import net.rushhourgame.controller.SimpleAssistanceController;
-import net.rushhourgame.controller.SimpleHumanController;
-import net.rushhourgame.controller.SimpleStepForHumanController;
-import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StepForHumanController;
-import net.rushhourgame.controller.TrainController;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
-import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.Residence;
@@ -70,11 +51,9 @@ import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -83,90 +62,35 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class GameMasterTest {
+    protected ControllerFactory factory;
 
     protected GameMaster inst;
 
     @Mock
-    protected DebugInitializer debug;
-    @Mock
     protected Lock lock;
 
-    protected static final EntityManager EM = LocalEntityManager.createEntityManager();
-    protected static final TrainController TCON = ControllerFactory.createTrainController();
-    protected static final CompanyController CCON = ControllerFactory.createCompanyController();
-    protected static final PlayerController PCON = ControllerFactory.createPlayController();
-    protected static final StationController STCON = ControllerFactory.createStationController();
-    protected static final RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-    protected static final LineRouteSearcher LSEARCHER = ControllerFactory.createLineRouteSearcher();
-    protected static final ResidenceController RCON = ControllerFactory.createResidenceController();
-    protected static final LineController LCON = ControllerFactory.createLineController();
-    protected static final RailController RAILCON = ControllerFactory.createRailController();
-    protected static final StepForHumanController SCON = ControllerFactory.createStepForHumanController();
-    protected SimpleAssistanceController aCon;
-    protected SimpleHumanController hCon;
-    
     protected static final Pointable ORIGIN = new SimplePoint();
     protected static final Pointable FAR = new SimplePoint(10, 20);
-
-    @Mock
-    protected ManagedExecutorService executorService;
-
-    @Mock
-    protected ManagedScheduledExecutorService timerService;
     
     @Mock
     protected Future<Boolean> future;
 
     @Before
     public void setUp() {
-        EM.getTransaction().begin();
+        factory = new ControllerFactory();
 
-        inst = spy(new GameMaster());
-        inst.debug = debug;
-        inst.executorService = executorService;
-        inst.timerService = timerService;
-        inst.searcher = spy(SEARCHER);
-        inst.searcher.init();
-        inst.prop = RushHourProperties.getInstance();
-        inst.stCon = spy(STCON);
-        inst.tCon = spy(TCON);
-        inst.rCon = spy(RCON);
-        inst.cCon = spy(CCON);
-        inst.lCon = spy(LCON);
+        inst = factory.getGameMaster();
         
-        hCon = spy(new SimpleHumanController());
-        hCon.init();
-        hCon.init(EM, ErrorMessageBuilder.instance, RushHourProperties.INSTANCE, 
-                inst.rCon, inst.searcher, inst.stCon, inst.tCon);
-        inst.hCon = hCon;
-        
-        inst.tCon.findAll().clear();
-        inst.lCon.findAll().clear();
-        inst.stCon.findAll().clear();
-        inst.hCon.findAll().clear();
-        inst.rCon.findAll().clear();
-        
-        inst.em = spy(EM);
-        
-        aCon = new SimpleAssistanceController();
-        aCon.init();
-        aCon.init(EM, ErrorMessageBuilder.instance, inst.lCon, RushHourResourceBundle.getInstance(), 
-                RushHourProperties.INSTANCE, RAILCON, SCON, inst.stCon);
-        
-        inst.writeLock = mock(Lock.class);
         doNothing().when(inst.rCon).step(anyLong());
         // 人を生成しないようにする
-        doReturn(future).when(executorService).submit(any(RouteSearcher.class));
+        doReturn(future).when(inst.executorService).submit(any(RouteSearcher.class));
+        
+        factory.begin();
     }
 
     @After
     public void tearDown() {
-        inst.lCon.findAll().clear();
-        inst.hCon.findAll().clear();
-        inst.stCon.findAll().clear();
-        inst.tCon.findAll().clear();
-        inst.rCon.findAll().clear();
-        EM.getTransaction().rollback();
+        factory.rollback();
     }
     
     @Test
@@ -187,7 +111,7 @@ public class GameMasterTest {
     public void testConstructTempleateWorld() throws Exception {
         inst.constructTemplateWorld();
 
-        verify(debug).init();
+        verify(inst.debug).init();
     }
 
     @Test
@@ -196,33 +120,30 @@ public class GameMasterTest {
 
         assertTrue(inst.startGame());
 
-        verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
         verify(inst, times(1)).synchronizeDatabase();
     }
 
     @Test
     public void testStartGameAlreadyRunning() {
-        inst.timerFuture = mock(ScheduledFuture.class);
         doReturn(false).when(inst.timerFuture).isDone();
 
         assertFalse(inst.startGame());
         verify(inst, never()).synchronizeDatabase();
-        verify(timerService, never()).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.timerService, never()).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
     }
 
     @Test
     public void testStartGameWhenCanceled() {
-        inst.timerFuture = mock(ScheduledFuture.class);
         doReturn(true).when(inst.timerFuture).isDone();
 
         assertTrue(inst.startGame());
-        verify(timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(inst.timerService, times(1)).scheduleWithFixedDelay(any(GameMaster.class), anyLong(), anyLong(), any(TimeUnit.class));
         verify(inst, times(1)).synchronizeDatabase();
     }
 
     @Test
     public void testStopGame() {
-        inst.timerFuture = mock(ScheduledFuture.class);
         doReturn(false).when(inst.timerFuture).isDone();
         doReturn(true).when(inst.timerFuture).cancel(eq(false));
 
@@ -243,7 +164,6 @@ public class GameMasterTest {
 
     @Test
     public void testStopGameAlreadyCanceled() {
-        inst.timerFuture = mock(ScheduledFuture.class);
         doReturn(true).when(inst.timerFuture).isDone();
 
         assertFalse(inst.stopGame());
@@ -254,7 +174,6 @@ public class GameMasterTest {
     
     @Test
     public void testStopGameCancellingFailed() {
-        inst.timerFuture = mock(ScheduledFuture.class);
         doReturn(false).when(inst.timerFuture).isDone();
         doReturn(false).when(inst.timerFuture).cancel(eq(false));
 
@@ -367,22 +286,25 @@ public class GameMasterTest {
     protected WorldPack createSmallWorld(boolean createsHuman) throws RushHourException {
         WorldPack pack = new WorldPack();
         pack.rsd = inst.rCon.create(ORIGIN);
-        pack.cmp = CCON.create(FAR);
-        pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+        pack.cmp = factory.getCompanyController().create(FAR);
+        pack.owner = factory.getPlayerController()
+                .upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 
-        AssistanceController.Result start = aCon.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
+        AssistanceController.Result start = factory.getAssistanceController()
+                .startWithStation(pack.owner, ORIGIN, Locale.getDefault());
         pack.st1 = start.station;
         pack.l = start.line;
 
-        AssistanceController.Result end = aCon.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
+        AssistanceController.Result end = factory.getAssistanceController()
+                .extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
         pack.st2 = end.station;
 
         if (createsHuman) {
             pack.h = inst.hCon.create(ORIGIN, pack.rsd, pack.cmp);
         }
 
-        pack.t = TCON.create(pack.owner);
-        TCON.deploy(pack.t, pack.owner, pack.l.findTopDeparture());
+        pack.t = factory.getTrainController().create(pack.owner);
+        factory.getTrainController().deploy(pack.t, pack.owner, pack.l.findTopDeparture());
 
         return pack;
     }

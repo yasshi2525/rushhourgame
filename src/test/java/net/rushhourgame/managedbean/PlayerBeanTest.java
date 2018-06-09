@@ -24,17 +24,12 @@
 package net.rushhourgame.managedbean;
 
 import java.io.IOException;
-import java.util.Locale;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import net.rushhourgame.entity.PlayerInfo;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
-import net.rushhourgame.json.UserData;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
 import org.mockito.Spy;
@@ -60,7 +55,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         inst.rushHourSession = session;
-        inst.pCon = PCON;
+        inst.pCon = pCon;
         inst.prop = PROP;
         doReturn(facesContext).when(inst).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
@@ -85,7 +80,7 @@ public class PlayerBeanTest extends AbstractBeanTest {
         assertTrue(inst.isSignIn());
         assertEquals(player.getInfo().getColor(), inst.getColor());
         assertEquals(player.getInfo().getIconUrl(), inst.getIconUrl());
-        assertEquals(player.getInfo().getName(), inst.getName());;
+        assertEquals(player.getInfo().getName(), inst.getName());
         assertEquals(player.getInfo().getTextColor(), inst.getTextColor());
     }
     

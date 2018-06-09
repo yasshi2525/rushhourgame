@@ -45,8 +45,8 @@ public class LocalTableController {
         "Player", "PlayerInfo", "OAuth"
     };
 
-    public LocalTableController(){
-        this.em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
+    public LocalTableController(EntityManager em){
+        this.em = em;
     }
 
     public void clean(){

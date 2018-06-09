@@ -24,15 +24,11 @@
 package net.rushhourgame.controller;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.controller.ControllerFactory.createDigestCalculator;
-import net.rushhourgame.entity.EncryptConverter;
 import net.rushhourgame.entity.OAuth;
 import net.rushhourgame.entity.SignInType;
 import org.junit.runner.RunWith;
@@ -51,15 +47,13 @@ public class OAuthControllerTest extends AbstractControllerTest{
     protected static final String TEST_REQ_TOKEN_SECRET = "test_secretBBB";
     protected static final String NOT_EXIST_REQ_TOKEN = "unexistrequesttoken";
     
-    @Spy
     protected OAuthController inst;
 
     @Before
     @Override
     public void setUp() {
         super.setUp();
-        ControllerFactory.init(inst);
-        inst.calculator = createDigestCalculator();
+        inst = oCon;
     }
 
     @Test
@@ -68,7 +62,7 @@ public class OAuthControllerTest extends AbstractControllerTest{
         assertNotNull(created.getId());
         assertEquals(TEST_REQ_TOKEN, created.getRequestToken());
         assertEquals(TEST_REQ_TOKEN_SECRET, created.getRequestTokenSecret());
-        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(1, tableCon.findAll("OAuth", OAuth.class).size());
     }
 
     /**
@@ -82,7 +76,7 @@ public class OAuthControllerTest extends AbstractControllerTest{
         assertEquals(TEST_REQ_TOKEN, updated.getRequestToken());
         assertEquals("updated", updated.getRequestTokenSecret());
         assertEquals(SignInType.LOCAL, updated.getSignIn());
-        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(1, tableCon.findAll("OAuth", OAuth.class).size());
     }
     
     @Test
@@ -104,10 +98,10 @@ public class OAuthControllerTest extends AbstractControllerTest{
     public void testUpsertRequestTokenOtherSignIn() throws RushHourException {
         OAuth target = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
         OAuth other = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.TWITTER);
-        EM.flush();
+        em.flush();
         assertNotEquals(target.getId(), other.getId());
         assertNotEquals(target.getSignIn(), other.getSignIn());
-        assertEquals(2, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(2, tableCon.findAll("OAuth", OAuth.class).size());
     }
 
     @Test
@@ -144,16 +138,16 @@ public class OAuthControllerTest extends AbstractControllerTest{
     @Test
     public void testPurgeOld() throws RushHourException{
         OAuth target = inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
-        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(1, tableCon.findAll("OAuth", OAuth.class).size());
         inst.purgeOld(0);
-        assertEquals(0, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(0, tableCon.findAll("OAuth", OAuth.class).size());
     }
     
     @Test
     public void testPurgeOldRemain() throws RushHourException{
         inst.upsertRequestToken(TEST_REQ_TOKEN, TEST_REQ_TOKEN_SECRET, SignInType.LOCAL);
-        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(1, tableCon.findAll("OAuth", OAuth.class).size());
         inst.purgeOld(1);
-        assertEquals(1, TCON.findAll("OAuth", OAuth.class).size());
+        assertEquals(1, tableCon.findAll("OAuth", OAuth.class).size());
     }
 }

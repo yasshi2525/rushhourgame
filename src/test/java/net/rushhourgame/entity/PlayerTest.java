@@ -52,6 +52,6 @@ public class PlayerTest extends AbstractEntityTest{
         player.setToken("token");
         player.setInfo(info);
         player.setSignIn(SignInType.LOCAL);
-        EM.persist(player);
+        em.persist(player);
     }
 }

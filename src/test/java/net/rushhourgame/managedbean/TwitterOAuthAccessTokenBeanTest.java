@@ -27,16 +27,13 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
 import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import net.rushhourgame.RushHourSession;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.httpclient.TwitterOAuthAccessTokenClient;
 import net.rushhourgame.httpclient.TwitterUserShowClient;
-import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.TwitterUserData;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,8 +68,8 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
     public void setUp() {
         super.setUp();
         try {
-            spy.oAuthController = OCON;
-            spy.playerController = PCON;
+            spy.oAuthController = oCon;
+            spy.playerController = pCon;
             spy.rushHourSession = session;
             spy.client = client;
             spy.userShowClient = showClient;
@@ -89,7 +86,7 @@ public class TwitterOAuthAccessTokenBeanTest extends AbstractBeanTest {
             doReturn("test_url").when(userData).getIconUrl();
             doReturn(userData).when(showClient).getUserData();
             doReturn(Locale.getDefault()).when(session).getLocale();
-            OCON.upsertRequestToken("test", "test_sec", SignInType.TWITTER);
+            oCon.upsertRequestToken("test", "test_sec", SignInType.TWITTER);
         } catch (IOException | RushHourException ex) {
             Logger.getLogger(TwitterOAuthAccessTokenBeanTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();

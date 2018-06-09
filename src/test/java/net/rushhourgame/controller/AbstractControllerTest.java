@@ -28,15 +28,12 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotNull;
 import javax.validation.executable.ExecutableValidator;
-import net.rushhourgame.DebugInitializer;
-import net.rushhourgame.GameMaster;
-import net.rushhourgame.LocalEntityManager;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.RushHourProperties;
-import static net.rushhourgame.controller.ControllerFactory.LCON;
+import net.rushhourgame.RushHourResourceBundle;
+import net.rushhourgame.entity.EncryptConverter;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SignInType;
@@ -47,37 +44,38 @@ import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.mock;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class AbstractControllerTest {
+    protected ControllerFactory factory;
 
-    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
-    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
-    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
-    protected final static PlayerController PCON = ControllerFactory.createPlayController();
-    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static RailController RAILCON = ControllerFactory.createRailController();
-    protected final static StationController STCON = ControllerFactory.createStationController();
-    protected final static LineController LCON = ControllerFactory.createLineController();
-    protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
-    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
-    protected final static HumanController HCON = ControllerFactory.createHumanController();
-    protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
-    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
-    protected final static GameMaster GM = ControllerFactory.createGameMaster();
+    protected AssistanceController aCon;
+    protected CompanyController cCon;
+    protected DigestCalculator calc;
+    protected EncryptConverter converter;
+    protected HumanController hCon;
+    protected LineController lCon;
+    protected LineRouteSearcher lSearcher;
+    protected OAuthController oCon;
+    protected PlayerController pCon;
+    protected RailController railCon;
+    protected ResidenceController rCon;
+    protected RouteSearcher searcher;
+    protected StationController stCon;
+    protected StepForHumanController sCon;
+    protected TrainController tCon;
+
+    protected LocalTableController tableCon;
+
+    protected EntityManager em;
+    protected static RushHourProperties PROP = RushHourProperties.getInstance();
+    protected static RushHourResourceBundle MSG = RushHourResourceBundle.getInstance();
+    protected static ErrorMessageBuilder BUILDER = ErrorMessageBuilder.getInstance();
 
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
@@ -90,22 +88,21 @@ public class AbstractControllerTest {
 
     @Before
     public void setUp() {
-        EM.getTransaction().begin();
-        LCON.synchronizeDatabase();
-        RCON.synchronizeDatabase();
-        STCON.synchronizeDatabase();
-        HCON.synchronizeDatabase();
-        TRAINCON.synchronizeDatabase();
+        factory = new ControllerFactory();
+        instantiate();
+        
+        factory.begin();
+        
+        lCon.synchronizeDatabase();
+        rCon.synchronizeDatabase();
+        stCon.synchronizeDatabase();
+        hCon.synchronizeDatabase();
+        tCon.synchronizeDatabase();
     }
 
     @After
     public void tearDown() {
-        LCON.findAll().clear();
-        HCON.findAll().clear();
-        STCON.findAll().clear();
-        TRAINCON.findAll().clear();
-        RCON.findAll().clear();
-        EM.getTransaction().rollback();
+        factory.rollback();
     }
 
     @AfterClass
@@ -113,18 +110,18 @@ public class AbstractControllerTest {
         validatorFactory.close();
     }
 
-    protected static Player createPlayer() throws RushHourException {
-        return PCON.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+    protected Player createPlayer() throws RushHourException {
+        return pCon.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
 
-    protected static Player createOther() throws RushHourException {
-        return PCON.upsertPlayer("_other", "_other", "_other", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+    protected Player createOther() throws RushHourException {
+        return pCon.upsertPlayer("_other", "_other", "_other", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
     }
 
-    protected static Station createStation() throws RushHourException {
+    protected Station createStation() throws RushHourException {
         Player owner = createPlayer();
-        RailNode ndoe = RAILCON.create(owner, new SimplePoint(0, 0));
-        return STCON.create(owner, ndoe, "_test");
+        RailNode ndoe = railCon.create(owner, new SimplePoint(0, 0));
+        return stCon.create(owner, ndoe, "_test");
     }
 
     protected static <U, T> void assertViolatedAnnotationTypeIs(Class<U> annotation, Set<ConstraintViolation<T>> violations) {
@@ -138,4 +135,23 @@ public class AbstractControllerTest {
         assertEquals(violatedValue, violations.iterator().next().getInvalidValue());
     }
 
+    protected void instantiate() {
+        aCon = factory.getAssistanceController();
+        cCon = factory.getCompanyController();
+        calc = factory.getDigestCalculator();
+        converter = factory.getEncryptConverter();
+        hCon = factory.getHumanController();
+        lCon = factory.getLineController();
+        lSearcher = factory.getLineRouteSearcher();
+        oCon = factory.getOAuthController();
+        pCon = factory.getPlayerController();
+        rCon = factory.getResidenceController();
+        railCon = factory.getRailController();
+        sCon = factory.getStepForHumanController();
+        searcher = factory.getRouteSearcher();
+        stCon = factory.getStationController();
+        tCon = factory.getTrainController();
+        tableCon = factory.getLocalTableController();
+        em = factory.getEntityManager();
+    }
 }

@@ -25,11 +25,7 @@ package net.rushhourgame.controller;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.NotNull;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.controller.AbstractControllerTest.createPlayer;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
@@ -38,14 +34,11 @@ import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
-import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.troute.LineStepDeparture;
-import net.rushhourgame.entity.troute.LineStepPassing;
 import net.rushhourgame.exception.RushHourException;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -68,7 +61,7 @@ public class LineControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createLineController();
+        inst = lCon;
         inst.writeLock = spy(inst.writeLock);
         inst.readLock = spy(inst.readLock);
     }
@@ -107,9 +100,9 @@ public class LineControllerTest extends AbstractControllerTest {
         Line line = inst.create(owner, TEST_NAME);
 
         LineStep parent = inst.start(line, owner, st);
-        EM.flush();
-        EM.refresh(line);
-        EM.refresh(parent);
+        em.flush();
+        em.refresh(line);
+        em.refresh(parent);
         LineStepDeparture child = parent.getDeparture();
 
         verify(inst.writeLock, times(3)).lock();
@@ -158,7 +151,7 @@ public class LineControllerTest extends AbstractControllerTest {
         Line line = inst.create(owner, TEST_NAME);
 
         // lineをINSERTする
-        EM.flush();
+        em.flush();
 
         LineStep current = inst.start(line, owner, st);
         assertTrue(inst.findNext(current, owner).isEmpty());
@@ -173,13 +166,13 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testFindNext() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode extend = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode extend = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
         Line line = inst.create(owner, TEST_NAME);
         LineStep current = inst.start(line, owner, st);
 
-        EM.flush();
-        EM.refresh(extend);
+        em.flush();
+        em.refresh(extend);
 
         assertEquals(extend.getInEdges().get(0), inst.findNext(current, owner).get(0));
         
@@ -194,13 +187,13 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st = createStation();
         Player owner = st.getOwner();
         Player other = createOther();
-        RailNode extend = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode extend = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
         Line line = inst.create(owner, TEST_NAME);
         LineStep current = inst.start(line, owner, st);
 
-        EM.flush();
-        EM.refresh(extend);
+        em.flush();
+        em.refresh(extend);
 
         try {
             inst.findNext(current, other);
@@ -230,7 +223,7 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testFindNextInvalidLine() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode extend = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode extend = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
         Line line = inst.create(owner, TEST_NAME);
         LineStep current = inst.start(line, owner, st);
@@ -239,8 +232,8 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep invalidLineStep = new LineStep();
         invalidLineStep.setParent(line);
         line.getSteps().add(invalidLineStep);
-        EM.persist(invalidLineStep);
-        EM.flush();
+        em.persist(invalidLineStep);
+        em.flush();
 
         try {
             inst.findNext(current, owner);
@@ -254,10 +247,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testExtendMoving() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
 
         RailEdge edge = node.getInEdges().get(0);
 
@@ -269,8 +262,8 @@ public class LineControllerTest extends AbstractControllerTest {
         verify(inst.writeLock, times(4)).lock();
         verify(inst.writeLock, times(4)).unlock();
 
-        EM.flush();
-        EM.refresh(line);
+        em.flush();
+        em.refresh(line);
 
         assertNotNull(extended);
         assertEquals(extended, start.getNext());
@@ -290,19 +283,19 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st1 = createStation();
         Player owner = st1.getOwner();
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
-        Station st2 = STCON.create(owner, n2, "_test2");
+        RailNode n2 = railCon.extend(owner, n1, TEST_POS);
+        Station st2 = stCon.create(owner, n2, "_test2");
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
         RailEdge edge = n2.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep extended = inst.extend(start, owner, edge);
 
-        EM.flush();
-        EM.refresh(line);
+        em.flush();
+        em.refresh(line);
 
         assertNotNull(extended);
         assertEquals(extended, start.getNext());
@@ -322,11 +315,11 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st1 = createStation();
         Player owner = st1.getOwner();
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
-        Station st2 = STCON.create(owner, n2, "_test2");
+        RailNode n2 = railCon.extend(owner, n1, TEST_POS);
+        Station st2 = stCon.create(owner, n2, "_test2");
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
         RailEdge edgeBack = n2.getOutEdges().get(0);
@@ -336,8 +329,8 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep extended = inst.extend(start, owner, edgeGo);
         LineStep extended2 = inst.extend(extended, owner, edgeBack);
 
-        EM.flush();
-        EM.refresh(line);
+        em.flush();
+        em.refresh(line);
 
         assertNotNull(extended2);
         assertEquals(extended, start.getNext());
@@ -356,19 +349,19 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st1 = createStation();
         Player owner = st1.getOwner();
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
-        Station st2 = STCON.create(owner, n2, "_test2");
+        RailNode n2 = railCon.extend(owner, n1, TEST_POS);
+        Station st2 = stCon.create(owner, n2, "_test2");
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
         RailEdge edge = n2.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
         LineStep start = inst.start(line, owner, st1);
         LineStep extended = inst.extend(start, owner, edge, true);
 
-        EM.flush();
-        EM.refresh(line);
+        em.flush();
+        em.refresh(line);
 
         assertNotNull(extended);
         assertEquals(2, line.getSteps().size());
@@ -390,10 +383,10 @@ public class LineControllerTest extends AbstractControllerTest {
         Player owner = st.getOwner();
         Player other = createOther();
 
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
 
         RailEdge extend = node.getInEdges().get(0);
 
@@ -413,10 +406,10 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st = createStation();
         Player owner = st.getOwner();
         Player other = createOther();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
 
         RailEdge extend = node.getInEdges().get(0);
 
@@ -456,11 +449,11 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st = createStation();
         Player owner = st.getOwner();
 
-        RailNode unconnectedNode1 = RAILCON.create(owner, new SimplePoint(5, 5));
-        RailNode unconnectedNode2 = RAILCON.extend(owner, unconnectedNode1, new SimplePoint(8, 8));
+        RailNode unconnectedNode1 = railCon.create(owner, new SimplePoint(5, 5));
+        RailNode unconnectedNode2 = railCon.extend(owner, unconnectedNode1, new SimplePoint(8, 8));
 
-        EM.flush();
-        EM.refresh(unconnectedNode2);
+        em.flush();
+        em.refresh(unconnectedNode2);
         RailEdge unconnectedEdge = unconnectedNode2.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -478,10 +471,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testExtendNextRegisterted() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge edge = node.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -502,7 +495,7 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testInsertOtherFrom() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode n1 = RAILCON.create(other, TEST_POS);
+        RailNode n1 = railCon.create(other, TEST_POS);
 
         try {
             inst.insert(n1, n1, player);
@@ -516,8 +509,8 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testInsertOtherTo() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode n1 = RAILCON.create(player, TEST_POS);
-        RailNode n2 = RAILCON.create(other, TEST_POS);
+        RailNode n1 = railCon.create(player, TEST_POS);
+        RailNode n2 = railCon.create(other, TEST_POS);
 
         try {
             inst.insert(n1, n2, player);
@@ -530,8 +523,8 @@ public class LineControllerTest extends AbstractControllerTest {
     @Test
     public void testInsertUnconnected() throws RushHourException {
         Player player = createPlayer();
-        RailNode n1 = RAILCON.create(player, TEST_POS);
-        RailNode n2 = RAILCON.create(player, TEST_POS2);
+        RailNode n1 = railCon.create(player, TEST_POS);
+        RailNode n2 = railCon.create(player, TEST_POS2);
 
         try {
             inst.insert(n1, n2, player);
@@ -544,8 +537,8 @@ public class LineControllerTest extends AbstractControllerTest {
     @Test
     public void testInsertEmpty() throws RushHourException {
         Player player = createPlayer();
-        RailNode n1 = RAILCON.create(player, TEST_POS);
-        RailNode n2 = RAILCON.extend(player, n1, TEST_POS2);
+        RailNode n1 = railCon.create(player, TEST_POS);
+        RailNode n2 = railCon.extend(player, n1, TEST_POS2);
 
         try {
             inst.insert(n1, n2, player);
@@ -588,10 +581,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testCanEndMovingToDeparture() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge edge = node.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -611,10 +604,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testCanEndPassingToDeparture() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
         RailEdge backEdge = node.getOutEdges().get(0);
 
@@ -636,10 +629,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testCanEndStoppingToDeparture() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
         RailEdge backEdge = node.getOutEdges().get(0);
 
@@ -656,10 +649,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testCanEndUnconnected() throws RushHourException {
         Station st1 = createStation();
         Player owner = st1.getOwner();
-        RailNode node = RAILCON.extend(owner, st1.getPlatform().getRailNode(), TEST_POS);
-        Station st2 = STCON.create(owner, node, "_test2");
-        EM.flush();
-        EM.refresh(node);
+        RailNode node = railCon.extend(owner, st1.getPlatform().getRailNode(), TEST_POS);
+        Station st2 = stCon.create(owner, node, "_test2");
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -689,9 +682,9 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testCanEndHavingNext() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(21.0, 5.0));
-        EM.flush();
-        EM.refresh(node2);
+        RailNode node2 = railCon.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(21.0, 5.0));
+        em.flush();
+        em.refresh(node2);
         RailEdge goEdge = node2.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -709,10 +702,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testEnd() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
         RailEdge backEdge = node.getOutEdges().get(0);
 
@@ -753,9 +746,9 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testEndHavingNext() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(21.0, 5.0));
-        EM.flush();
-        EM.refresh(node2);
+        RailNode node2 = railCon.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(21.0, 5.0));
+        em.flush();
+        em.refresh(node2);
         RailEdge goEdge = node2.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -773,10 +766,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testEndUnconnected() throws RushHourException {
         Station st1 = createStation();
         Player owner = st1.getOwner();
-        RailNode node = RAILCON.extend(owner, st1.getPlatform().getRailNode(), TEST_POS);
-        Station st2 = STCON.create(owner, node, "_test2");
-        EM.flush();
-        EM.refresh(node);
+        RailNode node = railCon.extend(owner, st1.getPlatform().getRailNode(), TEST_POS);
+        Station st2 = stCon.create(owner, node, "_test2");
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
 
         Line line = inst.create(owner, TEST_NAME);
@@ -799,11 +792,11 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st1 = createStation();
         Player owner = st1.getOwner();
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
-        Station st2 = STCON.create(owner, n2, "_test2");
+        RailNode n2 = railCon.extend(owner, n1, TEST_POS);
+        Station st2 = stCon.create(owner, n2, "_test2");
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
         RailEdge edgeBack = n2.getOutEdges().get(0);
@@ -813,12 +806,12 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep extended = inst.extend(start, owner, edgeGo);
         LineStep extended2 = inst.extend(extended, owner, edgeBack);
 
-        EM.flush();
-        EM.refresh(line);
+        em.flush();
+        em.refresh(line);
 
         inst.end(extended2, owner);
 
-        List<StepForHumanThroughTrain> throughs = SCON.findThroughTrainAll();
+        List<StepForHumanThroughTrain> throughs = sCon.findThroughTrainAll();
         assertEquals(2, throughs.size());
 
         // 徒歩よりコストが安い
@@ -835,10 +828,10 @@ public class LineControllerTest extends AbstractControllerTest {
         Station st1 = createStation();
         Player owner = st1.getOwner();
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, TEST_POS);
+        RailNode n2 = railCon.extend(owner, n1, TEST_POS);
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
 
         RailEdge edgeGo1 = n2.getInEdges().get(0);
         RailEdge edgeBack1 = n2.getOutEdges().get(0);
@@ -849,16 +842,16 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep extended2 = inst.extend(extended1, owner, edgeBack1);
         inst.end(extended2, owner);
 
-        RailNode n3 = RAILCON.create(owner, TEST_POS2);
-        RailNode n4 = RAILCON.extend(owner, n3, new SimplePoint(100, 100));
+        RailNode n3 = railCon.create(owner, TEST_POS2);
+        RailNode n4 = railCon.extend(owner, n3, new SimplePoint(100, 100));
 
-        EM.flush();
-        EM.refresh(n4);
+        em.flush();
+        em.refresh(n4);
 
         RailEdge edgeGo2 = n4.getInEdges().get(0);
         RailEdge edgeBack2 = n4.getOutEdges().get(0);
 
-        Station st2 = STCON.create(owner, n3, "test2");
+        Station st2 = stCon.create(owner, n3, "test2");
 
         try {
             LineStep start2 = inst.start(line, owner, st2);
@@ -884,8 +877,8 @@ public class LineControllerTest extends AbstractControllerTest {
     @Test
     public void testRemovePlatformStopped() throws RushHourException {
         Player owner = createPlayer();
-        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
-        ACON.extendWithStation(owner, res.node, TEST_POS2, Locale.JAPANESE);
+        AssistanceController.Result res = aCon.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        aCon.extendWithStation(owner, res.node, TEST_POS2, Locale.JAPANESE);
         
         inst.remove(res.station.getPlatform(), owner);
         
@@ -896,15 +889,15 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testRemovePlatformPassed() throws RushHourException {
         Player owner = createPlayer();
         
-        RailNode r1 = RAILCON.create(owner, TEST_POS);
+        RailNode r1 = railCon.create(owner, TEST_POS);
 
-        RailNode r2 = RAILCON.extend(owner, r1, TEST_POS2);
-        EM.refresh(r1);
+        RailNode r2 = railCon.extend(owner, r1, TEST_POS2);
+        em.refresh(r1);
         RailEdge e1 = r1.getOutEdges().get(0);
         RailEdge e2 = r1.getInEdges().get(0);
         
-        Station st1 = STCON.create(owner, r1, TEST_NAME);
-        Station st2 = STCON.create(owner, r2, TEST_NAME + "2");
+        Station st1 = stCon.create(owner, r1, TEST_NAME);
+        Station st2 = stCon.create(owner, r2, TEST_NAME + "2");
         
         Line line = inst.create(owner, TEST_NAME);
         LineStep dpt = inst.start(line, owner, st1);
@@ -921,7 +914,7 @@ public class LineControllerTest extends AbstractControllerTest {
     @Test
     public void testRemoveLonelyPlatform() throws RushHourException {
         Player owner = createPlayer();
-        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        AssistanceController.Result res = aCon.startWithStation(owner, TEST_POS, Locale.JAPANESE);
         
         inst.remove(res.station.getPlatform(), owner);
         
@@ -931,8 +924,8 @@ public class LineControllerTest extends AbstractControllerTest {
     @Test
     public void testRemovePlatformWithOnlyOneStationLine() throws RushHourException {
         Player owner = createPlayer();
-        AssistanceController.Result res = ACON.startWithStation(owner, TEST_POS, Locale.JAPANESE);
-        ACON.extend(owner, res.node, TEST_POS2);
+        AssistanceController.Result res = aCon.startWithStation(owner, TEST_POS, Locale.JAPANESE);
+        aCon.extend(owner, res.node, TEST_POS2);
         
         inst.remove(res.station.getPlatform(), owner);
         
@@ -946,10 +939,10 @@ public class LineControllerTest extends AbstractControllerTest {
         Player owner = st1.getOwner();
 
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, new SimplePoint(100, 100));
+        RailNode n2 = railCon.extend(owner, n1, new SimplePoint(100, 100));
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
 
@@ -968,10 +961,10 @@ public class LineControllerTest extends AbstractControllerTest {
         Player owner = st1.getOwner();
 
         RailNode n1 = st1.getPlatform().getRailNode();
-        RailNode n2 = RAILCON.extend(owner, n1, new SimplePoint(100, 100));
+        RailNode n2 = railCon.extend(owner, n1, new SimplePoint(100, 100));
 
-        EM.flush();
-        EM.refresh(n2);
+        em.flush();
+        em.refresh(n2);
 
         RailEdge edgeGo = n2.getInEdges().get(0);
 
@@ -979,7 +972,7 @@ public class LineControllerTest extends AbstractControllerTest {
         LineStep start = inst.start(line, owner, st1);
         LineStep extend = inst.extend(start, owner, edgeGo);
 
-        EM.flush();
+        em.flush();
         List<Line> scopedLine = inst.findIn(new SimplePoint(0, 0), 2);
         assertEquals(1, scopedLine.size());
         assertEquals(2, scopedLine.get(0).getSteps().size());
@@ -998,10 +991,10 @@ public class LineControllerTest extends AbstractControllerTest {
     public void testFindTopAlreadyCompleted() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode node = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        RailNode node = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
 
-        EM.flush();
-        EM.refresh(node);
+        em.flush();
+        em.refresh(node);
         RailEdge goEdge = node.getInEdges().get(0);
         RailEdge backEdge = node.getOutEdges().get(0);
 
@@ -1044,7 +1037,7 @@ public class LineControllerTest extends AbstractControllerTest {
         Station station = createStation();
         Player owner = station.getOwner();
         RailNode start = station.getPlatform().getRailNode();
-        RailNode extended = RAILCON.extend(owner, start, TEST_POS);
+        RailNode extended = railCon.extend(owner, start, TEST_POS);
         Line line = inst.create(station.getOwner(), TEST_NAME);
         inst.start(line, owner, station);
         inst.insert(start, extended, owner);

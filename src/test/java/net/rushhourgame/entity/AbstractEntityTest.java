@@ -23,37 +23,26 @@
  */
 package net.rushhourgame.entity;
 
-import net.rushhourgame.controller.LocalTableController;
 import javax.persistence.EntityManager;
-import net.rushhourgame.LocalEntityManager;
-import net.rushhourgame.RushHourProperties;
-import net.rushhourgame.controller.CompanyController;
-import net.rushhourgame.controller.ControllerFactory;
-import net.rushhourgame.controller.DigestCalculator;
-import net.rushhourgame.controller.LineController;
-import net.rushhourgame.controller.OAuthController;
-import net.rushhourgame.controller.PlayerController;
+import javax.persistence.Persistence;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public abstract class AbstractEntityTest {
-    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
-    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static LineController LCON = ControllerFactory.createLineController();
+    protected EntityManager em;
     
     @Before
     public void setUp() {
-        EM.getTransaction().begin();
+        em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
+        em.getTransaction().begin();
     }
     
     @After
     public void tearDown() {
-        EM.getTransaction().rollback();
+        em.getTransaction().rollback();
     }
 }

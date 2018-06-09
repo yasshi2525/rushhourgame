@@ -25,7 +25,6 @@ package net.rushhourgame.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import static net.rushhourgame.RushHourProperties.GAME_DEF_HUMAN_LIFESPAN;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
@@ -38,7 +37,6 @@ import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
-import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
@@ -66,7 +64,7 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = spy(ControllerFactory.createHumanController());
+        inst = hCon;
         inst.writeLock = spy(inst.writeLock);
         inst.readLock = spy(inst.readLock);
     }
@@ -80,8 +78,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         inst.entities = new ArrayList<>();
-        Residence src = RCON.create(origin);
-        Company dst = CCON.create(origin);
+        Residence src = rCon.create(origin);
+        Company dst = cCon.create(origin);
 
         Human h = inst.create(TEST, src, dst);
         
@@ -104,8 +102,8 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateUnsynchronized() throws RushHourException {
         inst.entities = null;
-        Residence src = RCON.create(origin);
-        Company dst = CCON.create(origin);
+        Residence src = rCon.create(origin);
+        Company dst = cCon.create(origin);
 
         Human h = inst.create(TEST, src, dst);
 
@@ -169,8 +167,8 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithSearching() throws RushHourException {
-        Residence src = RCON.create(origin);
-        Company dst = CCON.create(origin);
+        Residence src = rCon.create(origin);
+        Company dst = cCon.create(origin);
         inst.searcher.call();
         
         inst.create(origin, src, dst);
@@ -189,8 +187,8 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testStepWithoutSearching() throws RushHourException {
-        Residence src = RCON.create(origin);
-        Company dst = CCON.create(origin);
+        Residence src = rCon.create(origin);
+        Company dst = cCon.create(origin);
 
         inst.create(origin, src, dst);
         Human h = spy(inst.findAll().get(0));
@@ -210,7 +208,7 @@ public class HumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testKillHuman() {
-        inst.em = spy(EM);
+        inst.em = spy(em);
 
         Human happy = spy(Human.class);
         Human tired = spy(Human.class); // lifespan = 0
@@ -269,10 +267,10 @@ public class HumanControllerTest extends AbstractControllerTest {
     @Test
     public void testInheritEntity() throws RushHourException {
         Player player = createPlayer();
-        Residence src = RCON.create(origin);
-        Company dst = CCON.create(origin);
-        RailNode node = RAILCON.create(player, origin);
-        Station station = STCON.create(player, node, "hoge");
+        Residence src = rCon.create(origin);
+        Company dst = cCon.create(origin);
+        RailNode node = railCon.create(player, origin);
+        Station station = stCon.create(player, node, "hoge");
         
         Human human = inst.create(TEST, src, dst);
         human.enterIntoPlatform(station.getTicketGate(), station.getPlatform());

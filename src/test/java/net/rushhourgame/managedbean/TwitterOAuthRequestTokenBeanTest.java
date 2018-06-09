@@ -26,7 +26,6 @@ package net.rushhourgame.managedbean;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
 import net.rushhourgame.ErrorMessageBuilder;
 import static net.rushhourgame.RushHourResourceBundle.SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED;
 import net.rushhourgame.entity.SignInType;
@@ -65,7 +64,7 @@ public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest {
         }
         spy.errMsgBuilder = ErrorMessageBuilder.getInstance();
         spy.client = client;
-        spy.oAuthController = OCON;
+        spy.oAuthController = oCon;
         spy.prop = PROP;
         doReturn(facesContext).when(spy).getFacesContext();
         doReturn(externalContext).when(facesContext).getExternalContext();
@@ -79,8 +78,8 @@ public class TwitterOAuthRequestTokenBeanTest extends AbstractBeanTest {
 
         spy.requestRequestToken();
 
-        assertNotNull(OCON.findByRequestToken("test", SignInType.TWITTER));
-        assertEquals("test", OCON.findByRequestToken("test", SignInType.TWITTER).getRequestToken());
+        assertNotNull(oCon.findByRequestToken("test", SignInType.TWITTER));
+        assertEquals("test", oCon.findByRequestToken("test", SignInType.TWITTER).getRequestToken());
         verify(externalContext, times(1)).redirect(anyString());
     }
 

@@ -23,17 +23,11 @@
  */
 package net.rushhourgame.controller;
 
-import java.util.ArrayList;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.Min;
-import net.rushhourgame.GameMaster;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import static net.rushhourgame.RushHourProperties.*;
-import static net.rushhourgame.controller.AbstractControllerTest.CCON;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Pointable;
@@ -62,20 +56,12 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = spy(ControllerFactory.createResidenceController());
-        inst.searcher = spy(inst.searcher);
-        inst.cCon = spy(ControllerFactory.createCompanyController());
-        inst.hCon = spy(ControllerFactory.createHumanController());
-        inst.writeLock = spy(inst.writeLock);
-        inst.readLock = spy(inst.readLock);
+        inst = rCon;
     }
 
     @Test
     public void testCreate() throws RushHourException {
         Residence created = inst.create(TEST_POS);
-        
-        verify(inst.writeLock, times(2)).lock();
-        verify(inst.writeLock, times(2)).unlock();
         
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
@@ -83,15 +69,12 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_CAPACITY)), created.getCapacity());
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_RSD_INTERVAL)), created.getInterval());
 
-        assertEquals(1, RCON.findAll().size());
+        assertEquals(1, rCon.findAll().size());
     }
 
     @Test
     public void testCreate4arg() throws RushHourException {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
-        
-        verify(inst.writeLock, times(2)).lock();
-        verify(inst.writeLock, times(2)).unlock();
         
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
@@ -99,7 +82,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         assertEquals(TEST_CAPACITY, created.getCapacity());
         assertEquals(TEST_INTERVAL, created.getInterval());
 
-        assertEquals(1, RCON.findAll().size());
+        assertEquals(1, rCon.findAll().size());
     }
 
     @Test
@@ -124,9 +107,6 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
         inst.step(0L);
         
-        verify(inst.writeLock, times(3)).lock();
-        verify(inst.writeLock, times(3)).unlock();
-        
         verify(inst.cCon, times(0)).findAll();
     }
     
@@ -147,7 +127,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         inst.findAll().remove(0);
         inst.findAll().add(src);
         
-        Company dest = CCON.create(TEST_POS);
+        Company dest = cCon.create(TEST_POS);
         RouteNode node = mock(RouteNode.class);
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();
@@ -167,7 +147,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
         inst.findAll().remove(0);
         inst.findAll().add(src);
         
-        Company dest = CCON.create(new SimplePoint(10000, 10000));
+        Company dest = cCon.create(new SimplePoint(10000, 10000));
         RouteNode node = mock(RouteNode.class);
         doReturn(node).when(inst.searcher).getStart(eq(src), eq(dest));
         doReturn(src.distTo(dest)).when(node).getCost();

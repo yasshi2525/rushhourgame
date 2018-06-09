@@ -37,11 +37,6 @@ import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.SimplePoint;
-import net.rushhourgame.entity.hroute.StepForHumanDirectly;
-import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
-import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
-import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
-import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
@@ -69,7 +64,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createAssistanceController();
+        inst = aCon;
         try {
             player = createPlayer();
         } catch (RushHourException ex) {
@@ -87,13 +82,13 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         verify(inst.writeLock,times(1)).lock();
         verify(inst.writeLock,times(1)).unlock();
         
-        EM.flush();
-        EM.refresh(res.node);
+        em.flush();
+        em.refresh(res.node);
 
         assertTrue(res.node.distTo(ORGIN) == 0);
         assertEquals("駅1", res.station.getName());
         Line line = res.line;
-        EM.refresh(line);
+        em.refresh(line);
         assertEquals("路線1", line.getName());
         assertEquals(1, line.getSteps().size());
     }
@@ -140,7 +135,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Line line = start.line;
         assertTrue(line.isCompleted());
 
-        EM.refresh(line);
+        em.refresh(line);
 
         LineStep dep = findTop(line);
         assertDeparture(dep, start.node);
@@ -166,7 +161,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Line line = start.line;
         assertTrue(line.isCompleted());
 
-        EM.refresh(line);
+        em.refresh(line);
 
         // n2 -- [start] -- n1        
         LineStep dep2 = findTop(line);
@@ -201,13 +196,13 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
         Result n1 = inst.extend(player, start.node, EXTENDED);
         Result n2 = inst.extend(player, n1.node, EXTENDED2);
-        EM.flush();
+        em.flush();
 
-        assertEquals(1, LCON.findAll(player).size());
-        Line line = LCON.findAll(player).get(0);
+        assertEquals(1, lCon.findAll(player).size());
+        Line line = lCon.findAll(player).get(0);
         assertTrue(line.isCompleted());
 
-        EM.refresh(line);
+        em.refresh(line);
 
         //[start]-- n1 -- n2        
         LineStep top = findTop(line);
@@ -245,7 +240,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Line line = start.line;
         assertTrue(line.isCompleted());
 
-        EM.refresh(line);
+        em.refresh(line);
         // start -> n1 -> n3 -> n1 -> n2 -> n1 -> start
         LineStep top = findTop(line);
         assertDeparture(top, start.node);
@@ -273,7 +268,7 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         Line line = start.line;
         assertTrue(line.isCompleted());
 
-        EM.refresh(line);
+        em.refresh(line);
 
         // start -> n3 -> start -> n2 -> start -> n1 -> start
         LineStep top = findTop(line);
@@ -296,11 +291,11 @@ public class AssistanceControllerTest extends AbstractControllerTest {
     @Test
     public void testExtendWithLineController() throws RushHourException {
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
-        RailNode n2 = RAILCON.extend(player, start.node, EXTENDED);
-        EM.flush();
-        EM.refresh(n2);
-        EM.refresh(start.line);
-        LCON.extend(start.line.findTop(), player, n2.getInEdges().get(0));
+        RailNode n2 = railCon.extend(player, start.node, EXTENDED);
+        em.flush();
+        em.refresh(n2);
+        em.refresh(start.line);
+        lCon.extend(start.line.findTop(), player, n2.getInEdges().get(0));
         inst.extend(player, n2, EXTENDED2);
     }
 
@@ -310,15 +305,15 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         // after  : st -- st -- st
         Result start = inst.startWithStation(player, ORGIN, Locale.JAPANESE);
         Result extended = inst.extendWithStation(player, start.node, EXTENDED, Locale.JAPANESE);
-        EM.flush();
+        em.flush();
         
-        assertEquals(2, TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
+        assertEquals(2, tableCon.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
         
         Result extended2 = inst.extendWithStation(player, extended.node, EXTENDED2, Locale.JAPANESE);
-        EM.flush();
+        em.flush();
         
         // 古いのが残っていない
-        assertEquals(6, TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
+        assertEquals(6, tableCon.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class).size());
     }
 
     protected static LineStep findTop(Line line) {
@@ -332,19 +327,19 @@ public class AssistanceControllerTest extends AbstractControllerTest {
         assertEquals(on, step.getDeparture().getStaying().getRailNode());
     }
 
-    protected static void assertMoving(LineStep step, RailNode from, RailNode to) {
-        from = EM.merge(from);
-        to = EM.merge(to);
-        RailEdge edge = EM.merge(step.getMoving().getRunning());
+    protected void assertMoving(LineStep step, RailNode from, RailNode to) {
+        from = em.merge(from);
+        to = em.merge(to);
+        RailEdge edge = em.merge(step.getMoving().getRunning());
         assertNotNull(step.getMoving());
         assertEquals(from, edge.getFrom());
         assertEquals(to, edge.getTo());
     }
 
-    protected static void assertStopping(LineStep step, RailNode from, RailNode to) {
-        from = EM.merge(from);
-        to = EM.merge(to);
-        RailEdge edge = EM.merge(step.getStopping().getRunning());
+    protected void assertStopping(LineStep step, RailNode from, RailNode to) {
+        from = em.merge(from);
+        to = em.merge(to);
+        RailEdge edge = em.merge(step.getStopping().getRunning());
         assertNotNull(step.getStopping());
         assertEquals(from, edge.getFrom());
         assertEquals(to, edge.getTo());

@@ -24,20 +24,16 @@
 package net.rushhourgame.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import net.rushhourgame.GameMaster;
 import net.rushhourgame.controller.route.PermanentRouteEdge;
 import net.rushhourgame.controller.route.PermanentRouteNode;
 import net.rushhourgame.controller.route.RouteEdge;
 import net.rushhourgame.controller.route.RouteNode;
 import net.rushhourgame.controller.route.TemporaryHumanPoint;
 import net.rushhourgame.controller.route.TemporaryHumanRouteEdge;
-import net.rushhourgame.controller.route.TemporaryHumanRouteNode;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Line;
@@ -47,7 +43,6 @@ import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import net.rushhourgame.entity.RelayPointForHuman;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.entity.SimplePoint;
@@ -65,7 +60,6 @@ import net.rushhourgame.entity.hroute.StepForHumanTransfer;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -85,9 +79,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createRouteSearcher();
-        inst.hCon = spy(inst.hCon);
-        inst.init();
+        inst = searcher;
     }
 
     @Test
@@ -220,8 +212,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testIsReachableRsdCmp() throws RushHourException {
-        Residence r = RCON.create(new SimplePoint(10, 10));
-        Company c = CCON.create(new SimplePoint(10, 2));
+        Residence r = rCon.create(new SimplePoint(10, 10));
+        Company c = cCon.create(new SimplePoint(10, 2));
         doReturn(new ArrayList<>()).when(inst.hCon).findAll();
         assertTrue(inst.call());
         assertTrue(inst.isReachable(r, c));
@@ -234,7 +226,7 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testSearchOnlyCmp() throws RushHourException {
-        Company cmp = CCON.create(TEST_POS);
+        Company cmp = cCon.create(TEST_POS);
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
 
@@ -253,8 +245,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
      */
     @Test
     public void testSearchUnreach() throws RushHourException {
-        Company cmp1 = CCON.create(new SimplePoint(10, 10));
-        Company cmp2 = CCON.create(new SimplePoint(20, 20));
+        Company cmp1 = cCon.create(new SimplePoint(10, 10));
+        Company cmp2 = cCon.create(new SimplePoint(20, 20));
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
 
@@ -271,8 +263,8 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testSearch() throws RushHourException {
-        Residence rsd = RCON.create(new SimplePoint(10, 10));
-        Company cmp = CCON.create(new SimplePoint(10, 20));
+        Residence rsd = rCon.create(new SimplePoint(10, 10));
+        Company cmp = cCon.create(new SimplePoint(10, 20));
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
 
@@ -310,11 +302,11 @@ public class RouteSearcherTest extends AbstractControllerTest {
      */
     @Test
     public void testSearchDetour() throws RushHourException {
-        Residence r = RCON.create(new SimplePoint(-10, -10));
-        Company c = CCON.create(new SimplePoint(10, 1000));
+        Residence r = rCon.create(new SimplePoint(-10, -10));
+        Company c = cCon.create(new SimplePoint(10, 1000));
         Player p = createPlayer();
-        AssistanceController.Result result = ACON.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
-        AssistanceController.Result extend = ACON.extendWithStation(p, result.node, new SimplePoint(0, 990), Locale.JAPANESE);
+        AssistanceController.Result result = aCon.startWithStation(p, new SimplePoint(), Locale.JAPANESE);
+        AssistanceController.Result extend = aCon.extendWithStation(p, result.node, new SimplePoint(0, 990), Locale.JAPANESE);
 
         RouteSearcher.BaseObjPack bPack = inst.new BaseObjPack();
         RouteSearcher.PermanentObjPack pPack = inst.new PermanentObjPack(bPack);
@@ -345,10 +337,10 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testCallNoHuman() throws RushHourException {
-        Residence r1 = RCON.create(new SimplePoint(10, 10));
-        Company c1 = CCON.create(new SimplePoint(10, 20));
-        Residence r2 = RCON.create(new SimplePoint(100, 100));
-        Company c2 = CCON.create(new SimplePoint(200, 200));
+        Residence r1 = rCon.create(new SimplePoint(10, 10));
+        Company c1 = cCon.create(new SimplePoint(10, 20));
+        Residence r2 = rCon.create(new SimplePoint(100, 100));
+        Company c2 = cCon.create(new SimplePoint(200, 200));
 
         doReturn(new ArrayList<>()).when(inst.hCon).findAll();
 
@@ -371,9 +363,9 @@ public class RouteSearcherTest extends AbstractControllerTest {
 
     @Test
     public void testCallWithHuman() throws RushHourException {
-        Residence r = RCON.create(new SimplePoint(10, 10));
-        Company c = CCON.create(new SimplePoint(10, 20));
-        Human h = HCON.create(TEST_POS, r, c);
+        Residence r = rCon.create(new SimplePoint(10, 10));
+        Company c = cCon.create(new SimplePoint(10, 20));
+        Human h = hCon.create(TEST_POS, r, c);
         List<Human> list = new ArrayList<>();
         list.add(h);
         doReturn(list).when(inst.hCon).findAll();
@@ -542,23 +534,23 @@ public class RouteSearcherTest extends AbstractControllerTest {
      */
     protected WorldPack createSmallWorld() throws RushHourException {
         WorldPack pack = new WorldPack();
-        pack.rsd = RCON.create(ORIGIN);
-        pack.cmp = CCON.create(FAR);
-        pack.owner = PCON.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+        pack.rsd = rCon.create(ORIGIN);
+        pack.cmp = cCon.create(FAR);
+        pack.owner = pCon.upsertPlayer("admin", "admin", "admin", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
 
-        AssistanceController.Result start = ACON.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
+        AssistanceController.Result start = aCon.startWithStation(pack.owner, ORIGIN, Locale.getDefault());
         pack.st1 = start.station;
         pack.l = start.line;
 
-        AssistanceController.Result end = ACON.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
+        AssistanceController.Result end = aCon.extendWithStation(pack.owner, start.node, FAR, Locale.getDefault());
         pack.st2 = end.station;
 
-        pack.h = HCON.create(ORIGIN, pack.rsd, pack.cmp);
+        pack.h = hCon.create(ORIGIN, pack.rsd, pack.cmp);
 
-        pack.t = TRAINCON.create(pack.owner);
-        TRAINCON.deploy(pack.t, pack.owner, pack.l.findTopDeparture());
+        pack.t = tCon.create(pack.owner);
+        tCon.deploy(pack.t, pack.owner, pack.l.findTopDeparture());
 
-        EM.flush();
+        em.flush();
         return pack;
     }
 

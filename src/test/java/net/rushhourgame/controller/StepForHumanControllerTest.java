@@ -24,9 +24,6 @@
 package net.rushhourgame.controller;
 
 import java.util.List;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.constraints.NotNull;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -34,7 +31,6 @@ import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
-import net.rushhourgame.entity.Platform;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.entity.RailEdge;
@@ -42,8 +38,6 @@ import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
-import net.rushhourgame.entity.StepForHuman;
-import net.rushhourgame.entity.TicketGate;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.entity.hroute.StepForHumanIntoStation;
 import net.rushhourgame.entity.hroute.StepForHumanOutOfStation;
@@ -51,10 +45,8 @@ import net.rushhourgame.entity.hroute.StepForHumanResidenceToStation;
 import net.rushhourgame.entity.hroute.StepForHumanStationToCompany;
 import net.rushhourgame.entity.hroute.StepForHumanThroughTrain;
 import net.rushhourgame.entity.hroute.StepForHumanTransfer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -76,33 +68,30 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = ControllerFactory.createStepForHumanController();
-        RCON.sCon = inst;
-        CCON.sCon = inst;
-        STCON.sCon = inst;
+        inst = sCon;
     }
     
     @Test
     public void testFindIn() throws RushHourException {
         // 家 駅(0,0)-駅(1,0) 会社
         
-        RCON.create(new SimplePoint(-1, 0));
-        CCON.create(new SimplePoint(2, 0));
+        rCon.create(new SimplePoint(-1, 0));
+        cCon.create(new SimplePoint(2, 0));
         
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(1, 1));
-        STCON.create(owner, r2, "_test2");
-        EM.flush();
-        EM.refresh(r2);
+        RailNode r2 = railCon.extend(owner, st.getPlatform().getRailNode(), new SimplePoint(1, 1));
+        stCon.create(owner, r2, "_test2");
+        em.flush();
+        em.refresh(r2);
         RailEdge go = r2.getInEdges().get(0);
         RailEdge back = r2.getOutEdges().get(0);
         
-        Line line = LCON.create(owner, "_test");
-        LineStep start = LCON.start(line, owner, st);
-        LineStep extend = LCON.extend(start, owner, go);
-        LineStep tail = LCON.extend(extend, owner, back);
-        LCON.end(tail, owner);
+        Line line = lCon.create(owner, "_test");
+        LineStep start = lCon.start(line, owner, st);
+        LineStep extend = lCon.extend(start, owner, go);
+        LineStep tail = lCon.extend(extend, owner, back);
+        lCon.end(tail, owner);
         
         assertEquals(13, inst.findIn(new SimplePoint(0, 0), 2).size());
         inst.findIn(new SimplePoint(0, 0), -1);
@@ -115,7 +104,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddCompanyToEmptyWorld() throws RushHourException {
         // このなかで addCompanyが呼ばれる
-        CCON.create(TEST_POS);
+        cCon.create(TEST_POS);
 
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
@@ -131,7 +120,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddResidenceToEmptyWorld() throws RushHourException {
         // このなかで addResidenceが呼ばれる
-        RCON.create(TEST_POS);
+        rCon.create(TEST_POS);
 
         // StepForHumanができていない
         assertEquals(0, inst.findAll().size());
@@ -180,8 +169,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testAddCompanyToOneResidenceWorld() throws RushHourException {
-        Residence r = RCON.create(new SimplePoint(10, 10));
-        Company c = CCON.create(new SimplePoint(20, 10));
+        Residence r = rCon.create(new SimplePoint(10, 10));
+        Company c = cCon.create(new SimplePoint(20, 10));
 
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
@@ -196,9 +185,9 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertTrue(directly.getUid().startsWith("directly"));
         assertTrue(directly.getCost() == 10.0);
         
-        EM.flush();
-        EM.refresh(r);
-        EM.refresh(c);
+        em.flush();
+        em.refresh(r);
+        em.refresh(c);
         
         assertTrue(r.getInEdges().isEmpty());
         assertEquals(1, r.getOutEdges().size());
@@ -213,8 +202,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testAddResidenceToOneCompanyWorld() throws RushHourException {
-        CCON.create(new SimplePoint(20, 10));
-        RCON.create(new SimplePoint(10, 10));
+        cCon.create(new SimplePoint(20, 10));
+        rCon.create(new SimplePoint(10, 10));
 
         assertEquals(1, inst.findAll().size());
         assertDirectlyNumEquals(1);
@@ -232,7 +221,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddCompanyToStationWorld() throws RushHourException {
         Station st = createStation();
-        Company c = CCON.create(new SimplePoint(20, 10));
+        Company c = cCon.create(new SimplePoint(20, 10));
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -253,7 +242,7 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     @Test
     public void testAddResidenceToStationWorld() throws RushHourException {
         Station st = createStation();
-        Residence r = RCON.create(new SimplePoint(20, 10));
+        Residence r = rCon.create(new SimplePoint(20, 10));
 
         assertEquals(3, inst.findAll().size());
         assertDirectlyNumEquals(0);
@@ -278,10 +267,10 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
      */
     @Test
     public void testTwoResidenceTwoCompany() throws RushHourException {
-        RCON.create(TEST_POS);
-        RCON.create(TEST_POS2);
-        CCON.create(TEST_POS);
-        CCON.create(TEST_POS2);
+        rCon.create(TEST_POS);
+        rCon.create(TEST_POS2);
+        cCon.create(TEST_POS);
+        cCon.create(TEST_POS2);
 
         assertEquals(4, inst.findAll().size());
         assertDirectlyNumEquals(4);
@@ -295,8 +284,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
 
     @Test
     public void testAddStationToOneRsdCmpWorld() throws RushHourException {
-        RCON.create(TEST_POS);
-        CCON.create(TEST_POS);
+        rCon.create(TEST_POS);
+        cCon.create(TEST_POS);
         Station st = createStation();
 
         // R -> Gate <-> Platform
@@ -311,9 +300,9 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         assertThroughTrainNumEquals(0);
         assertTransferNumEquals(0);
         
-        EM.flush();
-        EM.refresh(st.getTicketGate());
-        EM.refresh(st.getPlatform());
+        em.flush();
+        em.refresh(st.getTicketGate());
+        em.refresh(st.getPlatform());
         
         assertEquals(2, st.getTicketGate().getInEdges().size());
         assertEquals(2, st.getTicketGate().getOutEdges().size());
@@ -325,12 +314,12 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testRemoveStation() throws RushHourException {
         Player other = createOther();
         
-        RCON.create(TEST_POS);
-        CCON.create(TEST_POS);
+        rCon.create(TEST_POS);
+        cCon.create(TEST_POS);
         Station st1 = createStation();
         
-        RailNode r1 = RAILCON.create(other, TEST_POS);
-        STCON.create(other, r1, "test2");
+        RailNode r1 = railCon.create(other, TEST_POS);
+        stCon.create(other, r1, "test2");
         
         inst.removeStation(st1);
         
@@ -347,20 +336,20 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     public void testAddCompletedLine() throws RushHourException {
         Station st = createStation();
         Player owner = st.getOwner();
-        RailNode r2 = RAILCON.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
-        STCON.create(owner, r2, "_test2");
-        EM.flush();
-        EM.refresh(r2);
+        RailNode r2 = railCon.extend(owner, st.getPlatform().getRailNode(), TEST_POS);
+        stCon.create(owner, r2, "_test2");
+        em.flush();
+        em.refresh(r2);
         RailEdge go = r2.getInEdges().get(0);
         RailEdge back = r2.getOutEdges().get(0);
         
-        Line line = LCON.create(owner, "_test");
-        LineStep start = LCON.start(line, owner, st);
-        LineStep extend = LCON.extend(start, owner, go);
-        LineStep tail = LCON.extend(extend, owner, back);
+        Line line = lCon.create(owner, "_test");
+        LineStep start = lCon.start(line, owner, st);
+        LineStep extend = lCon.extend(start, owner, go);
+        LineStep tail = lCon.extend(extend, owner, back);
         
         // このなかで addCompletedLine がよばれる
-        LCON.end(tail, owner);
+        lCon.end(tail, owner);
         
         assertThroughTrainNumEquals(2);
         assertTransferNumEquals(2);
@@ -371,8 +360,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         Station st = createStation();
         Player owner = st.getOwner();
         
-        Line line = LCON.create(owner, "_test");
-        LCON.start(line, owner, st);
+        Line line = lCon.create(owner, "_test");
+        lCon.start(line, owner, st);
         
         try {
             inst.addCompletedLine(line);
@@ -387,8 +376,8 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
         Station st = createStation();
         Player owner = st.getOwner();
         
-        Line line = LCON.create(owner, "_test");
-        LCON.start(line, owner, st);
+        Line line = lCon.create(owner, "_test");
+        lCon.start(line, owner, st);
         try {
             inst.modifyCompletedLine(line);
             fail();
@@ -398,31 +387,31 @@ public class StepForHumanControllerTest extends AbstractControllerTest {
     }
 
     protected List<StepForHumanDirectly> findDirectly() {
-        return TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
+        return tableCon.findAll("StepForHumanDirectly", StepForHumanDirectly.class);
     }
 
     protected List<StepForHumanIntoStation> findIntoStation() {
-        return TCON.findAll("StepForHumanIntoStation", StepForHumanIntoStation.class);
+        return tableCon.findAll("StepForHumanIntoStation", StepForHumanIntoStation.class);
     }
 
     protected List<StepForHumanOutOfStation> findOutOfStation() {
-        return TCON.findAll("StepForHumanOutOfStation", StepForHumanOutOfStation.class);
+        return tableCon.findAll("StepForHumanOutOfStation", StepForHumanOutOfStation.class);
     }
 
     protected List<StepForHumanResidenceToStation> findFromResidence() {
-        return TCON.findAll("StepForHumanResidenceToStation", StepForHumanResidenceToStation.class);
+        return tableCon.findAll("StepForHumanResidenceToStation", StepForHumanResidenceToStation.class);
     }
 
     protected List<StepForHumanStationToCompany> findToCompany() {
-        return TCON.findAll("StepForHumanStationToCompany", StepForHumanStationToCompany.class);
+        return tableCon.findAll("StepForHumanStationToCompany", StepForHumanStationToCompany.class);
     }
 
     protected List<StepForHumanThroughTrain> findThroughTrain() {
-        return TCON.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
+        return tableCon.findAll("StepForHumanThroughTrain", StepForHumanThroughTrain.class);
     }
     
     protected List<StepForHumanTransfer> findTransfer() {
-        return TCON.findAll("StepForHumanTransfer", StepForHumanTransfer.class);
+        return tableCon.findAll("StepForHumanTransfer", StepForHumanTransfer.class);
     }
 
     protected void assertDirectlyNumEquals(int expected) {

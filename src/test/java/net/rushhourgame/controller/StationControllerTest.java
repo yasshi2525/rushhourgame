@@ -69,15 +69,13 @@ public class StationControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = spy(ControllerFactory.createStationController());
-        inst.writeLock = spy(inst.writeLock);
-        inst.readLock = spy(inst.readLock);
+        inst = stCon;
     }
     
     @Test
     public void testFindOnNull() throws RushHourException {
         inst.entities = null;
-        assertNull(inst.findOn(RAILCON.create(createPlayer(), TEST_POS)));
+        assertNull(inst.findOn(railCon.create(createPlayer(), TEST_POS)));
     }
 
     @Test
@@ -118,21 +116,15 @@ public class StationControllerTest extends AbstractControllerTest {
 
         inst.step(1000);
 
-        verify(inst.writeLock, times(1)).lock();
-        verify(inst.writeLock, times(1)).unlock();
-
         assertTrue(st.getTicketGate().canEnter());
     }
 
     @Test
     public void testCreate() throws RushHourException {
         Player player = createPlayer();
-        RailNode node = RAILCON.create(player, TEST_POS);
+        RailNode node = railCon.create(player, TEST_POS);
 
         Station created = inst.create(player, node, TEST_NAME);
-
-        verify(inst.writeLock, times(2)).lock();
-        verify(inst.writeLock, times(2)).unlock();
 
         assertEquals(Integer.parseInt(PROP.get(GAME_DEF_GATE_NUM)),
                 created.getTicketGate().getGateNum());
@@ -147,7 +139,7 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testFull() throws RushHourException {
         Player player = createPlayer();
-        RailNode node = RAILCON.create(player, TEST_POS);
+        RailNode node = railCon.create(player, TEST_POS);
         Station created = inst.create(player, node,
                 TEST_NAME, TEST_NUM, TEST_CAPACITY, TEST_MOBILITY, TEST_PRODIST);
 
@@ -191,7 +183,7 @@ public class StationControllerTest extends AbstractControllerTest {
     public void testCreateOtherOwner() throws RushHourException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode node = RAILCON.create(player, TEST_POS);
+        RailNode node = railCon.create(player, TEST_POS);
         try {
             inst.create(other, node, TEST_NAME);
             fail();
@@ -203,8 +195,8 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateDuplicateName() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_POS);
-        RailNode node2 = RAILCON.extend(owner, node1, TEST_POS2);
+        RailNode node1 = railCon.create(owner, TEST_POS);
+        RailNode node2 = railCon.extend(owner, node1, TEST_POS2);
         inst.create(owner, node1, "Station1");
 
         try {
@@ -223,10 +215,10 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testCreateOtherDuplicateName() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_POS);
+        RailNode node1 = railCon.create(owner, TEST_POS);
 
         Player other = createOther();
-        RailNode node2 = RAILCON.create(other, TEST_POS2);
+        RailNode node2 = railCon.create(other, TEST_POS2);
 
         inst.create(owner, node1, "Station1");
 
@@ -239,7 +231,7 @@ public class StationControllerTest extends AbstractControllerTest {
         inst.remove(st, st.getOwner());
         
         assertTrue(inst.entities.isEmpty());
-        assertTrue(RAILCON.findNodeIn(new SimplePoint(), 16).isEmpty());
+        assertTrue(railCon.findNodeIn(new SimplePoint(), 16).isEmpty());
     }
     
     @Test
@@ -259,9 +251,6 @@ public class StationControllerTest extends AbstractControllerTest {
 
         inst.editStationName(created, created.getOwner(), "changed");
 
-        verify(inst.writeLock, times(1)).lock();
-        verify(inst.writeLock, times(1)).unlock();
-
         assertEquals("changed", created.getName());
     }
 
@@ -270,9 +259,6 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editStationName(created, created.getOwner(), created.getName());
-
-        verify(inst.writeLock, times(1)).lock();
-        verify(inst.writeLock, times(1)).unlock();
     }
 
     @Test
@@ -291,8 +277,8 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testEditNameDuplication() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_POS);
-        RailNode node2 = RAILCON.extend(owner, node1, TEST_POS2);
+        RailNode node1 = railCon.create(owner, TEST_POS);
+        RailNode node2 = railCon.extend(owner, node1, TEST_POS2);
         inst.create(owner, node1, "Station1");
         Station created = inst.create(owner, node2, "Station2");
 
@@ -312,10 +298,10 @@ public class StationControllerTest extends AbstractControllerTest {
     @Test
     public void testEditNameDuplicationOther() throws RushHourException {
         Player owner = createPlayer();
-        RailNode node1 = RAILCON.create(owner, TEST_POS);
+        RailNode node1 = railCon.create(owner, TEST_POS);
 
         Player other = createOther();
-        RailNode node2 = RAILCON.create(other, TEST_POS2);
+        RailNode node2 = railCon.create(other, TEST_POS2);
 
         Station created = inst.create(owner, node1, "Station1");
         inst.create(other, node2, "Station2");
@@ -328,9 +314,6 @@ public class StationControllerTest extends AbstractControllerTest {
         Station created = createStation();
 
         inst.editPlatformCapacity(created, created.getOwner(), 1000);
-
-        verify(inst.writeLock, times(1)).lock();
-        verify(inst.writeLock, times(1)).unlock();
 
         assertEquals(1000, created.getPlatform().getCapacity());
     }
@@ -375,9 +358,6 @@ public class StationControllerTest extends AbstractControllerTest {
 
         assertEquals(1, inst.findIn(new SimplePoint(0, 0), 1).size());
         assertEquals(0, inst.findIn(new SimplePoint(10, 10), 1).size());
-
-        verify(inst.readLock, times(2)).lock();
-        verify(inst.readLock, times(2)).unlock();
     }
 
     @Test

@@ -26,22 +26,19 @@ package net.rushhourgame.controller;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotNull;
-import static net.rushhourgame.controller.AbstractControllerTest.CCON;
-import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.RailNode;
-import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
-import net.rushhourgame.entity.hroute.StepForHumanDirectlyTest;
 import net.rushhourgame.exception.RushHourException;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Bean Validationの挙動をたしかめるためのテスト
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class BeanValidationTest extends AbstractControllerTest {
     /**
      * Client側でバリデーションテストするときのテンプレート
@@ -52,10 +49,10 @@ public class BeanValidationTest extends AbstractControllerTest {
     public void testStationCreateNameNull() throws RushHourException, NoSuchMethodException {
         Player player = createPlayer();
         Player other = createOther();
-        RailNode node = RAILCON.create(player, new SimplePoint(10, 10));
+        RailNode node = railCon.create(player, new SimplePoint(10, 10));
         
         Set<ConstraintViolation<StationController>> violations = validatorForExecutables.validateParameters(
-                STCON,
+                stCon,
                 StationController.class.getMethod("create", Player.class, RailNode.class, String.class),
                 new Object[]{player, node, null});
         

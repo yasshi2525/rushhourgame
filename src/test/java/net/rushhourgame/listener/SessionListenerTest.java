@@ -44,32 +44,25 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class SessionListenerTest {
+    protected ControllerFactory factory;
     @Mock
     protected HttpSessionEvent se;
     @Mock
     protected HttpSession session;
     @Mock
     protected RushHourSessionBean bean;
-    protected final static PlayerController PCON = ControllerFactory.createPlayController();
+    protected PlayerController pCon;
     protected SessionListener instance;
-    
-    public SessionListenerTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
     
     @Before
     public void setUp() {
+        factory = new ControllerFactory();
+        pCon = factory.getPlayerController();
+        
         when(se.getSession()).thenReturn(session);
         
         instance = new SessionListener();
-        instance.controller = spy(PCON);
+        instance.controller = pCon;
     }
     
     @After

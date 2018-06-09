@@ -28,18 +28,18 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import net.rushhourgame.DebugInitializer;
+import net.rushhourgame.ErrorMessageBuilder;
 import net.rushhourgame.GameMaster;
-import net.rushhourgame.LocalEntityManager;
 import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.RushHourResourceBundle;
 import net.rushhourgame.RushHourSession;
-import net.rushhourgame.SimpleGameMaster;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
 import net.rushhourgame.controller.DigestCalculator;
 import net.rushhourgame.controller.HumanController;
 import net.rushhourgame.controller.LineController;
+import net.rushhourgame.controller.LineRouteSearcher;
 import net.rushhourgame.controller.LocalTableController;
 import net.rushhourgame.controller.OAuthController;
 import net.rushhourgame.controller.PlayerController;
@@ -49,20 +49,15 @@ import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
 import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
+import net.rushhourgame.entity.EncryptConverter;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.exception.RushHourException;
 import net.rushhourgame.json.SimpleUserData;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.primefaces.PrimeFaces;
-import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -70,63 +65,94 @@ import org.primefaces.context.RequestContext;
  */
 public class AbstractBeanTest {
 
-    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
-    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static PlayerController PCON = ControllerFactory.createPlayController();
-    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static RailController RAILCON = ControllerFactory.createRailController();
-    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
-    protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static StationController STCON = ControllerFactory.createStationController();
-    protected final static TrainController TRCON = ControllerFactory.createTrainController();
-    protected final static HumanController HCON = ControllerFactory.createHumanController();
-    protected final static LineController LCON = ControllerFactory.createLineController();
-    protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
-    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
-    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
-    protected final static GameMaster GM = ControllerFactory.createGameMaster();
-    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
+    protected ControllerFactory factory;
+
+    protected AssistanceController aCon;
+    protected CompanyController cCon;
+    protected DigestCalculator calc;
+    protected EncryptConverter converter;
+    protected HumanController hCon;
+    protected LineController lCon;
+    protected LineRouteSearcher lSearcher;
+    protected OAuthController oCon;
+    protected PlayerController pCon;
+    protected RailController railCon;
+    protected ResidenceController rCon;
+    protected RouteSearcher searcher;
+    protected StationController stCon;
+    protected StepForHumanController sCon;
+    protected TrainController tCon;
+
+    protected LocalTableController tableCon;
     
+    protected GameMaster gm;
+    protected DebugInitializer debug;
+    
+    protected EntityManager em;
+    protected static RushHourProperties PROP = RushHourProperties.getInstance();
+    protected static RushHourResourceBundle MSG = RushHourResourceBundle.getInstance();
+    protected static ErrorMessageBuilder BUILDER = ErrorMessageBuilder.getInstance();
+
     @Mock
     protected FacesContext facesContext;
-    
+
     @Mock
     protected ExternalContext externalContext;
-    
+
     @Mock
     protected PrimeFaces primeface;
-    
+
     @Mock
     protected PrimeFaces.Dialog dialog;
-    
+
     @Mock
     protected RushHourSession session;
-    
+
     @Mock
     protected RushHourResourceBundle msg;
-    
+
     @Before
     public void setUp() {
-        EM.getTransaction().begin();
-        LCON.synchronizeDatabase();
-        RCON.synchronizeDatabase();
-        STCON.synchronizeDatabase();
-        TRCON.synchronizeDatabase();
-        HCON.synchronizeDatabase();
+        factory = new ControllerFactory();
+        instantiate();
+
+        factory.begin();
+        lCon.synchronizeDatabase();
+        rCon.synchronizeDatabase();
+        stCon.synchronizeDatabase();
+        tCon.synchronizeDatabase();
+        hCon.synchronizeDatabase();
     }
-    
+
     @After
     public void tearDown() {
-        LCON.findAll().clear();
-        RCON.findAll().clear();
-        STCON.findAll().clear();
-        TRCON.findAll().clear();
-        HCON.findAll().clear();
-        EM.getTransaction().rollback();
+        factory.rollback();
     }
-    
-    protected static Player createPlayer() throws RushHourException{
-        return PCON.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+
+    protected Player createPlayer() throws RushHourException {
+        return pCon.upsertPlayer("_player", "_player", "_player", SignInType.LOCAL, new SimpleUserData(), Locale.getDefault());
+    }
+
+    protected void instantiate() {
+        aCon = factory.getAssistanceController();
+        cCon = factory.getCompanyController();
+        calc = factory.getDigestCalculator();
+        converter = factory.getEncryptConverter();
+        hCon = factory.getHumanController();
+        lCon = factory.getLineController();
+        lSearcher = factory.getLineRouteSearcher();
+        oCon = factory.getOAuthController();
+        pCon = factory.getPlayerController();
+        rCon = factory.getResidenceController();
+        railCon = factory.getRailController();
+        sCon = factory.getStepForHumanController();
+        searcher = factory.getRouteSearcher();
+        stCon = factory.getStationController();
+        tCon = factory.getTrainController();
+        tableCon = factory.getLocalTableController();
+        
+        em = factory.getEntityManager();
+        gm = factory.getGameMaster();
+        debug = factory.getDebugInitializer();
     }
 }

@@ -67,14 +67,12 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst = spy(TRAINCON);
-        inst.writeLock = spy(inst.writeLock);
-        inst.readLock = spy(inst.readLock);
+        inst = tCon;
         try {
             player = createPlayer();
-            res1 = ACON.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
-            res2 = ACON.extendWithStation(player, res1.node, new SimplePoint(20.0, 25.0), Locale.JAPANESE);
-            EM.flush();
+            res1 = aCon.startWithStation(player, new SimplePoint(10.0, 15.0), Locale.JAPANESE);
+            res2 = aCon.extendWithStation(player, res1.node, new SimplePoint(20.0, 25.0), Locale.JAPANESE);
+            em.flush();
             lineStep = res1.line.findTopDeparture();
         } catch (RushHourException ex) {
             Logger.getLogger(TrainControllerTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,9 +103,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     @Test
     public void testCreate() throws RushHourException {
         Train created = inst.create(player);
-        
-        verify(inst.writeLock, times(2)).lock();
-        verify(inst.writeLock, times(2)).unlock();
         
         assertEquals(100, created.getMobility());
         assertTrue(0.2 == created.getSpeed());
@@ -140,9 +135,6 @@ public class TrainControllerTest extends AbstractControllerTest {
     public void testDeploy() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
-        
-        verify(inst.writeLock, times(3)).lock();
-        verify(inst.writeLock, times(3)).unlock();
         
         assertTrue(10.0 == train.getX());
         assertTrue(15.0 == train.getY());
@@ -178,9 +170,6 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         inst.undeploy(train.getDeployed(), player);
-        
-        verify(inst.writeLock, times(4)).lock();
-        verify(inst.writeLock, times(4)).unlock();
     }
 
     @Test
@@ -200,9 +189,9 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         
-        Residence src = RCON.create(new SimplePoint());
-        Company dst = CCON.create(new SimplePoint());
-        Human human = HCON.create(new SimplePoint(), src, dst);
+        Residence src = rCon.create(new SimplePoint());
+        Company dst = cCon.create(new SimplePoint());
+        Human human = hCon.create(new SimplePoint(), src, dst);
         human.setOnTrain(train.getDeployed());
         
         inst.undeploy(train.getDeployed(), player);
@@ -236,14 +225,11 @@ public class TrainControllerTest extends AbstractControllerTest {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);
         inst.step(0);
-        
-        verify(inst.writeLock, times(4)).lock();
-        verify(inst.writeLock, times(4)).unlock();
     }
     
     @Test
     public void testReplaceWaitForDeparture() throws RushHourException {
-        STCON.lCon.tCon = inst;
+        stCon.lCon.tCon = inst;
         
         LineStep dep = res1.line.getSteps().stream()
                 .filter(step -> step.getDeparture() != null)
@@ -253,7 +239,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         TrainDeployed deploy = inst.deploy(inst.create(player), player, dep);
         deploy.step(new ArrayList<>(), 10);
         
-        STCON.remove(res1.station, player);
+        stCon.remove(res1.station, player);
         
         assertTrue(deploy.getCurrent().getStopping()!= null);
         assertTrue(deploy.getProgress() == 0d);
@@ -261,7 +247,7 @@ public class TrainControllerTest extends AbstractControllerTest {
     
     @Test
     public void testReplaceWhileStopping() throws RushHourException {
-        STCON.lCon.tCon = inst;
+        stCon.lCon.tCon = inst;
         LineStep stop = res1.line.getSteps().stream()
                 .filter(step -> step.getStopping()!= null)
                 .filter(step -> step.getStopping().getGoal().equalsId(res2.station.getPlatform()))
@@ -270,7 +256,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         TrainDeployed deploy = inst.deploy(inst.create(player), player, stop);
         deploy.step(new ArrayList<>(), 10);
         
-        STCON.remove(res2.station, player);
+        stCon.remove(res2.station, player);
         
         assertTrue(deploy.getCurrent().getMoving() != null);
         assertTrue(deploy.getProgress() > 0d);

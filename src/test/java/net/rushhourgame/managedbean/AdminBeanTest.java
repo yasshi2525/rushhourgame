@@ -24,12 +24,10 @@
 package net.rushhourgame.managedbean;
 
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import net.rushhourgame.GameMaster;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -50,7 +48,7 @@ public class AdminBeanTest extends AbstractBeanTest{
     @Override
     public void setUp() {
         super.setUp();
-        inst.pCon = PCON;
+        inst.pCon = pCon;
         inst.session = session;
         inst.gm = mock(GameMaster.class);
         doReturn(Locale.getDefault()).when(session).getLocale();

@@ -25,37 +25,17 @@ package net.rushhourgame;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import javax.enterprise.concurrent.ManagedExecutors;
 import javax.persistence.EntityManager;
-import javax.transaction.UserTransaction;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
-import net.rushhourgame.controller.AssistanceController;
-import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.ControllerFactory;
-import net.rushhourgame.controller.DigestCalculator;
-import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.LineController;
-import net.rushhourgame.controller.LocalTableController;
-import net.rushhourgame.controller.OAuthController;
-import net.rushhourgame.controller.PlayerController;
-import net.rushhourgame.controller.RailController;
-import net.rushhourgame.controller.ResidenceController;
-import net.rushhourgame.controller.RouteSearcher;
-import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StepForHumanController;
-import net.rushhourgame.controller.TrainController;
-import net.rushhourgame.entity.Pointable;
 import net.rushhourgame.exception.RushHourException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import static org.mockito.Mockito.*;
 
 /**
  *
@@ -63,24 +43,7 @@ import static org.mockito.Mockito.*;
  */
 public class DebugInitializerTest {
 
-    protected final static EntityManager EM = LocalEntityManager.createEntityManager();
-    protected final static LocalTableController TCON = ControllerFactory.createLocalTableController();
-    protected final static DigestCalculator CALCULATOR = ControllerFactory.createDigestCalculator();
-    protected final static RushHourProperties PROP = RushHourProperties.getInstance();
-    protected final static PlayerController PCON = ControllerFactory.createPlayController();
-    protected final static OAuthController OCON = ControllerFactory.createOAuthController();
-    protected final static CompanyController CCON = ControllerFactory.createCompanyController();
-    protected final static RailController RAILCON = ControllerFactory.createRailController();
-    protected final static StationController STCON = ControllerFactory.createStationController();
-    protected final static LineController LCON = ControllerFactory.createLineController();
-    protected final static StepForHumanController SCON = ControllerFactory.createStepForHumanController();
-    protected final static AssistanceController ACON = ControllerFactory.createAssistanceController();
-    protected final static TrainController TRAINCON = ControllerFactory.createTrainController();
-    protected final static HumanController HCON = ControllerFactory.createHumanController();
-    protected final static GameMaster GM = ControllerFactory.createGameMaster();
-    protected final static RouteSearcher SEARCHER = ControllerFactory.createRouteSearcher();
-    protected final static ResidenceController RCON = ControllerFactory.createResidenceController();
-    
+    protected ControllerFactory factory;
     protected static ValidatorFactory validatorFactory;
     protected static ExecutableValidator validatorForExecutables;
     
@@ -95,28 +58,17 @@ public class DebugInitializerTest {
     
     @Before
     public void setUp() {
+        factory = new ControllerFactory();
+        
         executor = Executors.newSingleThreadExecutor();
-        inst = new DebugInitializer();
+        inst = factory.getDebugInitializer();
         
-        inst.em = EM;
-        
-        inst.aCon = ACON;
-        inst.rCon = RCON;
-        inst.cCon = CCON;
-        inst.oCon = OCON;
-        inst.pCon = PCON;
-        inst.railCon = RAILCON;
-        inst.stCon = STCON;
-        inst.lCon = LCON;
-        inst.tCon = TRAINCON;
-        inst.hCon = HCON;
-        
-        EM.getTransaction().begin();
+        factory.begin();
     }
 
     @After
     public void tearDown() {
-        EM.getTransaction().rollback();
+        factory.rollback();
         
         executor.shutdown();
     }

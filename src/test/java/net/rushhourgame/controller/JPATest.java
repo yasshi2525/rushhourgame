@@ -23,10 +23,8 @@
  */
 package net.rushhourgame.controller;
 
-import static net.rushhourgame.controller.AbstractControllerTest.CCON;
 import net.rushhourgame.entity.Company;
 import net.rushhourgame.entity.RelayPointForHuman;
-import net.rushhourgame.entity.Residence;
 import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.hroute.StepForHumanDirectly;
 import net.rushhourgame.exception.RushHourException;
@@ -45,8 +43,8 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrence() throws RushHourException {
-        Company original = CCON.create(new SimplePoint(1, 1));
-        Company fromJPQL = TCON.findAll("Company", Company.class).get(0);
+        Company original = cCon.create(new SimplePoint(1, 1));
+        Company fromJPQL = tableCon.findAll("Company", Company.class).get(0);
         
         assertEquals(original, fromJPQL);
     }
@@ -57,9 +55,9 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQL() throws RushHourException {
-        CCON.create(new SimplePoint(1, 1));
-        Company fromJPQL1 = TCON.findAll("Company", Company.class).get(0);
-        Company fromJPQL2 = TCON.findAll("Company", Company.class).get(0);
+        cCon.create(new SimplePoint(1, 1));
+        Company fromJPQL1 = tableCon.findAll("Company", Company.class).get(0);
+        Company fromJPQL2 = tableCon.findAll("Company", Company.class).get(0);
         
         assertEquals(fromJPQL1, fromJPQL2);
     }
@@ -70,11 +68,11 @@ public class JPATest extends AbstractControllerTest {
      */
     @Test
     public void testSameReferrenceJPQLrelation() throws RushHourException {
-        CCON.create(new SimplePoint(1, 1));
-        RCON.create(new SimplePoint(2, 2));
-        Company fromCompanyJPQL = TCON.findAll("Company", Company.class).get(0);
+        cCon.create(new SimplePoint(1, 1));
+        rCon.create(new SimplePoint(2, 2));
+        Company fromCompanyJPQL = tableCon.findAll("Company", Company.class).get(0);
         
-        RelayPointForHuman fromEdgeJPQL = TCON.findAll("StepForHumanDirectly", StepForHumanDirectly.class).get(0).getTo();
+        RelayPointForHuman fromEdgeJPQL = tableCon.findAll("StepForHumanDirectly", StepForHumanDirectly.class).get(0).getTo();
         assertEquals(fromCompanyJPQL, fromEdgeJPQL);
     }
 }

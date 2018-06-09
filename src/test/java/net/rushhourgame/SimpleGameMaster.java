@@ -23,22 +23,19 @@
  */
 package net.rushhourgame;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.Lock;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
-import net.rushhourgame.DebugInitializer;
-import net.rushhourgame.GameMaster;
-import net.rushhourgame.RushHourProperties;
 import net.rushhourgame.controller.CompanyController;
 import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.HumanController;
-import net.rushhourgame.controller.ResidenceController;
+import net.rushhourgame.controller.LineController;
 import net.rushhourgame.controller.ResidenceController;
 import net.rushhourgame.controller.RouteSearcher;
-import net.rushhourgame.controller.RouteSearcher;
 import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StationController;
-import net.rushhourgame.controller.StepForHumanController;
 import net.rushhourgame.controller.TrainController;
-import net.rushhourgame.controller.TrainController;
+import static org.mockito.Mockito.mock;
 
 /**
  *
@@ -52,6 +49,7 @@ public class SimpleGameMaster extends GameMaster {
             EntityManager em,
             DebugInitializer debug,
             HumanController hCon,
+            LineController lCon,
             RushHourProperties prop,
             ResidenceController rCon,
             RouteSearcher searcher,
@@ -68,5 +66,10 @@ public class SimpleGameMaster extends GameMaster {
         this.stCon = stCon;
         this.tCon = tCon;
         this.cCon = cCon;
+        this.lCon = lCon;
+        writeLock = mock(Lock.class);
+        timerFuture = mock(ScheduledFuture.class);
+        executorService = mock(ManagedExecutorService.class);
+        timerService = mock(ManagedScheduledExecutorService.class);
     }
 }

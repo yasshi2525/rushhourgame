@@ -32,7 +32,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import net.rushhourgame.exception.RushHourException;
 import static net.rushhourgame.RushHourResourceBundle.*;
-import static net.rushhourgame.controller.ControllerFactory.createDigestCalculator;
 import net.rushhourgame.entity.SignInType;
 import net.rushhourgame.json.SimpleUserData;
 import net.rushhourgame.json.UserData;
@@ -47,7 +46,6 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class PlayerControllerTest extends AbstractControllerTest {
-    @Spy
     protected PlayerController inst;
     protected final static UserData USERDATA1 = new SimpleUserData();
     protected final static UserData USERDATA2 = new SimpleUserData();
@@ -66,11 +64,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
     @Override
     public void setUp() {
         super.setUp();
-        inst.calculator = createDigestCalculator();
-        inst.em = EM;
-        inst.errMsgBuilder = ErrorMessageBuilder.getInstance();
-        inst.oCon = OCON;
-        inst.prop = PROP;
+        inst = pCon;
     }
 
     @Test
@@ -96,7 +90,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         assertEquals(Locale.CANADA, created.getInfo().getLocale());
         assertEquals(USERDATA1.getName(), created.getInfo().getName());
         assertEquals(USERDATA1.getTextColor(), created.getInfo().getTextColor());
-        assertEquals(1, TCON.findAll("Player", Player.class).size());
+        assertEquals(1, tableCon.findAll("Player", Player.class).size());
     }
 
     @Test
@@ -130,7 +124,7 @@ public class PlayerControllerTest extends AbstractControllerTest {
         assertEquals(Locale.CHINA, updated.getInfo().getLocale());
         assertEquals(USERDATA2.getName(), updated.getInfo().getName());
         assertEquals(USERDATA2.getTextColor(), updated.getInfo().getTextColor());
-        assertEquals(1, TCON.findAll("Player", Player.class).size());
+        assertEquals(1, tableCon.findAll("Player", Player.class).size());
     }
 
     @Test

@@ -24,20 +24,15 @@
 package net.rushhourgame.managedbean;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Locale;
 import java.util.Map;
-import javax.faces.context.ExternalContext;
 import net.rushhourgame.ErrorMessage;
-import net.rushhourgame.RushHourSession;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 

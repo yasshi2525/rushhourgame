@@ -26,7 +26,6 @@ package net.rushhourgame.controller;
 import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import net.rushhourgame.entity.Human;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.SimpleGeoEntity;
 import net.rushhourgame.entity.SimplePoint;
