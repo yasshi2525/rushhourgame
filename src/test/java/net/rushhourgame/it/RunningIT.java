@@ -53,22 +53,21 @@ public class RunningIT extends AbstractIT {
     protected static final long RUNNING_INTERVAL = 10;
     protected static final long TRAIN_TIMEOUT = 60;
 
-    @Before
-    public void setUp() {
-        behave.startGame();
-        setupInitialBuildings();
-        setupInitialLine();
-        behave.sleep(RUNNING_INTERVAL);
-    }
-
-    @After
-    public void tearDown() {
-        behave.sleep(RUNNING_INTERVAL);
-    }
-
     @Test
     public void testRunning() {
-
+        try {
+            behave.startGame();
+            setupInitialBuildings();
+            
+            behave.login();
+            
+            setupInitialLine();
+            behave.sleep(RUNNING_INTERVAL);
+            unsetupInitialLine();
+        } catch (RuntimeException e) {
+            LOG.log(Level.SEVERE, "exception in testRunning", e);
+            throw e;
+        }
     }
 
     protected void setupInitialBuildings() {
@@ -79,22 +78,27 @@ public class RunningIT extends AbstractIT {
     }
 
     protected void setupInitialLine() {
-        behave.login();
-        try {
-            behave.startRailCreation(LINE1);
-            behave.extendRail(LINE1_D1);
-            behave.extendRail(LINE1_D2);
-            behave.extendRail(LINE1_D3);
-            behave.endAction();
+        behave.startRailCreation(LINE1);
+        behave.extendRail(LINE1_D1);
+        behave.extendRail(LINE1_D2);
+        behave.extendRail(LINE1_D3);
+        behave.endAction();
 
-            behave.startRailExtension(LINE1_D4);
-            behave.extendRail(LINE1_D5);
-            behave.endAction();
+        behave.startRailExtension(LINE1_D4);
+        behave.extendRail(LINE1_D5);
+        behave.endAction();
 
-            behave.unscrollMapAll();
-        } catch (RuntimeException e) {
-            LOG.log(Level.SEVERE, "exception in setupInitialLine", e);
-            throw e;
-        }
+        behave.unscrollMapAll();
+    }
+
+    protected void unsetupInitialLine() {
+        behave.removeStation(LINE1);
+        behave.removeStation(LINE1_D1);
+        behave.removeStation(LINE1_D2);
+        behave.removeStation(LINE1_D3);
+        behave.scrollMap(reverse(LINE1_D4));
+        behave.removeStation(LINE1_D5);
+        
+        behave.unscrollMapAll();
     }
 }

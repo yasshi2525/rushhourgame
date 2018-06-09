@@ -59,14 +59,19 @@ public abstract class AbstractIT {
 
     @Before
     public void setUpCommon() {
-        ChromeOptions options = new ChromeOptions();
-        options.setHeadless(HEADLESS);
-        options.addArguments("--lang=ja");
-        driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
-        driver.manage().window().setSize(WINDOW_SIZE);
-        
-        behave = new CommonAction(driver);
+        try {
+            ChromeOptions options = new ChromeOptions();
+            options.setHeadless(HEADLESS);
+            options.addArguments("--lang=ja");
+            driver = new ChromeDriver(options);
+            driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
+            driver.manage().window().setSize(WINDOW_SIZE);
+
+            behave = new CommonAction(driver);
+        } catch (RuntimeException e) {
+            LOG.log(Level.SEVERE, "exception in setUpCommon", e);
+            throw e;
+        }
     }
 
     @After
@@ -76,13 +81,12 @@ public abstract class AbstractIT {
                 if (driver.getCurrentUrl().endsWith("error.xhtml")) {
                     fail("end with error page.");
                 }
-                behave.unscrollMapAll();
             } finally {
                 driver.quit();
             }
         }
     }
-    
+
     protected Dimension reverse(Dimension point) {
         return new Dimension(-point.width, -point.height);
     }

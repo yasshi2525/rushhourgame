@@ -61,33 +61,43 @@ public class BuildRailIT extends AbstractIT {
 
     @Test
     public void testBuildOnePoint() {
-        behave.login();
+        try {
+            behave.login();
 
-        assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(ONE));
-        behave.endAction();
-        
-        behave.unscrollMapAll();
-        behave.removeStation(ONE);
+            assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(ONE));
+            behave.endAction();
+
+            behave.unscrollMapAll();
+            behave.removeStation(ONE);
+        } catch (RuntimeException e) {
+            LOG.log(Level.SEVERE, "exception in testBuildOnePoint", e);
+            throw e;
+        }
     }
 
     @Test
     public void testBuildLine() {
-        behave.login();
+        try {
+            behave.login();
 
-        assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(LINE1));
-        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D1));
-        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D2));
-        behave.endAction();
+            assertEquals(MSG_RAIL_CREATED, behave.startRailCreation(LINE1));
+            assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D1));
+            assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D2));
+            behave.endAction();
 
-        assertEquals(MSG_RAIL_STARTING_EXTENTION, behave.startRailExtension(LINE1_D3));
-        assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D4));
-        behave.endAction();
-        
-        behave.unscrollMapAll();
-        behave.removeStation(LINE1);
-        behave.removeStation(LINE1_D1);
-        behave.removeStation(LINE1_D2);
-        behave.scrollMap(reverse(LINE1_D3));
-        behave.removeStation(LINE1_D4);
+            assertEquals(MSG_RAIL_STARTING_EXTENTION, behave.startRailExtension(LINE1_D3));
+            assertEquals(MSG_RAIL_EXTENDED, behave.extendRail(LINE1_D4));
+            behave.endAction();
+
+            behave.unscrollMapAll();
+            behave.removeStation(LINE1);
+            behave.removeStation(LINE1_D1);
+            behave.removeStation(LINE1_D2);
+            behave.scrollMap(reverse(LINE1_D3));
+            behave.removeStation(LINE1_D4);
+        } catch (RuntimeException e) {
+            LOG.log(Level.SEVERE, "exception in testBuildLine", e);
+            throw e;
+        }
     }
 }
