@@ -50,6 +50,10 @@ public class Constants {
     protected static final String ID_END_ACTION = "end-action";
     protected static final String ID_ANNOUNCEMENT = "announcement_container";
     protected static final String ID_GUIDE = "guide";
+    protected static final String ID_ERROR_TITLE = "error-title";
+    protected static final String ID_ERROR_DETAIL = "error-detail";
+    protected static final String ID_ERROR_ACTION = "error-action";
+    protected static final String ID_DEBUG_INFO = "debug-info";
     
     /**
      * linuxで maven 経由でシステムプロパティを設定すると末尾に /　が入る。謎。

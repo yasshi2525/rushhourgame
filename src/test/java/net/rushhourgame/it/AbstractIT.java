@@ -33,8 +33,10 @@ import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -78,9 +80,19 @@ public abstract class AbstractIT {
     public void tearDownCommon() {
         if (driver != null) {
             try {
-                if (driver.getCurrentUrl().endsWith("error.xhtml")) {
-                    fail("end with error page.");
+                WebElement error = driver.findElement(By.id(ID_ERROR_TITLE));
+                if (error.isDisplayed()) {
+                    LOG.log(Level.SEVERE, "error : " + error.getText());
+                    LOG.log(Level.SEVERE, "detail : " + driver.findElement(By.id(ID_ERROR_DETAIL)).getText());
+                    LOG.log(Level.SEVERE, "action : " + driver.findElement(By.id(ID_ERROR_ACTION)).getText());
+
+                    WebElement debug = driver.findElement(By.id(ID_DEBUG_INFO));
+                    if (debug.isDisplayed()) {
+                        LOG.log(Level.SEVERE, "debug : " + debug.getText());
+                    }
                 }
+            } catch (RuntimeException e) {
+                LOG.log(Level.SEVERE, "exception in tearDownCommon", e);
             } finally {
                 driver.quit();
             }

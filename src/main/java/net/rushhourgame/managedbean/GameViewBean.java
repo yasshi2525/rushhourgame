@@ -302,7 +302,8 @@ public class GameViewBean implements Serializable {
     }
 
     public void handleReturn(SelectEvent event) {
-        ((OperationBean) event.getObject()).select(this);
+        op = (OperationBean) event.getObject();
+        op.select(this);
     }
 
     @Transactional
