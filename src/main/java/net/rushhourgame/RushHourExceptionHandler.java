@@ -59,6 +59,8 @@ public class RushHourExceptionHandler extends ExceptionHandlerWrapper {
             ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
 
             Throwable t = context.getException();
+            LOG.log(Level.WARNING, "RushHourExceptionHandler catches exception", t);
+            
             FacesContext fc = getFacesInstance();
 
             try {
