@@ -67,9 +67,9 @@ import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.StepForHuman;
 import net.rushhourgame.entity.Train;
+import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.primefaces.PrimeFaces;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.SlideEndEvent;
 
@@ -302,32 +302,7 @@ public class GameViewBean implements Serializable {
     }
 
     public void handleReturn(SelectEvent event) {
-        op = (OperationBean) event.getObject();
-
-        switch (op.getType()) {
-            case RAIL_CREATE:
-                tailNode = op.getTailNode();
-                showCreatedRailAnnouncement();
-                showExtendingRailGuide();
-                getPrimeface().executeScript("startExtendingMode("
-                        + tailNode.getX() + ", " + tailNode.getY() + ")");
-                underOperation = true;
-                break;
-
-            case RAIL_EXTEND:
-                tailNode = op.getTailNode();
-                showExtendingRailGuide();
-                getPrimeface().executeScript("startExtendingMode("
-                        + tailNode.getX() + ", " + tailNode.getY() + ")");
-                underOperation = true;
-                break;
-
-            case RAIL_REMOVE:
-            case STATION_REMOVE:
-            case TRAIN_UNDEPLOY:
-                getPrimeface().executeScript("PF('confirmDialog').show();");
-                break;
-        }
+        ((OperationBean) event.getObject()).select(this);
     }
 
     @Transactional
@@ -379,14 +354,14 @@ public class GameViewBean implements Serializable {
                         msg.get(TUTORIAL_RAIL_LONELY, session.getLocale())));
     }
 
-    protected void showExtendingRailGuide() {
+    public void showExtendingRailGuide() {
         getFacesContext().addMessage(GUIDE_ID,
                 new FacesMessage(FacesMessage.SEVERITY_INFO,
                         msg.get(GUIDE_RAIL_EXTEND, session.getLocale()),
                         ""));
     }
 
-    protected void showCreatedRailAnnouncement() {
+    public void showCreatedRailAnnouncement() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(ANNOUNCEMENT_RAIL_CREATE, session.getLocale())));
     }
@@ -409,6 +384,15 @@ public class GameViewBean implements Serializable {
     protected void showLoopRailWarning() {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(FacesMessage.SEVERITY_WARN, msg.get(ANNOUNCEMENT_RAIL_LOOP, session.getLocale()), ""));
+    }
+
+    public void startExtendingMode() {
+        getPrimeface().executeScript("startExtendingMode(" + tailNode.getX() + ", " + tailNode.getY() + ")");
+        underOperation = true;
+    }
+
+    public void showConfirmDialog() {
+        getPrimeface().executeScript("PF('confirmDialog').show();");
     }
 
     public void finishesOperation() {
@@ -456,28 +440,42 @@ public class GameViewBean implements Serializable {
 
     @Transactional
     public void remove() throws RushHourException {
-        switch (op.getType()) {
-            case RAIL_REMOVE:
-                clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
-                railCon.remove(player, clickedRailEdge);
-                getPrimeface().executeScript("PF('confirmDialog').hide();");
-                showAnnouncement(ANNOUNCEMENT_RAIL_REMOVE);
-                break;
-            case STATION_REMOVE:
-                stCon.remove(op.getStation(), player);
-                getPrimeface().executeScript("PF('confirmDialog').hide();");
-                showAnnouncement(ANNOUNCEMENT_STAION_REMOVE);
-                break;
-            case TRAIN_UNDEPLOY:
-                tCon.undeploy(op.getTrain(), player);
-                getPrimeface().executeScript("PF('confirmDialog').hide();");
-                showAnnouncement(ANNOUNCEMENT_TRAIN_REMOVE);
-                break;
-        }
+        op.confirmOK(this);
+    }
+
+    public void removeRail() throws RushHourException {
+        clickedRailEdge = clickedRailEdge.stream().map((e) -> em.merge(e)).collect(Collectors.toList());
+        railCon.remove(player, clickedRailEdge);
+        closeConfirmDialog();
+        showAnnouncement(ANNOUNCEMENT_RAIL_REMOVE);
+    }
+
+    public void removeStation(Station station) throws RushHourException {
+        stCon.remove(station, player);
+        closeConfirmDialog();
+        showAnnouncement(ANNOUNCEMENT_STAION_REMOVE);
+    }
+
+    public void undeployTrain(TrainDeployed train) throws RushHourException {
+        tCon.undeploy(train, player);
+        closeConfirmDialog();
+        showAnnouncement(ANNOUNCEMENT_TRAIN_REMOVE);
+    }
+
+    public void closeConfirmDialog() {
+        getPrimeface().executeScript("PF('confirmDialog').hide();");
     }
 
     protected void showAnnouncement(String msgId) {
         getFacesContext().addMessage(ANNOUNCEMENT_ID,
                 new FacesMessage(msg.get(msgId, session.getLocale())));
+    }
+
+    public void setTailNode(RailNode tailNode) {
+        this.tailNode = tailNode;
+    }
+
+    public void setClickedRailEdge(List<RailEdge> clickedRailEdge) {
+        this.clickedRailEdge = clickedRailEdge;
     }
 }

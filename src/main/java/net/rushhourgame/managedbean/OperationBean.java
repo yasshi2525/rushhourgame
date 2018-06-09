@@ -29,86 +29,113 @@ import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.RailNode;
 import net.rushhourgame.entity.Station;
 import net.rushhourgame.entity.TrainDeployed;
+import net.rushhourgame.exception.RushHourException;
 
 /**
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class OperationBean implements Serializable{
+public abstract class OperationBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    protected Type type;
-    protected RailNode tailNode;
-    protected Line line;
-    protected TrainDeployed train;
-    protected Station station;
-    
-    private OperationBean(Type type) {
-        this.type = type;
-    }
-    
-    private OperationBean(Type type, RailNode tailNode) {
-        this.type = type;
-        this.tailNode = tailNode;
-    }
-    
-    private OperationBean(Type type, AssistanceController.Result result) {
-        this.type = type;
-        this.tailNode = result.node;
-        this.line = result.line;
-    }
-    
-    private OperationBean(Type type, Station station) {
-        this.type = type;
-        this.station = station;
-    }
-    
-    private OperationBean(Type type, TrainDeployed train) {
-        this.type = type;
-        this.train = train;
-    }
-    
-    public static OperationBean newRailCreate(AssistanceController.Result result) {
-        return new OperationBean(Type.RAIL_CREATE, result);
-    }
-    
-    public static OperationBean newRailExtend(RailNode tailNode) {
-        return new OperationBean(Type.RAIL_EXTEND, tailNode);
-    }
-    
-    public static OperationBean newRailRemove() {
-        return new OperationBean(Type.RAIL_REMOVE);
-    }
-    
-    public static OperationBean newStationRemove(Station station) {
-        return new OperationBean(Type.STATION_REMOVE, station);
-    }
-    
-    public static OperationBean newTrainUndeploy(TrainDeployed train) {
-        return new OperationBean(Type.TRAIN_UNDEPLOY, train);
+
+    abstract public void select(GameViewBean view);
+
+    abstract public void confirmOK(GameViewBean view) throws RushHourException;
+
+    public static class RailCreation extends OperationBean {
+
+        protected final RailNode tailNode;
+        protected final Line line;
+
+        public RailCreation(AssistanceController.Result result) {
+            this.tailNode = result.node;
+            this.line = result.line;
+        }
+
+        @Override
+        public void select(GameViewBean view) {
+            view.setTailNode(tailNode);
+            view.showCreatedRailAnnouncement();
+            view.showExtendingRailGuide();
+            view.startExtendingMode();
+        }
+
+        @Override
+        public void confirmOK(GameViewBean view) {
+            // do-nothing
+        }
     }
 
-    public Type getType() {
-        return type;
+    public static class RailExtension extends OperationBean {
+
+        protected RailNode tailNode;
+
+        public RailExtension(RailNode tailNode) {
+            this.tailNode = tailNode;
+        }
+
+        @Override
+        public void select(GameViewBean view) {
+            view.setTailNode(tailNode);
+            view.showExtendingRailGuide();
+            view.startExtendingMode();
+        }
+
+        @Override
+        public void confirmOK(GameViewBean view) {
+            // do-nothing
+        }
     }
 
-    public RailNode getTailNode() {
-        return tailNode;
+    public static class RailDeletion extends OperationBean {
+
+        @Override
+        public void select(GameViewBean view) {
+            view.showConfirmDialog();
+        }
+
+        @Override
+        public void confirmOK(GameViewBean view) throws RushHourException {
+            view.removeRail();
+        }
     }
 
-    public TrainDeployed getTrain() {
-        return train;
+    public static class StationDeletion extends OperationBean {
+
+        protected final Station station;
+
+        public StationDeletion(Station station) {
+            this.station = station;
+        }
+
+        @Override
+        public void select(GameViewBean view) {
+            view.showConfirmDialog();
+        }
+
+        @Override
+        public void confirmOK(GameViewBean view) throws RushHourException {
+            view.removeStation(station);
+        }
     }
 
-    public Station getStation() {
-        return station;
-    }
-    
-    public enum Type {
-        RAIL_CREATE,
-        RAIL_EXTEND,
-        RAIL_REMOVE,
-        STATION_REMOVE,
-        TRAIN_UNDEPLOY
+    public static class TrainUndeploy extends OperationBean {
+
+        protected final TrainDeployed train;
+
+        public TrainUndeploy(TrainDeployed train) {
+            this.train = train;
+        }
+        
+        @Override
+        public void select(GameViewBean view) {
+            view.showConfirmDialog();
+        }
+
+        @Override
+        public void confirmOK(GameViewBean view) throws RushHourException {
+            view.undeployTrain(train);
+        }
     }
 }

@@ -24,14 +24,13 @@
 package net.rushhourgame.managedbean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -40,7 +39,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import net.rushhourgame.RushHourResourceBundle;
-import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
 import net.rushhourgame.controller.AssistanceController;
 import net.rushhourgame.controller.PlayerController;
@@ -57,7 +55,6 @@ import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
 import org.primefaces.PrimeFaces;
-import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -97,6 +94,16 @@ public class ClickMenuBean implements Serializable {
 
     protected double scale;
 
+    protected Comparator<RailNode> neighborSearcher
+            = (n1, n2) -> {
+                if (n1.distTo(click) > n2.distTo(click)) {
+                    return 1;
+                } else if (n1.distTo(click) < n2.distTo(click)) {
+                    return -1;
+                }
+                return 0;
+            };
+
     @PostConstruct
     public void init() {
         LOG.log(Level.FINE, "{0}#init", ClickMenuBean.class);
@@ -118,7 +125,7 @@ public class ClickMenuBean implements Serializable {
                 Logger.getLogger(ClickMenuBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         List<Station> nearStations = stCon.findIn(player, click, scale - 3);
         clickedStation = nearStations.isEmpty() ? null : nearStations.get(0);
 
@@ -133,7 +140,8 @@ public class ClickMenuBean implements Serializable {
 
     @Transactional
     public void createRail() throws RushHourException {
-        getDialog().closeDynamic(OperationBean.newRailCreate(aCon.startWithStation(player, click, session.getLocale())));
+        getDialog().closeDynamic(new OperationBean.RailCreation(
+                aCon.startWithStation(player, click, session.getLocale())));
     }
 
     public boolean isDisplayExtendRail() {
@@ -141,17 +149,8 @@ public class ClickMenuBean implements Serializable {
     }
 
     public void extendRail() {
-        getDialog().closeDynamic(
-                OperationBean.newRailExtend(
-                        rCon.findNodeIn(player, click, scale - 3).stream()
-                                .min((n1, n2) -> {
-                                    if (n1.distTo(click) > n2.distTo(click)) {
-                                        return 1;
-                                    } else if (n1.distTo(click) < n2.distTo(click)) {
-                                        return -1;
-                                    }
-                                    return 0;
-                                }).get()));
+        getDialog().closeDynamic(new OperationBean.RailExtension(
+                rCon.findNodeIn(player, click, scale - 3).stream().min(neighborSearcher).get()));
     }
 
     public boolean isDisplayRemoveRail() {
@@ -169,15 +168,15 @@ public class ClickMenuBean implements Serializable {
     }
 
     public void removeRail() {
-        getDialog().closeDynamic(OperationBean.newRailRemove());
+        getDialog().closeDynamic(new OperationBean.RailDeletion());
     }
-    
+
     public boolean isDisplayRemoveStation() {
         return clickedStation != null;
     }
-    
+
     public void removeStation() {
-        getDialog().closeDynamic(OperationBean.newStationRemove(clickedStation));
+        getDialog().closeDynamic(new OperationBean.StationDeletion(clickedStation));
     }
 
     public boolean isDisplayUndeployTrain() {
@@ -185,7 +184,7 @@ public class ClickMenuBean implements Serializable {
     }
 
     public void undeployTrain() {
-        getDialog().closeDynamic(OperationBean.newTrainUndeploy(clickedTrain));
+        getDialog().closeDynamic(new OperationBean.TrainUndeploy(clickedTrain));
     }
 
     protected FacesContext getFacesContext() {
