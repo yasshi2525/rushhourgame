@@ -157,7 +157,7 @@ public class CommonAction {
         clickCanvas();
         selectClickMenu(ID_MENU_REMOVE_STATION);
         
-        sleep(1);
+        sleep(2);
         new Actions(driver)
                 .sendKeys(Keys.ENTER)
                 .build()
