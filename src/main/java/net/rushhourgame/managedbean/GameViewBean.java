@@ -475,8 +475,4 @@ public class GameViewBean implements Serializable {
     public void setTailNode(RailNode tailNode) {
         this.tailNode = tailNode;
     }
-
-    public void setClickedRailEdge(List<RailEdge> clickedRailEdge) {
-        this.clickedRailEdge = clickedRailEdge;
-    }
 }
