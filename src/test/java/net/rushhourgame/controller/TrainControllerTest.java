@@ -109,6 +109,7 @@ public class TrainControllerTest extends AbstractControllerTest {
         assertEquals(20, created.getCapacity());
         assertTrue(created.isPrivilegedBy(player));
         assertEquals(player, created.getOwner());
+        assertTrue(3.0 == created.getProdist());
 
         try {
             created.getX();

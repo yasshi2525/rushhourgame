@@ -118,7 +118,7 @@ public class ResidenceController extends CachedController<Residence> {
 
                     if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
                         for (int i = 0; i < r.getCapacity(); i++) {
-                            hCon.create(new SimplePoint(r).makeNearPoint(Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+                            hCon.create(r.makeNearPoint(Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
                         }
                     } else {
                         LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",

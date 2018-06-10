@@ -73,13 +73,6 @@ public class SimplePoint implements Pointable, Serializable {
                 + (p.getY() - y) * (p.getY() - y));
     }
 
-    public Pointable makeNearPoint(double maxdist) {
-        double dist = Math.random() * maxdist;
-        double radian = Math.random() * Math.PI * 2;
-
-        return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
-    }
-
     @Override
     public String toString() {
         return "(" + x + "," + y + ")";

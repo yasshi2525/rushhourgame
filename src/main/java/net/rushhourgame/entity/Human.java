@@ -117,7 +117,8 @@ public class Human extends GeoEntity implements Pointable {
         stand = StandingOn.TRAIN;
     }
     
-    public void getOffTrainForce() {
+    public void getOffTrainDirectly() {
+        setXY(makeNearPoint(onTrain.getTrain().getProdist()));
         onTrain = null;
         stand = StandingOn.GROUND;
         current = null;
@@ -169,9 +170,7 @@ public class Human extends GeoEntity implements Pointable {
                 new Object[]{Human.class, this, from, from.occupied});
         this.onPlatform = null;
 
-        Pointable newPoint = new SimplePoint(x, y).makeNearPoint(to.getProdist());
-        x = newPoint.getX();
-        y = newPoint.getY();
+        setXY(makeNearPoint(to.getProdist()));
         stand = StandingOn.GROUND;
     }
 

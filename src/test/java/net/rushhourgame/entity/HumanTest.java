@@ -225,6 +225,20 @@ public class HumanTest extends AbstractEntityTest {
         verify(inst, times(1)).shiftEdge();
         assertEquals(Human.StandingOn.PLATFORM, inst.stand);
     }
+    
+    @Test
+    public void testGetOffDirectly() {
+        inst.onTrain = train;
+        Train t = mock(Train.class);
+        doReturn(3.0).when(t).getProdist();
+        doReturn(t).when(train).getTrain();
+        
+        inst.setXY(new SimplePoint());
+        
+        inst.getOffTrainDirectly();
+        
+        assertTrue(inst.distTo(new SimplePoint()) > 0.0);
+    }
 
     @Test
     public void testShouldRide() {

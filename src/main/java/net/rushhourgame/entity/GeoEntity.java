@@ -54,6 +54,18 @@ public class GeoEntity extends AbstractEntity implements Pointable {
     public void setY(double y) {
         this.y = y;
     }
+    
+    public void setXY(Pointable p) {
+        this.x = p.getX();
+        this.y = p.getY();
+    }
+    
+    public Pointable makeNearPoint(double maxdist) {
+        double dist = Math.random() * maxdist;
+        double radian = Math.random() * Math.PI * 2;
+
+        return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
+    }
 
     @Override
     public double distTo(Pointable p) {

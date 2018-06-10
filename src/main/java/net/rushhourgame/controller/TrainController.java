@@ -39,6 +39,7 @@ import net.rushhourgame.entity.Line;
 import net.rushhourgame.entity.LineStep;
 import net.rushhourgame.entity.Player;
 import net.rushhourgame.entity.Pointable;
+import net.rushhourgame.entity.SimplePoint;
 import net.rushhourgame.entity.Train;
 import net.rushhourgame.entity.TrainDeployed;
 import net.rushhourgame.exception.RushHourException;
@@ -98,10 +99,11 @@ public class TrainController extends CachedController<Train> {
     public Train create(@NotNull Player p) {
         return create(p, Long.parseLong(prop.get(GAME_DEF_TRAIN_MOBILITY)),
                 Double.parseDouble(prop.get(GAME_DEF_TRAIN_SPEED)),
-                Integer.parseInt(prop.get(GAME_DEF_TRAIN_CAPACITY)));
+                Integer.parseInt(prop.get(GAME_DEF_TRAIN_CAPACITY)),
+                Double.parseDouble(prop.get(GAME_DEF_TRAIN_PRODIST)));
     }
 
-    public Train create(@NotNull Player p, long mobility, double speed, int capacity) {
+    public Train create(@NotNull Player p, long mobility, double speed, int capacity, double prodist) {
         writeLock.lock();
         try {
             Train train = new Train();
@@ -109,6 +111,7 @@ public class TrainController extends CachedController<Train> {
             train.setMobility(mobility);
             train.setSpeed(speed);
             train.setCapacity(capacity);
+            train.setProdist(prodist);
             persistEntity(train);
             em.flush();
             LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{TrainController.class, train});
@@ -237,7 +240,7 @@ public class TrainController extends CachedController<Train> {
         try {
             hCon.findAll().stream()
                     .filter(h -> train.equalsId(h.getOnTrain()))
-                    .forEach(h -> h.getOffTrainForce());
+                    .forEach(h -> h.getOffTrainDirectly());
             searcher.notifyUpdate();
         } finally {
             hCon.getWriteLock().unlock();
@@ -247,24 +250,25 @@ public class TrainController extends CachedController<Train> {
     /**
      * 削除したいLineStepがTrainDeployed.currentに参照されていると削除できない.
      * 該当するTrainDeployedだけレコードを更新する
+     *
      * @param removing 削除予定のLineStep
      */
     public void refresh(LineStep removing) {
         List<TrainDeployed> refs = em.createNamedQuery("TrainDeployed.findByCurrent", TrainDeployed.class)
                 .setParameter("current", removing)
                 .getResultList();
-        LOG.log(Level.FINE, "{0}#refresh refreshing {1}", 
+        LOG.log(Level.FINE, "{0}#refresh refreshing {1}",
                 new Object[]{TrainController.class, refs});
         refs.stream().map(ref -> find(ref)).forEach(td -> merge(td));
     }
-    
+
     protected TrainDeployed merge(TrainDeployed oldInst) {
         Train train = oldInst.getTrain();
-        LOG.log(Level.FINE, "{0}#merge updating {1} current = {2}", 
+        LOG.log(Level.FINE, "{0}#merge updating {1} current = {2}",
                 new Object[]{TrainController.class, train, oldInst.getCurrent()});
         TrainDeployed newInst = em.merge(oldInst);
         train.setDeployed(newInst);
-        LOG.log(Level.FINE, "{0}#merge updated {1} current = {2}", 
+        LOG.log(Level.FINE, "{0}#merge updated {1} current = {2}",
                 new Object[]{TrainController.class, train, newInst.getCurrent()});
         return newInst;
     }
