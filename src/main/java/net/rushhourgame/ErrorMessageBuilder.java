@@ -150,16 +150,6 @@ public class ErrorMessageBuilder implements Serializable {
         return errMsg;
     }
     
-    /**
-     * トークンが古い/不正
-     *
-     * @return ErrorMessage
-     */
-    public ErrorMessage createInvalidToken() {
-        ErrorMessage errMsg = new ErrorMessage(REQUEST_FAIL, REQUEST_FAIL_INVALID_TOKEN, SIGNIN_FAIL_ACTION);
-        return errMsg;
-    }
-    
     public ErrorMessage createNoPrivileged(String detailId){
         ErrorMessage errMsg = new ErrorMessage(GAME_NO_PRIVILEDGE, detailId, GAME_NO_PRIVILEDGE_ACTION);
         return errMsg;

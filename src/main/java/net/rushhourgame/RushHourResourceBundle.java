@@ -108,24 +108,10 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String SIGNIN_FAIL_BAD_RES_STATUS = "rushhour.message.signin.fail.badResponseStatus";
     public static final String SIGNIN_FAIL_INVALID_RESPONSE = "rushhour.message.signin.fail.invalidResponse";
     public static final String SIGNIN_FAIL_CONNECTION_ERR = "rushhour.message.signin.fail.connectionError";
-    public static final String SIGNIN_FAIL_GET_REQ_TOKEN_BADSTATUS = "rushhour.message.signin.fail.getRequestToken.badStatus";
     public static final String SIGNIN_FAIL_GET_REQ_TOKEN_CALLBACK_NOT_CONFIRMED = "rushhour.message.signin.fail.getRequestToken.invalidCallBack";
-    public static final String SIGNIN_FAIL_GET_REQ_TOKEN_DUPLICATE = "rushhour.message.signin.fail.getRequestToken.duplicate";
-    public static final String SIGNIN_FAIL_GET_REQ_TOKEN_INVALID_REQ_TOKEN = "rushhour.message.signin.fail.getRequestToken.invaildRequestToken";
     public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_NO_REQ_TOKEN = "rushhour.message.signin.fail.getAccessToken.noRequestToken";
     public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_UNREGISTERED_REQ_TOKEN = "rushhour.message.signin.fail.getAccessToken.unregisteredRequestToken";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_BADSTATUS = "rushhour.message.signin.fail.getAccessToken.badStatus";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_USER_ID = "rushhour.message.signin.fail.getAccessToken.duplicateUserId";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_DUPLICATE_ACCESS_TOKEN = "rushhour.message.signin.fail.getAccessToken.duplicateAccessToken";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_REQ_TOKEN = "rushhour.message.signin.fail.getAccessToken.invalidRequestToken";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_ACCESS_TOKEN = "rushhour.message.signin.fail.getAccessToken.invalidAccessToken";
-    public static final String SIGNIN_FAIL_GET_ACCESS_TOKEN_INVALID_USER_ID = "rushhour.message.signin.fail.getAccessToken.invalidUserId";
     public static final String SIGNIN_FAIL_DATA_INCONSISTENCY = "rushhour.message.signin.fail.dataInconsistency";
-
-    public static final String REQUEST_FAIL = "rushhour.message.request.fail";
-    public static final String REQUEST_FAIL_INVALID_TOKEN = "rushhour.message.request.fail.invalidToken";
-    public static final String ACCOUNT_FAIL = "rushhour.message.account.fail";
-    public static final String ACCOUNT_FAIL_UPDATE_ACCESS_TOKEN = "rushhour.message.account.fail.updateAccessToken";
 
     public static final String SERVER_ERR_ACTION = "rushhour.message.servererror.action";
     public static final String SYSTEM_ERR_ACTION = "rushhour.message.systemerror.action";
@@ -141,7 +127,6 @@ public class RushHourResourceBundle extends AbstractResourceBundle {
     public static final String GAME_DUP_ACTION = "rushhour.message.game.duplication.action";
 
     public static final String GAME_DATA_INCONSIST = "rushhour.message.game.dataInconsistency";
-    public static final String GAME_DATA_INCONSIST_DUP_GM = "rushhour.message.game.dataInconsistency.duplicateGameMaster";
     public static final String GAME_DATA_INCONSIST_ACTION = "rushhour.message.game.dataInconsistency.action";
 
     public static final String UNKNOWN = "rushhour.message.unknown";

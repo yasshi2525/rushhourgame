@@ -124,14 +124,6 @@ public class ErrorMessageBuilderTest {
     }
 
     @Test
-    public void testCreateInvalidToken() {
-        ErrorMessage token = inst.createInvalidToken();
-        assertEquals(REQUEST_FAIL, token.getTitleId());
-        assertEquals(REQUEST_FAIL_INVALID_TOKEN, token.getDetailId());
-        assertEquals(SIGNIN_FAIL_ACTION, token.getActionId());
-    }
-
-    @Test
     public void testCreateNoPrivileged() {
         ErrorMessage privilege = inst.createNoPrivileged("hoge");
         assertEquals(GAME_NO_PRIVILEDGE, privilege.getTitleId());
