@@ -117,7 +117,10 @@ public class Human extends GeoEntity implements Pointable {
         stand = StandingOn.TRAIN;
     }
     
-    public void getOffTrainDirectly() {
+    /**
+     * 電車自体が撤去されるため、強制的に退去
+     */
+    public void getOffTrainForce() {
         setXY(makeNearPoint(onTrain.getTrain().getProdist()));
         onTrain = null;
         stand = StandingOn.GROUND;
@@ -172,6 +175,19 @@ public class Human extends GeoEntity implements Pointable {
 
         setXY(makeNearPoint(to.getProdist()));
         stand = StandingOn.GROUND;
+    }
+    
+    /**
+     * 駅自体が撤去されるため、強制的に退去
+     */
+    public void exitFromPlatformForce() {
+        onPlatform.exit();
+        
+        setXY(makeNearPoint(onPlatform.getStation().getTicketGate().getProdist()));
+        stand = StandingOn.GROUND;
+        
+        onPlatform = null;
+        current = null;
     }
 
     public void setOnTrain(TrainDeployed onTrain) {

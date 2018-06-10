@@ -199,6 +199,26 @@ public class HumanTest extends AbstractEntityTest {
         assertNull(inst.getOnPlatform());
         assertEquals(Human.StandingOn.GROUND, inst.getStandingOn());
     }
+    
+    @Test
+    public void testExitFromPlatformForce() {
+        TicketGate tg = mock(TicketGate.class);
+        Station st = mock(Station.class);
+        
+        doReturn(st).when(platform).getStation();
+        doReturn(tg).when(st).getTicketGate();
+        doReturn(10.0).when(tg).getProdist();
+        
+        inst.onPlatform = platform;
+        
+        inst.exitFromPlatformForce();
+        
+        assertNull(inst.current);
+        assertNull(inst.onPlatform);
+        assertEquals(Human.StandingOn.GROUND, inst.stand);
+        
+        assertTrue(inst.distTo(new SimplePoint()) > 0);
+    }
 
     @Test
     public void testGetInTrain() {
@@ -235,7 +255,7 @@ public class HumanTest extends AbstractEntityTest {
         
         inst.setXY(new SimplePoint());
         
-        inst.getOffTrainDirectly();
+        inst.getOffTrainForce();
         
         assertTrue(inst.distTo(new SimplePoint()) > 0.0);
     }

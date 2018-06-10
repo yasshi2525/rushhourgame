@@ -240,7 +240,7 @@ public class TrainController extends CachedController<Train> {
         try {
             hCon.findAll().stream()
                     .filter(h -> train.equalsId(h.getOnTrain()))
-                    .forEach(h -> h.getOffTrainDirectly());
+                    .forEach(h -> h.getOffTrainForce());
             searcher.notifyUpdate();
         } finally {
             hCon.getWriteLock().unlock();

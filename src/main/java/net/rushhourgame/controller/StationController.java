@@ -58,6 +58,8 @@ public class StationController extends CachedController<Station> {
     protected LineController lCon;
     @Inject
     protected RailController rCon;
+    @Inject
+    protected HumanController hCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -239,6 +241,10 @@ public class StationController extends CachedController<Station> {
             if (!st.isOwnedBy(owner)) {
                 throw new RushHourException(errMsgBuilder.createNoPrivileged(GAME_NO_PRIVILEDGE_OTHER_OWNED));
             }
+            
+            hCon.findAll().stream()
+                    .filter(h -> st.getPlatform().equalsId(h.getOnPlatform()))
+                    .forEach(h -> h.exitFromPlatformForce());
             
             lCon.remove(st.getPlatform(), owner);
             sCon.removeStation(st);

@@ -296,6 +296,7 @@ public class ControllerFactory {
         stCon.sCon = sCon;
         stCon.rCon = railCon;
         stCon.lCon = lCon;
+        stCon.hCon = hCon;
         stCon.init();
         init(stCon);
         initLock(stCon);

@@ -64,7 +64,7 @@ public class GeoEntity extends AbstractEntity implements Pointable {
         double dist = Math.random() * maxdist;
         double radian = Math.random() * Math.PI * 2;
 
-        return new SimplePoint(x + Math.cos(radian) * dist, y + Math.sin(radian) * dist);
+        return new SimplePoint(getX() + Math.cos(radian) * dist, getY() + Math.sin(radian) * dist);
     }
 
     @Override
