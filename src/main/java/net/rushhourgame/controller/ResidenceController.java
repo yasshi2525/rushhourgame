@@ -77,10 +77,11 @@ public class ResidenceController extends CachedController<Residence> {
     public Residence create(@NotNull Pointable p) throws RushHourException {
         return create(p,
                 Integer.parseInt(prop.get(GAME_DEF_RSD_CAPACITY)),
-                Long.parseLong(prop.get(GAME_DEF_RSD_INTERVAL)));
+                Long.parseLong(prop.get(GAME_DEF_RSD_INTERVAL)),
+                Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST)));
     }
 
-    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval) throws RushHourException {
+    public Residence create(@NotNull Pointable p, @Min(1) int capacity, @Min(1) long interval, @Min(0) double prodist) throws RushHourException {
         writeLock.lock();
         try {
             if (exists(p)) {
@@ -92,6 +93,7 @@ public class ResidenceController extends CachedController<Residence> {
             inst.setCount((long) (interval * Math.random()));
             inst.setX(p.getX());
             inst.setY(p.getY());
+            inst.setProdist(prodist);
             persistEntity(inst);
             em.flush();
             LOG.log(Level.INFO, "{0}#create created {1}", new Object[]{ResidenceController.class, inst});
@@ -118,7 +120,7 @@ public class ResidenceController extends CachedController<Residence> {
 
                     if (cost <= Double.parseDouble(prop.get(GAME_DEF_HUMAN_MAXCOST))) {
                         for (int i = 0; i < r.getCapacity(); i++) {
-                            hCon.create(r.makeNearPoint(Double.parseDouble(prop.get(GAME_DEF_RSD_PRODIST))), r, companies.get(0));
+                            hCon.create(r.makeNearPoint(r.getProdist()), r, companies.get(0));
                         }
                     } else {
                         LOG.log(Level.FINE, "{0}#step() skip create human because of too cost {1} ({2} -> {3})",

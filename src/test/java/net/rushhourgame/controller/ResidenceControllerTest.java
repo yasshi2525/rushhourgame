@@ -51,6 +51,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     private static final Pointable TEST_POS = new SimplePoint(TEST_X, TEST_Y);
     private static final int TEST_CAPACITY = 2;
     private static final int TEST_INTERVAL = 3;
+    private static final double TEST_PRODIST = 10.0;
 
     @Before
     @Override
@@ -74,13 +75,14 @@ public class ResidenceControllerTest extends AbstractControllerTest {
 
     @Test
     public void testCreate4arg() throws RushHourException {
-        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST);
         
         assertNotNull(created);
         assertTrue(TEST_X == created.getX());
         assertTrue(TEST_Y == created.getY());
         assertEquals(TEST_CAPACITY, created.getCapacity());
         assertEquals(TEST_INTERVAL, created.getInterval());
+        assertTrue(TEST_PRODIST == created.getProdist());
 
         assertEquals(1, rCon.findAll().size());
     }
@@ -104,7 +106,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testStepDoNothing() throws RushHourException {
-        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        Residence created = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST);
         inst.step(0L);
         
         verify(inst.cCon, times(0)).findAll();
@@ -112,7 +114,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testStepNoCmpWorld() throws RushHourException {
-        Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        Residence created = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST));
         inst.findAll().remove(0);
         inst.findAll().add(created);
         
@@ -123,7 +125,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testStepGenerating() throws RushHourException {
-        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST));
         inst.findAll().remove(0);
         inst.findAll().add(src);
         
@@ -143,7 +145,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testStepSkipGenerating() throws RushHourException {
-        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL));
+        Residence src = spy(inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST));
         inst.findAll().remove(0);
         inst.findAll().add(src);
         
@@ -161,7 +163,7 @@ public class ResidenceControllerTest extends AbstractControllerTest {
     
     @Test
     public void testInheritInterval() throws RushHourException {
-        Residence src = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL);
+        Residence src = inst.create(TEST_POS, TEST_CAPACITY, TEST_INTERVAL, TEST_PRODIST);
         src.setCount(3);
         
         inst.synchronizeDatabase();

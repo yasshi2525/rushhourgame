@@ -57,6 +57,8 @@ public class Residence extends GeoEntity implements Pointable, RelayPointForHuma
     @Min(1)
     protected long _interval;
     protected long count;
+    @Min(0)
+    protected double prodist;
 
     @OneToMany(mappedBy = "_from")
     protected List<StepForHumanDirectly> directlyList;
@@ -98,6 +100,14 @@ public class Residence extends GeoEntity implements Pointable, RelayPointForHuma
 
     public boolean expires() {
         return count >= _interval;
+    }
+
+    public double getProdist() {
+        return prodist;
+    }
+
+    public void setProdist(double prodist) {
+        this.prodist = prodist;
     }
 
     @Override
