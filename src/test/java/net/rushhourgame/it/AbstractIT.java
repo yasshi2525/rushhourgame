@@ -80,8 +80,8 @@ public abstract class AbstractIT {
     public void tearDownCommon() {
         if (driver != null) {
             try {
-                WebElement error = driver.findElement(By.id(ID_ERROR_TITLE));
-                if (error.isDisplayed()) {
+                if (!driver.findElements(By.id(ID_ERROR_TITLE)).isEmpty()) {
+                    WebElement error = driver.findElement(By.id(ID_ERROR_TITLE));
                     LOG.log(Level.SEVERE, "error : " + error.getText());
                     LOG.log(Level.SEVERE, "detail : " + driver.findElement(By.id(ID_ERROR_DETAIL)).getText());
                     LOG.log(Level.SEVERE, "action : " + driver.findElement(By.id(ID_ERROR_ACTION)).getText());
