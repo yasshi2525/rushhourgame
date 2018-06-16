@@ -60,6 +60,8 @@ public class TrainController extends CachedController<Train> {
     protected LineController lCon;
     @Inject
     protected RouteSearcher searcher;
+    @Inject
+    protected StationController stCon;
 
     @Override
     public void synchronizeDatabase() {
@@ -266,7 +268,27 @@ public class TrainController extends CachedController<Train> {
         Train train = oldInst.getTrain();
         LOG.log(Level.FINE, "{0}#merge updating {1} current = {2}",
                 new Object[]{TrainController.class, train, oldInst.getCurrent()});
+        
+        LineStep cached = oldInst.getCurrent();
+        
+        if (cached.getDeparture() != null) {
+            if (stCon.find(cached.getDeparture().getStaying()) == null) {
+                LOG.log(Level.WARNING, "{0}#merge {1} current's station is already removed {2}",
+                    new Object[]{TrainController.class, oldInst, oldInst.getCurrent()});
+            }
+        }
+        
+        if (cached.getStopping() != null) {
+            if (stCon.find(cached.getStopping().getGoal()) == null) {
+                LOG.log(Level.WARNING, "{0}#merge {1} current's station is already removed {2}",
+                    new Object[]{TrainController.class, oldInst, oldInst.getCurrent()});
+            }
+        }
+        
         TrainDeployed newInst = em.merge(oldInst);
+        //上のmergeでreplace前の古いLineStepをとってしまう。
+        newInst.replaceCurrent(lCon.find(cached));
+        
         train.setDeployed(newInst);
         LOG.log(Level.FINE, "{0}#merge updated {1} current = {2}",
                 new Object[]{TrainController.class, train, newInst.getCurrent()});

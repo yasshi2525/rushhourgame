@@ -264,6 +264,18 @@ public class TrainControllerTest extends AbstractControllerTest {
     }  
     
     @Test
+    public void testMerge() throws RushHourException {
+        Train train = inst.create(player);
+        TrainDeployed oldInst = inst.deploy(train, player, lineStep);
+        
+        LineStep expected = oldInst.getCurrent();
+        
+        TrainDeployed newInst = inst.merge(oldInst);
+        
+        assertEquals(expected, newInst.getCurrent());
+    }
+    
+    @Test
     public void testInheritEntity() throws RushHourException {
         Train train = inst.create(player);
         inst.deploy(train, player, lineStep);

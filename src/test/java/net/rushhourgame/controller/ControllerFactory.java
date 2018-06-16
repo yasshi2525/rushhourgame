@@ -315,6 +315,7 @@ public class ControllerFactory {
         tCon.hCon = hCon;
         tCon.lCon = lCon;
         tCon.searcher = searcher;
+        tCon.stCon = stCon;
         init(tCon);
         initLock(tCon);
     }

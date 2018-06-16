@@ -25,6 +25,8 @@ package net.rushhourgame.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,6 +43,7 @@ import javax.validation.constraints.NotNull;
 public abstract class AbstractEntity implements Identifiable, Ownable, Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(AbstractEntity.class.getName());
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +84,10 @@ public abstract class AbstractEntity implements Identifiable, Ownable, Serializa
     public boolean equalsId(Identifiable other) {
         if (other == null) {
             return false;
+        }
+        if (!this.getClass().equals(other.getClass())) {
+            LOG.log(Level.WARNING, "{0}#equalsId class is difference {1} ({2}) and {3} ({4})",
+                    new Object[]{AbstractEntity.class, this, this.getClass(), other, other.getClass()});
         }
         return this.getClass().equals(other.getClass()) && this.id == other.getId();
     }

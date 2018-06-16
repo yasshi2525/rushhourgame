@@ -23,16 +23,12 @@
  */
 package net.rushhourgame.entity;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -207,7 +203,7 @@ public class TrainDeployed extends GeoEntity {
             LOG.log(Level.WARNING, "{0}#shiftStep {1} next is null : current = {2}",
                     new Object[]{TrainDeployed.class, this, current});
         }
-        LOG.log(Level.FINE, "{0}#shiftStep {1} shift from {2} to {3}",
+        LOG.log(Level.FINER, "{0}#shiftStep {1} shift from {2} to {3}",
                     new Object[]{TrainDeployed.class, this, current, current.next});
         current = current.getNext();
         progress = 0.0;

@@ -98,7 +98,8 @@ public class StationController extends CachedController<Station> {
                 LOG.log(Level.WARNING, "{0}#find controller never synchronize database", new Object[]{StationController.class});
                 return null;
             }
-            return entities.stream().filter(e -> e.getPlatform().equalsId(old)).findFirst().get().getPlatform();
+            Station st = entities.stream().filter(e -> e.getPlatform().equalsId(old)).findFirst().orElse(null);
+            return st != null ? st.getPlatform() : null;
         } finally {
             readLock.unlock();
         }
