@@ -29,7 +29,6 @@ var pixi = require('pixi.js');
 var consts = {
     round: 20,
     background: {
-        border: 8, // 背景のエリア区画間隔 (単位scale)
         width: 1,
         color: 0xffffff,
         alpha: 0.25
@@ -214,10 +213,11 @@ stageBackground = function () {
     var container = new pixi.Container();
 
     var scale = $('#scale').text();
+    var border = Math.floor(scale / 4) * 4 - 1;
 
     var diff = {
-        x: parseFloat(scope.$centerX.val()) / Math.pow(2, consts.background.border),
-        y: parseFloat(scope.$centerY.val()) / Math.pow(2, consts.background.border)
+        x: parseFloat(scope.$centerX.val()) / Math.pow(2, border),
+        y: parseFloat(scope.$centerY.val()) / Math.pow(2, border)
     };
 
     diff.x -= Math.floor(diff.x);
@@ -229,7 +229,7 @@ stageBackground = function () {
     };
 
     var range = Math.max(scope.renderer.width, scope.renderer.height);
-    var num = Math.pow(2, scale - consts.background.border);
+    var num = Math.pow(2, scale - border);
 
     [-1, +1].forEach(function (op) {
         for (var i = 0; i < num; i++) {
