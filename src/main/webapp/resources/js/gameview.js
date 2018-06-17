@@ -25,7 +25,13 @@
 var pixi = require('pixi.js');
 
 var consts = {
-    round: 20
+    round: 20,
+    background: {
+        border: 8, // 背景のエリア区画間隔 (単位scale)
+        width: 1,
+        color: 0xffffff,
+        alpha: 0.25
+    }
 };
 
 var spriteResources = {
@@ -133,6 +139,7 @@ initPixi = function () {
 
     scope.renderer = renderer;
     scope.stage = new pixi.Container();
+    scope.background = stageBackground();
 
     // 複数形にすると、要素名と一致しなく不便だったので、単数形
     scope.graphics = {
@@ -195,9 +202,53 @@ handleResize = function () {
     rewriteTempResource();
 };
 
+/**
+ * 背景を描画する.
+ * @returns {PIXI.Container} container
+ */
+stageBackground = function () {
+    var scope = $(document).data('scope');
+
+    var container = new pixi.Container();
+
+    var scale = $('#scale').text();
+
+    var diff = {
+        x: parseFloat(scope.$centerX.val()) / Math.pow(2, consts.background.border),
+        y: parseFloat(scope.$centerY.val()) / Math.pow(2, consts.background.border)
+    };
+
+    diff.x -= Math.floor(diff.x);
+    diff.y -= Math.floor(diff.y);
+
+    var range = Math.max(scope.renderer.width, scope.renderer.height);
+    var num = Math.pow(2, scale - consts.background.border);
+
+    for (var i = 0; i < num; i++) {
+        container.addChild(
+                new pixi.Graphics()
+                .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
+                .moveTo((-1 - diff.x) * range, (i - diff.y) * range / num)
+                .lineTo((+1 + diff.x) * range, (i - diff.y) * range / num));
+
+        container.addChild(
+                new pixi.Graphics()
+                .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
+                .moveTo((i - diff.x) * range / num, (-1 - diff.y) * range)
+                .lineTo((i - diff.x) * range / num, (+1 + diff.y) * range));
+    }
+
+    scope.stage.addChild(container);
+
+    return container;
+};
+
 // fetchGraphics()にすると、ajaxでよびだされない
 fetchGraphics = function () {
     var scope = $(document).data('scope');
+
+    scope.stage.removeChild(scope.background);
+    scope.background = stageBackground();
 
     // 既存のリソースにマークをつける
     markOldToGraphics(scope.graphics);
@@ -333,12 +384,11 @@ updateSprite = function (sprite, $elm, isBringToFront) {
  * 路線のlineではなく、線のline
  * @param {type} $elm
  * @param {type} opts
- * @returns 
+ * @returns line
  */
 stageLine = function ($elm, opts) {
     var scope = $(document).data('scope');
     var color = opts.color ? opts.color : scope.player[$elm.data('pid')].data('color').replace('#', '0x');
-    var scope = $(document).data('scope');
 
     var container = new pixi.Container;
     var obj = new pixi.Graphics();
