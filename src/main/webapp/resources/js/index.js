@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+/** @module index */
+
 var gameview = require('./gameview.js');
 
 $(function(){

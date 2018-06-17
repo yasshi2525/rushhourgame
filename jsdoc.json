@@ -1,5 +1,19 @@
 {
-    "opts" : {
+    "source": {
+        "include": [
+            "./src/main/webapp/resources/js"
+        ],
+        "exclude": [
+            "./src/main/webapp/resources/js/build"
+        ]
+    },
+    "templates": {
+        "systemName": "RushHourGame",
+        "theme": "cerulean",
+        "inverseNav": "true"
+    },
+    "opts": {
+        "template": "./node_modules/ink-docstrap/template",
         "destination": "./docs/jsdoc"
     }
 }

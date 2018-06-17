@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+/** @module gameview */
+
 var pixi = require('pixi.js');
 
 var consts = {

@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+/** @module admin */
+
 var gameview = require('./gameview.js');
 
 $(function(){
