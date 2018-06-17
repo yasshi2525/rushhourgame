@@ -223,22 +223,31 @@ stageBackground = function () {
     diff.x -= Math.floor(diff.x);
     diff.y -= Math.floor(diff.y);
 
+    var offset = {
+        x: scope.renderer.width / 2,
+        y: scope.renderer.height / 2
+    };
+
     var range = Math.max(scope.renderer.width, scope.renderer.height);
     var num = Math.pow(2, scale - consts.background.border);
 
-    for (var i = 0; i < num; i++) {
-        container.addChild(
-                new pixi.Graphics()
-                .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
-                .moveTo((-1 - diff.x) * range, (i - diff.y) * range / num)
-                .lineTo((+1 + diff.x) * range, (i - diff.y) * range / num));
+    [-1, +1].forEach(function (op) {
+        for (var i = 0; i < num; i++) {
+            var xBar = new pixi.Graphics()
+                    .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
+                    .moveTo(0, (op * i - diff.y) * range / num)
+                    .lineTo(scope.renderer.width, (op * i - diff.y) * range / num);
+            xBar.y = offset.y;
+            container.addChild(xBar);
 
-        container.addChild(
-                new pixi.Graphics()
-                .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
-                .moveTo((i - diff.x) * range / num, (-1 - diff.y) * range)
-                .lineTo((i - diff.x) * range / num, (+1 + diff.y) * range));
-    }
+            var yBar = new pixi.Graphics()
+                    .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
+                    .moveTo((op * i - diff.x) * range / num, 0)
+                    .lineTo((op * i - diff.x) * range / num, scope.renderer.height);
+            yBar.x = offset.x;
+            container.addChild(yBar);
+        }
+    });
 
     scope.stage.addChild(container);
 
