@@ -26,9 +26,10 @@ var gulp = require('gulp');
 var karma = require('karma');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-var streamify = require('gulp-streamify');
+var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
+var jsdoc = require("gulp-jsdoc3");
 
 gulp.task('watch', function () {
     gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal']);
@@ -52,18 +53,22 @@ gulp.task('karma', function (done) {
     }).start();
 });
 
+gulp.task('doc', function (cb) {
+    gulp.src(['README.md', './src/main/webapp/resources/js/*.js'], {read: false})
+            .pipe(jsdoc(cb));
+});
+
 function build(minimize) {
     _build('index.js', ['./src/main/webapp/resources/js/index.js'], minimize);
     _build('admin.js', ['./src/main/webapp/resources/js/admin.js'], minimize);
 }
 
 function _build(target, entries, minimize) {
-    var b = browserify({entries: entries})
+    browserify({entries: entries})
             .bundle()
-            .pipe(source(target));
-    if (minimize) {
-        b.pipe(streamify(uglify()));
-    }
-    b.pipe(rename(target))
+            .pipe(source(target))
+            .pipe(buffer())
+            .pipe(uglify({compress: minimize, mangle: minimize}))
+            .pipe(rename(target))
             .pipe(gulp.dest('./src/main/webapp/resources/js/build'));
 }
