@@ -84,6 +84,7 @@ describe('test gameview', function () {
                 addChild: doNothing,
                 removeChild: doNothing
             },
+            background: {},
             graphics: {
                 'company': {},
                 'residence': {},
@@ -128,8 +129,15 @@ describe('test gameview', function () {
         });
     });
 
+    describe('test stageBackground', function () {
+        it('invoke', function () {
+            stageBackground();
+        });
+    });
+
     describe('test fetchGraphicx', function () {
         beforeEach(function () {
+            spyOn(window, 'stageBackground').and.returnValue({});
             spyOn(window, 'updateSprite').and.callFake(doNothing);
             spyOn(window, 'stageResourceSprite').and.returnValue({});
             spyOn(window, 'stageLine').and.returnValue({});
@@ -144,7 +152,7 @@ describe('test gameview', function () {
             fetchGraphics();
             expect(window.updateSprite.calls.any()).toEqual(false);
             expect(window.stageResourceSprite.calls.any()).toEqual(false);
-            expect(scope.stage.removeChild.calls.any()).toEqual(false);
+            expect(scope.stage.removeChild.calls.count()).toEqual(1);
             expect(window.stageLine.calls.any()).toEqual(false);
 
             $('#admin').remove();
@@ -160,7 +168,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.any()).toEqual(false);
                 expect(window.stageResourceSprite.calls.count()).toEqual(1);
                 expect(window.stageLine.calls.any()).toEqual(false);
-                expect(scope.stage.removeChild.calls.any()).toEqual(false);
+                expect(scope.stage.removeChild.calls.count()).toEqual(1);
                 expect(scope.graphics[type].no1).toBeDefined();
 
             });
@@ -174,7 +182,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.count()).toEqual(1);
                 expect(window.stageResourceSprite.calls.any()).toEqual(false);
                 expect(window.stageLine.calls.any()).toEqual(false);
-                expect(scope.stage.removeChild.calls.any()).toEqual(false);
+                expect(scope.stage.removeChild.calls.count()).toEqual(1);
                 expect(scope.graphics[type].no1).toBeDefined();
             });
 
@@ -186,7 +194,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.any()).toEqual(false);
                 expect(window.stageResourceSprite.calls.any()).toEqual(false);
                 expect(window.stageLine.calls.any()).toEqual(false);
-                expect(scope.stage.removeChild.calls.count()).toEqual(1);
+                expect(scope.stage.removeChild.calls.count()).toEqual(2);
                 expect(scope.graphics[type].no1).not.toBeDefined();
             });
 
@@ -204,7 +212,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.any()).toEqual(false);
                 expect(window.stageResourceSprite.calls.any()).toEqual(false);
                 expect(window.stageLine.calls.count()).toEqual(1);
-                expect(scope.stage.removeChild.calls.any()).toEqual(false);
+                expect(scope.stage.removeChild.calls.count()).toEqual(1);
                 expect(scope.graphics[type].no1).toBeDefined();
             });
 
@@ -217,7 +225,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.any()).toEqual(false);
                 expect(window.stageResourceSprite.calls.any()).toEqual(false);
                 expect(window.stageLine.calls.count()).toEqual(1);
-                expect(scope.stage.removeChild.calls.count()).toEqual(1);
+                expect(scope.stage.removeChild.calls.count()).toEqual(2);
                 expect(scope.graphics[type].no1).toBeDefined();
             });
 
@@ -229,7 +237,7 @@ describe('test gameview', function () {
                 expect(window.updateSprite.calls.any()).toEqual(false);
                 expect(window.stageResourceSprite.calls.any()).toEqual(false);
                 expect(window.stageLine.calls.any()).toEqual(false);
-                expect(scope.stage.removeChild.calls.count()).toEqual(1);
+                expect(scope.stage.removeChild.calls.count()).toEqual(2);
                 expect(scope.graphics[type].no1).not.toBeDefined();
             });
 
@@ -815,9 +823,10 @@ describe('test initPixi', function () {
     it('invoke', function () {
         //loadImageを2回実行するとResource読み込みエラーになる
         spyOn(window, 'loadImage').and.callFake(function () {});
+        spyOn(window, 'stageBackground').and.returnValue({});
         $('body').append("<div class='player' id='admin' data-icon='base/src/main/webapp/resources/image/s_player.png'/>");
         $('body').append("<div id='gameview'/>");
-        
+
         var localScope = {
             $gameview: $('#gameview'),
             player: {}
