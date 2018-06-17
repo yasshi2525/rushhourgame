@@ -54,8 +54,9 @@ gulp.task('karma', function (done) {
 });
 
 gulp.task('doc', function (cb) {
+    var config = require('./jsdoc.json');
     gulp.src(['README.md', './src/main/webapp/resources/js/*.js'], {read: false})
-            .pipe(jsdoc(cb));
+            .pipe(jsdoc(config, cb));
 });
 
 function build(minimize) {

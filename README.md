@@ -103,7 +103,7 @@ pip install Sphinx sphinxcontrib-actdiag sphinxcontrib-blockdiag sphinxcontrib-n
 ### 仕様書をビルドする
 
 ```
-cd docs  
+cd docs/spec  
 make html  
 ```
 
@@ -118,7 +118,8 @@ The MIT License
 ## Link
 
 仕様書  : <http://docs.rushhourgame.net/spec/>  
-javadoc : <http://docs.rushhourgame.net/javadoc/>  
+javadoc : <http://docs.rushhourgame.net/javadoc/>
+jsdoc : <http://docs.rushhourgame.net/jsdoc/>    
 Redmine : <http://redmine.rushhourgame.net/>  
 
 ## 作成者
