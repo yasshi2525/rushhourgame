@@ -118,8 +118,8 @@ The MIT License
 ## Link
 
 仕様書  : <http://docs.rushhourgame.net/spec/>  
-javadoc : <http://docs.rushhourgame.net/javadoc/>
-jsdoc : <http://docs.rushhourgame.net/jsdoc/>    
+javadoc : <http://docs.rushhourgame.net/javadoc/>  
+jsdoc : <http://docs.rushhourgame.net/jsdoc/>  
 Redmine : <http://redmine.rushhourgame.net/>  
 
 ## 作成者
