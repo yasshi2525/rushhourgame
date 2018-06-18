@@ -232,7 +232,8 @@ stageBackground = function () {
     var num = Math.pow(2, scale - border);
 
     [-1, +1].forEach(function (op) {
-        for (var i = 0; i < num; i++) {
+        // 真ん中が太くならないように
+        for (var i = Math.max(op, 0); i < num; i++) {
             var xBar = new pixi.Graphics()
                     .lineStyle(consts.background.width, consts.background.color, consts.background.alpha)
                     .moveTo(0, (op * i - diff.y) * range / num)
