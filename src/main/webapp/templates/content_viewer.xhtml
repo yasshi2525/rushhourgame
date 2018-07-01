@@ -165,11 +165,13 @@
         <h:outputText  id="scale" value="#{game.scale}"/>
         <h:inputHidden id="sliderscale" value="#{game.scale * 100}"/>
         <p:slider for="sliderscale" minValue="100" maxValue="1600" 
-                  onSlide="handleSlide(event, ui)">
+                  onSlide="handleSlide(event, ui)" widgetVar="slider">
             <p:ajax event="slideEnd" listener="#{game.onSlideEnd}" 
                     update="gamemodel scale"
                     oncomplete="fetchGraphics()"/>
         </p:slider>
+        <!-- マウスホイール起点のscale変更をサーバに送信. slideEndは発火しない -->
+        <p:remoteCommand name="registerScale" immediate="true" actionListener="#{game.registerScale}" />
     </h:panelGrid>
 </h:form>
 

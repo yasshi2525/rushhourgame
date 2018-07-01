@@ -108,6 +108,7 @@ describe('test gameview', function () {
         window.startPosition = null;
         window.registerClickPos = doNothing;
         window.registerEdgeId = doNothing;
+        window.registerScale = doNothing;
         window.extendRail = doNothing;
         mockSprite.position.reset();
     });
@@ -350,6 +351,10 @@ describe('test gameview', function () {
             handleSlide(null, {value: 1000});
             expect($('#scale').text()).toEqual('10');
         });
+
+        afterEach(function () {
+            $('#scale').text(8);
+        });
     });
 
     describe('test onDragStart', function () {
@@ -447,6 +452,59 @@ describe('test gameview', function () {
 
             expect(scope.tailNode.x).not.toEqual(100);
             expect(scope.tailNode.y).not.toEqual(100);
+        });
+    });
+
+    describe('test onWheel', function () {
+        beforeEach(function () {
+            $('body').append("<input id=\"sliderscale\" type=\"hidden\" name=\"sliderscale\" value=\"800\">");
+            window.PF = function (name) {
+                return {
+                    setValue: function (value) {}
+                };
+            };
+            spyOn(window, 'fetchGraphics').and.callFake(doNothing);
+            spyOn(window, 'fetchMovableGraphics').and.callFake(doNothing);
+            spyOn(window, 'rewriteTempResource').and.callFake(doNothing);
+        });
+
+        it('scroll positive', function () {
+            onWheel({originalEvent: {deltaY: 1}});
+            expect($('#sliderscale').val()).toEqual('840');
+            expect($('#scale').text()).toEqual('8.4');
+        });
+
+        it('scroll positive max', function () {
+            $('#sliderscale').val(1599);
+            $('#scale').text(15.9);
+
+            onWheel({originalEvent: {deltaY: 1}});
+
+            expect($('#sliderscale').val()).toEqual('1600');
+            expect($('#scale').text()).toEqual('16');
+        });
+
+        it('scroll negative', function () {
+            onWheel({originalEvent: {deltaY: -1}});
+            expect($('#sliderscale').val()).toEqual('760');
+            expect($('#scale').text()).toEqual('7.6');
+        });
+
+        it('scroll negative min', function () {
+            $('#sliderscale').val(1);
+            $('#scale').text(0.01);
+
+            onWheel({originalEvent: {deltaY: -1}});
+
+            expect($('#sliderscale').val()).toEqual('0');
+            expect($('#scale').text()).toEqual('0');
+        });
+
+        afterEach(function () {
+            $('#sliderscale').val(800);
+            $('#scale').text(8);
+            $('#sliderscale').remove();
+            delete window.PF;
         });
     });
 

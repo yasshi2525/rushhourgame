@@ -235,6 +235,19 @@ public class GameViewBeanTest extends AbstractBeanTest {
 
         assertTrue(1 == inst.getScale());
     }
+    
+    @Test
+    public void testRegisterScale () {
+        Map<String, String> map = new HashMap<>();
+        map.put("scale", Double.toString(2.2));
+        doReturn(facesContext).when(inst).getFacesContext();
+        doReturn(externalContext).when(facesContext).getExternalContext();
+        doReturn(map).when(externalContext).getRequestParameterMap();
+        
+        inst.registerScale();
+        
+        assertTrue(inst.getScale() == 2.2);
+    }
 
     @Test
     public void testInitGuide() {

@@ -279,6 +279,15 @@ public class GameViewBean implements Serializable {
     public void onSlideEnd(SlideEndEvent event) {
         setScale(event.getValue() / 100.0); // 100倍の値を入力させている
     }
+    
+    /**
+     * クライアントサイドからのスケールの更新.
+     * マウスホイール起点のスケール変更通知のため実装.
+     */
+    public void registerScale() {
+        Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
+        setScale(Double.parseDouble(reqParam.get("scale")));
+    }
 
     /**
      * 読み込む際は表示するより広い領域読み込む. スクロールしても表示が途切れないようにするため

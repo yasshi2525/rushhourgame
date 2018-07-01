@@ -32,6 +32,10 @@ var consts = {
         width: 1,
         color: 0xffffff,
         alpha: 0.25
+    },
+    slider: {
+        min: 0.0,
+        max: 16.0
     }
 };
 
@@ -190,7 +194,8 @@ initEventHandler = function () {
         'mouseout': onDragEnd,
         'touchend': onDragEnd,
         'mousemove': onDragMove,
-        'touchmove': onDragMove
+        'touchmove': onDragMove,
+        'wheel': onWheel
     });
     // Fullscreen in pixi is resizing the renderer to be window.innerWidth by window.innerHeight
     window.addEventListener("resize", handleResize);
@@ -549,6 +554,26 @@ onDragMove = function (event) {
     }
 
     rewriteTempResource();
+};
+
+onWheel = function (event) {
+    var sliderscale = Math.round($('#sliderscale').val());
+
+    if (event.originalEvent.deltaY > 0) {
+        sliderscale = Math.min(consts.slider.max * 100, sliderscale + 40);
+    }
+    if (event.originalEvent.deltaY < 0) {
+        sliderscale = Math.max(consts.slider.min * 100, sliderscale - 40);
+    }
+
+    $('#sliderscale').val(sliderscale);
+    $('#scale').text(sliderscale / 100);
+    PF('slider').setValue(sliderscale);
+    fetchGraphics();
+    fetchMovableGraphics();
+    rewriteTempResource();
+
+    registerScale([{name: 'scale', value: sliderscale / 100}]);
 };
 
 toViewPosFromMouse = function (event) {
