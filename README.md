@@ -1,7 +1,7 @@
 RushHour
 ========
 
-![Build Status](http://jenkins.rushhourgame.net/job/RushHourGameStaging/badge/icon)
+![Build Status](http://jenkins.rushhourgame.net/job/RushHourGameStaging/statusbadges-build/icon) ![Grade](http://jenkins.rushhourgame.net/job/RushHourGameStaging/statusbadges-grade/icon) ![Coverage](http://jenkins.rushhourgame.net/job/RushHourGameStaging/statusbadges-coverage/icon)
 
 ## 概要
 
