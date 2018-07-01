@@ -1,6 +1,8 @@
 RushHour
 ========
 
+![Build Status](http://jenkins.rushhourgame.net/job/RushHourGameStaging/badge/icon)
+
 ## 概要
 
 RushHourは通勤シミュレーションゲームです。
