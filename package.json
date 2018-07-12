@@ -28,8 +28,6 @@
     "karma-jquery": "0.2.3",
     "karma-mocha-reporter": "^2.2.5",
     "karma-phantomjs-launcher": "1.0.4",
-    "log4js": "2.11.0",
-    "request": "2.87.0",
     "watchify": "3.11.0"
   }
 }
