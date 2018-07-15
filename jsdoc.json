@@ -1,12 +1,4 @@
 {
-    "source": {
-        "include": [
-            "./src/main/webapp/resources/js"
-        ],
-        "exclude": [
-            "./src/main/webapp/resources/js/build"
-        ]
-    },
     "templates": {
         "systemName": "RushHourGame",
         "theme": "cerulean",
