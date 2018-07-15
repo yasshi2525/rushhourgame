@@ -26,6 +26,10 @@ THE SOFTWARE.
     Author     : yasshi2525 <https://twitter.com/yasshi2525>
 */
 
+*:not(body) {
+    z-index: 2;
+}
+
 .title{
     font-size: x-large;
 }
@@ -69,6 +73,16 @@ div.footer {
 #scale {
     float: right; 
     color: #ffffff;
+}
+
+#toolbar {
+    position: relative;
+    z-index: 2;
+}
+
+#guide {
+    position: relative;
+    z-index: 2;
 }
 
 div.footer a {

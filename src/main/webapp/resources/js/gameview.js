@@ -146,7 +146,7 @@ initPixi = function () {
             .css('position', 'fixed')
             .css('left', '0px')
             .css('top', '0px')
-            .css('z-index', '-1');
+            .css('z-index', '1');
 
     initEventHandler(); //イベントハンドラ登録
 
@@ -199,71 +199,15 @@ initEventHandler = function () {
         'mousedown': onDragStart,
         'touchstart': onDragStart,
         'mouseup': onDragEnd,
-        'mouseout': onDragEnd,
+        'mouseleave': onDragEnd,
         'touchend': onDragEnd,
         'mousemove': onDragMove,
         'touchmove': onDragMove,
         'wheel': onWheel
     });
 
-    // 何もない領域でイベントが発生した際は$canvasのイベントとして扱う
-    $('body').on({
-        'mousedown': refireDragStart,
-        'touchstart': refireDragStart,
-        'mouseup': refireDragEnd,
-        'mouseout': refireDragEnd,
-        'touchend': refireDragEnd,
-        'mousemove': refireDragMove,
-        'touchmove': refireDragMove,
-        'wheel': refireWheel
-    });
-
     // Fullscreen in pixi is resizing the renderer to be window.innerWidth by window.innerHeight
     window.addEventListener("resize", handleResize);
-};
-
-/**
- * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
- * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
- * @param {MouseEvent} event
- */
-refireDragStart = function (event) {
-    if ($(event.target).is('body')) {
-        onDragStart(event);
-    }
-};
-
-/**
- * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
- * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
- * @param {MouseEvent} event
- */
-refireDragEnd = function (event) {
-    if ($(event.target).is('body')) {
-        onDragEnd(event);
-    }
-};
-
-/**
- * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
- * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
- * @param {MouseEvent} event
- */
-refireDragMove = function (event) {
-    if ($(event.target).is('body')) {
-        onDragMove(event);
-    }
-};
-
-/**
- * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
- * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
- * @param {MouseEvent} event
- */
-refireWheel = function (event) {
-    if ($(event.target).is('body')) {
-        onWheel(event);
-    }
 };
 
 handleResize = function () {

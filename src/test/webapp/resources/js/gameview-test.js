@@ -130,42 +130,6 @@ describe('test gameview', function () {
         });
     });
 
-    describe('test refire event', function () {
-
-        beforeEach(function () {
-            spyOn(window, 'onDragStart').and.callFake(doNothing);
-            spyOn(window, 'onDragMove').and.callFake(doNothing);
-            spyOn(window, 'onDragEnd').and.callFake(doNothing);
-            spyOn(window, 'onWheel').and.callFake(doNothing);
-        });
-
-        it('doNothing when body does not be selected', function () {
-            var emptyEvent = {'target': {}};
-           
-            refireDragStart(emptyEvent);
-            refireDragEnd(emptyEvent);
-            refireDragMove(emptyEvent);
-            refireWheel(emptyEvent);
-            expect(window.onDragStart.calls.count()).toEqual(0);
-            expect(window.onDragMove.calls.count()).toEqual(0);
-            expect(window.onDragEnd.calls.count()).toEqual(0);
-            expect(window.onWheel.calls.count()).toEqual(0);
-        });
-
-        it('call drag event when body is selected', function () {
-            var eventFromBody = {'target': $('body')};
-
-            refireDragStart(eventFromBody);
-            refireDragEnd(eventFromBody);
-            refireDragMove(eventFromBody);
-            refireWheel(eventFromBody);
-            expect(window.onDragStart.calls.count()).toEqual(1);
-            expect(window.onDragMove.calls.count()).toEqual(1);
-            expect(window.onDragEnd.calls.count()).toEqual(1);
-            expect(window.onWheel.calls.count()).toEqual(1);
-        });
-    });
-
     describe('test stageBackground', function () {
         it('invoke', function () {
             stageBackground();
