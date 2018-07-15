@@ -22,8 +22,18 @@
  * THE SOFTWARE.
  */
 
+/**
+ * @typedef Point
+ * @type {Object}
+ * @property {number} x x座標
+ * @property {number} y y座標 
+ */
+
 /** @module gameview */
 
+/**
+ * @type Module pixi|Module pixi
+ */
 var pixi = require('pixi.js');
 
 var consts = {
@@ -453,7 +463,7 @@ slideEdge = function (from, to, scale) {
  * サーバ上のパスを画面上の座標に変換する
  * @param {type} x
  * @param {type} y
- * @returns {nm$_gameview.toViewPos.gameviewAnonym$2}
+ * @returns {Point} 座標値
  */
 toViewPos = function (x, y) {
     var scope = $(document).data('scope');
@@ -495,7 +505,7 @@ onDragStart = function (event) {
 onDragEnd = function (event) {
     var scope = $(document).data('scope');
 
-    var mousePos = toViewPosFromMouse(event);
+    var mousePos = toViewPosFromMouse(event, scope.mousePos);
 
     if (this.startPosition && this.startPosition.x === mousePos.x
             && this.startPosition.y === mousePos.y) {
@@ -529,12 +539,12 @@ onDragEnd = function (event) {
 
 /**
  * ドラッグ時、新しくなるcenterX, centerYを求める
- * @param {type} event
+ * @param {MouseEvent} event
  * @returns {nm$_gameview.onDragMove}
  */
 onDragMove = function (event) {
     var scope = $(document).data('scope');
-    scope.mousePos = toViewPosFromMouse(event);
+    scope.mousePos = toViewPosFromMouse(event, scope.mousePos);
 
     if (this.dragging) {
         var newCenterPos = toNewCenterGamePos(
@@ -576,13 +586,23 @@ onWheel = function (event) {
     registerScale([{name: 'scale', value: sliderscale / 100}]);
 };
 
-toViewPosFromMouse = function (event) {
+/**
+ * イベント変数からマウス座標を取得する。
+ * @param {MouseEvent} event
+ * @param {Point} def マウス座標値が取得できなかったとき返す値。指定なしのときは{x: 0, y: 0}を返す。
+ * @returns {Point} マウス座標値
+ */
+toViewPosFromMouse = function (event, def) {
+    if (def === undefined) {
+        def = {x: 0, y: 0};
+    }
+    
     if (event.offsetX && event.offsetY) {
         return {x: event.offsetX, y: event.offsetY};
     } else if (event.originalEvent.touches && event.originalEvent.touches[0]) {
         return {x: event.originalEvent.touches[0].pageX, y: event.originalEvent.touches[0].pageY};
     }
-    return {x: 0, y: 0};
+    return def;
 };
 
 toNewCenterGamePos = function (startGamePos, startViewPos, newViewPos) {
