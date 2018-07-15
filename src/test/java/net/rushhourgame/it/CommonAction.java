@@ -157,11 +157,7 @@ public class CommonAction {
         clickCanvas();
         selectClickMenu(ID_MENU_REMOVE_STATION);
         
-        sleep(1);
-        new Actions(driver)
-                .sendKeys(Keys.ENTER)
-                .build()
-                .perform();
+        driver.findElement(By.id(ID_CONFIRM_OK)).click();
         
         WebElement announcement = findAnnouncement();
         String msg = announcement.getText();
