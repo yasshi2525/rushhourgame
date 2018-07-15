@@ -32,6 +32,7 @@ var rename = require('gulp-rename');
 var jsdoc = require("gulp-jsdoc3");
 
 gulp.task('watch', function () {
+    build(false);
     gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal']);
 });
 
