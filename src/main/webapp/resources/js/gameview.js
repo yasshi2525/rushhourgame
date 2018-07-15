@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+/** @module gameview */
+
 /**
  * 座標を表すクラス
  * @typedef Point
@@ -29,8 +31,6 @@
  * @property {number} x x座標
  * @property {number} y y座標 
  */
-
-/** @module gameview */
 
 var pixi = require('pixi.js');
 
@@ -205,8 +205,65 @@ initEventHandler = function () {
         'touchmove': onDragMove,
         'wheel': onWheel
     });
+
+    // 何もない領域でイベントが発生した際は$canvasのイベントとして扱う
+    $('body').on({
+        'mousedown': refireDragStart,
+        'touchstart': refireDragStart,
+        'mouseup': refireDragEnd,
+        'mouseout': refireDragEnd,
+        'touchend': refireDragEnd,
+        'mousemove': refireDragMove,
+        'touchmove': refireDragMove,
+        'wheel': refireWheel
+    });
+
     // Fullscreen in pixi is resizing the renderer to be window.innerWidth by window.innerHeight
     window.addEventListener("resize", handleResize);
+};
+
+/**
+ * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
+ * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
+ * @param {MouseEvent} event
+ */
+refireDragStart = function (event) {
+    if ($(event.target).is('body')) {
+        onDragStart(event);
+    }
+};
+
+/**
+ * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
+ * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
+ * @param {MouseEvent} event
+ */
+refireDragEnd = function (event) {
+    if ($(event.target).is('body')) {
+        onDragEnd(event);
+    }
+};
+
+/**
+ * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
+ * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
+ * @param {MouseEvent} event
+ */
+refireDragMove = function (event) {
+    if ($(event.target).is('body')) {
+        onDragMove(event);
+    }
+};
+
+/**
+ * 要素の存在しない領域でイベントが発生した際、canvasでイベントが発火したものとする。
+ * canvasが背景にあるため、body領域上でイベントが発火すると、canvasがうけとれないため
+ * @param {MouseEvent} event
+ */
+refireWheel = function (event) {
+    if ($(event.target).is('body')) {
+        onWheel(event);
+    }
 };
 
 handleResize = function () {
@@ -493,6 +550,7 @@ onDragStart = function (event) {
     var scope = $(document).data('scope');
     this.moving = false;
     this.dragging = true;
+    $('body').css('user-select', 'none'); // body要素上のテキストが選択され、ドラッグできなくなるため
     this.startGamePos = {
         x: parseFloat(scope.$centerX.val()),
         y: parseFloat(scope.$centerY.val())
@@ -531,6 +589,7 @@ onDragEnd = function (event) {
         // mouseup時のリロードは xhtml側で行う
     }
     this.dragging = false;
+    $('body').css('user-select', 'auto');
     this.startGamePos = null;
     this.startPosition = null;
 };
@@ -594,7 +653,7 @@ toViewPosFromMouse = function (event, def) {
     if (def === undefined) {
         def = {x: 0, y: 0};
     }
-    
+
     if (event.offsetX && event.offsetY) {
         return {x: event.offsetX, y: event.offsetY};
     } else if (event.originalEvent.touches && event.originalEvent.touches[0]) {
