@@ -23,6 +23,7 @@
  */
 
 /**
+ * 座標を表すクラス
  * @typedef Point
  * @type {Object}
  * @property {number} x x座標
@@ -31,9 +32,6 @@
 
 /** @module gameview */
 
-/**
- * @type Module pixi|Module pixi
- */
 var pixi = require('pixi.js');
 
 var consts = {
