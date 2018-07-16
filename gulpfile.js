@@ -31,17 +31,20 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var jsdoc = require("gulp-jsdoc3");
 
-gulp.task('watch', function () {
+gulp.task('watch', function (done) {
     build(false);
-    gulp.watch('./src/main/webapp/resources/js/*.js', ['buildNormal']);
+    gulp.watch('./src/main/webapp/resources/js/*.js', gulp.task('buildNormal'));
+    done();
 });
 
-gulp.task('buildNormal', function () {
+gulp.task('buildNormal', function (done) {
     build(false);
+    done();
 });
 
-gulp.task('default', function () {
+gulp.task('default', function (done) {
     build(true);
+    done();
 });
 
 gulp.task('karma', function (done) {
