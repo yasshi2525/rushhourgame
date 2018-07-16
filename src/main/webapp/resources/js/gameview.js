@@ -540,7 +540,7 @@ onDragEnd = function (event) {
 
 /**
  * ドラッグ時、新しくなるcenterX, centerYを求める
- * @param {MouseEvent} event
+ * @param {jQuery.Event} event
  * @returns {nm$_gameview.onDragMove}
  */
 onDragMove = function (event) {
@@ -589,7 +589,7 @@ onWheel = function (event) {
 
 /**
  * イベント変数からマウス座標を取得する。
- * @param {MouseEvent} event
+ * @param {jQuery.Event} event
  * @param {Point} def マウス座標値が取得できなかったとき返す値。指定なしのときは{x: 0, y: 0}を返す。
  * @returns {Point} マウス座標値
  */
