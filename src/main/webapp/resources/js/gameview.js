@@ -25,15 +25,25 @@
 /** @module gameview */
 
 /**
- * 座標を表すクラス
- * @typedef Point
- * @type {Object}
+ * @typedef {object} Point 座標を表すクラス
  * @property {number} x x座標
  * @property {number} y y座標 
  */
 
 var pixi = require('pixi.js');
 
+/**
+ * 共通情報
+ * @type {object}
+ * @property {number} round リソースをクリックするときの誤差許容ピクセル
+ * @property {object} background 背景情報
+ * @property {number} background.width 背景グリッド線の太さ
+ * @property {number} background.color グリッド線の色
+ * @property {number} background.alpha 透明度 
+ * @property {object} slider 拡大縮小情報。マウスホイールで動的変更する際、最大最小値制御が必要なため導入
+ * @property {number} slider.min 許容最小倍率
+ * @property {number} slider.max 許容最大倍率 
+ */
 var consts = {
     round: 20,
     background: {
@@ -47,13 +57,52 @@ var consts = {
     }
 };
 
+/**
+ * @typedef {object} SpriteOpts 画像リソースのカスタマイズ情報。
+ * @property {number} alpha 透明度 
+ */
+
+/**
+ * 画像リソース情報
+ * @type {object}
+ * @property {object} residence 住宅画像情報
+ * @property {object} company 会社画像情報
+ * @property {object} station 駅画像情報
+ * @property {SpriteOpts} station.my 自分保有駅のエフェクト
+ * @property {SpriteOpts} station.other 他ユーザ保有駅のエフェクト
+ * @property {object} lonelyrailnode 孤立線路点画像情報
+ */
 var spriteResources = {
     'residence': {},
     'company': {},
-    'station': {},
+    'station': {
+        my: {
+            alpha: 1.0
+        },
+        other: {
+            alpha: 0.5
+        }
+    },
     'lonelyrailnode': {}
 };
 
+/**
+ * @typedef {object} LineOpts ベクタ線のカスタマイズ情報。
+ * @property {number} slide 中心線からずらす距離
+ * @property {number} scale 線の幅
+ * @property {number} alpha 透明度 
+ */
+
+/**
+ * ベクタ線情報
+ * @type {object}
+ * @property {object} railedge 線路エッジの情報
+ * @property {LineOpts} railedge.my 自分保有線路エッジのエフェクト
+ * @property {LineOpts} railedge.other 他ユーザ保有線路エッジのエフェクト
+ * @property {object} linestep 路線ステップの情報
+ * @property {LineOpts} linestep.my 自分保有路線ステップのエフェクト
+ * @property {LineOpts} linestep.other 他ユーザ保有線路ステップのエフェクト
+ */
 var lineResources = {
     railedge: {
         my: {
@@ -81,10 +130,34 @@ var lineResources = {
     }
 };
 
+/**
+ * 移動画像リソースの情報。ポーリングのたびに書き直す必要があるため {@link spriteResources} から分離した。
+ * @type {object}
+ * @property {SpriteOpts} train 電車画像情報 
+ */
 var movableSprites = {
-    train: {}
+    train: {
+        my: {
+            alpha: 1.0
+        },
+        other: {
+            alpha: 0.5
+        }
+    }
 };
 
+/**
+ * @typedef {object} CircleOpts ベクタ円情報
+ * @property {number} color 描画色
+ * @property {number} radius 大きさ
+ * @property {number} alpha 透明度 
+ */
+
+/**
+ * 移動ベクタ円情報
+ * @type {object}
+ * @property {CircleOpts} human 人情報 
+ */
 var movableCircles = {
     human: {
         color: 0xff69b4,
@@ -93,6 +166,15 @@ var movableCircles = {
     }
 };
 
+/**
+ * 一時描画用の情報。ユーザ操作の補助をする
+ * @type {object}
+ * @property {CircleOpts} neighborNode マウスカーソル近傍の線路ノードの強調表示
+ * @property {CircleOpts} tailNode 線路延伸元の線路ノードの強調表示
+ * @property {CircleOpts} cursor マウスカーソルの強調表示
+ * @property {LineOpts} extendEdge 線路延伸予定エッジの表示
+ * @property {LineOpts} neighborEdge マウスカーソル近傍の線路エッジの強調表示
+ */
 var tempResources = {
     neighborNode: {
         color: 0xbf7fff,
@@ -111,7 +193,8 @@ var tempResources = {
     },
     extendEdge: {
         color: 0x7fff7f,
-        width: 4,
+        slide: 0,
+        scale: 4,
         alpha: 0.5
     },
     neighborEdge: {
@@ -777,7 +860,7 @@ stageTempLine = function (head, tail, opts) {
     var obj = new pixi.Graphics();
 
     obj.alpha = opts.alpha;
-    obj.lineStyle(opts.width, opts.color)
+    obj.lineStyle(opts.scale, opts.color)
             .moveTo(head.x, head.y)
             .lineTo(tail.x, tail.y);
     scope.stage.addChild(obj);
