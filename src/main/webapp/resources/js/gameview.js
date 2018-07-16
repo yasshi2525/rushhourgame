@@ -587,6 +587,25 @@ onWheel = function (event) {
     registerScale([{name: 'scale', value: sliderscale / 100}]);
 };
 
+onPollStart = function () {
+    var scope = $(document).data('scope');
+    scope.isPolling = true;
+};
+
+onPollEnd = function () {
+    var scope = $(document).data('scope');
+    scope.isPolling = false;
+};
+
+onAjaxStart = function () {
+    var scope = $(document).data('scope');
+    if (scope.isPolling) {
+        $('#ajaxstatus').hide();
+    } else {
+        $('#ajaxstatus').show();
+    }
+};
+
 /**
  * イベント変数からマウス座標を取得する。
  * @param {jQuery.Event} event

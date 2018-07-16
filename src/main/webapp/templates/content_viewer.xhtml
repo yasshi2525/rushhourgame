@@ -20,7 +20,7 @@
                              process="@this" update="controllpanel"
                              actionListener="#{game.finishesOperation}"
                              style="width: 100%"/>
-            
+
             <p:toolbar id="toolbar">
                 <f:facet name="left">
                     <p:selectBooleanButton onLabel="" offLabel="" styleClass="railCreation toolbarButton"/>
@@ -59,7 +59,7 @@
         <h:inputHidden id="clickX" value="#{game.clickX}"/>
         <h:inputHidden id="clickY" value="#{game.clickY}"/> 
 
-        <p:ajaxStatus>
+        <p:ajaxStatus onstart="onAjaxStart()">
             <f:facet name="start">
                 <h:graphicImage id="ajaxstatus" value="resources/image/loading.gif"/>
             </f:facet>
@@ -147,9 +147,9 @@
                  data-cost="#{s.cost}"/>
         </ui:repeat>
     </h:panelGroup>
-    
+
     <h:panelGroup id="gamemovablemodel">
-        <p:poll interval="1" update="gamemovablemodel" oncomplete="fetchMovableGraphics()"/>
+        <p:poll interval="1" update="gamemovablemodel" onstart="onPollStart()" oncomplete="onPollEnd();fetchMovableGraphics()"/>
         <ui:repeat var="t" value="#{game.trains}">
             <div class="train" id="train#{t.id}"
                  data-x="#{t.x}" data-y="#{t.y}"/>
@@ -159,7 +159,7 @@
                  data-x="#{h.x}" data-y="#{h.y}"/>
         </ui:repeat>
     </h:panelGroup>
-    
+
     <!-- 拡大縮小用 -->
     <h:panelGrid columns="1" class="zoombar">
         <h:outputText  id="scale" value="#{game.scale}"/>
