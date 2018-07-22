@@ -261,14 +261,14 @@ describe('test gameview', function () {
 
     describe('test stageResourceSprite', function () {
         it('create sprite', function () {
-            expect(stageResourceSprite('company', $mockElm))
+            expect(stageResourceSprite('company', $mockElm, {alpha: 1.0}))
                     .not.toBeNull();
         });
     });
 
     describe('test updateSprite', function () {
         it('change pos', function () {
-            updateSprite(mockSprite, $mockElm);
+            updateSprite(mockSprite, $mockElm, {alpha: 1.0});
             expect(mockSprite.position.x).toEqual(500);
             expect(mockSprite.position.y).toEqual(500);
         });

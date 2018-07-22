@@ -88,13 +88,13 @@
         <ui:repeat var="c" value="#{game.companies}">
             <div class="company" id="company#{c.id}"
                  data-x="#{c.x}" data-y="#{c.y}"
-                 data-scale="#{c.scale}"/>
+                 data-scale="#{c.scale}" data-ismine="false"/>
         </ui:repeat>
 
         <ui:repeat var="r" value="#{game.residences}">
             <div class="residence" id="residence#{r.id}"
                  data-x="#{r.x}" data-y="#{r.y}"
-                 data-interval="#{r.interval}" data-capacity="#{r.capacity}"/>
+                 data-interval="#{r.interval}" data-capacity="#{r.capacity}" data-ismine="false"/>
         </ui:repeat>
 
         <ui:repeat var="n" value="#{game.myRailNodes}">
@@ -104,7 +104,7 @@
 
         <ui:repeat var="ln" value="#{game.myLonelyRailNodes}">
             <div class="lonelyrailnode" id ="lonelyrailnode#{ln.id}"
-                 data-x="#{ln.x}" data-y="#{ln.y}"/>
+                 data-x="#{ln.x}" data-y="#{ln.y}" data-ismine="true"/>
         </ui:repeat>
 
         <ui:repeat var="e" value="#{game.railEdges}">
@@ -115,7 +115,6 @@
                  data-to-x="#{e.to.x}" data-to-y="#{e.to.y}"
                  data-pid="player#{e.owner.id}" data-ismine="#{game.player.id == e.owner.id}"
                  />
-
         </ui:repeat>
 
         <ui:repeat var="st" value="#{game.stations}">
@@ -123,7 +122,9 @@
                  data-owner-name="#{st.owner.info.name}"  
                  data-x="#{st.platform.railNode.x}" data-y="#{st.platform.railNode.y}"
                  data-name="#{st.name}" data-gatenum="#{st.ticketGate.gateNum}" 
-                 data-capacity="#{st.platform.capacity}" data-pid="p#{st.owner.id}"/>
+                 data-capacity="#{st.platform.capacity}" data-pid="p#{st.owner.id}"
+                 data-ismine="#{game.player.id == st.owner.id}"
+                 />
         </ui:repeat>
 
         <ui:repeat var="l" value="#{game.lines}">
@@ -152,7 +153,7 @@
         <p:poll interval="1" update="gamemovablemodel" onstart="onPollStart()" oncomplete="onPollEnd();fetchMovableGraphics()"/>
         <ui:repeat var="t" value="#{game.trains}">
             <div class="train" id="train#{t.id}"
-                 data-x="#{t.x}" data-y="#{t.y}"/>
+                 data-x="#{t.x}" data-y="#{t.y}" data-ismine="#{game.player.id == t.owner.id}"/>
         </ui:repeat>
         <ui:repeat var="h" value="#{game.humans}">
             <div class="human" id="human#{h.id}"

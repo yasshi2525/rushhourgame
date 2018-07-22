@@ -73,8 +73,16 @@ var consts = {
  * @property {object} lonelyrailnode 孤立線路点画像情報
  */
 var spriteResources = {
-    'residence': {},
-    'company': {},
+    'residence': {
+        other: {
+            alpha: 0.5
+        }
+    },
+    'company': {
+        other: {
+            alpha: 0.5
+        }
+    },
     'station': {
         my: {
             alpha: 1.0
@@ -83,7 +91,11 @@ var spriteResources = {
             alpha: 0.5
         }
     },
-    'lonelyrailnode': {}
+    'lonelyrailnode': {
+        my: {
+            alpha: 1.0
+        }
+    }
 };
 
 /**
@@ -352,7 +364,10 @@ stageBackground = function () {
     return container;
 };
 
-// fetchGraphics()にすると、ajaxでよびだされない
+/**
+ * {@link gamemodel} に定義された情報を描画する。
+ * fetchGraphics()にすると、ajaxでよびだされない。
+ */
 fetchGraphics = function () {
     var scope = $(document).data('scope');
 
@@ -366,7 +381,8 @@ fetchGraphics = function () {
     for (var name in spriteResources) {
         // クラス名 : .リソース名
         $('.' + name).each(function (i, elm) {
-            upsertSprite(name, name, scope.graphics, $(elm).attr('id'), $(elm));
+            var opts = $(elm).data('ismine') ? spriteResources[name].my : spriteResources[name].other;
+            upsertSprite(name, name, scope.graphics, $(elm).attr('id'), $(elm), opts);
         });
     }
 
@@ -391,7 +407,8 @@ fetchGraphics = function () {
 
     $('.player').each(function (i, elm) {
         if ($(elm).data('isin')) {
-            upsertSprite('icon', 'p' + $(elm).attr('id'), scope.graphics, $(elm).attr('id'), $(elm), true);
+            var opts = {alpha : 1.0};
+            upsertSprite('icon', 'p' + $(elm).attr('id'), scope.graphics, $(elm).attr('id'), $(elm), opts, true);
         }
     });
 
@@ -429,7 +446,8 @@ fetchMovableGraphics = function () {
 
     for (var name in movableSprites) {
         $('.' + name).each(function (i, elm) {
-            upsertSprite(name, name, scope.movablegraphics, $(elm).attr('id'), $(elm));
+            var opts = $(elm).data('ismine') ? movableSprites[name].my : movableSprites[name].other;
+            upsertSprite(name, name, scope.movablegraphics, $(elm).attr('id'), $(elm), opts);
         });
     }
 
@@ -439,7 +457,7 @@ fetchMovableGraphics = function () {
                     parseFloat($(elm).data('x')),
                     parseFloat($(elm).data('y')));
             upsertCircle(name, scope.movablegraphics,
-                    $(elm).attr('id'), pos, movableCircles[name])
+                    $(elm).attr('id'), pos, movableCircles[name]);
         });
     }
 
@@ -447,18 +465,35 @@ fetchMovableGraphics = function () {
     scope.renderer.render(scope.stage);
 };
 
-upsertSprite = function (name, restype, graphics, id, $elm, isBringToFront) {
+/**
+ * 画像リソースを描画する。
+ * @param {type} name リソース識別子
+ * @param {type} restype 画像リソース名
+ * @param {Object} graphics 画像リソースデータ
+ * @param {type} id ID
+ * @param {jQuery} $elm 属性値が格納されたモデル
+ * @param {SpriteOpts} opts オプション
+ * @param {type} isBringToFront 描画更新時最前面に表示させるか
+ */
+upsertSprite = function (name, restype, graphics, id, $elm, opts, isBringToFront) {
     if (graphics[name][id]) {
         // 更新
         graphics[name][id].old = false;
-        updateSprite(graphics[name][id], $elm, isBringToFront);
+        updateSprite(graphics[name][id], $elm, opts, isBringToFront);
     } else {
         // 新規作成
-        graphics[name][id] = stageResourceSprite(restype, $elm);
+        graphics[name][id] = stageResourceSprite(restype, $elm, opts);
     }
 };
 
-stageResourceSprite = function (type, $elm) {
+/**
+ * 新規にSpriteを描画する
+ * @param {string} type リソース名
+ * @param {jQuery} $elm 属性値が入ったオブジェクト
+ * @param {SpriteOpts} opts オプション
+ * @returns {PIXI.Sprite} 新規作成したSprite
+ */
+stageResourceSprite = function (type, $elm, opts) {
     var scope = $(document).data('scope');
     var pos = toViewPos(
             parseFloat($elm.data('x')),
@@ -466,7 +501,7 @@ stageResourceSprite = function (type, $elm) {
 
     var obj = new pixi.Sprite(pixi.loader.resources[type].texture);
     obj.anchor.set(0.5, 0.5);
-    obj.alpha = 1;
+    obj.alpha = opts.alpha;
     obj.position.set(pos.x, pos.y);
     obj.scale.x = 0.5;
     obj.scale.y = 0.5;
@@ -475,13 +510,22 @@ stageResourceSprite = function (type, $elm) {
     return obj;
 };
 
-updateSprite = function (sprite, $elm, isBringToFront) {
+/**
+ * すでに描画されているSpriteの属性を変更する
+ * @param {PIXI.Sprite} sprite 変更対象のSprite
+ * @param {jQeury} $elm 属性値が入ったオブジェクト
+ * @param {SpriteOpts} opts オプション
+ * @param {boolean} isBringToFront 画面手前に描画しなおすか
+ * @returns {PIXI.Sprite} 更新されたsprite
+ */
+updateSprite = function (sprite, $elm, opts, isBringToFront) {
     var scope = $(document).data('scope');
     var pos = toViewPos(
             parseFloat($elm.data('x')),
             parseFloat($elm.data('y')));
 
     sprite.position.set(pos.x, pos.y);
+    sprite.alpha = opts.alpha;
 
     if (isBringToFront) {
         scope.stage.removeChild(sprite);
