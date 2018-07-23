@@ -4,5 +4,5 @@ addons:
     mariadb: '10.3'
 
 before_install:
-    - mysql -e 'CREATE USER rushhourtest@localhost IDENTIFIED BY rushhourtest;'
-    - mysql -e 'GRANT ALL ON rushhourtest.* TO rushhourtest@localhost;'
+    - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
+    - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
