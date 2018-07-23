@@ -5,13 +5,12 @@ env:
 
 addons:
     mariadb: '10.3'
-    ssh_known_hosts:
-        - $LIBHOST
 
 before_install:
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
     - openssl aes-256-cbc -K $encrypted_2c430460807a_key -iv $encrypted_2c430460807a_iv -in lib_key.enc -out lib_key -d
     - chmod 600 lib_key
+    - ssh-keyscan $LIBHOST >> ~/.ssh/known_hosts
     - scp -i lib_key -P $LIBPORT -r $LIBUSER@$LIBHOST:~/omega-$LIB_OMEGA_VER .
     - mvn install:install-file -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
