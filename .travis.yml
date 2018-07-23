@@ -5,6 +5,8 @@ env:
 
 addons:
     mariadb: '10.3'
+    ssh_known_hosts:
+        - $LIBHOST
 
 before_install:
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
