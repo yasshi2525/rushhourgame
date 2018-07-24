@@ -9,7 +9,7 @@ addons:
 before_install:
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
-    - mysql -e "CREATE DATABASE rushhourgame;"
+    - mysql -e "CREATE DATABASE rushhourtest;"
     - openssl aes-256-cbc -K $encrypted_2c430460807a_key -iv $encrypted_2c430460807a_iv -in lib_key.enc -out lib_key -d
     - chmod 600 lib_key
     - ssh-keyscan -p $LIBPORT $LIBHOST >> ~/.ssh/known_hosts
