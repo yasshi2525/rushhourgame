@@ -28,7 +28,7 @@ MariaDBにユーザを作成する
 ```
 CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY '<your password>';  
 GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourgame.* TO 'rushhourgame'@'localhost';  
-CREATE DATABASE rushhourgame;  
+CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;;  
 ```
 
 ### アプリケーションサーバのセットアップ
@@ -83,7 +83,7 @@ mvn install
 ```
 CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';  
 GRANT alter, create, create temporary tables, create view, delete, drop, grant option, index, insert, select, show view, trigger, update ON rushhourtest.* TO 'rushhourtest'@'localhost';  
-CREATE DATABASE rushhourtest;  
+CREATE DATABASE rushhourtest CHARACTER SET utf8mb4;;  
 ```
 
 ### Mavenでテストする
