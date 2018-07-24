@@ -17,7 +17,7 @@ before_install:
     - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
 
 install:
-    - mvn install -q -Dut.skip=true -Dmaven.javadoc.skip=true -B -V
+    - mvn install -q -Dut.skip=true -Dct.skip=true -Dmaven.javadoc.skip=true -B -V
 
 script:
-    - mvn test -q -B
+    - mvn test -q -Dct.skip=true -B
