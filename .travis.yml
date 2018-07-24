@@ -14,10 +14,10 @@ before_install:
     - chmod 600 lib_key
     - ssh-keyscan -p $LIBPORT $LIBHOST >> ~/.ssh/known_hosts
     - scp -i lib_key -P $LIBPORT -r $LIBUSER@$LIBHOST:~/omega-$LIB_OMEGA_VER .
-    - mvn install:install-file -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
+    - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
 
 install:
-    - mvn install -q -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+    - mvn install -q -Dut.skip=true -Dmaven.javadoc.skip=true -B -V
 
 script:
     - mvn test -q -B
