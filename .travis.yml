@@ -21,3 +21,6 @@ install:
 
 script:
     - mvn test -q -Dit.skip=true -B
+    - npm install
+    - gulp
+    - gulp karma
