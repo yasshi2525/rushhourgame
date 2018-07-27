@@ -3,6 +3,7 @@ language: java
 
 env:
     - LIB_OMEGA_VER=1.1.4
+    - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
 
 addons:
     mariadb: '10.3'
@@ -21,8 +22,17 @@ before_install:
 install:
     - mvn install -q -Dut.skip=true -Dit.skip=true -Dmaven.javadoc.skip=true -B -V
 
+before_script:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+  
 script:
     - mvn test jacoco:report coveralls:report -q -Dit.skip=true -B
     - npm install
     - npx gulp
     - npx gulp karma
+    - bundle exec rspec
+
+after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
