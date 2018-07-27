@@ -1,7 +1,7 @@
 RushHour
 ========
 
-[![Build Status](https://travis-ci.org/yasshi2525/rushhourgame.svg?branch=master)](https://travis-ci.org/yasshi2525/rushhourgame)
+[![Build Status](https://travis-ci.org/yasshi2525/rushhourgame.svg?branch=master)](https://travis-ci.org/yasshi2525/rushhourgame) [![Coverage Status](https://coveralls.io/repos/github/yasshi2525/rushhourgame/badge.svg?branch=master)](https://coveralls.io/github/yasshi2525/rushhourgame?branch=master)
 
 ## 概要
 
