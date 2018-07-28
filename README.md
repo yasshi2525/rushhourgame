@@ -1,7 +1,9 @@
 RushHour
 ========
 
-[![Build Status](https://travis-ci.org/yasshi2525/rushhourgame.svg?branch=master)](https://travis-ci.org/yasshi2525/rushhourgame) [![Maintainability](https://api.codeclimate.com/v1/badges/0e904c469067072e0afd/maintainability)](https://codeclimate.com/github/yasshi2525/rushhourgame/maintainability) [![Coverage Status](https://coveralls.io/repos/github/yasshi2525/rushhourgame/badge.svg?branch=master)](https://coveralls.io/github/yasshi2525/rushhourgame?branch=master)
+[![Build Status](https://travis-ci.org/yasshi2525/rushhourgame.svg?branch=master)](https://travis-ci.org/yasshi2525/rushhourgame)
+[![Maintainability](https://api.codeclimate.com/v1/badges/0e904c469067072e0afd/maintainability)](https://codeclimate.com/github/yasshi2525/rushhourgame/maintainability)
+[![Coverage Status](https://coveralls.io/repos/github/yasshi2525/rushhourgame/badge.svg?branch=master)](https://coveralls.io/github/yasshi2525/rushhourgame?branch=master)
 
 ## 概要
 
