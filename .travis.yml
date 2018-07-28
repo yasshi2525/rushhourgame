@@ -2,8 +2,9 @@ sudo: required
 language: java
 
 env:
-    - LIB_OMEGA_VER=1.1.4
-    - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
+    global:
+        - LIB_OMEGA_VER=1.1.4
+        - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
 
 addons:
     mariadb: '10.3'
@@ -32,7 +33,6 @@ script:
     - npm install
     - npx gulp
     - npx gulp karma
-    - bundle exec rspec
 
 after_script:
     - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
