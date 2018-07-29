@@ -67,7 +67,7 @@ script:
     - sed -i -e "s|^\(rushhour.twitter.callbackUrl=\)\$|\1$APP_URL/faces/callbackTwitter.xhtml|" $CONF_PATH
     - touch $CONF_PATH
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -Dut.skip=true -B
+    - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
     
 after_script:
     - cat $GF_HOME/domains/domain1/logs/server.log
