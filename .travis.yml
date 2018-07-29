@@ -31,7 +31,7 @@ before_install:
     - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
     
     # for integration test
-    - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourtest';"
+    - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourgame';"
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
     - wget -q https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
