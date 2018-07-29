@@ -35,4 +35,4 @@ script:
     - npx gulp karma
 
 after_script:
-    - ./cc-test-reporter --debug after-build --prefix target --exit-code $TRAVIS_TEST_RESULT
+    - ./cc-test-reporter --debug after-build --exit-code $TRAVIS_TEST_RESULT
