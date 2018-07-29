@@ -59,9 +59,8 @@ script:
     
     # integration test
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
-    - sleep 5
     - curl -X GET $APP_URL
-    - sleep 5
+    - sleep 10
     - ls $GF_HOME/domains/domain1/config
     - date
     - sed -i -e "s|^\(rushhour.twitter.consumerKey=\)\$|\1$CONSUMER_KEY|" $CONF_PATH
