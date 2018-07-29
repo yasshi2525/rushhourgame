@@ -3,24 +3,53 @@ language: java
 
 env:
     global:
+        - RUSHHOUR_VER=1.0-SNAPSHOT
         - LIB_OMEGA_VER=1.1.4
+        - LIB_MARIADB_VER=2.2.6
+        - LIB_PAYARA_VER=5-prerelease
         - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
         - JACOCO_SOURCE_PATH=src/main/java
+        - GF_HOME=payara5/glassfish
+        - CONF_PATH=$GF_HOME/domains/domain1/config/rushhour_config.properties
+        - APP_URL=http://localhost:8080/RushHourGame
 
 addons:
     mariadb: '10.3'
     chrome: stable
 
 before_install:
+    # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourtest CHARACTER SET utf8mb4;"
+    
+    # resolve dependency
     - openssl aes-256-cbc -K $encrypted_2c430460807a_key -iv $encrypted_2c430460807a_iv -in lib_key.enc -out lib_key -d
     - chmod 600 lib_key
     - ssh-keyscan -p $LIBPORT $LIBHOST >> ~/.ssh/known_hosts
     - scp -i lib_key -P $LIBPORT -r $LIBUSER@$LIBHOST:~/omega-$LIB_OMEGA_VER .
     - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
-
+    
+    # for integration test
+    - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourtest';"
+    - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
+    - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
+    - wget https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
+    - unzip payara-$LIB_PAYARA_VER.zip
+    - wget -o $GF_HOME/domains/domain1/lib/mariadb-java-client-$LIB_MARIADB_VER.jar \
+      https://downloads.mariadb.com/Connectors/java/connector-java-$LIB_MARIADB_VER/mariadb-java-client-$LIB_MARIADB_VER.jar
+    - payara-$LIB_PAYARA_VER/payara/
+    - $GF_HOME/bin/asadmin start-domain
+    - $GF_HOME/bin/asadmin create-jdbc-connection-pool \
+        --datasourceclassname org.mariadb.jdbc.MariaDbDataSource \
+        --restype javax.sql.XADataSource \
+        --property user=rushhourgame:password=rushhourgame:databaseName=rushhourgame:portNumber=3306:serverName=localhost \
+        RushHourGamePool
+    - $GF_HOME/bin/asadmin create-jdbc-resource \
+        --connectionpoolid RushHourGamePool jdbc/RushHourGame
+    - $GF_HOME/bin/asadmin create-managed-executor-service concurrent/RushHourGame
+    - $GF_HOME/bin/asadmin create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute
+    
 install:
     - mvn install -q -Dut.skip=true -Dit.skip=true -Dmaven.javadoc.skip=true -B -V
 
@@ -34,7 +63,17 @@ script:
     - npm install
     - npx gulp
     - npx gulp karma
-
+    
+    # integration test
+    - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
+    - curl -X GET $APP_URL
+    - sed -i -e "s|^\(rushhour.twitter.consumerKey=\)\$|\1$CONSUMER_KEY|" $CONF_PATH
+    - sed -i -e "s|^\(rushhour.twitter.consumerSecret=\)\$|\1$CONSUMER_SECRET|" $CONF_PATH
+    - sed -i -e "s|^\(rushhour.twitter.callbackUrl=\)\$|\1$APP_URL/faces/callbackTwitter.xhtml|" $CONF_PATH
+    - touch /home/aps/rushhour_config.properties
+    - curl -X GET $APP_URL/gm?op=start
+    - mvn integration-test verify -Dut.skip=true -B
+    
 after_script:
     - ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.1.json target/site/jacoco/jacoco.xml
     - ./cc-test-reporter format-coverage -t lcov   -o coverage/codeclimate.2.json target/jscoverage/lcov/lcov.info
