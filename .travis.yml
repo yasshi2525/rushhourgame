@@ -68,7 +68,7 @@ script:
     - mvn integration-test verify -Dut.skip=true -B
     
 after_script:
-    - cat $GF_HOME/glassfish/domains/domain1/logs/server.log
+    - cat $GF_HOME/domains/domain1/logs/server.log
     - ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.1.json target/site/jacoco/jacoco.xml
     - ./cc-test-reporter format-coverage -t lcov   -o coverage/codeclimate.2.json target/jscoverage/lcov/lcov.info
     - ./cc-test-reporter sum-coverage -p 2 coverage/codeclimate.*.json
