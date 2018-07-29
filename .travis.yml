@@ -34,7 +34,7 @@ before_install:
     - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
-    - wget https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
+    - wget -q https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
     - unzip -q payara-$LIB_PAYARA_VER.zip
     - wget -q -o $GF_HOME/domains/domain1/lib/mariadb-java-client-$LIB_MARIADB_VER.jar https://downloads.mariadb.com/Connectors/java/connector-java-$LIB_MARIADB_VER/mariadb-java-client-$LIB_MARIADB_VER.jar
     - $GF_HOME/bin/asadmin start-domain
