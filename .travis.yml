@@ -35,18 +35,12 @@ before_install:
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
     - wget https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
-    - unzip payara-$LIB_PAYARA_VER.zip
-    - wget -o $GF_HOME/domains/domain1/lib/mariadb-java-client-$LIB_MARIADB_VER.jar \
-      https://downloads.mariadb.com/Connectors/java/connector-java-$LIB_MARIADB_VER/mariadb-java-client-$LIB_MARIADB_VER.jar
+    - unzip -q payara-$LIB_PAYARA_VER.zip
+    - wget -o $GF_HOME/domains/domain1/lib/mariadb-java-client-$LIB_MARIADB_VER.jar https://downloads.mariadb.com/Connectors/java/connector-java-$LIB_MARIADB_VER/mariadb-java-client-$LIB_MARIADB_VER.jar
     - payara-$LIB_PAYARA_VER/payara/
     - $GF_HOME/bin/asadmin start-domain
-    - $GF_HOME/bin/asadmin create-jdbc-connection-pool \
-        --datasourceclassname org.mariadb.jdbc.MariaDbDataSource \
-        --restype javax.sql.XADataSource \
-        --property user=rushhourgame:password=rushhourgame:databaseName=rushhourgame:portNumber=3306:serverName=localhost \
-        RushHourGamePool
-    - $GF_HOME/bin/asadmin create-jdbc-resource \
-        --connectionpoolid RushHourGamePool jdbc/RushHourGame
+    - $GF_HOME/bin/asadmin create-jdbc-connection-pool --datasourceclassname org.mariadb.jdbc.MariaDbDataSource --restype javax.sql.XADataSource --property user=rushhourgame:password=rushhourgame:databaseName=rushhourgame:portNumber=3306:serverName=localhost RushHourGamePool
+    - $GF_HOME/bin/asadmin create-jdbc-resource --connectionpoolid RushHourGamePool jdbc/RushHourGame
     - $GF_HOME/bin/asadmin create-managed-executor-service concurrent/RushHourGame
     - $GF_HOME/bin/asadmin create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute
     
