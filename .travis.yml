@@ -59,6 +59,7 @@ script:
     
     # integration test
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
+    - sleep 5
     - curl -X GET $APP_URL
     - sleep 10
     - ls $GF_HOME/domains/domain1/config
