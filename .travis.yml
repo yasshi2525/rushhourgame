@@ -61,12 +61,13 @@ script:
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
     - sleep 3
     - curl -L $APP_URL
-    - $GF_HOME/bin/asadmin restart-domain
-    - sleep 10
+    - sleep 3
     - sed -i -e "s|^\(rushhour.twitter.consumerKey=\)\$|\1$CONSUMER_KEY|" $CONF_PATH
     - sed -i -e "s|^\(rushhour.twitter.consumerSecret=\)\$|\1$CONSUMER_SECRET|" $CONF_PATH
     - sed -i -e "s|^\(rushhour.twitter.callbackUrl=\)\$|\1$APP_URL/faces/callbackTwitter.xhtml|" $CONF_PATH
     - touch $CONF_PATH
+    - $GF_HOME/bin/asadmin restart-domain
+    - sleep 10
     - curl -X GET $APP_URL/gm?op=start
     - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
     
