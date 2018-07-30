@@ -6,7 +6,7 @@ env:
         - RUSHHOUR_VER=1.0-SNAPSHOT
         - LIB_OMEGA_VER=1.1.4
         - LIB_MARIADB_VER=2.2.6
-        - LIB_PAYARA_VER=5-prerelease
+        - LIB_PAYARA_VER=5.182
         - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
         - JACOCO_SOURCE_PATH=src/main/java
         - GF_HOME=payara5/glassfish
@@ -18,7 +18,6 @@ addons:
     chrome: stable
 
 before_install:
-    - java -version
     # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
@@ -35,7 +34,7 @@ before_install:
     - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourgame';"
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
-    - wget -q https://s3-eu-west-1.amazonaws.com/payara.fish/payara-$LIB_PAYARA_VER.zip
+    - wget -q http://repo1.maven.org/maven2/fish/payara/distributions/payara/5.182/payara-$LIB_PAYARA_VER.zip
     - unzip -q payara-$LIB_PAYARA_VER.zip
     - curl -L https://downloads.mariadb.com/Connectors/java/connector-java-$LIB_MARIADB_VER/mariadb-java-client-$LIB_MARIADB_VER.jar > $GF_HOME/domains/domain1/lib/mariadb-java-client-$LIB_MARIADB_VER.jar
     - $GF_HOME/bin/asadmin start-domain
