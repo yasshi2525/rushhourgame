@@ -19,7 +19,7 @@ addons:
 
 before_install:
     # update java
-    - sudo add-apt-repository -q -y ppa:webupd8team/java
+    - sudo add-apt-repository -y ppa:webupd8team/java
     - sudo apt-get update -q
     - sudo apt-get install -q -y oracle-java8-installer || true
     
