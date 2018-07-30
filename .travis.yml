@@ -18,6 +18,7 @@ addons:
     chrome: stable
 
 before_install:
+    - java -version
     # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
