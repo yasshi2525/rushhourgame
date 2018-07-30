@@ -19,10 +19,9 @@ addons:
 
 before_install:
     # update java
-    - sudo add-apt-repository -y ppa:webupd8team/java
-    - sudo apt-get update
-    - sudo apt-get install -y oracle-java8-installer || true
-    - java -version
+    - sudo add-apt-repository -q -y ppa:webupd8team/java
+    - sudo apt-get update -q
+    - sudo apt-get install -q -y oracle-java8-installer || true
     
     # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
@@ -66,7 +65,7 @@ script:
     # integration test
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
     - sleep 3
-    - curl -L $APP_URL > dev/null
+    - curl -L $APP_URL > /dev/null
     - sleep 3
     - sed -i -e "s|^\(rushhour.twitter.consumerKey=\)\$|\1$CONSUMER_KEY|" $CONF_PATH
     - sed -i -e "s|^\(rushhour.twitter.consumerSecret=\)\$|\1$CONSUMER_SECRET|" $CONF_PATH
@@ -78,7 +77,6 @@ script:
     - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
     
 after_script:
-    - tail -n 500 $GF_HOME/domains/domain1/logs/server.log
     - ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.1.json target/site/jacoco/jacoco.xml
     - ./cc-test-reporter format-coverage -t lcov   -o coverage/codeclimate.2.json target/jscoverage/lcov/lcov.info
     - ./cc-test-reporter sum-coverage -p 2 coverage/codeclimate.*.json
