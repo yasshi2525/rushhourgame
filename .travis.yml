@@ -21,7 +21,8 @@ before_install:
     # update java
     - sudo add-apt-repository -y ppa:webupd8team/java
     - sudo apt-get update -q
-    - sudo apt-get install -q -y oracle-java8-set-default || true
+    - sudo apt-get install -q -y oracle-java8-installer || true
+    - java -version
     
     # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
