@@ -18,6 +18,8 @@ addons:
     chrome: stable
 
 before_install:
+    - sudo apt-get update
+    - java -version
     # setup database
     - mysql -e "CREATE USER 'rushhourtest'@'localhost' IDENTIFIED BY 'rushhourtest';"
     - mysql -e "GRANT ALL ON rushhourtest.* TO 'rushhourtest'@'localhost';"
@@ -67,7 +69,7 @@ script:
     - sed -i -e "s|^\(rushhour.twitter.callbackUrl=\)\$|\1$APP_URL/faces/callbackTwitter.xhtml|" $CONF_PATH
     - touch $CONF_PATH
     - $GF_HOME/bin/asadmin restart-domain
-    - sleep 10
+    - sleep 20
     - curl -X GET $APP_URL/gm?op=start
     - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
     
