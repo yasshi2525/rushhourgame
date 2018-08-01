@@ -75,8 +75,7 @@ script:
     - $GF_HOME/bin/asadmin restart-domain
     - sleep 20
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
-    
+  
 after_script:
     - tail -n 500 $GF_HOME/domains/domain1/logs/server.log
     - ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.1.json target/site/jacoco/jacoco.xml
