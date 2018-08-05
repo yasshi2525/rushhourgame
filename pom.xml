@@ -146,9 +146,46 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.2</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>provision</id>
+                        <configuration>
+                            <warSourceDirectory>src/main/webapp</warSourceDirectory>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                        </configuration>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>testoauth</id>
+                        <configuration>
+                            <warName>DummyOAuthServer</warName>
+                            <webappDirectory>${project.build.directory}/DummyOAuthServer</webappDirectory>
+                            <dependentWarExcludes>**</dependentWarExcludes>
+                            <skinnyWars>true</skinnyWars>
+                            <packagingIncludes>**/*.jsp,**/*.html,WEB-INF/classes/net/rushhourgame/auth/**</packagingIncludes>
+                            <webResources>
+                                <resource>
+                                    <directory>src/test/resources/jsp</directory>
+                                    <targetPath></targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>src/test/resources/WEB-INF</directory>
+                                    <targetPath>WEB-INF</targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.directory}/test-classes/net/rushhourgame/auth</directory>
+                                    <targetPath>WEB-INF/classes/net/rushhourgame/auth</targetPath>
+                                </resource>
+                            </webResources>
+                            <webXml>src/test/resources/WEB-INF/web.xml</webXml>
+                        </configuration>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
