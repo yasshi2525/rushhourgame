@@ -42,7 +42,7 @@ before_install:
     - sed -i -e "s|https://api.twitter.com/oauth/access_token|$OAUTH_PASS/access_token|" $CONST_PATH
     - sed -i -e "s|https://api.twitter.com/oauth/request_token|$OAUTH_PASS/request_token|" $CONST_PATH
     - sed -i -e "s|https://api.twitter.com/oauth/authenticate|$OAUTH_PASS/authenticate|" $CONST_PATH
-    - sed -i -e "s|https://api.twitter.com/oauth/users/show|$OAUTH_PASS/users_show|" $CONST_PATH
+    - sed -i -e "s|https://api.twitter.com/1.1/users/show|$OAUTH_PASS/users_show|" $CONST_PATH
     - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourgame';"
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
