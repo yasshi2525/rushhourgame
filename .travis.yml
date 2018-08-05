@@ -12,6 +12,8 @@ env:
         - GF_HOME=payara5/glassfish
         - CONF_PATH=$GF_HOME/domains/domain1/config/rushhour_config.properties
         - APP_URL=http://localhost:8080/RushHourGame
+        - OAUTH_PASS=http://localhost:8080/DummyOAuthServer
+        - CONST_PATH=src/main/resources/net/rushhourgame/conf/constants.properties
 
 addons:
     mariadb: '10.3'
@@ -37,6 +39,10 @@ before_install:
     - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
     
     # for integration test
+    - sed -i -e "s|^\(rushhour.twitter.api.access_token=\)\$|\1$OAUTH_PASS/access_token|" $CONST_PATH
+    - sed -i -e "s|^\(rushhour.twitter.api.request_token=\)\$|\1$OAUTH_PASS/request_token|" $CONST_PATH
+    - sed -i -e "s|^\(rushhour.twitter.api.authenticate=\)\$|\1$OAUTH_PASS/authenticate|" $CONST_PATH
+    - sed -i -e "s|^\(rushhour.twitter.api.users.show=\)\$|\1$OAUTH_PASS/users_show|" $CONST_PATH
     - mysql -e "CREATE USER 'rushhourgame'@'localhost' IDENTIFIED BY 'rushhourgame';"
     - mysql -e "GRANT ALL ON rushhourgame.* TO 'rushhourgame'@'localhost';"
     - mysql -e "CREATE DATABASE rushhourgame CHARACTER SET utf8mb4;"
@@ -64,6 +70,7 @@ script:
     - npx gulp karma
     
     # integration test
+    - $GF_HOME/bin/asadmin deploy --contextroot DummyOAuthServer  target/DummyOAuthServer.war
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
     - sleep 3
     - curl -L $APP_URL > /dev/null
@@ -75,6 +82,7 @@ script:
     - $GF_HOME/bin/asadmin restart-domain
     - sleep 20
     - curl -X GET $APP_URL/gm?op=start
+    - mvn integration-test verify -Dut.skip=true -Dtest.headless=true -Dtest.targetUrl=$APP_URL -Dtest.twitter.mailaddress=$TWITTER_MAIL -Dtest.twitter.password=$TWITTER_PASSWORD -B
   
 after_script:
     - tail -n 500 $GF_HOME/domains/domain1/logs/server.log
