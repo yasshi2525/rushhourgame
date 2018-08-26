@@ -66,6 +66,7 @@ public class RunningIT extends AbstractIT {
             unsetupInitialLine();
         } catch (RuntimeException e) {
             LOG.log(Level.SEVERE, "exception in testRunning", e);
+            LOG.log(Level.SEVERE, driver.getPageSource());
             throw e;
         }
     }

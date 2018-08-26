@@ -152,6 +152,7 @@
                         <configuration>
                             <warSourceDirectory>src/main/webapp</warSourceDirectory>
                             <failOnMissingWebXml>false</failOnMissingWebXml>
+                            <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
                         </configuration>
                         <goals>
                             <goal>war</goal>

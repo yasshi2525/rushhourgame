@@ -71,6 +71,7 @@ public class BuildRailIT extends AbstractIT {
             behave.removeStation(ONE);
         } catch (RuntimeException e) {
             LOG.log(Level.SEVERE, "exception in testBuildOnePoint", e);
+            LOG.log(Level.SEVERE, driver.getPageSource());
             throw e;
         }
     }
@@ -97,6 +98,7 @@ public class BuildRailIT extends AbstractIT {
             behave.removeStation(LINE1_D4);
         } catch (RuntimeException e) {
             LOG.log(Level.SEVERE, "exception in testBuildLine", e);
+            LOG.log(Level.SEVERE, driver.getPageSource());
             throw e;
         }
     }
