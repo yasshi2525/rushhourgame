@@ -242,6 +242,8 @@ initPixi = function () {
             .css('left', '0px')
             .css('top', '0px')
             .css('z-index', '1');
+    
+    $("body").append("<div>finished to initialize canvas!</div>");
 
     initEventHandler(); //イベントハンドラ登録
 
