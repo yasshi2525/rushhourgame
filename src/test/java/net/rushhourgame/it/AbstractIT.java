@@ -24,6 +24,7 @@
 package net.rushhourgame.it;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,6 +42,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.Logs;
 
 /**
  *
@@ -65,6 +67,10 @@ public abstract class AbstractIT {
             ChromeOptions options = new ChromeOptions();
             options.setHeadless(HEADLESS);
             options.addArguments("--lang=ja");
+            options.addArguments("--enable-logging");
+            options.setCapability(LogType.BROWSER, Level.ALL);
+            options.setCapability(LogType.DRIVER, Level.ALL);
+            options.setCapability(LogType.CLIENT, Level.ALL);
             driver = new ChromeDriver(options);
             driver.manage().timeouts().implicitlyWait(TIMEOUT, TimeUnit.SECONDS);
             driver.manage().window().setSize(WINDOW_SIZE);
@@ -94,6 +100,14 @@ public abstract class AbstractIT {
             } catch (RuntimeException e) {
                 LOG.log(Level.SEVERE, "exception in tearDownCommon", e);
             } finally {
+                LOG.log(Level.INFO, "console");
+                
+                driver.manage().logs().getAvailableLogTypes().forEach(type -> {
+                    LOG.log(Level.INFO, "type = " + type);
+                    driver.manage().logs().get(type).getAll()
+                        .forEach(entry -> LOG.log(Level.INFO, entry.getLevel() + " " + entry.getMessage()));
+                });
+                
                 driver.quit();
             }
         }
