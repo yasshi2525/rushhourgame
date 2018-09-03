@@ -67,6 +67,9 @@ script:
     - mvn test jacoco:report coveralls:report -q -Dit.skip=true -B
     - npm install
     - npx gulp
+    
+    - ls -laR
+    
     - npx gulp karma
     
     # integration test
