@@ -68,7 +68,8 @@ script:
     - npm install
     - npx gulp
     
-    - ls -laR
+    - ls -laR src
+    - ls -laR target
     
     - npx gulp karma
     
