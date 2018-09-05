@@ -37,7 +37,12 @@ before_install:
     - ssh-keyscan -p $LIBPORT $LIBHOST >> ~/.ssh/known_hosts
     - scp -i lib_key -P $LIBPORT -r $LIBUSER@$LIBHOST:~/omega-$LIB_OMEGA_VER .
     - mvn install:install-file -q -Dfile=omega-$LIB_OMEGA_VER/omega-$LIB_OMEGA_VER.war -DpomFile=omega-$LIB_OMEGA_VER/tag/pom.xml
-    
+
+    # for coverage
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+
     # for integration test
     - sed -i -e "s|https://api.twitter.com/oauth/access_token|$OAUTH_PASS/access_token|" $CONST_PATH
     - sed -i -e "s|https://api.twitter.com/oauth/request_token|$OAUTH_PASS/request_token|" $CONST_PATH
@@ -56,23 +61,14 @@ before_install:
     - $GF_HOME/bin/asadmin create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute
     
 install:
-    - mvn install -q -Dut.skip=true -Dit.skip=true -Dmaven.javadoc.skip=true -B -V
-
-before_script:
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    - chmod +x ./cc-test-reporter
-    - ./cc-test-reporter before-build
-  
-script:
-    - mvn test jacoco:report coveralls:report -q -Dit.skip=true -B
     - npm install
-    - npx gulp
-    
-    - ls -laR src
-    - ls -laR target
-    
+    - npx gulp  
     - npx gulp karma
+    - mvn install -q -Dut.skip=true -Dit.skip=true -Dmaven.javadoc.skip=true -B -V
     
+    # unit test
+    - mvn test jacoco:report coveralls:report -q -Dit.skip=true -B
+
     # integration test
     - $GF_HOME/bin/asadmin deploy --contextroot DummyOAuthServer  target/DummyOAuthServer.war
     - $GF_HOME/bin/asadmin deploy --contextroot RushHourGame  target/RushHourGame-$RUSHHOUR_VER.war
