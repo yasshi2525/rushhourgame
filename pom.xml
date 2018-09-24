@@ -14,6 +14,36 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <profiles>
+        <profile>
+            <id>development</id>
+            <properties>
+                <build.profile.id>development</build.profile.id>
+                <ut.skip>false</ut.skip>
+                <it.skip>true</it.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <build.profile.id>integration-test</build.profile.id>
+                <ut.skip>true</ut.skip>
+                <it.skip>false</it.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>production</build.profile.id>
+                <ut.skip>true</ut.skip>
+                <it.skip>true</it.skip>
+            </properties>
+        </profile>
+    </profiles>
+    
     <dependencies>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -28,7 +58,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
-            <version>2.7.2</version>
+            <version>2.7.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -46,7 +76,7 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>2.2.5</version>
+            <version>2.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -58,32 +88,26 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.19.0</version>
+            <version>2.21.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.primefaces</groupId>
-            <artifactId>omega</artifactId>
-            <version>1.1.4</version>
-            <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <scope>test</scope>
-            <version>3.13.0</version>
+            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <scope>test</scope>
-            <version>2.2.4</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
             <scope>test</scope>
-            <version>3.13.0</version>
+            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -94,7 +118,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.10.Final</version>
+            <version>6.0.12.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -117,7 +141,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.2.0</version>
+            <version>2.2.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -130,10 +154,36 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.1.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <filters>
+            <filter>profiles/${build.profile.id}.properties</filter>
+        </filters>
+         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/webapp/WEB-INF</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -155,8 +205,13 @@
                     <execution>
                         <id>provision</id>
                         <configuration>
+                            <webResources>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </webResources>
                             <warSourceDirectory>src/main/webapp</warSourceDirectory>
-                            <failOnMissingWebXml>false</failOnMissingWebXml>
                             <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
                         </configuration>
                         <goals>
@@ -166,8 +221,8 @@
                     <execution>
                         <id>testoauth</id>
                         <configuration>
-                            <warName>DummyOAuthServer</warName>
-                            <webappDirectory>${project.build.directory}/DummyOAuthServer</webappDirectory>
+                            <warName>DummyOAuthServer-${project.version}</warName>
+                            <webappDirectory>${project.build.directory}/DummyOAuthServer-${project.version}</webappDirectory>
                             <dependentWarExcludes>**</dependentWarExcludes>
                             <skinnyWars>true</skinnyWars>
                             <packagingIncludes>**/*.jsp,**/*.html,WEB-INF/classes/net/rushhourgame/auth/**</packagingIncludes>
@@ -175,10 +230,12 @@
                                 <resource>
                                     <directory>src/test/resources/jsp</directory>
                                     <targetPath></targetPath>
+                                    <filtering>true</filtering>
                                 </resource>
                                 <resource>
                                     <directory>src/test/resources/WEB-INF</directory>
                                     <targetPath>WEB-INF</targetPath>
+                                    <filtering>true</filtering>
                                 </resource>
                                 <resource>
                                     <directory>${project.build.directory}/test-classes/net/rushhourgame/auth</directory>
@@ -241,16 +298,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
                 <configuration>
-                    <systemProperties>
-                        <property> 
-                            <name>java.util.logging.config.file</name>
-                            <value>src/test/resources/logging.properties</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                        <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
+                    </systemPropertyVariables>
                     <skipTests>${ut.skip}</skipTests>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
+                    <trimStackTrace>false</trimStackTrace>
                     <argLine>@{argLine} -Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
             </plugin>
@@ -259,13 +314,12 @@
                 <version>2.22.0</version>
                 <configuration>
                     <skipTests>${it.skip}</skipTests>
+                    <systemPropertiesFile>profiles/${build.profile.id}.properties</systemPropertiesFile>
                     <systemPropertyVariables>
-                        <test.headless>${test.headless}</test.headless>
-                        <test.targetUrl>${test.targetUrl}/</test.targetUrl>
-                        <test.twitter.mailaddress>${test.twitter.mailaddress}/</test.twitter.mailaddress>
-                        <test.twitter.password>${test.twitter.password}/</test.twitter.password>
+                        <it.skip>${it.skip}</it.skip>
                     </systemPropertyVariables>
-                    <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
+                    <trimStackTrace>false</trimStackTrace>
+                    <argLine>@{argLine} -Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
                 <executions>
                     <execution>

@@ -37,7 +37,7 @@ public abstract class AbstractEntityTest {
     
     @Before
     public void setUp() {
-        em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
+        em = Persistence.createEntityManagerFactory("RushHourGameTestPU").createEntityManager();
         em.getTransaction().begin();
     }
     

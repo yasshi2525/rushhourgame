@@ -22,17 +22,4 @@
             org.primefaces.application.DialogViewHandler
         </view-handler>
     </application>
-    
-    <component>
-        <component-type>org.primefaces.component.OmegaMenu</component-type>
-        <component-class>org.primefaces.omega.component.menu.OmegaMenu</component-class>
-    </component>
-    
-    <render-kit>
-        <renderer>
-            <component-family>org.primefaces.component</component-family>
-            <renderer-type>org.primefaces.component.OmegaMenuRenderer</renderer-type>
-            <renderer-class>org.primefaces.omega.component.menu.OmegaMenuRenderer</renderer-class>
-        </renderer>
-    </render-kit>
 </faces-config>

@@ -23,7 +23,11 @@
  */
 package net.rushhourgame.it;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.Dimension;
 
 /**
@@ -31,11 +35,10 @@ import org.openqa.selenium.Dimension;
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
 public class Constants {
-    protected static final Properties CONFIG = new Properties();
     protected static final Boolean HEADLESS = Boolean.getBoolean("test.headless");
-    protected static final String TARGET_URL = getProperty("test.targetUrl");
-    protected static final String TWITTER_USER_NAME = getProperty("test.twitter.mailaddress");
-    protected static final String TWITTER_PASSWORD = getProperty("test.twitter.password");
+    protected static String TARGET_URL;
+    protected static String TWITTER_USER_NAME;
+    protected static String TWITTER_PASSWORD;
     protected static final long TIMEOUT = 10; // sec
     protected static final long TIMEOUT_ANNOUNCEMENT = 10; // sec
     protected static final long TIMEOUT_POLLING = 1; // sec
@@ -56,13 +59,17 @@ public class Constants {
     protected static final String ID_ERROR_ACTION = "error-action";
     protected static final String ID_DEBUG_INFO = "debug-info";
     
-    /**
-     * linuxで maven 経由でシステムプロパティを設定すると末尾に /　が入る。謎。
-     * @param name プロパティ名
-     * @return トリミングした文字列
-     */
-    protected static String getProperty(String name) {
-        return System.getProperty(name).replaceAll("/$", "");
+    protected static final String PROP_PATH = "net/rushhourgame/conf/integration_test.properties";
+    static {
+        try(InputStream is = ClassLoader.getSystemResourceAsStream(PROP_PATH)) {
+            Properties prop = new Properties();
+            prop.load(is);
+            
+            TARGET_URL = prop.getProperty("test.targetUrl");
+            TWITTER_USER_NAME = prop.getProperty("test.twitter.mailaddress");
+            TWITTER_PASSWORD = prop.getProperty("test.twitter.password");
+        } catch (IOException ex) {
+            Logger.getLogger(Constants.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
 }

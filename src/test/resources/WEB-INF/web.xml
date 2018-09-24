@@ -4,6 +4,6 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <context-param>
         <param-name>net.rushhourgame.test.callbackurl</param-name>
-        <param-value>http://localhost:8080/RushHourGame/faces/callbackTwitter.xhtml</param-value>
+        <param-value>${rushhour.twitter.callbackUrl}</param-value>
     </context-param>
 </web-app>

@@ -74,7 +74,7 @@ public class ControllerFactory {
     protected final ErrorMessageBuilder builder;
 
     public ControllerFactory() {
-        this.em = Persistence.createEntityManagerFactory("test_rushhour_RushHour1.0_war_1.0-SNAPSHOTPU").createEntityManager();
+        this.em = Persistence.createEntityManagerFactory("RushHourGameTestPU").createEntityManager();
         this.prop = spy(RushHourProperties.getInstance());
         this.msg = spy(RushHourResourceBundle.getInstance());
         this.builder = spy(ErrorMessageBuilder.getInstance());

@@ -29,14 +29,50 @@ THE SOFTWARE.
                           https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <profiles>
         <profile>
-            <id>integration-test</id>
+            <id>development</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>build.profile.id</name>
+                    <value>development</value>
+                </property>
             </activation>
             <properties>
-                <test.targetUrl>http://localhost:8080/RushHourGame</test.targetUrl>
-                <test.twitter.mailaddress>your mailaddress</test.twitter.mailaddress>
-                <test.twitter.password>your password</test.twitter.password>
+                <rushhour.host>localhost</rushhour.host>
+                <rushhour.port>8080</rushhour.port>
+                <rushhour.twitter.consumerKey></rushhour.twitter.consumerKey>
+                <rushhour.twitter.consumerSecret></rushhour.twitter.consumerSecret>
+            </properties>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <activation>
+                <property>
+                    <name>build.profile.id</name>
+                    <value>integration-test</value>
+                </property>
+            </activation>
+            <properties>
+                <rushhour.host>localhost</rushhour.host>
+                <rushhour.port>8080</rushhour.port>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <activation>
+                <property>
+                    <name>build.profile.id</name>
+                    <value>production</value>
+                </property>
+            </activation>
+            <properties>
+                <rushhour.host>localhost</rushhour.host>
+                <rushhour.port>8080</rushhour.port>
+                <rushhour.twitter.consumerKey></rushhour.twitter.consumerKey>
+                <rushhour.twitter.consumerSecret></rushhour.twitter.consumerSecret>
+                <rushhour.root.password>__any_string__</rushhour.root.password>
+                <rushhour.digest.salt>__64_length_hex_string__</rushhour.digest.salt>
+                <rushhour.encrypt.key>__128_bit_data_encoded_by_Base64__</rushhour.encrypt.key>
             </properties>
         </profile>
     </profiles>
