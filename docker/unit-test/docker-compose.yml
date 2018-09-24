@@ -1,5 +1,10 @@
 version: '3'
 
+networks:
+  default:
+    external:
+      name: rushhour-net-test
+
 services:
     rushhour-db: 
         image: mariadb
