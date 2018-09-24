@@ -15,7 +15,7 @@ services:
             MYSQL_USER: ${DB_USER}
             MYSQL_PASSWORD: ${DB_PASSWORD}
         volumes:
-            - "${LOG_DIR}/db:/var/log/nginx"
+            - "${LOG_DIR}/db:/var/log/mysql"
             - "${DB_DATADIR}/db:/var/lib/mysql"
         ports:
             - "${DB_PORT}:3306"
