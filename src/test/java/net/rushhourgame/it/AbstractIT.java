@@ -68,6 +68,7 @@ public abstract class AbstractIT {
             options.setHeadless(HEADLESS);
             options.addArguments("--lang=ja");
             options.addArguments("--enable-logging");
+            options.addArguments("--no-sandbox");
             options.setCapability(LogType.BROWSER, Level.ALL);
             options.setCapability(LogType.DRIVER, Level.ALL);
             options.setCapability(LogType.CLIENT, Level.ALL);
