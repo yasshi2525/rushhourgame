@@ -90,7 +90,7 @@ RUN ${PAYARA_PATH}/bin/asadmin --user ${ADMIN_USER} --passwordfile=/opt/tmpfile 
 RUN rm /opt/tmpfile
 
 # Default payara ports to expose
-EXPOSE 4848 8009 8080 8181
+EXPOSE 4848 8009 18080 8181
     
 ENTRYPOINT \
     ${PAYARA_PATH}/bin/asadmin start-domain ${PAYARA_DOMAIN} && \
@@ -104,5 +104,6 @@ ENTRYPOINT \
         --connectionpoolid RushHourGamePool jdbc/RushHourGame && \
     ${PAYARA_PATH}/bin/asadmin ${ASOPTS} create-managed-executor-service concurrent/RushHourGame && \
     ${PAYARA_PATH}/bin/asadmin ${ASOPTS} create-managed-executor-service --maximumpoolsize 1 concurrent/RushHourGameRoute && \
+    ${PAYARA_PATH}/bin/asadmin ${ASOPTS} set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.port=18080 && \
     ${PAYARA_PATH}/bin/asadmin stop-domain ${PAYARA_DOMAIN} && \
     ${PAYARA_PATH}/bin/asadmin start-domain -v ${PAYARA_DOMAIN}

@@ -37,7 +37,7 @@ services:
             - "${LOG_DIR}/aps:/opt/payara5/glassfish/domains/domain1/logs"
         ports:
             - "${DAS_PORT}:4848"
-            - "${APS_PORT}:8080"
+            - "${APS_PORT}:18080"
         links:
             - rushhour-db
     rushhour-web:
@@ -46,7 +46,7 @@ services:
             args:
                 HOSTNAME: rushhour-web
                 APS_HOST: rushhour-aps
-                APS_PORT: 8080
+                APS_PORT: 18080
                 APNAME: ${APP_NAME}
                 AUTHNAME: ${AUTH_NAME}
         image: rushhour-nginx-it
