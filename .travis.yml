@@ -22,12 +22,14 @@ before_install:
     - ./cc-test-reporter before-build
 
     # for unit test
+    - docker network create rushhour-net-ut
     - pushd docker/unit-test
     - mkdir -p log/db data
     - docker-compose up -d
     - popd
 
     # for integration test
+    - docker network create rushhour-net-it
     - pushd docker/integration-test
     - mkdir -p log/db log/aps log/web data autodeploy
     - docker-compose up -d
