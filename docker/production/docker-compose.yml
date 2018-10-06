@@ -16,7 +16,7 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
         volumes:
             - "${LOG_DIR}/db:/var/log/mysql"
-            - "${DB_DATADIR}/db:/var/lib/mysql"
+            - "${DB_DATADIR}:/var/lib/mysql"
         ports:
             - "${DB_PORT}:3306"
     rushhour-aps:
