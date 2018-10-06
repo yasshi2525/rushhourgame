@@ -23,13 +23,13 @@ before_install:
 
     # for unit test
     - pushd docker/unit-test
-    - mkdir log data
+    - mkdir -p log/db data
     - docker-compose up -d
     - popd
 
     # for integration test
     - pushd docker/integration-test
-    - mkdir log data autodeploy
+    - mkdir -p log/db log/aps log/web data autodeploy
     - docker-compose up -d
     - popd
     
