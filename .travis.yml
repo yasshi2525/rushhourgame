@@ -9,7 +9,7 @@ env:
         - RUSHHOUR_VER=1.0-SNAPSHOT
         - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
         - JACOCO_SOURCE_PATH=src/main/java
-        - APP_URL=http://localhost:8080/RushHourGame-$RUSHHOUR_VER
+        - APP_URL=http://localhost/RushHourGame-$RUSHHOUR_VER
 
 addons:
     chrome: stable
