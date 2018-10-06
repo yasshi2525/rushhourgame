@@ -6,9 +6,9 @@ networks:
       name: rushhour-net-ut
 
 services:
-    rushhour-db-ut: 
+    rushhour-db: 
         build: "./db"
-        image: rushhour-mariadb
+        image: rushhour-mariadb-ut
         command: mysqld --character-set-server=utf8
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -17,6 +17,6 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
         volumes:
             - "${LOG_DIR}/db:/var/log/mysql"
-            - "${DB_DATADIR}/db:/var/lib/mysql"
+            - "${DB_DATADIR}:/var/lib/mysql"
         ports:
             - "${DB_PORT}:3306"

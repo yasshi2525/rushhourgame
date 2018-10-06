@@ -6,9 +6,9 @@ networks:
       name: rushhour-net-it
 
 services:
-    rushhour-db-it: 
+    rushhour-db: 
         build: "./db"
-        image: rushhour-mariadb
+        image: rushhour-mariadb-it
         command: mysqld --character-set-server=utf8
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -20,13 +20,13 @@ services:
             - "${DB_DATADIR}:/var/lib/mysql"
         ports:
             - "${DB_PORT}:3306"
-    rushhour-aps-it:
+    rushhour-aps:
         build: "./aps"
-        image: rushhour-payara
+        image: rushhour-payara-it
         environment:
             ADMIN_USER: ${DAS_USER}
             ADMIN_PASSWORD: ${DAS_PASSWORD}
-            DBHOST: rushhour-db-it
+            DBHOST: rushhour-db
             DBPORT: 3306
             DBDATABASE: ${DB_USER}
             DBUSER: ${DB_USER}
@@ -39,23 +39,23 @@ services:
             - "${DAS_PORT}:4848"
             - "${APS_PORT}:8080"
         links:
-            - rushhour-db-it
-    rushhour-web-it:
+            - rushhour-db
+    rushhour-web:
         build: 
             context: ./web 
             args:
-                HOSTNAME: rushhour-web-it
-                APS_HOST: rushhour-aps-it
+                HOSTNAME: rushhour-web
+                APS_HOST: rushhour-aps
                 APS_PORT: 8080
                 APNAME: ${APP_NAME}
                 AUTHNAME: ${AUTH_NAME}
-        image: rushhour-nginx
+        image: rushhour-nginx-it
         volumes:
             - "${LOG_DIR}/web:/var/log/nginx"
         ports:
             - "${WEB_PORT}:80"
         depends_on:
-            - rushhour-aps-it
+            - rushhour-aps
         links:
-            - rushhour-aps-it
+            - rushhour-aps
             
