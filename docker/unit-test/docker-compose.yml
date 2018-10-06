@@ -3,10 +3,10 @@ version: '3'
 networks:
   default:
     external:
-      name: rushhour-net-test
+      name: rushhour-net-ut
 
 services:
-    rushhour-db: 
+    rushhour-db-ut: 
         build: "./db"
         image: rushhour-mariadb
         command: mysqld --character-set-server=utf8
