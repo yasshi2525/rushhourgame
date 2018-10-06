@@ -30,6 +30,8 @@ ARG APS_PORT=8080
 ARG APNAME=RushHourGame-1.0-SNAPSHOT
 ARG AUTHNAME=DummyOAuthServer-1.0-SNAPSHOT
 
+VOLUME /var/log/nginx
+
 ENV CONF /etc/nginx/conf.d/default.conf
 
 RUN \

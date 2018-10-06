@@ -92,6 +92,10 @@ RUN rm /opt/tmpfile
 
 # Default payara ports to expose
 EXPOSE 4848 8009 8080 8181
+
+VOLUME /opt/payara5/conf
+VOLUME /opt/payara5/glassfish/domains/domain1/autodeploy
+VOLUME /opt/payara5/glassfish/domains/domain1/logs
     
 ENTRYPOINT \
     ${PAYARA_PATH}/bin/asadmin start-domain ${PAYARA_DOMAIN} && \

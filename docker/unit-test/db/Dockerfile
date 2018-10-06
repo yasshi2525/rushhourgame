@@ -22,5 +22,8 @@
 
 FROM mariadb
 
+VOLUME /var/log/mysql
+VOLUME /var/lib/mysql
+
 RUN usermod -u 1000 mysql; groupmod -g 1000 mysql;
 RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld

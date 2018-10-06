@@ -28,7 +28,8 @@ ARG HOSTNAME=localhost
 ARG APS_HOST=localhost
 ARG APS_PORT=8080
 ARG APNAME=RushHourGame
-ARG AUTHNAME=OAuth
+
+VOLUME /var/log/nginx
 
 ENV CONF /etc/nginx/conf.d/default.conf
 
@@ -48,9 +49,6 @@ RUN \
     echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$APNAME/;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    " >> ${CONF} && \
-    echo "    location /$AUTHNAME/ {" >> ${CONF} && \
-    echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$AUTHNAME/;" >> ${CONF} && \
-    echo "    }" >> ${CONF} && \
     echo "    location / {" >> ${CONF} && \
     echo "        root   /usr/share/nginx/html;" >> ${CONF} && \
     echo "        index  index.html index.htm;" >> ${CONF} && \
