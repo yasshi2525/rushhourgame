@@ -38,10 +38,10 @@ install:
     - npm install
     - npx gulp  
     - npx gulp karma
-    - mvn install -P unit-test -q -Dmaven.javadoc.skip=true -B
+    - mvn install -P development -q -Dmaven.javadoc.skip=true -B
     
     # unit test
-    - mvn test jacoco:report coveralls:report -P unit-test -q -B
+    - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
     - cp target/*.war docker/integration-test/autodeploy
