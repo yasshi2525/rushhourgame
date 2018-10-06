@@ -38,7 +38,7 @@ install:
     - npm install
     - npx gulp  
     - npx gulp karma
-    - mvn install -P development -q -Dmaven.javadoc.skip=true -Dtest.database.host=rushhour-db -B
+    - mvn install -P development -q -Dmaven.javadoc.skip=true -B
     
     # unit test
     - mvn test jacoco:report coveralls:report -P development -q -B
