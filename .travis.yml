@@ -46,6 +46,7 @@ install:
     # integration test
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
+    - tail -n 500 docker/integration-test/log/aps/server.log
     - curl -X GET $APP_URL/gm?op=start
     - mvn clean install integration-test verify -P integration-test -B -Drushhour.host=localhost -Drushhour.port=80
   
