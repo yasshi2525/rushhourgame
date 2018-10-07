@@ -27,7 +27,6 @@ FROM nginx
 ARG HOSTNAME=localhost
 ARG APS_HOST=localhost
 ARG APS_PORT=8080
-ARG APNAME=RushHourGame
 
 VOLUME /var/log/nginx
 
@@ -45,14 +44,10 @@ RUN \
     echo "    proxy_set_header    X-Forwarded-Host       \$host;" >> ${CONF} && \
     echo "    proxy_set_header    X-Forwarded-Server    \$host;" >> ${CONF} && \
     echo "    proxy_set_header    X-Forwarded-For    \$proxy_add_x_forwarded_for;" >> ${CONF} && \
-    echo "    location /$APNAME/ {" >> ${CONF} && \
-    echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$APNAME;" >> ${CONF} && \
+    echo "    location / {" >> ${CONF} && \
+    echo "        proxy_pass    http://$APS_HOST:$APS_PORT;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    " >> ${CONF} && \
-    echo "    location / {" >> ${CONF} && \
-    echo "        root   /usr/share/nginx/html;" >> ${CONF} && \
-    echo "        index  index.html index.htm;" >> ${CONF} && \
-    echo "    }" >> ${CONF} && \
     echo "    error_page   500 502 503 504  /50x.html;" >> ${CONF} && \
     echo "    location = /50x.html {" >> ${CONF} && \
     echo "        root   /usr/share/nginx/html;" >> ${CONF} && \

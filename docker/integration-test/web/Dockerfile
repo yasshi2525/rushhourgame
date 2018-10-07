@@ -27,8 +27,8 @@ FROM nginx
 ARG HOSTNAME=localhost
 ARG APS_HOST=localhost
 ARG APS_PORT=18080
-ARG APNAME=RushHourGame-1.0-SNAPSHOT
-ARG AUTHNAME=DummyOAuthServer-1.0-SNAPSHOT
+ARG APNAME=/RushHourGame-1.0-SNAPSHOT/
+ARG AUTHNAME=/DummyOAuthServer-1.0-SNAPSHOT/
 
 VOLUME /var/log/nginx
 
@@ -46,11 +46,11 @@ RUN \
     echo "    proxy_set_header    X-Forwarded-Host       \$host;" >> ${CONF} && \
     echo "    proxy_set_header    X-Forwarded-Server    \$host;" >> ${CONF} && \
     echo "    proxy_set_header    X-Forwarded-For    \$proxy_add_x_forwarded_for;" >> ${CONF} && \
-    echo "    location /$APNAME/ {" >> ${CONF} && \
+    echo "    location $APNAME {" >> ${CONF} && \
     echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$APNAME/;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    " >> ${CONF} && \
-    echo "    location /$AUTHNAME/ {" >> ${CONF} && \
+    echo "    location $AUTHNAME {" >> ${CONF} && \
     echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$AUTHNAME/;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    location / {" >> ${CONF} && \

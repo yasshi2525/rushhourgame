@@ -7,7 +7,8 @@ networks:
 
 services:
     rushhour-db: 
-        image: mariadb
+        build: "./db"
+        image: rushhour-mariadb
         command: mysqld --character-set-server=utf8
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -46,7 +47,6 @@ services:
                 HOSTNAME: rushhour-web
                 APS_HOST: rushhour-aps
                 APS_PORT: 18080
-                APNAME: ${APP_NAME}
         image: rushhour-nginx
         volumes:
             - "${LOG_DIR}/web:/var/log/nginx"
