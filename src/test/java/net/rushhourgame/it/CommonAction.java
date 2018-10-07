@@ -75,6 +75,9 @@ public class CommonAction {
         // サインインボタンの押下
         signin.sendKeys(Keys.ENTER);
 
+        LOG.log(Level.INFO, "URL : " + driver.getCurrentUrl());
+        LOG.log(Level.INFO, driver.getPageSource());
+
         // 名前とパスワードを入力
         WebElement name = driver.findElement(By.id("username_or_email"));
         name.sendKeys(TWITTER_USER_NAME);
