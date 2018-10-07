@@ -75,6 +75,7 @@ public class CommonAction {
         // サインインボタンの押下
         signin.sendKeys(Keys.ENTER);
 
+        sleep(5);
         LOG.log(Level.INFO, "URL : " + driver.getCurrentUrl());
         LOG.log(Level.INFO, driver.getPageSource());
 
