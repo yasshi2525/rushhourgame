@@ -31,7 +31,7 @@ before_install:
     - docker network create rushhour-net-it
     - pushd docker/integration-test
     - mkdir -p log/db log/aps log/web data autodeploy
-    - docker-compose up -d --build
+    - docker-compose up --build
     - popd
     
 install:
