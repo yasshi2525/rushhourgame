@@ -32,6 +32,8 @@ before_install:
     - pushd docker/integration-test
     - mkdir -m 777 -p log/db log/aps log/web data autodeploy conf/aps conf/web
     - docker-compose up -d --build
+    - sleep 60
+    - ls -laR docker/integration-test/conf
     - cat docker/integration-test/conf/web/default.conf
     - popd
     
