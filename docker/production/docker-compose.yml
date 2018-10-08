@@ -21,16 +21,17 @@ services:
         ports:
             - "${DB_PORT}:3306"
     rushhour-aps:
-        build: "./aps"
+        build: 
+            context: "./aps"
+            args:
+                ADMIN_USER: ${DAS_USER}
+                ADMIN_PASSWORD: ${DAS_PASSWORD}
+                DBHOST: rushhour-db
+                DBPORT: 3306
+                DBDATABASE: ${DB_USER}
+                DBUSER: ${DB_USER}
+                DBPASSWORD: ${DB_PASSWORD}
         image: rushhour-payara
-        environment:
-            ADMIN_USER: ${DAS_USER}
-            ADMIN_PASSWORD: ${DAS_PASSWORD}
-            DBHOST: rushhour-db
-            DBPORT: 3306
-            DBDATABASE: ${DB_USER}
-            DBUSER: ${DB_USER}
-            DBPASSWORD: ${DB_PASSWORD}
         volumes:
             - "${APS_CONFDIR}:/opt/payara5/conf"
             - "${APS_APPDIR}:/opt/payara5/glassfish/domains/domain1/autodeploy"

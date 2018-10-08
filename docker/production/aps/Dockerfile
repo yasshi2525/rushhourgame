@@ -26,14 +26,15 @@ FROM openjdk:8-jdk
 
 ENV PAYARA_PATH /opt/payara5
 ENV PAYARA_DOMAIN domain1
-ENV ADMIN_USER admin
-ENV ADMIN_PASSWORD admin
 
-ENV DBHOST localhsot
-ENV DBPORT 3306
-ENV DBDATABASE rushhourittest
-ENV DBUSER rushhourittest
-ENV DBPASSWORD rushhourittest
+ARG ADMIN_USER=admin
+ARG ADMIN_PASSWORD=admin
+
+ARG DBHOST=localhsot
+ARG DBPORT=3306
+ARG DBDATABASE=rushhour
+ARG DBUSER=rushhour
+ARG DBPASSWORD=rushhour
 
 ENV DBDRIVER_URL=https://downloads.mariadb.com/Connectors/java/connector-java-2.3.0/mariadb-java-client-2.3.0.jar
 ENV DBDRIVER_JAR=mariadb-java-client.jar
@@ -91,6 +92,12 @@ RUN rm /opt/tmpfile
 
 # Default payara ports to expose
 EXPOSE 4848 8009 18080 8181
+
+ENV DBHOST=${DBHOST}
+ENV DBPORT=${DBPORT}
+ENV DBDATABASE=${DBDATABASE}
+ENV DBUSER=${DBUSER}
+ENV DBPASSWORD=${DBPASSWORD}
     
 ENTRYPOINT \
     ${PAYARA_PATH}/bin/asadmin start-domain ${PAYARA_DOMAIN} && \
