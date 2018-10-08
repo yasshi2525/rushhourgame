@@ -33,7 +33,6 @@ before_install:
     - mkdir -m 777 -p log/db log/aps log/web data autodeploy conf/aps conf/web
     - docker-compose up -d --build
     - sleep 30
-    - ls -laR .
     - cat conf/web/default.conf
     - popd
     
