@@ -44,11 +44,11 @@ install:
     - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
-    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=localhost -Drushhour.port=80
+    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=integrationtest_rushhour-web_1 -Drushhour.port=80
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -P integration-test -B -Drushhour.host=localhost -Drushhour.port=80
+    - mvn integration-test verify -P integration-test -B -Drushhour.host=integrationtest_rushhour-web_1 -Drushhour.port=80
   
 after_script:
     - tail -n 500 docker/integration-test/log/aps/server.log
