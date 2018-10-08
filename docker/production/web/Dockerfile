@@ -28,6 +28,7 @@ ARG HOSTNAME=localhost
 ARG APS_HOST=localhost
 ARG APS_PORT=8080
 
+VOLUME /etc/nginx/conf.d
 VOLUME /var/log/nginx
 
 ENV CONF /etc/nginx/conf.d/default.conf

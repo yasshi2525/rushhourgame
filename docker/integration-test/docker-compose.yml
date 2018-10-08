@@ -33,7 +33,7 @@ services:
                 DBPASSWORD: ${DB_PASSWORD}
         image: rushhour-payara-it
         volumes:
-            - "${APS_CONFDIR}:/opt/payara5/conf"
+            - "${CONF_DIR}/aps:/opt/payara5/conf"
             - "${APS_APPDIR}:/opt/payara5/glassfish/domains/domain1/autodeploy"
             - "${LOG_DIR}/aps:/opt/payara5/glassfish/domains/domain1/logs"
         ports:
@@ -52,6 +52,7 @@ services:
                 AUTHNAME: ${AUTH_NAME}
         image: rushhour-nginx-it
         volumes:
+            - "${CONF_DIR}/web:/etc/nginx/conf.d"
             - "${LOG_DIR}/web:/var/log/nginx"
         ports:
             - "${WEB_PORT}:80"
