@@ -44,11 +44,10 @@ install:
     - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
+    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=localhost -Drushhour.port=80
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
     - curl -X GET $APP_URL/gm?op=start
-    - mvn clean install -Dit.skip=true -P integration-test -B -Drushhour.host=localhost -Drushhour.port=80
-    - cat target/RushHourGame-1.0-SNAPSHOT/WEB-INF/classes/net/rushhourgame/conf/constants.properties
     - mvn integration-test verify -P integration-test -B -Drushhour.host=localhost -Drushhour.port=80
   
 after_script:
