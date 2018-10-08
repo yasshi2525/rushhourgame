@@ -53,11 +53,11 @@ ENTRYPOINT \
     echo "    proxy_set_header    X-Forwarded-Server    \$host;" >> ${CONF} && \
     echo "    proxy_set_header    X-Forwarded-For    \$proxy_add_x_forwarded_for;" >> ${CONF} && \
     echo "    location $APNAME {" >> ${CONF} && \
-    echo "        proxy_pass    http://$APS_HOST:$APS_PORT$APNAME;" >> ${CONF} && \
+    echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$APNAME;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    " >> ${CONF} && \
     echo "    location $AUTHNAME {" >> ${CONF} && \
-    echo "        proxy_pass    http://$APS_HOST:$APS_PORT$AUTHNAME;" >> ${CONF} && \
+    echo "        proxy_pass    http://$APS_HOST:$APS_PORT/$AUTHNAME;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
     echo "    location / {" >> ${CONF} && \
     echo "        root   /usr/share/nginx/html;" >> ${CONF} && \
