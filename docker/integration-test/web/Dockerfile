@@ -43,6 +43,7 @@ ENV AUTHNAME=${AUTHNAME}
 
 ENTRYPOINT \
     mkdir -p /etc/nginx/conf.d && \
+    touch ${CONF} && \
     echo "server{" > ${CONF} && \
     echo "    listen         80;" >> ${CONF} && \
     echo "    server_name    $HOSTNAME;" >> ${CONF} && \
