@@ -15,6 +15,7 @@ services:
             MYSQL_DATABASE: ${DB_USER}
             MYSQL_USER: ${DB_USER}
             MYSQL_PASSWORD: ${DB_PASSWORD}
+            TZ: JST-9
         volumes:
             - "${LOG_DIR}:/var/log/mysql"
             - "${DB_DATADIR}:/var/lib/mysql"
@@ -32,6 +33,8 @@ services:
                 DBUSER: ${DB_USER}
                 DBPASSWORD: ${DB_PASSWORD}
         image: rushhour-payara-it
+        environment:
+            TZ: JST-9
         volumes:
             - "${CONF_DIR}/aps:/opt/payara5/conf"
             - "${APS_APPDIR}:/opt/payara5/glassfish/domains/domain1/autodeploy"
@@ -51,6 +54,8 @@ services:
                 APNAME: ${APP_NAME}
                 AUTHNAME: ${AUTH_NAME}
         image: rushhour-nginx-it
+        environment:
+            TZ: JST-9
         volumes:
             - "${CONF_DIR}/web:/etc/nginx/conf.d"
             - "${LOG_DIR}/web:/var/log/nginx"

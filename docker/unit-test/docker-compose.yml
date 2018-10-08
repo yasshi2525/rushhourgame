@@ -15,6 +15,7 @@ services:
             MYSQL_DATABASE: ${DB_USER}
             MYSQL_USER: ${DB_USER}
             MYSQL_PASSWORD: ${DB_PASSWORD}
+            TZ: JST-9
         volumes:
             - "${LOG_DIR}/db:/var/log/mysql"
             - "${DB_DATADIR}:/var/lib/mysql"
