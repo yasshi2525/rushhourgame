@@ -46,7 +46,7 @@ install:
     - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
-    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=rushhour-aps -Drushhour.port=18080
+    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=localhost -Drushhour.port=18080
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
     - tail -n 100 docker/integration-test/log/aps/server.log
