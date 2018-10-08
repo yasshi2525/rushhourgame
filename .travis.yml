@@ -32,6 +32,8 @@ before_install:
     - pushd docker/integration-test
     - mkdir -m 777 -p log/db log/aps log/web data autodeploy conf/aps conf/web
     - docker-compose up -d --build
+    - sleep 10
+    - cat conf/web/default.conf
     - popd
     
 install:
@@ -44,14 +46,13 @@ install:
     - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
-    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=integrationtest_rushhour-web_1 -Drushhour.port=80
+    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=integrationtest_rushhour-aps_1 -Drushhour.port=18080
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -P integration-test -B -Drushhour.host=integrationtest_rushhour-web_1 -Drushhour.port=80 || echo error
+    - mvn integration-test verify -P integration-test -B -Drushhour.host=integrationtest_rushhour-aps_1 -Drushhour.port=18080
   
 after_script:
-    - tail -n 500 docker/integration-test/log/aps/server.log
     - ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.1.json target/site/jacoco/jacoco.xml
     - ./cc-test-reporter format-coverage -t lcov   -o coverage/codeclimate.2.json target/jscoverage/lcov/lcov.info
     - ./cc-test-reporter sum-coverage -p 2 coverage/codeclimate.*.json
