@@ -9,7 +9,7 @@ env:
         - RUSHHOUR_VER=1.0-SNAPSHOT
         - CC_TEST_REPORTER_ID=60091ab280e51b0abd3d8b58d1a6d909f30be3b2a7a366aa8234eb3205bb7abf
         - JACOCO_SOURCE_PATH=src/main/java
-        - APP_URL=http://integrationtest_rushhour-aps_1/RushHourGame-$RUSHHOUR_VER
+        - APP_URL=http://localhost/RushHourGame-$RUSHHOUR_VER
 
 addons:
     chrome: stable
@@ -46,12 +46,12 @@ install:
     - mvn test jacoco:report coveralls:report -P development -q -B
 
     # integration test
-    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=integrationtest_rushhour-aps_1 -Drushhour.port=18080
+    - mvn clean install -P integration-test -Dit.skip=true -Drushhour.host=rushhour-aps -Drushhour.port=18080
     - cp target/*.war docker/integration-test/autodeploy
     - sleep 30
     - tail -n 100 docker/integration-test/log/aps/server.log
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -P integration-test -B -Drushhour.host=integrationtest_rushhour-aps_1 -Drushhour.port=18080 || echo error
+    - mvn integration-test verify -P integration-test -B -Drushhour.host=rushhour-aps -Drushhour.port=18080 || echo error
   
 after_script:
     - tail -n 100 docker/integration-test/log/aps/server.log
