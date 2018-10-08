@@ -35,9 +35,14 @@ VOLUME /var/log/nginx
 
 ENV CONF /etc/nginx/conf.d/default.conf
 
-RUN \
-    nginx && \
-    nginx -s stop && \
+ENV HOSTNAME=${HOSTNAME}
+ENV APS_HOST=${APS_HOST}
+ENV APS_PORT=${APS_PORT}
+ENV APNAME=${APNAME}
+ENV AUTHNAME=${AUTHNAME}
+
+ENTRYPOINT \
+    mkdir -p /etc/nginx/conf.d && \
     echo "server{" > ${CONF} && \
     echo "    listen         80;" >> ${CONF} && \
     echo "    server_name    $HOSTNAME;" >> ${CONF} && \
@@ -62,7 +67,5 @@ RUN \
     echo "    location = /50x.html {" >> ${CONF} && \
     echo "        root   /usr/share/nginx/html;" >> ${CONF} && \
     echo "    }" >> ${CONF} && \
-    echo "}" >> ${CONF}
-    
-ENTRYPOINT \
+    echo "}" >> ${CONF} && \
     nginx -g 'daemon off;'
