@@ -72,15 +72,8 @@ public class CommonAction {
         body.sendKeys(Keys.TAB);
         WebElement signin = driver.switchTo().activeElement();
         
-        LOG.log(Level.INFO, "[DEBUG] URL(1) : " + driver.getCurrentUrl());
-        LOG.log(Level.INFO, "[DEBUG] elm : " + signin.getTagName() + " " + signin.getText());
-        LOG.log(Level.INFO, driver.getPageSource());
-
         // サインインボタンの押下
         signin.sendKeys(Keys.ENTER);
-
-        LOG.log(Level.INFO, "[DEBUG] URL(2) : " + driver.getCurrentUrl());
-        LOG.log(Level.INFO, driver.getPageSource());
 
         // 名前とパスワードを入力
         WebElement name = driver.findElement(By.id("username_or_email"));
