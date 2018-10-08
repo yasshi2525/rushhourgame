@@ -51,7 +51,7 @@ install:
     - sleep 30
     - tail -n 100 docker/integration-test/log/aps/server.log
     - curl -X GET $APP_URL/gm?op=start
-    - mvn integration-test verify -P integration-test -B -Drushhour.host=rushhour-aps -Drushhour.port=18080 || echo error
+    - mvn integration-test verify -P integration-test -B -Drushhour.host=localhost -Drushhour.port=18080 || echo error
   
 after_script:
     - tail -n 100 docker/integration-test/log/aps/server.log
