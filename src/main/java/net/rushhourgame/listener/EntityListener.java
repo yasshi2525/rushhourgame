@@ -25,6 +25,7 @@ package net.rushhourgame.listener;
 
 import java.util.Date;
 import java.util.logging.Logger;
+import javax.persistence.PostRemove;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import net.rushhourgame.exception.RushHourRuntimeException;
@@ -34,33 +35,33 @@ import net.rushhourgame.entity.AbstractEntity;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class EntityListener{
+public class EntityListener {
 
     private static final Logger LOG = Logger.getLogger(EntityListener.class.getName());
-    
+
     @PrePersist
-    public void prePersist(Object obj){
-        if(obj instanceof AbstractEntity){
-            AbstractEntity entity = (AbstractEntity) obj;
-            if(entity.getCreated() != null){
-                throw new RushHourRuntimeException("\"created\" parameter is set even if before persist : " + entity);
-            }
-            if(entity.getUpdated() != null){
-                throw new RushHourRuntimeException("\"updated\" parameter is set even if before persist : " + entity);
-            }
-            entity.setCreated(new Date());
-            entity.setUpdated(new Date());
+    public void prePersist(AbstractEntity entity) {
+        if (entity.getCreated() != null) {
+            throw new RushHourRuntimeException("\"created\" parameter is set even if before persist : " + entity);
         }
+        if (entity.getUpdated() != null) {
+            throw new RushHourRuntimeException("\"updated\" parameter is set even if before persist : " + entity);
+        }
+        entity.setCreated(new Date());
+        entity.setUpdated(new Date());
     }
-    
+
     @PreUpdate
-    public void preUpdate(Object obj){
-        if(obj instanceof AbstractEntity){
-            AbstractEntity entity = (AbstractEntity) obj;
-            if(entity.getCreated() == null){
-                throw new RushHourRuntimeException("\"created\" is null even if state is preUpdate ; " + entity);
-            }
-            entity.setUpdated(new Date());
+    public void preUpdate(AbstractEntity entity) {
+        if (entity.getCreated() == null) {
+            throw new RushHourRuntimeException("\"created\" is null even if state is preUpdate ; " + entity);
         }
+        entity.setUpdated(new Date());
+    }
+
+    @PostRemove
+    public void postRemove(AbstractEntity entity) {
+        entity.setCreated(null);
+        entity.setUpdated(null);
     }
 }

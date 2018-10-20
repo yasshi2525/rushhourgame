@@ -52,8 +52,6 @@ public class EntityListenerTest {
 
     @Test
     public void testPrePersist() {
-        inst.prePersist(null);
-        inst.prePersist("invalidObject");
         inst.prePersist(entity);
         assertNotNull(entity.getCreated());
         assertNotNull(entity.getUpdated());
@@ -61,8 +59,6 @@ public class EntityListenerTest {
 
     @Test
     public void testPreUpdate() {
-        inst.preUpdate(null);
-        inst.preUpdate("invalidObject");
         
         inst.prePersist(entity);
         inst.preUpdate(entity);
@@ -123,5 +119,16 @@ public class EntityListenerTest {
         expectException.expectMessage("\"created\" is null even if state is preUpdate");
         
         inst.preUpdate(entity);
+    }
+    
+    @Test
+    public void testPostRemove() {
+        entity.setCreated(new Date());
+        entity.setUpdated(new Date());
+        
+        inst.postRemove(entity);
+        
+        assertNull(entity.getCreated());
+        assertNull(entity.getUpdated());
     }
 }

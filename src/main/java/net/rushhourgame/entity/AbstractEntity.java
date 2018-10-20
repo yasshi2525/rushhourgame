@@ -73,11 +73,11 @@ public abstract class AbstractEntity implements Identifiable, Ownable, Serializa
     }
 
     public void setCreated(Date created) {
-        this.created = new Date(created.getTime());
+        this.created = created == null ? null : new Date(created.getTime());
     }
 
     public void setUpdated(Date updated) {
-        this.updated = new Date(updated.getTime());
+        this.updated = updated == null ? null : new Date(updated.getTime());
     }
     
     @Override
