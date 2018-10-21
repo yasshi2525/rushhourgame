@@ -255,43 +255,12 @@ public class TrainController extends CachedController<Train> {
      *
      * @param removing 削除予定のLineStep
      */
-    public void refresh(LineStep removing) {
+    public void detach(LineStep removing) {
         List<TrainDeployed> refs = em.createNamedQuery("TrainDeployed.findByCurrent", TrainDeployed.class)
                 .setParameter("current", removing)
                 .getResultList();
         LOG.log(Level.FINE, "{0}#refresh refreshing {1}",
                 new Object[]{TrainController.class, refs});
-        refs.stream().map(ref -> find(ref)).forEach(td -> merge(td));
-    }
-
-    protected TrainDeployed merge(TrainDeployed oldInst) {
-        Train train = oldInst.getTrain();
-        LOG.log(Level.FINE, "{0}#merge updating {1} current = {2}",
-                new Object[]{TrainController.class, train, oldInst.getCurrent()});
-        
-        LineStep cached = oldInst.getCurrent();
-        
-        if (cached.getDeparture() != null) {
-            if (stCon.find(cached.getDeparture().getStaying()) == null) {
-                LOG.log(Level.WARNING, "{0}#merge {1} current's station is already removed {2}",
-                    new Object[]{TrainController.class, oldInst, oldInst.getCurrent()});
-            }
-        }
-        
-        if (cached.getStopping() != null) {
-            if (stCon.find(cached.getStopping().getGoal()) == null) {
-                LOG.log(Level.WARNING, "{0}#merge {1} current's station is already removed {2}",
-                    new Object[]{TrainController.class, oldInst, oldInst.getCurrent()});
-            }
-        }
-        
-        TrainDeployed newInst = em.merge(oldInst);
-        //上のmergeでreplace前の古いLineStepをとってしまう。
-        newInst.replaceCurrent(lCon.find(cached));
-        
-        train.setDeployed(newInst);
-        LOG.log(Level.FINE, "{0}#merge updated {1} current = {2}",
-                new Object[]{TrainController.class, train, newInst.getCurrent()});
-        return newInst;
+        refs.forEach(td -> td.replaceCurrent(find(td).getCurrent()));
     }
 }

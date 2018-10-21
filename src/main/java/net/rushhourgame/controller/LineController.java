@@ -346,7 +346,7 @@ public class LineController extends CachedController<Line> {
                     .filter(step -> step.getPassing() != null)
                     .forEach(step -> replacePassing(step));
 
-            intoSteps.forEach(step -> tCon.refresh(step));
+            intoSteps.forEach(step -> tCon.detach(step));
             intoSteps.forEach(step -> remove(step));
             em.flush();
         } finally {
@@ -387,6 +387,7 @@ public class LineController extends CachedController<Line> {
         
         oldDep.setNext(null);
         oldStop.setNext(null);
+        
     }
 
     /**

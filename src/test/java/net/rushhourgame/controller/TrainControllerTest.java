@@ -261,18 +261,6 @@ public class TrainControllerTest extends AbstractControllerTest {
         
         assertTrue(deploy.getCurrent().getMoving() != null);
         assertTrue(deploy.getProgress() > 0d);
-    }  
-    
-    @Test
-    public void testMerge() throws RushHourException {
-        Train train = inst.create(player);
-        TrainDeployed oldInst = inst.deploy(train, player, lineStep);
-        
-        LineStep expected = oldInst.getCurrent();
-        
-        TrainDeployed newInst = inst.merge(oldInst);
-        
-        assertEquals(expected, newInst.getCurrent());
     }
     
     @Test
