@@ -42,13 +42,12 @@ import net.rushhourgame.entity.RailNode;
 public class RushHourSessionTest {
 
     private static RushHourSessionBean bean;
-
-    public RushHourSessionTest() {
-    }
-
+    private static RushHourProperties prop;
+    
     @BeforeClass
     public static void setUpClass() {
-        bean = new RushHourSessionBean();
+        bean = new RushHourSessionBean(0);
+        prop = RushHourProperties.getInstance();
     }
 
     @AfterClass
@@ -114,7 +113,7 @@ public class RushHourSessionTest {
         when(session.getAttribute(SESSION_NAME)).thenReturn(new Object());
         assertFalse(RushHourSession.isValidBean(session));
         
-        when(session.getAttribute(SESSION_NAME)).thenReturn(new RushHourSessionBean());
+        when(session.getAttribute(SESSION_NAME)).thenReturn(new RushHourSessionBean(0));
         assertTrue(RushHourSession.isValidBean(session));
     }
 
@@ -136,6 +135,7 @@ public class RushHourSessionTest {
     @Test
     public void testCreateBean(){
         RushHourSession inst = new RushHourSession();
+        inst.prop = prop;
         RushHourSession spy = spy(inst);
         doReturn(false).when(spy).hasValidBean();
         
@@ -154,6 +154,8 @@ public class RushHourSessionTest {
     @Test
     public void testReplaceBean(){
         RushHourSession inst = new RushHourSession();
+        inst.prop = prop;
+        
         HttpSession session = mock(HttpSession.class);
         
         Object before = new Object();
@@ -208,7 +210,7 @@ public class RushHourSessionTest {
     @Test
     public void testBean() {
         RushHourSession obj = spy(RushHourSession.class);
-        doReturn(new RushHourSessionBean()).when(obj).findOrCreateBean();
+        doReturn(new RushHourSessionBean(0)).when(obj).findOrCreateBean();
         
         obj.setToken("hoge");
         obj.setCenterX(10);
@@ -228,7 +230,7 @@ public class RushHourSessionTest {
     @Test
     public void testStaticMethod() {
         HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute(RushHourSession.SESSION_NAME)).thenReturn(new RushHourSessionBean());
+        when(session.getAttribute(RushHourSession.SESSION_NAME)).thenReturn(new RushHourSessionBean(0));
 
         RushHourSession.setLocale(session, Locale.ITALY);
         assertEquals(Locale.ITALY, RushHourSession.getLocale(session));

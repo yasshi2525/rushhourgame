@@ -93,6 +93,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
         inst.center = new SimplePoint();
         inst.click = new SimplePoint();
         inst.clickedRailEdge = new ArrayList<>();
+        inst.prop = PROP;
 
         try {
             player = createPlayer();
@@ -101,6 +102,7 @@ public class GameViewBeanTest extends AbstractBeanTest {
             fail();
         }
         inst.session = session;
+        
         doReturn(player.getToken()).when(session).getToken();
     }
 

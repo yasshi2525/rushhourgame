@@ -31,16 +31,17 @@ import net.rushhourgame.entity.RailNode;
  *
  * @author yasshi2525 (https://twitter.com/yasshi2525)
  */
-public class RushHourSessionBean implements Serializable{
+public class RushHourSessionBean implements Serializable {
     private static final long serialVersionUID = 1L;
     protected String token;
     protected Locale locale;
     protected double centerX;
     protected double centerY;
-    protected double scale = 7;
+    protected double scale;
     protected RailNode tailNode;
 
-    protected RushHourSessionBean() {
+    protected RushHourSessionBean(double scale) {
+        this.scale = scale;
     }
     
     public String getToken() {

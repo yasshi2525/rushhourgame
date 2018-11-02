@@ -40,6 +40,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import net.rushhourgame.RushHourProperties;
+import static net.rushhourgame.RushHourProperties.*;
 import net.rushhourgame.RushHourResourceBundle;
 import static net.rushhourgame.RushHourResourceBundle.*;
 import net.rushhourgame.RushHourSession;
@@ -111,6 +113,9 @@ public class GameViewBean implements Serializable {
     protected RushHourSession session;
     @Inject
     protected RushHourResourceBundle msg;
+    @Inject
+    protected RushHourProperties prop;
+
     protected Player player;
 
     protected SimplePoint center;
@@ -184,32 +189,48 @@ public class GameViewBean implements Serializable {
     }
 
     public List<RailNode> getMyRailNodes() {
-        return railCon.findNodeIn(player, center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))
+                ? Collections.EMPTY_LIST
+                : railCon.findNodeIn(player, center, getLoadScale());
     }
 
     @Transactional
     public List<RailNode> getMyLonelyRailNodes() {
-        return railCon.findLonelyIn(player, center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))
+                ? Collections.EMPTY_LIST
+                : railCon.findLonelyIn(player, center, getLoadScale());
     }
 
     public List<RailEdge> getRailEdges() {
-        return railCon.findEdgeIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))
+                ? Collections.EMPTY_LIST
+                : railCon.findEdgeIn(center, getLoadScale());
     }
 
     public List<Station> getStations() {
-        return stCon.findIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_STATION))
+                ? Collections.EMPTY_LIST
+                : stCon.findIn(center, getLoadScale());
     }
 
     public List<Human> getHumans() {
-        return hCon.findIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_HUMAN))
+                ? Collections.EMPTY_LIST
+                : hCon.findIn(center, getLoadScale());
     }
 
     @Transactional
     public List<Line> getLines() {
-        return lCon.findIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))
+                ? Collections.EMPTY_LIST
+                : lCon.findIn(center, getLoadScale());
     }
 
     public List<LineStep> getSortedLineSteps(Line line) {
+        if (scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))) {
+            return Collections.EMPTY_LIST;
+        }
+
         if (line.isCompleted()) {
             List<LineStep> sorted = new ArrayList<>();
             LineStep top = line.findTop();
@@ -226,11 +247,15 @@ public class GameViewBean implements Serializable {
     }
 
     public List<StepForHuman> getStepForHuman() {
-        return sCon.findIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_RAIL))
+                ? Collections.EMPTY_LIST
+                : sCon.findIn(center, getLoadScale());
     }
 
     public List<Train> getTrains() {
-        return tCon.findIn(center, getLoadScale());
+        return scale > Double.parseDouble(prop.get(VIEW_SCALE_TRAIN))
+                ? Collections.EMPTY_LIST
+                : tCon.findIn(center, getLoadScale());
     }
 
     public double getClickX() {
@@ -279,14 +304,25 @@ public class GameViewBean implements Serializable {
     public void onSlideEnd(SlideEndEvent event) {
         setScale(event.getValue() / 100.0); // 100倍の値を入力させている
     }
-    
+
     /**
-     * クライアントサイドからのスケールの更新.
-     * マウスホイール起点のスケール変更通知のため実装.
+     * クライアントサイドからのスケールの更新. マウスホイール起点のスケール変更通知のため実装.
      */
     public void registerScale() {
         Map<String, String> reqParam = getFacesContext().getExternalContext().getRequestParameterMap();
         setScale(Double.parseDouble(reqParam.get("scale")));
+    }
+
+    public int getMinScale() {
+        return (int) Double.parseDouble(prop.get(VIEW_SCALE_MIN));
+    }
+
+    public int getDefaultScale() {
+        return (int) Double.parseDouble(prop.get(VIEW_SCALE_DEFAULT));
+    }
+
+    public int getMaxScale() {
+        return (int) Double.parseDouble(prop.get(VIEW_SCALE_MAX));
     }
 
     /**

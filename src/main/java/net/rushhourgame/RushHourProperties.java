@@ -87,6 +87,15 @@ public class RushHourProperties implements Serializable {
     public static final String ADMINISTRATOR = "rushhour.administrator";
     public static final String LANG = "rushhour.lang";
 
+    public static final String MAP_SCALE = "rushhour.map.scale";
+    public static final String VIEW_SCALE_MIN = "rushhour.view.scale.min";
+    public static final String VIEW_SCALE_DEFAULT = "rushhour.view.scale.default";
+    public static final String VIEW_SCALE_HUMAN = "rushhour.view.scale.human";
+    public static final String VIEW_SCALE_TRAIN = "rushhour.view.scale.train";
+    public static final String VIEW_SCALE_RAIL = "rushhour.view.scale.rail";
+    public static final String VIEW_SCALE_STATION = "rushhour.view.scale.station";
+    public static final String VIEW_SCALE_MAX = "rushhour.view.scale.max";
+    
     public static final String GAME_INTERVAL = "rushhour.game.interval";
     public static final String GAME_DEF_OAUTH_PURGE_DAY = "rushhour.game.default.oauth.purgeday";
     public static final String GAME_DEF_CMP_SCALE = "rushhour.game.default.company.scale";

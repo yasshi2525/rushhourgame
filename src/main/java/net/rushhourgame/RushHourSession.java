@@ -46,6 +46,9 @@ public class RushHourSession implements Serializable {
     @Inject
     transient HttpSession injectedSession;
 
+    @Inject
+    protected RushHourProperties prop;
+
     public void setLocale(Locale locale) {
         findOrCreateBean().setLocale(locale);
     }
@@ -85,11 +88,11 @@ public class RushHourSession implements Serializable {
     public void setScale(double scale) {
         findOrCreateBean().setScale(scale);
     }
-    
+
     public RailNode getTailNode() {
         return findOrCreateBean().getTailNode();
     }
-    
+
     public void setTailNode(RailNode tailNode) {
         findOrCreateBean().setTailNode(tailNode);
     }
@@ -124,15 +127,9 @@ public class RushHourSession implements Serializable {
             return (RushHourSessionBean) injectedSession.getAttribute(SESSION_NAME);
         }
 
-        RushHourSessionBean ret;
-
         if (injectedSession.getAttribute(SESSION_NAME) == null) {
             //新規作成
             LOG.log(Level.FINE, "{0}#create", new Object[]{getClass().getSimpleName()});
-
-            ret = new RushHourSessionBean();
-            injectedSession.setAttribute(SESSION_NAME, ret);
-            return ret;
         } else {
             // RushHourSessionBean以外の値があるので上書き
             LOG.log(Level.INFO, "{0}#create overwrite session.{1} from {2} (Class : {3})",
@@ -141,11 +138,11 @@ public class RushHourSession implements Serializable {
                         SESSION_NAME,
                         injectedSession.getAttribute(SESSION_NAME),
                         injectedSession.getAttribute(SESSION_NAME).getClass()});
-
-            ret = new RushHourSessionBean();
-            injectedSession.setAttribute(SESSION_NAME, ret);
-            return ret;
         }
+        RushHourSessionBean ret = new RushHourSessionBean(
+                Double.parseDouble(prop.get(RushHourProperties.VIEW_SCALE_DEFAULT)));
+        injectedSession.setAttribute(SESSION_NAME, ret);
+        return ret;
     }
 
     /**
@@ -160,15 +157,9 @@ public class RushHourSession implements Serializable {
             return (RushHourSessionBean) session.getAttribute(SESSION_NAME);
         }
 
-        RushHourSessionBean ret;
-
         if (session.getAttribute(SESSION_NAME) == null) {
             //新規作成
             LOG.log(Level.FINE, "{0}#create", new Object[]{RushHourSession.class.getSimpleName()});
-
-            ret = new RushHourSessionBean();
-            session.setAttribute(SESSION_NAME, ret);
-            return ret;
         } else {
             // RushHourSessionBean以外の値があるので上書き
             LOG.log(Level.INFO, "{0}#create overwrite session.{1} from {2} (Class : {3})",
@@ -177,21 +168,25 @@ public class RushHourSession implements Serializable {
                         SESSION_NAME,
                         session.getAttribute(SESSION_NAME),
                         session.getAttribute("rushhour").getClass()});
-
-            ret = new RushHourSessionBean();
-            session.setAttribute(SESSION_NAME, ret);
-            return ret;
         }
+
+        RushHourSessionBean ret = new RushHourSessionBean(
+                Double.parseDouble(RushHourProperties.getInstance()
+                        .get(RushHourProperties.VIEW_SCALE_DEFAULT)));
+        session.setAttribute(SESSION_NAME, ret);
+        return ret;
     }
-    
+
     public static RushHourSession getSimpleSession() {
         return new SimpleRushHourSession();
     }
-    
+
     protected static class SimpleRushHourSession extends RushHourSession {
-        
+
         private static final long serialVersionUID = 1L;
-        protected RushHourSessionBean bean = new RushHourSessionBean();
+        protected RushHourSessionBean bean = new RushHourSessionBean(
+                Double.parseDouble(RushHourProperties.getInstance()
+                        .get(RushHourProperties.VIEW_SCALE_DEFAULT)));
 
         @Override
         public Locale getLocale() {
