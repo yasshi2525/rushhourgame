@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -58,7 +59,7 @@ public class TrainDeployed extends GeoEntity {
     protected Train train;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     protected LineStep current;
 
     @Min(0)
