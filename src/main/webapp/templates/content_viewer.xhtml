@@ -172,10 +172,7 @@
                     oncomplete="fetchGraphics()"/>
         </p:slider>
         <!-- マウスホイール起点のscale変更をサーバに送信. slideEndは発火しない -->
-        <p:remoteCommand name="registerScale" 
-                         immediate="true" 
-                         actionListener="#{game.registerScale}"
-                         update="gamemodel scale" oncomplete="fetchGraphics()" />
+        <p:remoteCommand name="registerScale" immediate="true" actionListener="#{game.registerScale}" />
     </h:panelGrid>
 </h:form>
 
