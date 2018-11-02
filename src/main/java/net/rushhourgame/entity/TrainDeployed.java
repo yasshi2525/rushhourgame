@@ -44,8 +44,8 @@ import javax.validation.constraints.NotNull;
         query = "DELETE FROM TrainDeployed obj WHERE obj = :obj"
 )
 @NamedQuery(
-        name = "TrainDeployed.findByCurrent",
-        query = "SELECT obj FROM TrainDeployed obj WHERE obj.current = :current"
+        name = "TrainDeployed.findByCurrentId",
+        query = "SELECT obj FROM TrainDeployed obj WHERE obj.current.id = :id"
 )
 @Entity
 public class TrainDeployed extends GeoEntity {

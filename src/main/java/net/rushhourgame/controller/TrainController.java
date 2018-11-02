@@ -256,8 +256,8 @@ public class TrainController extends CachedController<Train> {
      * @param removing 削除予定のLineStep
      */
     public void detach(LineStep removing) {
-        List<TrainDeployed> refs = em.createNamedQuery("TrainDeployed.findByCurrent", TrainDeployed.class)
-                .setParameter("current", removing)
+        List<TrainDeployed> refs = em.createNamedQuery("TrainDeployed.findByCurrentId", TrainDeployed.class)
+                .setParameter("id", removing.getId())
                 .getResultList();
         LOG.log(Level.FINE, "{0}#refresh refreshing {1}",
                 new Object[]{TrainController.class, refs});
